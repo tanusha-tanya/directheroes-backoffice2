@@ -1,0 +1,53 @@
+version: '3.5'
+
+services:
+    # data container is a workaround for docker issue: https://github.com/docker/docker/issues/2259
+    data:
+        image: bitnami/minideb:jessie
+        volumes:
+            - .:/var/www/symfony:rw
+            - ../volumes/redis:/data:rw
+            - ../volumes/nginx:/var/lib/nginx:rw
+        command: bash -c "chown -R 1000:33 /var/www/symfony; chown -R 1000:33 /var/lib/nginx; chown -R 999:999 /data; sleep 5"
+    php:
+        restart: always
+        build: ./php-fpm
+        depends_on:
+          - data
+        expose:
+            - 8082
+        volumes:
+            - ..:/var/www/symfony:rw
+        tty: true
+        stdin_open: true
+    nginx:
+        restart: always
+        build: ./nginx
+        depends_on:
+          - data
+          - php
+        expose:
+            - 8080
+        volumes:
+            - ..:/var/www/symfony:ro
+            - ../volumes/nginx:/var/lib/nginx:rw
+        environment:
+            - VIRTUAL_HOST=${VIRTUAL_HOST}
+            - VIRTUAL_NETWORK=nginx-proxy
+            - VIRTUAL_PORT=8080
+            - HTTPS_METHOD=${HTTPS_METHOD}
+        networks:
+            - default
+            - nginx-proxy
+    redis:
+        restart: always
+        build: ./redis
+        depends_on:
+          - data
+        volumes:
+            - ../volumes/redis:/data:rw
+        expose:
+            - 6379
+networks:
+    nginx-proxy:
+        external: true
