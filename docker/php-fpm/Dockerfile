@@ -1,4 +1,4 @@
-FROM adorofeev/php-fpm-nodejs:php71
+FROM adorofeev/php-fpm-nodejs
 
 # switch to root (parent image uses www-data user)
 USER root
@@ -12,8 +12,8 @@ RUN install_packages \
   sudo
 
 # set up php
-ADD symfony.ini /etc/php7.1/fpm/conf.d/
-ADD symfony.ini /etc/php7.1/cli/conf.d/
+ADD symfony.ini /etc/php7.2/fpm/conf.d/
+ADD symfony.ini /etc/php7.2/cli/conf.d/
 ADD sudoers /etc/
 
 # switch back to www-data
