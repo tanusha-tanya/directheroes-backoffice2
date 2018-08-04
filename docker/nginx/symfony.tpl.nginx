@@ -2,21 +2,18 @@ proxy_cache_path /var/lib/nginx/proxy_cache levels=1:2 keys_zone=static_cache:1m
 
 resolver 8.8.8.8 valid=60s;
 
+# Forward to landing page: upstream
 upstream static_pages {
     server "landing.directheroes.com" fail_timeout=120 max_fails=2;
 }
 
+# Forward to dev-server (if running) or static files: Upstream
 upstream choose_server {
-    server php:80 fail_timeout=1 max_fails=0;
+    server ${PHP_FPM_HOSTNAME}:80 fail_timeout=1 max_fails=0;
     server localhost:80 fail_timeout=1 max_fails=0 backup;
 }
 
-#server {
-#  listen 80;
-#  server_name "~^www\.(.*)$";
-#  return 301 http://$1$request_uri ;
-#}
-
+# Forward to landing page: upstream
 server {
     listen 8080 default_server;
 
@@ -31,7 +28,6 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_connect_timeout   1;
-        proxy_set_header        host directheroes.devel;
         proxy_pass              http://localhost:80;
     }
 }
@@ -42,6 +38,7 @@ server {
     root /var/www/symfony/public;
     include detailed_errors.conf.inc;
 
+    # Landing page URLs
     location /wordpress/ {
         proxy_connect_timeout   2s;
         proxy_send_timeout      5s;
@@ -74,7 +71,9 @@ server {
         proxy_cache_valid       200 2m;
         proxy_cache_use_stale   error timeout http_500 http_502 http_503 http_504 http_403 http_404;
     }
+    # End landing page URLs
 
+    # Static files headers
     location ~ ^/(js|css) {
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '*';
@@ -108,6 +107,7 @@ server {
             add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
         }
     }
+    # End static files headers
 
     location / {
         try_files $uri @rewriteapp;

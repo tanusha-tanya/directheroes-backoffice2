@@ -13,13 +13,13 @@ services:
         restart: always
         build: ./php-fpm
         depends_on:
-          - data
-        expose:
-            - 8082
+            - data
         volumes:
             - ..:/var/www/symfony:rw
-        tty: true
-        stdin_open: true
+        networks:
+            default:
+                aliases:
+                - php-fpm.compose
     nginx:
         restart: always
         build: ./nginx
@@ -37,8 +37,10 @@ services:
             - VIRTUAL_PORT=8080
             - HTTPS_METHOD=${HTTPS_METHOD}
         networks:
-            - default
-            - nginx-proxy
+            default:
+                aliases:
+                - nginx.compose
+            nginx-proxy: ~
     redis:
         restart: always
         build: ./redis
@@ -46,8 +48,12 @@ services:
           - data
         volumes:
             - ../volumes/redis:/data:rw
-        expose:
-            - 6379
+#        expose:
+#            - 6379
+        networks:
+            default:
+                aliases:
+                - redis.compose
 networks:
     nginx-proxy:
         external: true

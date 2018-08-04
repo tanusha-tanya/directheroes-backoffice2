@@ -9,36 +9,11 @@
     </head>
     <body>
         {% block body %}
-            <div id="vue-app">
+            <div id="app">
             </div>
         {% endblock %}
         {% block javascripts %}
-            <script>
-              var data = {
-                board: {
-                  stages: ['on-hold', 'in-progress', 'needs-review', 'approved'],
-                  blocks: [
-                    {
-                      id: 1,
-                      number: 1,
-                      estimate: 0.5,
-                      status: 'on-hold',
-                      title: 'reply to Mark',
-                    },
-                    {
-                      id: 2,
-                      number: 1,
-                      estimate: 2.75,
-                      status: 'in-progress',
-                      title: 'Order pizza',
-                    },
-                  ],
-                }
-              };
-            </script>
             <script src="{{ asset('build/app.js') }}"></script>
-            <script>
-            </script>
         {% endblock %}
     </body>
 </html>

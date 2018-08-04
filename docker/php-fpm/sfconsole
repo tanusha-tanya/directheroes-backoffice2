@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-COMMAND="/var/www/symfony/bin/console $@"
-
-if [ ! "$(whoami)" == 'www-data' ] ; then
-    su -s /bin/bash - www-data -c "cd /var/www/symfony; $COMMAND"
-else
-    bash -c "cd /var/www/symfony; $COMMAND"
-fi
