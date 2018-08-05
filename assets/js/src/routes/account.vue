@@ -7,10 +7,9 @@
           {{currentAccount.followers}} Followers • {{currentAccount.following}} Following
         </div>
       </div>
-      <el-collapse accordion>
-
+      <el-collapse class="account-menu" accordion>
         <router-link
-          class="el-collapse-item"
+          class="account-menu-item"
           :to="{ name: 'accountCurrent', params: { accountId: currentAccount.id || 0 } }"
           tag="div"
         >
@@ -30,7 +29,7 @@
             </span>
           </template>
         </el-collapse-item> -->
-        <el-collapse-item>
+        <el-collapse-item class="account-menu-item">
           <template slot="title">
             <span>
               <img src="../assets/copy.svg"/>
@@ -50,7 +49,7 @@
             {{compaign.type}}
           </router-link>
         </el-collapse-item>
-        <el-collapse-item>
+        <el-collapse-item class="account-menu-item">
           <template slot="title">
             <span>
               <img src="../assets/comment.svg"/>
@@ -121,11 +120,12 @@ export default {
       margin-right: -1px;
     }
 
-    .el-collapse-item {
+    .account-menu-item {
       border-left: 3px solid transparent;
       border-bottom: 1px solid #e6e6e6;
       opacity: .5;
       cursor: pointer;
+      transition: .2s opacity;
 
       &:hover {
         opacity: .8;
@@ -136,6 +136,7 @@ export default {
         background-image: url(../assets/arrow.svg);
         width: 24px;
         height: 24px;
+        transition: .2s transform;
       }
 
       &.router-link-exact-active {

@@ -113,4 +113,45 @@ body {
     }
   }
 }
+
+.scroller {
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d2d2d2;
+    border: 0px none #ffffff;
+    border-radius: 50px;
+    transition: .2s background-color
+  }
+
+  &::-webkit-scrollbar-thumb:hover, &::-webkit-scrollbar-thumb:active {
+    background-color: #a4a4a4;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #f8f8f8;
+    border: 0px none #ffffff;
+    border-radius: 50px;
+  }
+
+  &::-webkit-scrollbar-track:hover, &::-webkit-scrollbar-track:active {
+    background: #ffffff;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+.el-select-dropdown {
+  display: none;
+}
 </style>

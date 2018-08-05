@@ -6,6 +6,8 @@ Vue.use(VueRouter)
 
 import store from './store/store'
 
+// import 'element-ui/lib/theme-chalk/index.css';
+
 /**
  * Import routes components
  */

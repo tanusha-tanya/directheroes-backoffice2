@@ -18,13 +18,21 @@ export default new VueX.Store({
             name: 'All the Stories',
             type: 'Story Campaign',
             active: true,
-            rules: [
-              { message: [], replies:{
-                text: 'dsfdfsdf',
-                actions: [
-                  {id: 123, type:123}
+            templates:[
+              {
+                id: 1,
+                rules: [
+                  {
+                    messages: ['Hello', 'Hi'],
+                    replies:{
+                      text: 'dsfdfsdf',
+                      actions: [
+                        {id: 123, type: 233}
+                      ]
+                    }
+                  }
                 ]
-              }}
+              }
             ]
           },
           {
@@ -32,13 +40,21 @@ export default new VueX.Store({
             name: 'Campaign Name',
             type: 'IGTV Campaign',
             active: true,
-            rules: [
-              { message: [], replies:{
-                text: 'dsfdfsdf',
-                actions: [
-                  {id: 123, type: 233}
+            templates:[
+              {
+                id: 1,
+                rules: [
+                  {
+                    message: '',
+                    replies:{
+                      text: 'dsfdfsdf',
+                      actions: [
+                        {id: 123, type: 233}
+                      ]
+                    }
+                  }
                 ]
-              }}
+              }
             ]
           }
         ]
