@@ -1,37 +1,37 @@
 <template>
-  <div class="compaign-content" v-if="currentCompagin">
-    <div class="compaign-panel">
-      <div class="compaign-title">
-        <strong>{{currentCompagin.name}}</strong>
+  <div class="campaign-content" v-if="currentCampaign">
+    <div class="campaign-panel">
+      <div class="campaign-title">
+        <strong>{{currentCampaign.name}}</strong>
         <div>
-          {{currentCompagin.type}}
+          {{currentCampaign.type}}
           <img src="../assets/info.svg"/>
         </div>
       </div>
-      <div class="compaign-controls">
-        <div class="compaign-button">
+      <div class="campaign-controls">
+        <div class="campaign-button">
           <img src="../assets/send.svg"/>
-          Test Compaign
+          Test Campaign
         </div>
-        <div @click="addTemplate" class="compaign-button">
+        <div @click="addTemplate" class="campaign-button">
           Add template
         </div>
-        <div class="compaign-button">
-          Rename Compagin
+        <div class="campaign-button" @click="renameCampaign">
+          Rename Campaign
         </div>
-        <div class="compaign-button">
+        <div class="campaign-button">
           Archive
         </div>
-        <label :class="{'compaign-button': true, 'not-active': !currentCompagin.active }">
+        <label :class="{'campaign-button': true, 'not-active': !currentCampaign.active }">
           Active
-          <el-switch v-model="currentCompagin.active" :width="30"></el-switch>
+          <el-switch v-model="currentCampaign.active" :width="30"></el-switch>
         </label>
       </div>
     </div>
-    <el-collapse class="compaign-templates">
-      <el-collapse-item class="compaign-template" :title="`Template ${ index + 1 }`" v-for="template, index in currentCompagin.templates" :key="index">
-        <draggable v-model="template.rules" element="div" class="compaign-template-rules" :options="{ handle:'.rule-drag', animation: 300, forceFallback: true }">
-          <div class="compaign-template-rule" v-for="rule in template.rules">
+    <el-collapse class="campaign-templates">
+      <el-collapse-item class="campaign-template" :title="`Template ${ index + 1 }`" v-for="template, index in currentCampaign.templates" :key="index">
+        <draggable v-model="template.rules" element="div" class="campaign-template-rules" :options="{ handle:'.rule-drag', animation: 300, forceFallback: true }">
+          <div class="campaign-template-rule" v-for="rule in template.rules">
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg"/>
               <img src="../assets/drag.svg"/>
@@ -98,13 +98,13 @@
     },
 
     computed: {
-      currentCompagin() {
-        const { compaignId } = this.$route.params;
-        const { compaigns } = this.$store.state.currentAccount;
+      currentCampaign() {
+        const { campaignId } = this.$route.params;
+        const { campaigns } = this.$store.state.currentAccount;
 
-        if (!compaigns || !compaignId) return;
+        if (!campaigns || !campaignId) return;
 
-        return compaigns.find(compaign => compaign.id == compaignId);
+        return campaigns.find(campaign => campaign.id == campaignId);
       }
     },
     methods: {
@@ -124,7 +124,7 @@
         rules.splice(ruleIndex, 1);
 
         if (!rules.length) {
-          const { templates } = this.currentCompagin;
+          const { templates } = this.currentCampagin;
           const templateIndex = templates.indexOf(template)
 
           templates.splice(templateIndex, 1);
@@ -132,24 +132,26 @@
       },
 
       addTemplate() {
-        const { templates } = this.currentCompagin;
+        const { templates } = this.currentCampaign;
         const template =  {
-          id: templates.length,
           rules:[]
         }
 
         this.addRule(template);
 
         templates.push(template);
-      }
+      },
 
+      renameCampaign() {
+        this.$store.state.campaignToRename = this.currentCampaign;
+      }
     }
   }
 </script>
 <style lang="scss">
-  .compaign-content {
+  .campaign-content {
 
-    .compaign-panel {
+    .campaign-panel {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -157,7 +159,7 @@
       background-color: #EEEEEE;
     }
 
-    .compaign-title {
+    .campaign-title {
       strong {
         line-height: 23px;
         font-size: 16px;
@@ -174,11 +176,11 @@
       }
     }
 
-    .compaign-controls {
+    .campaign-controls {
       display: flex;
     }
 
-    .compaign-button {
+    .campaign-button {
       display: flex;
       align-items: center;
       color: #85539C;
@@ -210,11 +212,11 @@
       }
     }
 
-    .compaign-templates {
+    .campaign-templates {
       margin: 24px 30px 24px 15px;
     }
 
-    .compaign-template {
+    .campaign-template {
       &.is-active {
         .el-collapse-item__arrow {
           transform: rotate(90deg);
@@ -276,7 +278,7 @@
 
     }
 
-    .compaign-template-rule {
+    .campaign-template-rule {
       padding: 30px 0;
       height: 195px;
       border-bottom: 1px solid #E6E5E9;

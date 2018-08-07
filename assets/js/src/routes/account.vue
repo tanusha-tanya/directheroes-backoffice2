@@ -33,21 +33,24 @@
           <template slot="title">
             <span>
               <img src="../assets/copy.svg"/>
-              Compaign Builder
+              Campaign Builder
             </span>
           </template>
           <router-link
             class="collapse-sub-item"
-            :to="{ name: 'accountCompaign', params: { compaignId: compaign.id, accountId: currentAccount.id } }"
-            v-for="compaign in currentAccount.compaigns"
-            :key="compaign.id"
+            :to="{ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } }"
+            v-for="campaign in currentAccount.campaigns"
+            :key="campaign.id"
             tag="div"
           >
-            <div class="compaign-name">
-              {{compaign.name}}
+            <div class="campaign-name">
+              {{campaign.name}}
             </div>
-            {{compaign.type}}
+            {{campaign.type}}
           </router-link>
+          <div class="add-campaign-button" @click="isCampaignAdd = true">
+            + Add campaign
+          </div>
         </el-collapse-item>
         <el-collapse-item class="account-menu-item">
           <template slot="title">
@@ -62,10 +65,37 @@
     <div class="content">
       <router-view></router-view>
     </div>
+    <el-dialog title="Add New Campaign":visible.sync="isCampaignAdd" custom-class="add-campagin-dialog">
+      <div class="dialog-description">
+        What kind of campaign are you adding?
+      </div>
+      <div class="campaign-list">
+        <div class="campaign-type" v-for="campaign in campaignTypes" @click="addCompaign(campaign)">
+          <div :class="[{ 'campaign-type-icon': true }, campaign.type]"></div>
+          {{ campaign.name }}
+        </div>
+      </div>
+    </el-dialog>
+    <el-dialog
+      v-if ="Boolean(campaignToRename)"
+      :title="campaignToRename.id ? `Rename Your Campaign ${ campaignToRename.type }` : `Name Your New ${ campaignToRename.type }`"
+      :visible.sync="showRenameCampaign"
+      custom-class="rename-campagin-dialog"
+    >
+      <div class="dialog-description">
+        Nam porttitor blandit accumsan. Ut vel dictum sem, a pretium dui. In malesuada enim in dolor euismod, id commodo mi consectetur. Curabitur at vestibulum nisi
+      </div>
+      <el-input v-model="newCampaignName" placeholder="Name of campaign"></el-input>
+      <template slot="footer">
+        <div :class="{ 'dialog-button': true, disabled: !newCampaignName}" @click="renameAddCampaign">
+          {{ campaignToRename.id ? 'Rename Campaign' : 'Add Campaign' }}
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { Collapse, CollapseItem } from 'element-ui'
+import { Collapse, CollapseItem, Dialog, Input } from 'element-ui'
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -79,15 +109,81 @@ export default {
     next();
   },
 
+  data() {
+    return {
+      newCampaignName: '',
+      isCampaignAdd: false,
+      campaignTypes: [
+        {
+          type: 'welcome',
+          name: 'Welcome Campaign',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+        {
+          type: 'message',
+          name: 'Message Request Campaign',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+        {
+          type: 'story',
+          name: 'Story Campaign',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+        {
+          type: 'igtv',
+          name: 'IGTV Campaign',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+        {
+          type: 'ad',
+          name: 'AD Campaign',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+        {
+          type: 'broadcast',
+          name: 'Broadcast Bot',
+          dataTemplate: {
+            rules:[]
+          }
+        },
+      ]
+    }
+  },
+
   computed: {
     currentAccount() {
       return this.$store.state.currentAccount;
+    },
+
+    campaignToRename() {
+      return this.$store.state.campaignToRename;
+    },
+
+    showRenameCampaign: {
+      get() {
+        return  Boolean(this.campaignToRename);
+      },
+      set() {
+        this.$store.state.campaignToRename = null;
+      }
     }
   },
 
   components: {
     'el-collapse': Collapse,
-    'el-collapse-item': CollapseItem
+    'el-collapse-item': CollapseItem,
+    'el-dialog': Dialog,
+    'el-input': Input,
   },
 
   methods: {
@@ -101,6 +197,37 @@ export default {
       } else {
         $store.commit('selectAccount', accounts[0]);
       }
+    },
+
+    addCompaign(campaign) {
+      this.isCampaignAdd = false;
+      this.$store.state.campaignToRename = {
+        name: '',
+        type: campaign.name,
+        active: false,
+        templates: [campaign.dataTemplate]
+      }
+    },
+
+    renameAddCampaign() {
+      const { campaignToRename, currentAccount } = this;
+
+      campaignToRename.name = this.newCampaignName;
+
+      if (!campaignToRename.id) {
+        campaignToRename.id = currentAccount.campaigns.length + 10;
+        currentAccount.campaigns.push(campaignToRename)
+
+        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaignToRename.id, accountId: currentAccount.id } })
+      }
+
+      this.showRenameCampaign = null
+    }
+  },
+  
+  watch: {
+    showRenameCampaign() {
+      this.newCampaignName = this.campaignToRename ? this.campaignToRename.name : '';
     }
   }
 }
@@ -172,6 +299,7 @@ export default {
         width: 24px;
         height: 24px;
         margin-right: 8px;
+        opacity: .5;
       }
 
       .el-collapse-item__wrap {
@@ -192,9 +320,81 @@ export default {
         background-color: #DEDDE1;
         opacity: 1;
 
-        .compaign-name {
+        .campaign-name {
           font-weight: bold;
         }
+      }
+    }
+
+    .add-campaign-button {
+      color: #85539C;
+      font-weight: 600;
+      padding: 15px 15px 15px 45px;
+    }
+
+    .add-campagin-dialog {
+      .el-dialog__header {
+        align-items: flex-start;
+      }
+
+      .el-dialog__title {
+        text-align: center;
+      }
+    }
+
+    .campaign-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin: 26px 0;
+
+      .campaign-type {
+        width: 150px;
+        font-size: 14px;
+        line-height: 20px;
+        margin:25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .campaign-type-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 7px;
+        opacity: .5;
+
+        &.welcome {
+          background-image: url(../assets/folder.svg);
+        }
+
+        &.message {
+          background-image: url(../assets/comment.svg);
+        }
+
+        &.story {
+          background-image: url(../assets/copy.svg);
+        }
+
+        &.igtv {
+          background-image: url(../assets/bell.svg);
+        }
+
+        &.ad {
+          background-image: url(../assets/cart.svg);
+        }
+
+        &.broadcast {
+          background-image: url(../assets/heart.svg);
+        }
+      }
+    }
+
+    .rename-campagin-dialog {
+      .el-input {
+        margin-top: 42px;
       }
     }
   }

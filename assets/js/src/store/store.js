@@ -12,7 +12,7 @@ export default new VueX.Store({
         avatarURL: 'https://i.stack.imgur.com/CKnwO.png?s=128&g=1',
         followers: 13456,
         following: 15432,
-        compaigns: [
+        campaigns: [
           {
             id: 1,
             name: 'All the Stories',
@@ -45,7 +45,7 @@ export default new VueX.Store({
                 id: 1,
                 rules: [
                   {
-                    message: '',
+                    message: [],
                     replies:{
                       text: 'dsfdfsdf',
                       actions: [
@@ -72,7 +72,8 @@ export default new VueX.Store({
         following: 1542
       }
     ],
-    currentAccount: {}
+    currentAccount: {},
+    campaignToRename: null,
   },
 
   mutations: {

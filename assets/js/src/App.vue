@@ -154,4 +154,107 @@ body {
 .el-select-dropdown {
   display: none;
 }
+
+.v-modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .5;
+  background: #000;
+}
+
+.el-dialog__wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0;
+}
+
+.el-dialog {
+  position: relative;
+  margin: 0 auto 50px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  box-sizing: border-box;
+  width: 708px;
+  padding: 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 20px;
+
+  .el-input {
+    border: 1px solid #0C0033;
+    border-radius: 7px;
+
+    input {
+      padding: 14px 16px 13px;
+      font-size: 16px;
+      line-height: 24px;
+      border: none;
+      width: 100%;
+      outline: none;
+      background-color: transparent;
+    }
+  }
+
+  .el-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .dialog-description {
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .el-dialog__title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 32px;
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  .el-dialog__headerbtn {
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .el-dialog__close {
+    display: block;
+    width: 24px;
+    height: 24px;
+    background-image: url(./assets/times.svg);
+    cursor: pointer;
+  }
+
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 25px;
+  }
+
+  .dialog-button {
+    font-weight: 600;
+    padding: 8px 16px;
+    color: #fff;
+    background-color: #434890;
+    border-radius: 3px;
+    cursor: pointer;
+
+    &.disabled {
+      opacity: .5;
+      cursor: default;
+    }
+  }
+}
+
 </style>

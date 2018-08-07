@@ -13,14 +13,14 @@ import store from './store/store'
  */
 import account from './routes/account.vue'
 import accountDetails from './routes/accountDetails.vue'
-import accountCompaign from './routes/accountCompaign.vue'
+import accountCampaign from './routes/accountCampaign.vue'
 
 const router = new VueRouter({
   routes:[
     { path: '/', component: account,
       children: [
         { name: 'home', path: '', component: accountDetails },
-        { name: 'accountCompaign', path: ':accountId/compaign/:compaignId', component: accountCompaign },
+        { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: accountCampaign },
         { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
     }
