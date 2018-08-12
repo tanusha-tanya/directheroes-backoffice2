@@ -84,8 +84,16 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
+    host: 'directheroes.local',
     // noInfo: true,
-    overlay: true
+    overlay: true,
+    proxy: [{
+      context: ['/api/1.0.0/**'],
+      target: 'https://beta.directheroes.com/app_dev.php',
+      changeOrigin: true,
+      secure: true,
+      logLevel: 'debug',
+    }],
   },
   performance: {
     hints: false

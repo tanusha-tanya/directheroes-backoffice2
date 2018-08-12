@@ -1,28 +1,28 @@
 <template>
   <div class="campaign-content" v-if="currentCampaign">
-    <div class="campaign-panel">
-      <div class="campaign-title">
-        <strong>{{currentCampaign.name}}</strong>
+    <div class="content-panel">
+      <div class="title">
+        {{currentCampaign.name}}
         <div>
-          {{currentCampaign.type}}
+          {{currentCampaign.typeName}}
           <img src="../assets/info.svg"/>
         </div>
       </div>
-      <div class="campaign-controls">
-        <div class="campaign-button">
+      <div class="content-controls">
+        <div class="content-button">
           <img src="../assets/send.svg"/>
           Test Campaign
         </div>
-        <div @click="addTemplate" class="campaign-button">
+        <div class="content-button" @click="addTemplate">
           Add template
         </div>
-        <div class="campaign-button" @click="renameCampaign">
+        <div class="content-button" @click="renameCampaign">
           Rename Campaign
         </div>
-        <div class="campaign-button">
+        <div class="content-button">
           Archive
         </div>
-        <label :class="{'campaign-button': true, 'not-active': !currentCampaign.active }">
+        <label :class="{'content-button': true, 'not-active': !currentCampaign.active }">
           Active
           <el-switch v-model="currentCampaign.active" :width="30"></el-switch>
         </label>
@@ -88,6 +88,23 @@
   import { Switch, Collapse, CollapseItem, Select, Input } from 'element-ui'
 
   export default {
+    beforeRouteEnter(to, from, next) {
+      next(accountCampaign => {
+        accountCampaign.setCurrentCampaign(to);
+      })
+    },
+
+    beforeRouteUpdate(to, from, next) {
+      this.setCurrentCampaign(to);
+      next();
+    },
+
+    data() {
+      return {
+        currentCampaign: null,
+      }
+    },
+
     components: {
       draggable,
       'el-input': Input,
@@ -98,16 +115,17 @@
     },
 
     computed: {
-      currentCampaign() {
-        const { campaignId } = this.$route.params;
-        const { campaigns } = this.$store.state.currentAccount;
-
-        if (!campaigns || !campaignId) return;
-
-        return campaigns.find(campaign => campaign.id == campaignId);
-      }
     },
     methods: {
+      setCurrentCampaign(route) {
+        const { campaignId } = route.params;
+        const { campaignList } = this.$store.state.currentAccount;
+
+        if (!campaignList || !campaignId) return;
+
+        this.currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
+      },
+
       addRule(template) {
         template.rules.push({
           messages: [],
@@ -145,26 +163,21 @@
       renameCampaign() {
         this.$store.state.campaignToRename = this.currentCampaign;
       }
+    },
+
+    watch: {
+      '$store.state.accounts'() {
+        if (this.currentCampaign) return;
+
+        this.setCurrentCampaign(this.$route);
+      }
     }
   }
 </script>
 <style lang="scss">
   .campaign-content {
 
-    .campaign-panel {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 17px;
-      background-color: #EEEEEE;
-    }
-
-    .campaign-title {
-      strong {
-        line-height: 23px;
-        font-size: 16px;
-      }
-
+    .title {
       img {
         width: 16px;
         height: 16px;
@@ -173,40 +186,13 @@
       div {
         display: flex;
         align-items: center;
+        font-size: 12px;
+        font-weight: normal;
+        line-height: 16px;
       }
     }
 
-    .campaign-controls {
-      display: flex;
-    }
-
-    .campaign-button {
-      display: flex;
-      align-items: center;
-      color: #85539C;
-      white-space: nowrap;
-      margin: 0 15px;
-      cursor: pointer;
-      opacity: .5;
-
-      & {
-        opacity: 1
-      }
-
-      &.not-active {
-        opacity: .5;
-
-        &:hover {
-          opacity: .8;
-        }
-      }
-
-      img {
-        width: 20px;
-        height: 20px;
-        margin-right: 4px;
-      }
-
+    .content-button {
       .el-switch {
         margin-left: 7px;
       }

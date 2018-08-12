@@ -27,6 +27,8 @@ const router = new VueRouter({
   ]
 })
 
+store.dispatch('getAccounts');
+
 new Vue({
   el: '#app',
   store,

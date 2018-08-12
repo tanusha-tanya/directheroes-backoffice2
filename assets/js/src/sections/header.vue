@@ -11,27 +11,79 @@
         v-for="account in accounts"
         :key="account.id"
       >
-        <div class="account-avatar" :style="{'background-image': `url(${ account.avatarURL }), url(${ defaultAvatar })`}"></div>
-        {{account.name}}
+        <div :class="{'account-avatar': true, 'logged-out': !account.isLoggedIn }" :style="{'background-image': `${ account.profilePicUrl ? 'url(' + account.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
+        {{account.login}}
       </router-link>
-      <div class="add-account" @click="addAccount">
-        <div class="account-plus-ico">
-          +
-        </div>
+      <div class="add-account" @click="isAddAccount = true">
+        <div class="account-plus-ico">+</div>
         Add account
       </div>
     </div>
+    <el-dialog :visible.sync="isAddAccount" custom-class="add-account-dialog">
+      <template slot="title" v-if="accountState === 'add'">
+        <div class="el-dialog__title">
+          Add your Instagram account
+        </div>
+      </template>
+      <div class="add-step" v-if="accountState === 'add'">
+        <div class="dialog-description">
+          Curabitur lobortis id lorem id bibendum. Ut id consectetur magna. Quisque volutpat augue enim, pulvinar lobortis nibh lacinia at.
+        </div>
+        <label>
+          Instagram username<br />
+          <input v-model="account.login"/>
+        </label>
+        <label>
+          Instagram password<br />
+          <input v-model="account.password" type="password"/>
+        </label>
+        <el-checkbox v-model="account.keepPassword">Remember details</el-checkbox>
+        <div class="dialog-buttons">
+          <button class="cancel-button" @click="isAddAccount = false">
+            Cancel
+          </button>
+          <button :disabled="!account.login || !account.password" @click="addAccount">
+            Add account
+          </button>
+        </div>
+      </div>
+      <template slot="title" v-if="accountState === 'verify'">
+        <div class="el-dialog__title">
+          Verify your Instagram account
+        </div>
+      </template>
+      <div v-if="accountState === 'verify'">
+        <div class="dialog-description">
+          Curabitur lobortis id lorem id bibendum. Ut id consectetur magna. Quisque volutpat augue enim, pulvinar lobortis nibh lacinia at.
+        </div>
+      </div>
+    </el-dialog>
   </header>
 </template>
 <script>
-  import { mapMutations } from 'vuex';
+  import { mapActions } from 'vuex'
   import defaultAvatar from '../assets/ig-avatar.jpg'
+  import { Checkbox, Dialog, Collapse, CollapseItem } from 'element-ui'
 
   export default {
     data() {
       return {
-        defaultAvatar
+        defaultAvatar,
+        accountState: 'add',
+        isAddAccount: false,
+        account: {
+          login: '',
+          password: '',
+          keepPassword: false,
+        }
       }
+    },
+
+    components: {
+      'el-collapse': Collapse,
+      'el-collapse-item': CollapseItem,
+      'el-dialog': Dialog,
+      'el-checkbox': Checkbox
     },
 
     computed: {
@@ -45,10 +97,25 @@
     },
 
     methods: {
-      ...mapMutations([
-        'addAccount'
-      ])
+      addAccount() {
+        this.$store.dispatch('addAccount', this.account)
+      }
+    },
+
+    watch: {
+      isAddAccount(value, oldValue) {
+        const { login, password } = this.$refs;
+
+        if (value) return;
+
+        this.account = {
+          login: '',
+          password: '',
+          keepPassword: false
+        }
+      }
     }
+
   }
 </script>
 <style lang="scss">
@@ -106,6 +173,18 @@
         background-size: contain;
         border-radius: 50%;
         margin-right: 12px;
+        position: relative;
+        overflow: hidden;
+
+        &.logged-out:before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(#000, .5);
+          content: '';
+        }
       }
     }
 
@@ -128,6 +207,24 @@
         margin-right: 12px;
         padding: 8px;
         text-align: center;
+      }
+    }
+
+    .add-account-dialog {
+      color: #0C0033;
+      text-align: left;
+      width: 460px;
+
+      .el-dialog__title, .dialog-description {
+        text-align: left;
+      }
+
+      label {
+        margin-top: 26px;
+      }
+
+      button {
+        background-color: #85539C;
       }
     }
   }

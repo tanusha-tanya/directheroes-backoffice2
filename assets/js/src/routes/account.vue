@@ -1,10 +1,10 @@
 <template>
-  <div class="container account">
+  <div class="container account" v-if="currentAccount">
     <div class="sidebar">
       <div class="account-mini-details">
-        <strong>{{currentAccount.name}}</strong>
+        <strong>{{currentAccount.login}}</strong>
         <div>
-          {{currentAccount.followers}} Followers • {{currentAccount.following}} Following
+          {{currentAccount.followerCount}} Followers • {{currentAccount.followingCount}} Following
         </div>
       </div>
       <el-collapse class="account-menu" accordion>
@@ -39,14 +39,14 @@
           <router-link
             class="collapse-sub-item"
             :to="{ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } }"
-            v-for="campaign in currentAccount.campaigns"
+            v-for="campaign in currentAccount.campaignList"
             :key="campaign.id"
             tag="div"
           >
             <div class="campaign-name">
               {{campaign.name}}
             </div>
-            {{campaign.type}}
+            {{campaign.typeName}}
           </router-link>
           <div class="add-campaign-button" @click="isCampaignAdd = true">
             + Add campaign
@@ -224,10 +224,15 @@ export default {
       this.showRenameCampaign = null
     }
   },
-  
+
   watch: {
     showRenameCampaign() {
       this.newCampaignName = this.campaignToRename ? this.campaignToRename.name : '';
+    },
+    '$store.state.accounts'() {
+      if (this.currentAccount) return;
+
+      this.selectAccount(this.$route);
     }
   }
 }
