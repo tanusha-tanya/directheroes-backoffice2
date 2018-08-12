@@ -5,7 +5,7 @@
           Instagram account details
         </div>
         <div class="content-controls">
-          <div class="content-button">
+          <div class="content-button" @click="isDeleteAccount = true">
             <img src="../assets/delete-acc.svg"/>
             Delete Account
           </div>
@@ -36,17 +36,30 @@
           </div>
         </div>
       </div>
+      <el-dialog title="Delete your Instagram account" :visible.sync="isDeleteAccount" custom-class="delete-account-dialog">
+        <div class="dialog-description">
+          Curabitur lobortis id lorem id bibendum. Ut id consectetur magna. Quisque volutpat augue enim, pulvinar lobortis nibh lacinia at.
+        </div>
+        <div class="dialog-buttons">
+          <button class="cancel-button" @click="isDeleteAccount = false">
+            Cancel
+          </button>
+          <button @click="deleteAccount">
+            Delete account
+          </button>
+        </div>
+      </el-dialog>
     </div>
 </template>
 <script>
   import defaultAvatar from '../assets/ig-avatar.jpg'
-  import { Checkbox, Input } from 'element-ui'
+  import { Checkbox, Input, Dialog } from 'element-ui'
 
   export default {
     data() {
-      console.log(this.currentAccount);
       return {
         defaultAvatar,
+        isDeleteAccount: false,
         password: '',
       }
     },
@@ -59,7 +72,25 @@
 
     components: {
       'el-input': Input,
-      'el-checkbox': Checkbox
+      'el-checkbox': Checkbox,
+      'el-dialog': Dialog,
+    },
+
+    methods: {
+      deleteAccount() {
+        this.$store.dispatch('deleteAccount', this.currentAccount)
+          .then(({ data }) => {
+            const { accounts } = this.$store.state;
+
+            this.isDeleteAccount = false;
+
+            if (!accounts.length) {
+              this.$router.push({ name: 'home' });
+            } else {
+              this.$router.push({ name: 'accountCurrent', params: { accountId: accounts[0].id } })
+            }
+          })
+      }
     }
   }
 </script>
@@ -137,5 +168,18 @@
       }
     }
 
+  }
+
+  .delete-account-dialog {
+    width: 460px;
+    text-align: left;
+
+    .el-dialog__title, .dialog-description {
+      text-align: left;
+    }
+
+    button {
+      background-color: #FF0048;
+    }
   }
 </style>

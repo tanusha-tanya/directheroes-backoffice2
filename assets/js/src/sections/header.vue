@@ -99,6 +99,13 @@
     methods: {
       addAccount() {
         this.$store.dispatch('addAccount', this.account)
+          .then(({data}) => {
+            const { account } = data.response.body
+
+            this.isAddAccount = false;
+
+            this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
+          })
       }
     },
 
@@ -130,10 +137,13 @@
       width: 100%;
       text-align: center;
       background-color: #31356A;
+      flex-shrink: 0;
     }
 
     .account-list {
-      display: flex
+      display: flex;
+      // overflow-x: auto;
+      // overflow-y: hidden;
     }
 
     .account-item {
@@ -207,6 +217,7 @@
         margin-right: 12px;
         padding: 8px;
         text-align: center;
+        flex-shrink: 0;
       }
     }
 

@@ -2,6 +2,14 @@ import Vue from 'vue'
 import VueX from 'vuex'
 import axios from 'axios'
 
+const accountRequestHandler = (method, params) => {
+  return axios({
+    url: `/api/1.0.0/${ dh.userName }/ig_account/save`,
+    method,
+    data: { account: params}
+  })
+}
+
 Vue.use(VueX)
 
 export default new VueX.Store({
@@ -113,13 +121,27 @@ export default new VueX.Store({
     },
 
     addAccount({ state, commit }, params) {
-      return axios({
-        url: `/api/1.0.0/${ dh.userName }/ig_account/save`,
-        method: 'post',
-        data: { account: params}
-      }).then(({ data }) => {
-        console.log(data);
-      })
+      const { accounts } = state;
+      const request = accountRequestHandler('post', params)
+
+      request.then(({ data }) => {
+        const { account } = data.response.body;
+
+        accounts.push(account);
+      });
+
+      return request
+    },
+
+    deleteAccount({ state, commit }, params) {
+      const { accounts } = state;
+      const request = accountRequestHandler('delete', params)
+
+      request.then(({ data }) => {
+        accounts.splice(accounts.indexOf(params),1)
+      });
+
+      return request
     }
   },
 
