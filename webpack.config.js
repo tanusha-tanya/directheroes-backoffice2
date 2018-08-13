@@ -10,7 +10,7 @@ Encore
     // only needed for CDN's or sub-directory deploy
     .setManifestKeyPrefix('build/')
     // always enable versioning
-    .enableVersioning()
+    .enableVersioning(true)
     // .enableVersioning(Encore.isProduction())
 
     /*
