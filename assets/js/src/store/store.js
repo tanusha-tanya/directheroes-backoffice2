@@ -88,6 +88,10 @@ export default new VueX.Store({
     ],
     currentAccount: null,
     campaignToRename: null,
+    newAccount: {
+      accountState: 'add',
+      isAdd: false
+    }
   },
 
   actions: {
@@ -142,7 +146,11 @@ export default new VueX.Store({
       });
 
       return request
-    }
+    },
+
+    saveAccount({ state, commit }, params) {
+      return accountRequestHandler('post', params)
+    },
   },
 
   mutations: {

@@ -4,7 +4,7 @@
       <div class="account-mini-details">
         <strong>{{currentAccount.login}}</strong>
         <div>
-          {{currentAccount.followerCount}} Followers • {{currentAccount.followingCount}} Following
+          {{currentAccount.followerCount || 0}} Followers • {{currentAccount.followingCount || 0}} Following
         </div>
       </div>
       <el-collapse class="account-menu" accordion>

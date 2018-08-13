@@ -34,7 +34,7 @@
           <div class="campaign-template-rule" v-for="rule in template.rules">
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg"/>
-              <img src="../assets/drag.svg"/>
+              <img src="../assets/eye.svg"/>
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg"/>
             </div>
             <div class="rule-messages">

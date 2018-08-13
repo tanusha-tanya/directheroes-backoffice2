@@ -18,6 +18,11 @@ export default {
 </script>
 
 <style lang="scss">
+  @keyframes rotation {
+    0% { transform:rotate(0deg); }
+    100% { transform:rotate(360deg); }
+  }
+
   #app {
     font-family: sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -67,6 +72,30 @@ export default {
     padding: 8px 26px;
     color: #fff;
     cursor: pointer;
+
+    &:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    &.loading {
+      color: transparent;
+      position: relative;
+
+      &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: calc(50% - 10px);
+        left: calc(50% - 10px);
+        width: 15px;
+        height: 15px;
+        border-radius: 100%;
+        border: 3px solid #FFF;
+        border-bottom-color: transparent;
+        animation: rotation  .8s infinite linear;
+      }
+    }
   }
 
   label {
@@ -314,17 +343,6 @@ export default {
       justify-content: flex-end;
       margin-top: 25px;
     }
-
-    .dialog-button {
-      font-weight: 600;
-      padding: 8px 16px;
-      color: #fff;
-      background-color: #434890;
-      border-radius: 3px;
-      cursor: pointer;
-
-
-    }
   }
 
   .dialog-buttons {
@@ -336,7 +354,8 @@ export default {
     .cancel-button {
       background: none;
       padding: 0;
-      color: #85539C;
+      color: #0C0033;
+      font-weight: normal;
     }
   }
 

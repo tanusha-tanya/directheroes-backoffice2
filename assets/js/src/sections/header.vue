@@ -42,7 +42,7 @@
           <button class="cancel-button" @click="isAddAccount = false">
             Cancel
           </button>
-          <button :disabled="!account.login || !account.password" @click="addAccount">
+          <button :class="{ loading }" :disabled="!account.login || !account.password || loading" @click="addAccount">
             Add account
           </button>
         </div>
@@ -69,13 +69,12 @@
     data() {
       return {
         defaultAvatar,
-        accountState: 'add',
-        isAddAccount: false,
         account: {
           login: '',
           password: '',
           keepPassword: false,
-        }
+        },
+        loading: false,
       }
     },
 
@@ -93,16 +92,34 @@
 
       currentAccount() {
         return this.$store.state.currentAccount
+      },
+
+      isAddAccount: {
+        get() {
+          return this.$store.state.newAccount.isAdd
+        },
+        set(value) {
+          this.$store.commit('set', {path: 'newAccount.isAdd', value });
+        }
+      },
+
+      accountState() {
+        return this.$store.state.newAccount.accountState;
       }
     },
 
     methods: {
+
+
       addAccount() {
+        this.loading = true;
+        
         this.$store.dispatch('addAccount', this.account)
           .then(({data}) => {
             const { account } = data.response.body
 
             this.isAddAccount = false;
+            this.loading = true;
 
             this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
           })
@@ -192,7 +209,8 @@
           left: 0;
           right: 0;
           bottom: 0;
-          background-color: rgba(#000, .5);
+          background: url(../assets/triangle.svg) rgba(#000, .5) center no-repeat;
+          background-size: 50%;
           content: '';
         }
       }
