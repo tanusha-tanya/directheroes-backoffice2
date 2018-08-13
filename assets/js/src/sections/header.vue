@@ -1,7 +1,6 @@
 <template>
   <header>
     <div class="logo">
-      Direct Heroes
     </div>
     <div class="account-list">
       <router-link
@@ -113,13 +112,13 @@
 
       addAccount() {
         this.loading = true;
-        
+
         this.$store.dispatch('addAccount', this.account)
           .then(({data}) => {
             const { account } = data.response.body
 
             this.isAddAccount = false;
-            this.loading = true;
+            this.loading = false;
 
             this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
           })
@@ -153,8 +152,9 @@
       max-width: 250px;
       width: 100%;
       text-align: center;
-      background-color: #31356A;
       flex-shrink: 0;
+      background: url(../assets/logo.svg) center no-repeat #31356A;
+      background-size: cover;
     }
 
     .account-list {
