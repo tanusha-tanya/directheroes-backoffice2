@@ -4,7 +4,7 @@ import axios from 'axios'
 
 const accountRequestHandler = (method, params) => {
   return axios({
-    url: `/api/1.0.0/${ dh.userName }/ig_account/save`,
+    url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/save`,
     method,
     data: { account: params}
   })
@@ -97,7 +97,7 @@ export default new VueX.Store({
   actions: {
     getAccounts({ state, commit }, params) {
       axios({
-        url: `/api/1.0.0/${ dh.userName }/ig_account/list`
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
         const { accountList } = data.response.body;
 
