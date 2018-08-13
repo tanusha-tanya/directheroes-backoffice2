@@ -12,6 +12,13 @@
             <div id="app">
             </div>
         {% endblock %}
+        <script>
+          window.data = {};
+          window.dh = {
+            apiUrl: '{{ apiUrl }}/app_dev.php',
+            userName: 'anton@dorofeev.me',
+          }
+        </script>
         {% block javascripts %}
             <script src="{{ asset('build/app.js') }}"></script>
         {% endblock %}

@@ -12,11 +12,8 @@ class MainController extends Controller
      */
     public function index()
     {
-        return $this->render('base.html.twig');
-
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/MainController.php',
+        return $this->render('base.html.twig', [
+            'apiUrl' => $this->getParameter('app.api_url'),
         ]);
     }
 }
