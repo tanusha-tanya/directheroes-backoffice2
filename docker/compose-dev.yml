@@ -41,6 +41,10 @@ services:
                 aliases:
                 - nginx.compose
             nginx-proxy: ~
+            application-network:
+                aliases:
+                - backoffice.app.directheroes
+
     redis:
         restart: always
         build: ./redis
@@ -56,4 +60,6 @@ services:
                 - redis.compose
 networks:
     nginx-proxy:
+        external: true
+    application-network
         external: true
