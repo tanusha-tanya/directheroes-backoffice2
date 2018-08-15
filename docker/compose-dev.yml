@@ -63,5 +63,5 @@ services:
 networks:
     nginx-proxy:
         external: true
-    application-network
+    application-network:
         external: true
