@@ -19,30 +19,32 @@
         <div class="content-button" @click="renameCampaign">
           Rename Campaign
         </div>
-        <div class="content-button">
+        <div class="content-button" @click="deleteCampaign">
           Archive
         </div>
-        <label :class="{'content-button': true, 'not-active': !currentCampaign.active }">
+        <label :class="{'content-button': true, 'not-active': !currentCampaign.enabled }">
           Active
-          <el-switch v-model="currentCampaign.active" :width="30"></el-switch>
+          <el-switch v-model="currentCampaign.enabled" :width="30"></el-switch>
         </label>
       </div>
     </div>
     <el-collapse class="campaign-templates">
-      <el-collapse-item class="campaign-template" :title="`Template ${ index + 1 }`" v-for="template, index in currentCampaign.templates" :key="index">
+      <el-collapse-item class="campaign-template" :title="`Template #${ templateIndex + 1 }`" v-for="template, templateIndex in currentCampaign.templateList" :key="template.id">
         <draggable v-model="template.rules" element="div" class="campaign-template-rules" :options="{ handle:'.rule-drag', animation: 300, forceFallback: true }">
-          <div class="campaign-template-rule" v-for="rule in template.rules">
+          <div class="campaign-template-rule" v-for="rule, ruleIndex in template.ruleList">
             <div class="rule-controls">
-              <img class="rule-drag" src="../assets/drag.svg"/>
+              <img class="rule-drag" src="../assets/drag.svg" v-if="template.type !== 'welcomeOpener' && (ruleIndex || templateIndex)" />
+              <span v-else></span>
               <img src="../assets/eye.svg"/>
-              <img @click="deleteRule(template, rule)" src="../assets/delete.svg"/>
+              <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="ruleIndex || templateIndex"/>
+              <span v-else></span>
             </div>
             <div class="rule-messages">
               <div class="rule-messages-title">
                 <img src="../assets/star.svg"/>
                 If follower messages…
               </div>
-              <el-select v-model="rule.messages"
+              <el-select v-model="rule.triggerPhraseList"
                 class="scroller"
                 placeholder="Enter messages"
                 multiple
@@ -68,12 +70,12 @@
               <el-input
                 type="textarea"
                 placeholder="Enter replies"
-                v-model="rule.replies.text">
+                v-model="rule.messageTemplate">
               </el-input>
             </div>
           </div>
         </draggable>
-        <div class="add-rule-button">
+        <div class="add-rule-button" v-if="canAddRule(template)">
           <div @click="addRule(template)">
             <img src="../assets/star-white.svg"/>
             Add rule
@@ -82,9 +84,13 @@
       </el-collapse-item>
     </el-collapse>
   </div>
+  <div class="loading-content"v-else>
+    <div class="pre-loader"></div>
+  </div>
 </template>
 <script>
   import draggable from 'vuedraggable'
+  import debounce from 'lodash/debounce'
   import { Switch, Collapse, CollapseItem, Select, Input } from 'element-ui'
 
   export default {
@@ -95,6 +101,8 @@
     },
 
     beforeRouteUpdate(to, from, next) {
+      this.currentCampaign = null;
+
       this.setCurrentCampaign(to);
       next();
     },
@@ -102,6 +110,7 @@
     data() {
       return {
         currentCampaign: null,
+        updateState: false,
       }
     },
 
@@ -114,8 +123,6 @@
       'el-collapse-item': CollapseItem
     },
 
-    computed: {
-    },
     methods: {
       setCurrentCampaign(route) {
         const { campaignId } = route.params;
@@ -123,45 +130,119 @@
 
         if (!campaignList || !campaignId) return;
 
-        this.currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
+        const currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
+
+        if (currentCampaign.templateList) {
+          this.currentCampaign = currentCampaign;
+        } else {
+          this.$store.dispatch('getCampaignTemplates', currentCampaign)
+            .then(({ data }) => {
+              this.currentCampaign = data.campaign;
+            });
+        }
       },
 
       addRule(template) {
-        template.rules.push({
-          messages: [],
-          replies: {
-            text: ''
-          }
+        template.ruleList.push({
+          triggerPhraseList: [],
+          messageTemplate: "",
         });
       },
 
       deleteRule(template, rule) {
-        const { rules } = template
-        const ruleIndex = rules.indexOf(rule)
+        const { ruleList } = template
+        const ruleIndex = ruleList.indexOf(rule)
 
-        rules.splice(ruleIndex, 1);
+        ruleList.splice(ruleIndex, 1);
 
-        if (!rules.length) {
-          const { templates } = this.currentCampagin;
-          const templateIndex = templates.indexOf(template)
+        if (!ruleList.length) {
+          const { templateList } = this.currentCampaign;
+          const templateIndex = templateList.indexOf(template)
 
-          templates.splice(templateIndex, 1);
+          templateList.splice(templateIndex, 1);
         }
       },
 
       addTemplate() {
-        const { templates } = this.currentCampaign;
+        const { templateList } = this.currentCampaign;
+        const { dynId, uuidv4 } = this.utils;
         const template =  {
-          rules:[]
+          id: dynId(),
+          uuid: uuidv4(),
+          name: "Template #",
+          ruleList:[]
         }
 
         this.addRule(template);
 
-        templates.push(template);
+        templateList.push(template);
       },
 
       renameCampaign() {
         this.$store.state.campaignToRename = this.currentCampaign;
+      },
+
+      saveCampaigns: debounce(function() {
+        const { currentCampaign } = this;
+        this.$store.dispatch('saveCampaigns', currentCampaign)
+          .then(({ data }) => {
+            const campaign = data.campaignList[0];
+
+            this.updateState = true;
+
+            campaign.templateList.forEach((template, index) => {
+              const campaignTemplate = currentCampaign.templateList[index];
+
+              if (!template.oldId) return;
+
+              campaignTemplate.id = template.id;
+            });
+
+            this.updateState = false;
+
+            this.$message.success({
+              message: 'Success saved',
+              duration: 3000,
+              center: true
+            });
+          })
+          .catch(() => {
+            this.$message.error({
+              message: 'Error saved',
+              duration: 3000,
+              center: true
+            })
+          });
+      }, 3000),
+
+      deleteCampaign() {
+        this.$store.dispatch('deleteCampaign', this.currentCampaign)
+          .then(({ data }) => {
+            const { currentAccount } = this.$store.state;
+            const { campaignList } = currentAccount;
+
+            if (!campaignList.length) {
+              this.$router.replace({ name: 'accountCurrent', params: { accountId: currentAccount.id } })
+            } else {
+              this.$router.replace({ name: 'accountCampaign', params: { campaignId: campaignList[0].id, accountId: currentAccount.id } })
+            }
+
+            this.$message.success({
+              message: 'Success delete',
+              duration: 3000,
+              center: true
+            });
+          }).catch(() => {
+            this.$message.error({
+              message: 'Error delete',
+              duration: 3000,
+              center: true
+            })
+          });
+      },
+
+      canAddRule(template) {
+        console.log(template, this.currentCampaign);
       }
     },
 
@@ -170,6 +251,15 @@
         if (this.currentCampaign) return;
 
         this.setCurrentCampaign(this.$route);
+      },
+
+      currentCampaign: {
+        handler: function (campaign, oldCampaign) {
+          if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id || this.updateState) return;
+
+          this.saveCampaigns();
+        },
+        deep: true
       }
     }
   }
@@ -282,6 +372,11 @@
         img {
           width: 24px;
           cursor: pointer;
+        }
+
+        span {
+          height: 24px;
+          width: 24px;
         }
       }
 

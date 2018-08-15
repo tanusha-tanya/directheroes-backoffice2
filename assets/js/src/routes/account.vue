@@ -42,7 +42,7 @@
             v-for="campaign in currentAccount.campaignList"
             :key="campaign.id"
             tag="div"
-          >
+           >
             <div class="campaign-name">
               {{campaign.name}}
             </div>
@@ -70,32 +70,43 @@
         What kind of campaign are you adding?
       </div>
       <div class="campaign-list">
-        <div class="campaign-type" v-for="campaign in campaignTypes" @click="addCompaign(campaign)">
+        <button :disabled="!canAddCampaign(campaign.type)" class="campaign-type" v-for="campaign in campaignTypes" @click="addCompaign(campaign)">
           <div :class="[{ 'campaign-type-icon': true }, campaign.type]"></div>
           {{ campaign.name }}
-        </div>
+        </button>
       </div>
     </el-dialog>
     <el-dialog
       v-if ="Boolean(campaignToRename)"
-      :title="campaignToRename.id ? `Rename Your Campaign ${ campaignToRename.type }` : `Name Your New ${ campaignToRename.type }`"
+      :title="campaignToRename.id ? `Rename Your Campaign ${ campaignToRename.typeName }` : `Name Your New ${ campaignToRename.typeName }`"
       :visible.sync="showRenameCampaign"
       custom-class="rename-campagin-dialog"
     >
       <div class="dialog-description">
         Nam porttitor blandit accumsan. Ut vel dictum sem, a pretium dui. In malesuada enim in dolor euismod, id commodo mi consectetur. Curabitur at vestibulum nisi
       </div>
-      <el-input v-model="newCampaignName" placeholder="Name of campaign"></el-input>
+      <input v-model="newCampaignName" placeholder="Name of campaign"></input>
       <template slot="footer">
-        <div :class="{ 'dialog-button': true, disabled: !newCampaignName}" @click="renameAddCampaign">
+        <button :disabled="!newCampaignName" @click="renameAddCampaign">
           {{ campaignToRename.id ? 'Rename Campaign' : 'Add Campaign' }}
-        </div>
+        </button>
       </template>
     </el-dialog>
+  </div>
+  <div class="loading-content"v-else>
+    <div class="pre-loader"></div>
   </div>
 </template>
 <script>
 import { Collapse, CollapseItem, Dialog, Input } from 'element-ui'
+
+const emptyTemplate = {
+  name: "Template #",
+  ruleList: [{
+    triggerPhraseList: [],
+    messageTemplate: "",
+  }],
+}
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -115,46 +126,34 @@ export default {
       isCampaignAdd: false,
       campaignTypes: [
         {
-          type: 'welcome',
+          type: 'welcomeCampaign',
           name: 'Welcome Campaign',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({ type: 'welcomeOpener' }, emptyTemplate)],
         },
         {
-          type: 'message',
+          type: 'messageRequestCampaign',
           name: 'Message Request Campaign',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({ type: "generic" }, emptyTemplate)],
         },
         {
-          type: 'story',
+          type: 'storyCampaign',
           name: 'Story Campaign',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({ type:"storyOpener", scarcity: null, hits: 0}, emptyTemplate)],
         },
         {
           type: 'igtv',
           name: 'IGTV Campaign',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({}, emptyTemplate)],
         },
         {
           type: 'ad',
           name: 'AD Campaign',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({}, emptyTemplate)],
         },
         {
-          type: 'broadcast',
+          type: 'broadcastCampaign',
           name: 'Broadcast Bot',
-          dataTemplate: {
-            rules:[]
-          }
+          templateList: [Object.assign({ type:"storyOpener", scarcity: null, hits: 0}, emptyTemplate)],
         },
       ]
     }
@@ -200,40 +199,87 @@ export default {
     },
 
     addCompaign(campaign) {
+      const { dynId, uuidv4 } = this.utils;
+
       this.isCampaignAdd = false;
+
+      Object.assign(campaign.templateList[0], {
+        id: dynId(),
+        uuid: uuidv4(),
+      })
+
       this.$store.state.campaignToRename = {
         name: '',
-        type: campaign.name,
-        active: false,
-        templates: [campaign.dataTemplate]
+        type: campaign.type,
+        typeName: campaign.name,
+        enabled: false,
+        templateList: campaign.templateList,
       }
     },
 
     renameAddCampaign() {
       const { campaignToRename, currentAccount } = this;
+      const { dynId, uuidv4 } = this.utils;
 
       campaignToRename.name = this.newCampaignName;
 
       if (!campaignToRename.id) {
-        campaignToRename.id = currentAccount.campaigns.length + 10;
-        currentAccount.campaigns.push(campaignToRename)
+        campaignToRename.id = dynId();
+        campaignToRename.uuid = uuidv4();
 
-        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaignToRename.id, accountId: currentAccount.id } })
+        this.$store.dispatch('saveCampaigns', campaignToRename)
+          .then(({ data }) => {
+            const { campaignList } = data;
+            const currentCampaign = campaignList.find(campaign => campaign.uuid === campaignToRename.uuid);
+
+            this.$message.success({
+              message: 'Success add',
+              duration: 3000,
+              center: true
+            })
+
+            this.$router.push({ name: 'accountCampaign', params: { campaignId: currentCampaign.id, accountId: currentAccount.id } })
+          })
+          .catch(() => {
+            this.$message.error({
+              message: 'Add error',
+              duration: 3000,
+              center: true
+            })
+          });
       }
 
-      this.showRenameCampaign = null
-    }
+      this.showRenameCampaign = null;
+    },
+
+    canAddCampaign(campaignType) {
+      const { campaignList } = this.currentAccount;
+
+      switch(campaignType) {
+        case 'ad':
+        case 'igtv':
+        case 'broadcastCampaign':
+          return false;
+        break;
+        case 'messageRequestCampaign':
+        case 'welcomeCampaign':
+          return !campaignList.some(campaign => ['messageRequestCampaign', 'welcomeCampaign'].includes(campaign.type));
+      }
+
+      return true;
+    },
   },
 
   watch: {
     showRenameCampaign() {
       this.newCampaignName = this.campaignToRename ? this.campaignToRename.name : '';
     },
+
     '$store.state.accounts'() {
       if (this.currentAccount) return;
 
       this.selectAccount(this.$route);
-    }
+    },
   }
 }
 </script>
@@ -362,7 +408,10 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        cursor: pointer;
+        background-color: transparent;
+        color: #0C0033;
+        font-weight: normal;
+        padding: 0;
       }
 
       .campaign-type-icon {
@@ -371,15 +420,15 @@ export default {
         margin-bottom: 7px;
         opacity: .5;
 
-        &.welcome {
+        &.welcomeCampaign {
           background-image: url(../assets/folder.svg);
         }
 
-        &.message {
+        &.messageRequestCampaign {
           background-image: url(../assets/comment.svg);
         }
 
-        &.story {
+        &.storyCampaign {
           background-image: url(../assets/copy.svg);
         }
 
@@ -391,14 +440,14 @@ export default {
           background-image: url(../assets/cart.svg);
         }
 
-        &.broadcast {
+        &.broadcastCampaign {
           background-image: url(../assets/heart.svg);
         }
       }
     }
 
     .rename-campagin-dialog {
-      .el-input {
+      input {
         margin-top: 42px;
       }
     }

@@ -108,8 +108,6 @@
     },
 
     methods: {
-
-
       addAccount() {
         this.loading = true;
 
@@ -121,6 +119,9 @@
             this.loading = false;
 
             this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
+          }).catch((error) => {
+            console.log(error);
+            this.loading = false;
           })
       }
     },

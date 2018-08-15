@@ -23,6 +23,17 @@ export default {
     100% { transform:rotate(360deg); }
   }
 
+  @keyframes preloader-wave {
+    0% {
+        opacity: 1;
+        transform: scale(0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1, 1);
+    }
+  }
+
   #app {
     font-family: sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -59,6 +70,33 @@ export default {
     width: 100%;
     flex-shrink: 0;
     background-color: #EEEEEE;
+  }
+
+  .pre-loader {
+    height: 50px;
+    width: 50px;
+    position: relative;
+
+    &:before, &:after {
+      animation: 1.6s linear 0s normal none infinite running preloader-wave;
+      background: #434890 none repeat scroll 0 0;
+      border-radius: 100%;
+      content: "";
+      height: 50px;
+      position: absolute;
+      width: 50px;
+    }
+
+    &:after {
+      animation-delay: -0.8s;
+    }
+  }
+
+  .loading-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
   button {
@@ -426,4 +464,51 @@ export default {
     margin-left: 10px;
   }
 }
+
+  .el-message {
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 380px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ebeef5;
+    position: fixed;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    background-color: #edf2fc;
+    transition: opacity .3s,transform .4s;
+    padding: 15px 15px 15px 20px;
+    display: flex;
+    align-items: center;
+    font: 600 16px sans-serif;
+
+    p {
+       margin: 0;
+    }
+
+    &.el-message--success {
+      background-color: rgba(#f0f9eb, .95);
+      border-color: #e1f3d8;
+
+      .el-message__content {
+        color: #67c23a;
+      }
+    }
+
+    &.el-message--error {
+      background-color: rgba(#f0f9eb, .95);
+      border-color: #fde2e2;
+
+      .el-message__content {
+        color: #f56c6c;
+      }
+    }
+
+    .el-message__content {
+      padding: 0;
+      line-height: 1;
+      text-align: center;
+    }
+  }
 </style>

@@ -101,24 +101,24 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList } = data.response.body;
 
-        accountList.forEach(account => {
-          account.campaignList.forEach( campaign => {
-            campaign.templates = [{
-              id: 1,
-              rules: [
-                {
-                  messages: ['Hello', 'Hi'],
-                  replies:{
-                    text: 'dsfdfsdf',
-                    actions: [
-                      {id: 123, type: 233}
-                    ]
-                  }
-                }
-              ]
-            }]
-          });
-        })
+        // accountList.forEach(account => {
+        //   account.campaignList.forEach( campaign => {
+        //     campaign.templates = [{
+        //       id: 1,
+        //       rules: [
+        //         {
+        //           messages: ['Hello', 'Hi'],
+        //           replies:{
+        //             text: 'dsfdfsdf',
+        //             actions: [
+        //               {id: 123, type: 233}
+        //             ]
+        //           }
+        //         }
+        //       ]
+        //     }]
+        //   });
+        // })
 
         commit('set', {path: 'accounts', value: accountList});
       })
@@ -143,7 +143,7 @@ export default new VueX.Store({
 
       request.then(({ data }) => {
         accounts.splice(accounts.indexOf(params),1)
-      });
+      })
 
       return request
     },
@@ -151,6 +151,61 @@ export default new VueX.Store({
     saveAccount({ state, commit }, params) {
       return accountRequestHandler('post', params)
     },
+
+    getCampaignTemplates({ state, commit }, campaign) {
+      const { campaignList } = state.currentAccount;
+      const request = axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/get`,
+        params: { id: campaign.id }
+      })
+
+      request.then(({ data }) => {
+        campaignList.splice(campaignList.indexOf(campaign), 1, data.campaign);
+      })
+
+      return request;
+    },
+
+    saveCampaigns({ state, commit }, campaign) {
+      const { currentAccount } = state;
+      const request = axios({
+        method: 'post',
+        url: `${ dh.apiUrl }/ig/accounts/${ currentAccount.login }/build/campaigns/save`,
+        data: {
+          igAccount: { id: currentAccount.id },
+          campaignList: [campaign],
+          campaignTypeList: [campaign.type]
+        }
+      })
+
+      request.then(({ data }) => {
+        const { campaignList } = data;
+        const newCampaign = campaignList[0];
+
+        if (newCampaign.oldId) {
+          currentAccount.campaignList.push(newCampaign)
+        } else {
+          currentAccount.campaignList.splice(currentAccount.campaignList.indexOf(campaign), 1, newCampaign)
+        }
+      })
+
+      return request;
+    },
+
+    deleteCampaign({ state, commit }, campaign) {
+      const request = axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/archive`,
+        params: { id: campaign.id }
+      })
+
+      request.then(({ data }) => {
+        const { campaignList } = state.currentAccount;
+
+        campaignList.splice(campaignList.indexOf(campaign), 1);
+      })
+
+      return request;
+    }
   },
 
   mutations: {
@@ -164,7 +219,6 @@ export default new VueX.Store({
 
         return source[node];
       }, state);
-
 
       if (!source) return console.error(`Can\'t find source by path ${ path }.` );
 
