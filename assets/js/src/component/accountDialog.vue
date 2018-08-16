@@ -117,7 +117,7 @@
 
     methods: {
       addAccount() {
-        const { loading } = this
+        const { loading, $store } = this
 
         loading.action = true;
         this.error = ''
@@ -129,6 +129,7 @@
             loading.action = false;
 
             if (!account.isLoggedIn && (account.igChallenge || account.igCheckpoint)) {
+              $store.commit('set', { path: 'currentAccount', value: account })
               $store.commit('set', { path: 'newAccount.password', value: this.account.password })
               $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
             } else {
