@@ -70,6 +70,10 @@
     },
 
     computed: {
+      accounts() {
+        return this.$store.state.accounts
+      },
+
       currentAccount() {
         return this.$store.state.currentAccount
       }
@@ -100,15 +104,28 @@
           })
       },
       saveAccount() {
-        const accountToSend = JSON.parse(JSON.stringify(this.currentAccount));
+        const { currentAccount, load, password } = this;
+        const accountToSend = JSON.parse(JSON.stringify(currentAccount));
 
-        this.load.save = true;
+        load.save = true;
 
-        accountToSend.password = this.password;
+        accountToSend.password = password;
 
-        this.$store.dispatch('saveAccount', accountToSend).then(() => {
-          this.load.save = false;
-        });
+        this.$store.dispatch('saveAccount', accountToSend)
+          .then(({ data }) => {
+            const { account } = data.response.body;
+            const { $store, accounts, currentAccount } = this;
+
+            load.save = false;
+
+            accounts.splice(accounts.indexOf(currentAccount), 1, account);
+
+            if (account.igChallenge || account.igCheckpoint) {
+              $store.commit('set', { path: 'newAccount.password', value: password })
+              $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
+              $store.commit('set', { path: 'newAccount.isAdd', value: true })
+            }
+          });
       }
     }
   }

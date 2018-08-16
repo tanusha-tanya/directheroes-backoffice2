@@ -99,6 +99,30 @@ export default {
     height: 100%;
   }
 
+  .error-message {
+    color: #ff0048;
+    font-size: 12px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      background: url(./assets/triangle-error.svg);
+    }
+  }
+  .success-message {
+    color: #67c23a;
+    font-weight: 600;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
   button {
     background-color: #434890;
     border: none;
@@ -152,6 +176,10 @@ export default {
     padding: 8px;
     color: #0C0033;
     width: 100%;
+
+    &.error {
+      border-color: #ff0048;
+    }
   }
 
   .content {
@@ -398,72 +426,72 @@ export default {
   }
 
   .el-checkbox {
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  user-select: none;
-
-  .el-checkbox__input {
-    white-space: nowrap;
+    font-size: 12px;
     cursor: pointer;
-    outline: none;
-    display: inline-block;
-    line-height: 1;
-    position: relative;
-    vertical-align: middle;
+    white-space: nowrap;
+    user-select: none;
 
-    &.is-checked {
-      .el-checkbox__inner {
-        background-color: #434890;
-        &:after {
-          transform: rotate(45deg) scaleY(1);
+    .el-checkbox__input {
+      white-space: nowrap;
+      cursor: pointer;
+      outline: none;
+      display: inline-block;
+      line-height: 1;
+      position: relative;
+      vertical-align: middle;
+
+      &.is-checked {
+        .el-checkbox__inner {
+          background-color: #434890;
+          &:after {
+            transform: rotate(45deg) scaleY(1);
+          }
         }
       }
     }
-  }
 
-  .el-checkbox__original {
-    opacity: 0;
-    outline: none;
-    position: absolute;
-    margin: 0;
-    width: 0;
-    height: 0;
-    z-index: -1;
-  }
-
-  .el-checkbox__inner {
-    display: inline-block;
-    position: relative;
-    border: 1px solid #434890;
-    border-radius: 2px;
-    box-sizing: border-box;
-    width: 20px;
-    height: 20px;
-    background-color: #fff;
-    z-index: 1;
-    transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
-
-    &:after {
-      content: "";
-      border: 2px solid #fff;
-      border-left: 0;
-      border-top: 0;
-      height: 11px;
-      left: 6px;
+    .el-checkbox__original {
+      opacity: 0;
+      outline: none;
       position: absolute;
-      top: 0;
-      transform: rotate(45deg) scaleY(0);
-      width: 5px;
-      transition: transform .15s ease-in .05s;
-      transform-origin: center;
+      margin: 0;
+      width: 0;
+      height: 0;
+      z-index: -1;
+    }
+
+    .el-checkbox__inner {
+      display: inline-block;
+      position: relative;
+      border: 1px solid #434890;
+      border-radius: 2px;
+      box-sizing: border-box;
+      width: 20px;
+      height: 20px;
+      background-color: #fff;
+      z-index: 1;
+      transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
+
+      &:after {
+        content: "";
+        border: 2px solid #fff;
+        border-left: 0;
+        border-top: 0;
+        height: 11px;
+        left: 6px;
+        position: absolute;
+        top: 0;
+        transform: rotate(45deg) scaleY(0);
+        width: 5px;
+        transition: transform .15s ease-in .05s;
+        transform-origin: center;
+      }
+    }
+
+    .el-checkbox__label {
+      margin-left: 10px;
     }
   }
-
-  .el-checkbox__label {
-    margin-left: 10px;
-  }
-}
 
   .el-message {
     border-radius: 4px;

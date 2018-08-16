@@ -90,6 +90,7 @@ export default new VueX.Store({
     campaignToRename: null,
     newAccount: {
       accountState: 'add',
+      password: '',
       isAdd: false
     }
   },
@@ -100,25 +101,6 @@ export default new VueX.Store({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
         const { accountList } = data.response.body;
-
-        // accountList.forEach(account => {
-        //   account.campaignList.forEach( campaign => {
-        //     campaign.templates = [{
-        //       id: 1,
-        //       rules: [
-        //         {
-        //           messages: ['Hello', 'Hi'],
-        //           replies:{
-        //             text: 'dsfdfsdf',
-        //             actions: [
-        //               {id: 123, type: 233}
-        //             ]
-        //           }
-        //         }
-        //       ]
-        //     }]
-        //   });
-        // })
 
         commit('set', {path: 'accounts', value: accountList});
       })
