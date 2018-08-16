@@ -90,7 +90,7 @@
       accounts() {
         return this.$store.state.accounts
       },
-      
+
       currentAccount() {
         return this.$store.state.currentAccount
       },
@@ -183,6 +183,7 @@
           this.success = "Code sended"
           loading.sending = false
         }).catch( error => {
+          this.error = 'Please, re-send code on email again';
           loading.sending = false
         })
       },
@@ -209,7 +210,7 @@
           }
 
         }).catch( error => {
-          this.error = 'Please, re-send error again';
+          this.error = 'Please, re-send code on email again';
           loading.action = false;
         })
       }
