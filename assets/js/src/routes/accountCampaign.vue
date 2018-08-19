@@ -51,6 +51,7 @@
                 filterable
                 allow-create
                 default-first-option
+                @keydown.native="selectChange($event, rule)"
               ></el-select>
             </div>
             <div class="rule-replies-icon">
@@ -241,8 +242,29 @@
           });
       },
 
-      canAddRule(template) {
-        console.log(template, this.currentCampaign);
+      selectChange(event, rule) {
+        const { target } = event;
+        const { triggerPhraseList } = rule;
+
+        if ([188, 9].includes(event.keyCode)) {
+
+          if (!target.value) {
+            target.value = '';
+            return;
+          }
+
+          event.preventDefault();
+
+          if (triggerPhraseList.includes(target.value)) {
+            triggerPhraseList.splice(triggerPhraseList.indexOf(target.value), 1)
+          } else {
+            triggerPhraseList.push(target.value.replace(',', ''));
+          }
+
+          target.value = '';
+
+          return false;
+        }
       }
     },
 
