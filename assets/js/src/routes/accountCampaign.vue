@@ -39,7 +39,7 @@
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
             </div>
-            <div class="rule-messages">
+            <div class="rule-messages"  v-if="!(currentCampaign.type === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
               <div class="rule-messages-title">
                 <img src="../assets/star.svg"/>
                 If follower messages…
@@ -54,7 +54,7 @@
                 @keydown.native="selectChange($event, rule)"
               ></el-select>
             </div>
-            <div class="rule-replies-icon">
+            <div class="rule-replies-icon"  v-if="!(currentCampaign.type === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
               <img src="../assets/comment.svg"/>
             </div>
             <div class="rule-replies">
