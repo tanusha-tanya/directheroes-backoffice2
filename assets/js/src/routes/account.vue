@@ -227,7 +227,7 @@ export default {
         campaignToRename.id = dynId();
         campaignToRename.uuid = uuidv4();
 
-        this.$store.dispatch('saveCampaigns', campaignToRename)
+        this.$store.dispatch('saveCampaigns', [campaignToRename])
           .then(({ data }) => {
             const { campaignList } = data;
             const currentCampaign = campaignList.find(campaign => campaign.uuid === campaignToRename.uuid);

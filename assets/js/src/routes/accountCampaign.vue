@@ -94,6 +94,8 @@
   import debounce from 'lodash/debounce'
   import { Switch, Collapse, CollapseItem, Select, Input } from 'element-ui'
 
+  const campaignsToSave = [];
+
   export default {
     beforeRouteEnter(to, from, next) {
       next(accountCampaign => {
@@ -184,21 +186,13 @@
       },
 
       saveCampaigns: debounce(function() {
-        const { currentCampaign } = this;
-        this.$store.dispatch('saveCampaigns', currentCampaign)
+        const campaigns = campaignsToSave.slice(0);
+
+        campaignsToSave.splice(0, campaignsToSave.length)
+
+        this.updateState = true;
+        this.$store.dispatch('saveCampaigns', campaigns)
           .then(({ data }) => {
-            const campaign = data.campaignList[0];
-
-            this.updateState = true;
-
-            campaign.templateList.forEach((template, index) => {
-              const campaignTemplate = currentCampaign.templateList[index];
-
-              if (!template.oldId) return;
-
-              campaignTemplate.id = template.id;
-            });
-
             this.updateState = false;
 
             this.$message.success({
@@ -277,7 +271,11 @@
 
       currentCampaign: {
         handler: function (campaign, oldCampaign) {
-          if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id || this.updateState) return;
+          if (!oldCampaign || !campaign || campaign.uuid !== oldCampaign.uuid || this.updateState) return;
+
+          if (!campaignsToSave.includes(campaign)) {
+            campaignsToSave.push(campaign);
+          }
 
           this.saveCampaigns();
         },

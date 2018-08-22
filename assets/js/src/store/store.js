@@ -14,78 +14,7 @@ Vue.use(VueX)
 
 export default new VueX.Store({
   state: {
-    accounts: [
-      // {
-      //   id: 1,
-      //   name: '@Gate13',
-      //   avatarURL: 'https://i.stack.imgur.com/CKnwO.png?s=128&g=1',
-      //   followers: 13456,
-      //   following: 15432,
-      //   rememberme: true,
-      //   logged: false,
-      //   campaigns: [
-      //     {
-      //       id: 1,
-      //       name: 'All the Stories',
-      //       type: 'Story Campaign',
-      //       active: true,
-      //       templates:[
-      //         {
-      //           id: 1,
-      //           rules: [
-      //             {
-      //               messages: ['Hello', 'Hi'],
-      //               replies:{
-      //                 text: 'dsfdfsdf',
-      //                 actions: [
-      //                   {id: 123, type: 233}
-      //                 ]
-      //               }
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     },
-      //     {
-      //       id: 2,
-      //       name: 'Campaign Name',
-      //       type: 'IGTV Campaign',
-      //       active: true,
-      //       templates:[
-      //         {
-      //           id: 1,
-      //           rules: [
-      //             {
-      //               messages: [],
-      //               replies:{
-      //                 text: 'dsfdfsdf',
-      //                 actions: [
-      //                   {id: 123, type: 233}
-      //                 ]
-      //               }
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // },
-      // {
-      //   id: 2,
-      //   name: '@JimmyMoutzouris',
-      //   followers: 45456,
-      //   following: 132,
-      //   rememberme: false,
-      //   logged: true,
-      // },
-      // {
-      //   id: 3,
-      //   name: '@Brasilia',
-      //   followers: 24456,
-      //   following: 1542,
-      //   rememberme: true,
-      // }
-    ],
+    accounts: [],
     currentAccount: null,
     campaignToRename: null,
     newAccount: {
@@ -148,27 +77,44 @@ export default new VueX.Store({
       return request;
     },
 
-    saveCampaigns({ state, commit }, campaign) {
+    saveCampaigns({ state, commit }, campaigns) {
       const { currentAccount } = state;
       const request = axios({
         method: 'post',
         url: `${ dh.apiUrl }/ig/accounts/${ currentAccount.login }/build/campaigns/save`,
         data: {
           igAccount: { id: currentAccount.id },
-          campaignList: [campaign],
-          campaignTypeList: [campaign.type]
+          campaignList: campaigns,
+          campaignTypeList: [campaigns[0].type]
         }
       })
 
       request.then(({ data }) => {
         const { campaignList } = data;
-        const newCampaign = campaignList[0];
 
-        if (newCampaign.oldId) {
-          currentAccount.campaignList.push(newCampaign)
-        } else {
-          currentAccount.campaignList.splice(currentAccount.campaignList.indexOf(campaign), 1, newCampaign)
-        }
+        campaignList.forEach(newCampaign => {
+          const oldCampaign = currentAccount.campaignList.find(campaign => campaign.uuid == newCampaign.uuid)
+
+          if (oldCampaign) {
+            newCampaign.templateList.forEach((template, index) => {
+              const campaignTemplate = oldCampaign.templateList[index];
+
+              if (!template.oldId) return;
+
+              Object.keys(template).forEach(templateProperty => {
+                if (templateProperty === 'ruleList') return;
+
+                campaignTemplate[templateProperty] = template[templateProperty];
+              })
+            });
+
+            // currentAccount.campaignList.splice(currentAccount.campaignList.indexOf(oldCampaign), 1, newCampaign);
+          } else {
+            currentAccount.campaignList.push(newCampaign);
+          }
+        })
+      }).catch( error => {
+        console.log(error);
       })
 
       return request;
