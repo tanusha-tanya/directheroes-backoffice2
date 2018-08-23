@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="content-controls">
-        <div class="content-button">
+        <div v-if="false" class="content-button">
           <img src="../assets/send.svg"/>
           Test Campaign
         </div>
@@ -33,9 +33,9 @@
         <draggable v-model="template.rules" element="div" class="campaign-template-rules" :options="{ handle:'.rule-drag', animation: 300, forceFallback: true }">
           <div class="campaign-template-rule" v-for="rule, ruleIndex in template.ruleList">
             <div class="rule-controls">
-              <img class="rule-drag" src="../assets/drag.svg" v-if="!(currentCampaign.type === 'welcomeCampaign' && !ruleIndex && !templateIndex)" />
+              <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
-              <img src="../assets/eye.svg"/>
+              <img v-if="false" src="../assets/eye.svg"/>
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
             </div>
