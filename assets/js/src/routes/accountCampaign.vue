@@ -76,7 +76,7 @@
             </div>
           </div>
         </draggable>
-        <div class="add-rule-button" v-if="currentCampaign.type !== 'welcomeCampaign' && !templateIndex">
+        <div class="add-rule-button" v-if="currentCampaign.type !== 'welcomeCampaign' || templateIndex">
           <div @click="addRule(template)">
             <img src="../assets/star-white.svg"/>
             Add rule
