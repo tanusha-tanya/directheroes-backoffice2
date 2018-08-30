@@ -31,6 +31,10 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList } = data.response.body;
 
+        accountList.forEach( account => {
+          account.threadList = account.campaignList;
+        })
+
         commit('set', {path: 'accounts', value: accountList});
       })
     },

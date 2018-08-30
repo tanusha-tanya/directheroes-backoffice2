@@ -17,6 +17,7 @@ import store from './store/store'
 import account from './routes/account.vue'
 import accountDetails from './routes/accountDetails.vue'
 import accountCampaign from './routes/accountCampaign.vue'
+import accountThread from './routes/accountThread.vue'
 
 const router = new VueRouter({
   routes:[
@@ -24,6 +25,7 @@ const router = new VueRouter({
       children: [
         { name: 'home', path: '', component: accountDetails },
         { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: accountCampaign },
+        { name: 'accountThread', path: ':accountId/thread/:threadId', component: accountThread },
         { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
     }

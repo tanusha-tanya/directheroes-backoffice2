@@ -43,7 +43,7 @@
             :key="campaign.id"
             tag="div"
            >
-            <div class="campaign-name">
+            <div class="sub-item-name">
               {{campaign.name}}
             </div>
             {{campaign.typeName}}
@@ -59,6 +59,18 @@
               Threads
             </span>
           </template>
+          <router-link
+            class="collapse-sub-item"
+            :to="{ name: 'accountThread', params: { threadId: thread.id, accountId: currentAccount.id } }"
+            v-for="thread in currentAccount.threadList"
+            :key="thread.id"
+            tag="div"
+           >
+            <div class="sub-item-name">
+              {{thread.name}}
+            </div>
+            {{thread.typeName}}
+          </router-link>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -371,7 +383,7 @@ export default {
         background-color: #DEDDE1;
         opacity: 1;
 
-        .campaign-name {
+        .sub-item-name {
           font-weight: bold;
         }
       }

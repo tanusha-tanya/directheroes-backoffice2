@@ -287,21 +287,6 @@
 <style lang="scss">
   .campaign-content {
 
-    .title {
-      img {
-        width: 16px;
-        height: 16px;
-      }
-
-      div {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        font-weight: normal;
-        line-height: 16px;
-      }
-    }
-
     .content-button {
       .el-switch {
         margin-left: 7px;

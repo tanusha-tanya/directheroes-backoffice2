@@ -190,7 +190,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 13px 17px;
+    padding: 12px 17px;
     background-color: #EEEEEE;
   }
 
@@ -230,6 +230,19 @@ export default {
     font-size: 16px;
     font-weight: 600;
     line-height: 24px;
+
+    img {
+      width: 16px;
+      height: 16px;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: normal;
+      line-height: 16px;
+    }
   }
 
   .el-switch {
