@@ -11,7 +11,10 @@
       </div>
       <label>
         Instagram username<br />
-        <input v-model="account.login"/>
+        <input :class="{ error }" @input="error = ''" v-model="account.login"/>
+        <div class="error-message" v-if="error">
+          {{ error }}
+        </div>
       </label>
       <label>
         Instagram password<br />
@@ -38,17 +41,25 @@
       </div>
       <div class="challenge-actions">
         <div v-if="currentAccount.igChallenge">
-          <input :class="{ error }" @input="error = ''" v-model="codeValue" maxlength="6"/>
-          <div class="error-message" v-if="error">
-            {{ error }}
-          </div>
-          <div class="success-message" v-if="success">
-            {{ success }}
-          </div>
-          <div class="challenge-buttons">
-            <button @click="checkCode" :class="{ loading: loading.action }" :disabled="codeValue.length !== 6 || loading.action || loading.sending" >Check code</button>
-            <button @click="sendChallendge" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">{{codeSended ? 'Re-send code' : 'E-mail me code' }}</button>
-          </div>
+          <template v-if="transport">
+            <input :class="{ error }" @input="error = ''" v-model="codeValue" maxlength="6"/>
+            <div class="error-message" v-if="error">
+              {{ error }}
+            </div>
+            <div class="success-message" v-if="success">
+              {{ success }}
+            </div>
+            <div class="challenge-buttons">
+              <button @click="checkCode" :class="{ loading: loading.action }" :disabled="codeValue.length !== 6 || loading.action || loading.sending" >Check code</button>
+              <button @click="sendChallendge()" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">Re-send code</button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="challenge-buttons">
+              <button @click="sendChallendge('sms')" :disabled="loading.sending" :class="{ loading: loading.sending }" >SMS me code</button>
+              <button @click="sendChallendge('email')" :disabled="loading.sending" :class="{ loading: loading.sending }" >E-mail me code</button>
+            </div>
+          </template>
         </div>
         <div v-if="currentAccount.igCheckpoint">
           <span>Open IG app and click [<strong>It was me</strong>]</span><br />
@@ -78,6 +89,7 @@
         codeSended: false,
         codeValue: '',
         success: '',
+        transport: '', 
       }
     },
 
@@ -123,7 +135,7 @@
         this.error = ''
 
         this.$store.dispatch('addAccount', this.account)
-          .then(({data}) => {
+          .then(({ data }) => {
             const { account } = data.response.body
 
             loading.action = false;
@@ -136,7 +148,8 @@
               this.isAddAccount = false;
               this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
             }
-          }).catch((error) => {
+          }).catch(error => {
+            this.error = error.response.data.error;            
             loading.action = false;
           })
       },
@@ -146,11 +159,14 @@
         const accountToSend = JSON.parse(JSON.stringify(currentAccount));
 
         loading.action = true;
+
         this.error = ''
 
         accountToSend.password = this.$store.state.newAccount.password;
 
-        this.$store.dispatch('saveAccount', accountToSend)
+        const request = this.$store.dispatch('saveAccount', accountToSend)
+
+        request
           .then(({ data }) => {
             const { account } = data.response.body;
             const { $store, accounts, currentAccount } = this;
@@ -158,6 +174,8 @@
             loading.action = false;
 
             accounts.splice(accounts.indexOf(currentAccount), 1, account);
+
+            this.currentAccount = account;
 
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: accountToSend.password })
@@ -167,24 +185,28 @@
               this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
             }
           });
+
+        return request;
       },
 
-      sendChallendge() {
+      sendChallendge(transport) {
         const { currentAccount, loading } = this;
 
         this.codeSended = true;
+
+        this.transport = transport || this.transport;
 
         loading.sending = true;
         this.error = ''
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/challenge/start`,
-          params: { accountId: currentAccount.id }
+          params: { accountId: currentAccount.id, transport }
         }).then(({ data }) => {
           this.success = "Code sended"
           loading.sending = false
         }).catch( error => {
-          this.error = 'Please, re-send code on email again';
+          this.error = 'Please, click re-send code again'
           loading.sending = false
         })
       },
@@ -201,17 +223,20 @@
         })
         .then(({data}) => {
           const codeState = data.response.body
-          loading.action = false;
-
+          
           if (!codeState.success) {
             this.error = codeState.message;
+            loading.action = false;
           } else {
             this.success = "Code verified"
-            saveAccount();
+            setTimeout(() => {
+              saveAccount().then(() => {
+                loading.action = false;
+              })
+            }, 5000)
           }
-
         }).catch( error => {
-          this.error = 'Please, re-send code on email again';
+          this.error = 'Please, click re-send code again';
           loading.action = false;
         })
       }

@@ -14,7 +14,11 @@
       <div class="account-details">
         <div class="title">
           Basic information
-          <div class="logged-out-message" v-if="!currentAccount.isLoggedIn">
+          <div class="logged-error-message" v-if="!currentAccount.isPasswordValid">
+            <img src="../assets/triangle-error.svg"/>
+            Account has password seems to be incorrect.
+          </div>
+          <div class="logged-out-message" v-else-if="!currentAccount.isLoggedIn">
             <img src="../assets/triangle.svg"/>
             Account has been logged out, please re-login.
           </div>
@@ -29,7 +33,7 @@
               </label>
               <label>
                 Account Password<br />
-                <input type="password" v-model="password" :placeholder="currentAccount.isPasswordSet && '••••••••'"/>
+                <input type="password" v-model="password" :placeholder="currentAccount.isPasswordSet && '••••••••'" :readonly="currentAccount.isLoggedIn"/>
               </label>
               <button @click="saveAccount" :class="{ loading: load.save }" :disabled="load.save || !password">Save</button>
             </div>
@@ -103,6 +107,7 @@
             this.load.remove = false;
           })
       },
+
       saveAccount() {
         const { currentAccount, load, password } = this;
         const accountToSend = JSON.parse(JSON.stringify(currentAccount));
@@ -120,12 +125,20 @@
 
             accounts.splice(accounts.indexOf(currentAccount), 1, account);
 
+            this.currentAccount = account;
+
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: password })
               $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
               $store.commit('set', { path: 'newAccount.isAdd', value: true })
             }
           });
+      }
+    },
+
+    watch: {
+      currentAccount() {
+        this.password = '';
       }
     }
   }
@@ -140,7 +153,7 @@
       padding: 30px 17px;
     }
 
-    .logged-out-message {
+    .logged-out-message, .logged-error-message {
       color: #7A6421;
       font-size: 12px;
       line-height: 16px;
@@ -151,6 +164,10 @@
         width: 16px;
         margin: 0 3px -1px 5px;
       }
+    }
+
+    .logged-error-message {
+      color: rgb(255, 0, 72);
     }
 
     .account-avatar {

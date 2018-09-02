@@ -32,7 +32,8 @@ export default new VueX.Store({
         const { accountList } = data.response.body;
 
         accountList.forEach( account => {
-          account.threadList = account.campaignList;
+          // account.isPasswordValid = false;
+          // account.threadList = account.campaignList;
         })
 
         commit('set', {path: 'accounts', value: accountList});
