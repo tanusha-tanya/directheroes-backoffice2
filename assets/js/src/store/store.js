@@ -65,7 +65,19 @@ export default new VueX.Store({
     },
 
     saveAccount({ state, commit }, params) {
-      return accountRequestHandler('post', params)
+      const request = accountRequestHandler('post', params)
+      
+      request
+        .then(({ data }) => {
+          const { account } = data.response.body;
+          const { accounts, currentAccount } = state;
+
+          accounts.splice(accounts.indexOf(currentAccount), 1, account);
+
+          commit('set', {path: 'currentAccount', value: account});
+        });
+
+      return request;
     },
 
     getCampaignTemplates({ state, commit }, campaign) {

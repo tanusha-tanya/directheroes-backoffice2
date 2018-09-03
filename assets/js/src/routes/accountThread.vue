@@ -29,29 +29,12 @@
           Actions
         </div>
       </div>
-      <div class="thread-list-item">
+      <div class="thread-list-item" v-for="thread in currentThread">
         <div class="username">
-          @username
+          {{thread.username}}
         </div>
         <div class="status">
-          Status
-        </div>
-        <div class="template">
-          Template
-        </div>
-        <div class="sub-category">
-          Sub-category
-        </div>
-        <div class="actions">
-          Actions
-        </div>
-      </div>
-      <div class="thread-list-item">
-        <div class="username">
-          @username
-        </div>
-        <div class="status">
-          Status
+          {{thread.status}}
         </div>
         <div class="template">
           Template
@@ -70,6 +53,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -91,23 +75,26 @@ export default {
     }
   },
 
+  computed: {
+    currentAccount() {
+      return this.$store.state.currentAccount
+    }
+  },
+
   methods: {
     setCurrentThread(route) {
       const { threadId } = route.params;
-      const { threadList } = this.$store.state.currentAccount;
+      const { currentAccount } = this;
+      if (!threadId || !currentAccount) return;
 
-      if (!threadList || !threadId) return;
+      const url = ['all', 'ignore', 'stuck'].includes(threadId) ? 
+        `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/${ threadId }` :
+        `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/campaign/${ threadId }`
 
-      const currentThread = threadList.find(thread => thread.id == threadId);
-
-      // if (currentCampaign.templateList) {
-      this.currentThread = currentThread;
-      // } else {
-      //   this.$store.dispatch('getCampaignTemplates', currentCampaign)
-      //     .then(({ data }) => {
-      //       this.currentCampaign = data.campaign;
-      //     });
-      // }
+      axios({ url })
+        .then(({ data }) => {
+          this.currentThread = data.response.body.threadList;
+        })
     },
   },
 
@@ -128,9 +115,29 @@ export default {
       padding: 16px 18px 16px 12px;
 
       & > div {
-        flex-grow: 1;
+        // flex-grow: 1;
         flex-shrink: 0;
         padding-right: 6px;
+      }
+
+      .username {
+        width: 30%;
+        min-width: 150px;
+      }
+
+      .status {
+        width: 20%;
+        min-width: 100px;
+      }
+
+      .template {
+        width: 15%;
+        min-width: 100px;
+      }
+
+      .sub-category {
+        width: 15%;
+        min-width: 100px;
       }
 
       &.thread-list-header {

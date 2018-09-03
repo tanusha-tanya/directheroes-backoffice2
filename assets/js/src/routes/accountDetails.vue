@@ -123,10 +123,6 @@
 
             load.save = false;
 
-            accounts.splice(accounts.indexOf(currentAccount), 1, account);
-
-            this.currentAccount = account;
-
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: password })
               $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})

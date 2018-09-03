@@ -61,8 +61,38 @@
           </template>
           <router-link
             class="collapse-sub-item"
+            :to="{ name: 'accountThread', params: { threadId: 'all', accountId: currentAccount.id } }"
+            tag="div"
+           >
+            <div class="sub-item-name">
+              All
+            </div>
+            All threads
+          </router-link>
+          <router-link
+            class="collapse-sub-item"
+            :to="{ name: 'accountThread', params: { threadId: 'ignore', accountId: currentAccount.id } }"
+            tag="div"
+           >
+            <div class="sub-item-name">
+              Ignore
+            </div>
+            Ignored threads
+          </router-link>
+          <router-link
+            class="collapse-sub-item"
+            :to="{ name: 'accountThread', params: { threadId: 'stuck', accountId: currentAccount.id } }"
+            tag="div"
+           >
+            <div class="sub-item-name">
+              Stuck
+            </div>
+            Stucked threads
+          </router-link>
+          <router-link
+            class="collapse-sub-item"
             :to="{ name: 'accountThread', params: { threadId: thread.id, accountId: currentAccount.id } }"
-            v-for="thread in currentAccount.threadList"
+            v-for="thread in currentAccount.campaignList"
             :key="thread.id"
             tag="div"
            >

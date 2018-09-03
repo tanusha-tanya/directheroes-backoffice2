@@ -52,6 +52,7 @@
             <div class="challenge-buttons">
               <button @click="checkCode" :class="{ loading: loading.action }" :disabled="codeValue.length !== 6 || loading.action || loading.sending" >Check code</button>
               <button @click="sendChallendge()" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">Re-send code</button>
+              <button @click="transport = ''" :disabled="loading.action || loading.sending">Change transport</button>
             </div>
           </template>
           <template v-else>
@@ -173,10 +174,6 @@
 
             loading.action = false;
 
-            accounts.splice(accounts.indexOf(currentAccount), 1, account);
-
-            this.currentAccount = account;
-
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: accountToSend.password })
               $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
@@ -291,16 +288,21 @@
 
     .challenge-actions {
       text-align: left;
-      margin: 20px 0;
+      margin: 20px 0 0;
 
       input {
-        margin: 10px 0 5px; ;
+        margin: 10px 0 0; ;
       }
 
       .challenge-buttons {
         display: flex;
-        margin-top: 10px;
+        flex-wrap: wrap;
         justify-content: space-around;
+
+        button {
+          white-space: nowrap;
+          margin-top: 10px;
+        }
       }
     }
   }
