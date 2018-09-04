@@ -11,44 +11,88 @@
       <div class="content-controls">
       </div>
     </div>
-    <div class="thread-list">
-      <div class="thread-list-item thread-list-header">
-        <div class="username">
-          @username
+    <template v-if="isAllCampaigns">
+      <div class="thread-list">
+        <div class="thread-list-item thread-list-header">
+          <div class="username">
+            @username
+          </div>
+          <div class="bot">
+            Bot
+          </div>
+          <div class="actions">
+            Actions
+          </div>
         </div>
-        <div class="status">
-          Status
-        </div>
-        <div class="template">
-          Template
-        </div>
-        <div class="sub-category">
-          Sub-category
-        </div>
-        <div class="actions">
-          Actions
+        <div class="thread-list-item" v-for="thread in currentThread">
+          <div class="username">
+            {{thread.username}}
+          </div>
+          <div class="bot">
+            <router-link 
+              class="campaign-item" 
+              tag="div" 
+              :key="campaign.id"
+              v-for="campaign in thread.campaignList"
+              :to="{ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } }"
+            >
+              {{campaign.name}}<br>
+              <span>{{campaign.typeName}}</span>
+            </router-link>
+            {{thread.status}}
+          </div>
+          <div class="actions">
+            <router-link 
+              class="content-button" tag="div"
+              :to="{ name: 'accountThreadMessages', params: { threadId: thread.id, accountId: currentAccount.id } }"
+              >
+              <img src="../assets/eye.svg"/>
+              View Messages
+            </router-link>
+          </div>
         </div>
       </div>
-      <div class="thread-list-item" v-for="thread in currentThread">
-        <div class="username">
-          {{thread.username}}
+    </template>
+    <template v-else>
+      <div class="thread-list">
+        <div class="thread-list-item thread-list-header">
+          <div class="username">
+            @username
+          </div>
+          <div class="status">
+            Status
+          </div>
+          <div class="template">
+            Template
+          </div>
+          <div class="actions">
+            Actions
+          </div>
         </div>
-        <div class="status">
-          {{thread.status}}
-        </div>
-        <div class="template">
-          Template
-        </div>
-        <div class="sub-category">
-          Sub-category
-        </div>
-        <div class="actions">
-          Actions
+        <div class="thread-list-item" v-for="thread in currentThread">
+          <div class="username">
+            {{thread.username}}
+          </div>
+          <div class="status">
+            {{thread.status}}
+          </div>
+          <div class="template">
+            {{thread.depth}}
+          </div>
+          <div class="actions">
+            <router-link 
+              class="content-button" tag="div"
+              :to="{ name: 'accountThreadMessages', params: { threadId: thread.id, accountId: currentAccount.id } }"
+              >
+              <img src="../assets/eye.svg"/>
+              View Messages
+            </router-link>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
-  <div class="loading-content"v-else>
+  <div class="loading-content" v-else>
     <div class="pre-loader"></div>
   </div>
 </template>
@@ -78,6 +122,10 @@ export default {
   computed: {
     currentAccount() {
       return this.$store.state.currentAccount
+    },
+
+    isAllCampaigns() {
+      return ['all', 'ignore', 'stuck'].includes(this.$route.params.threadId)
     }
   },
 
@@ -125,19 +173,44 @@ export default {
         min-width: 150px;
       }
 
+      .bot {
+        width: 50%;
+        min-width: 300px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
       .status {
         width: 20%;
         min-width: 100px;
       }
 
       .template {
-        width: 15%;
+        width: 20%;
         min-width: 100px;
+        text-align: center;
       }
 
       .sub-category {
         width: 15%;
         min-width: 100px;
+      }
+
+      .actions {
+        .content-button {
+          margin: 0;
+
+          img {
+            opacity: .3;
+          }
+
+          &:hover {
+            text-decoration: underline;
+            img {
+              opacity: .5;
+            }
+          }
+        }
       }
 
       &.thread-list-header {
@@ -153,5 +226,28 @@ export default {
         background-color: #EEEEEE;
       }
     }
+  
+    .campaign-item {
+      color: #85539C;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      span {
+        font-size: 10px;
+        opacity: .5;
+      }
+
+      &:not(:last-child) {
+        margin-right: 5px;
+
+        &:after {
+          content: ','
+        }
+      }
+    }
   }
+
 </style>

@@ -18,6 +18,7 @@ import account from './routes/account.vue'
 import accountDetails from './routes/accountDetails.vue'
 import accountCampaign from './routes/accountCampaign.vue'
 import accountThread from './routes/accountThread.vue'
+import accountThreadMessages from './routes/accountThreadMessages.vue'
 
 const router = new VueRouter({
   routes:[
@@ -26,6 +27,7 @@ const router = new VueRouter({
         { name: 'home', path: '', component: accountDetails },
         { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: accountCampaign },
         { name: 'accountThread', path: ':accountId/thread/:threadId', component: accountThread },
+        { name: 'accountThreadMessages', path: ':accountId/messages/:threadId', component: accountThreadMessages },
         { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
     }
