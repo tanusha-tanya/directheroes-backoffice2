@@ -63,6 +63,7 @@
             class="collapse-sub-item"
             :to="{ name: 'accountThread', params: { threadId: 'all', accountId: currentAccount.id } }"
             tag="div"
+            v-if="false"
            >
             <div class="sub-item-name">
               All
@@ -73,6 +74,7 @@
             class="collapse-sub-item"
             :to="{ name: 'accountThread', params: { threadId: 'ignore', accountId: currentAccount.id } }"
             tag="div"
+            v-if="false"
            >
             <div class="sub-item-name">
               Ignore
@@ -83,6 +85,7 @@
             class="collapse-sub-item"
             :to="{ name: 'accountThread', params: { threadId: 'stuck', accountId: currentAccount.id } }"
             tag="div"
+            v-if="false"
            >
             <div class="sub-item-name">
               Stuck
