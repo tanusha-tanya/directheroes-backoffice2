@@ -112,7 +112,7 @@ export default {
       width: 12px;
       height: 12px;
       margin-right: 5px;
-      background: url(./assets/triangle-error.svg);
+      background: url(./assets/triangle-error.svg) no-repeat;
     }
   }
   .success-message {
@@ -550,6 +550,80 @@ export default {
       padding: 0;
       line-height: 1;
       text-align: center;
+    }
+  }
+
+  .el-radio {
+    color: #606266;
+    cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+
+    .el-radio__input {
+      color: #606266;
+      cursor: pointer;
+      display: inline-block;
+      white-space: nowrap;
+      outline: none;
+      
+      &.is-checked {
+        .el-radio__inner {
+          border-color: #434890;
+          background: #434890;
+
+          &:after {
+            transform: translate(-50%,-50%) scale(1);
+          }
+        }
+
+        & +.el-radio__label {
+          color: #434890;
+        }
+      }
+    }
+
+    .el-radio__inner {
+      border: 1px solid #dcdfe6;
+      border-radius: 100%;
+      width: 20px;
+      height: 20px;
+      background-color: #fff;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+
+      &:after {
+        width: 8px;
+        height: 8px;
+        border-radius: 100%;
+        background-color: #fff;
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%) scale(0);
+        transition: transform .15s ease-in;
+      }
+    }
+
+    .el-radio__original {
+      opacity: 0;
+      outline: none;
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+    }
+
+    .el-radio__label {
+      font-size: 14px;
+      margin-left: 10px;
     }
   }
 </style>

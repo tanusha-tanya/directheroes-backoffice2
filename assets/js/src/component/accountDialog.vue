@@ -32,46 +32,64 @@
     </div>
     <template slot="title" v-if="isChallenge">
       <div class="el-dialog__title">
-        A few extra steps to get started
+        SMS/Email verification required
       </div>
     </template>
     <div v-if="isChallenge">
       <div class="dialog-description">
-        Curabitur lobortis id lorem id bibendum. Ut id consectetur magna. Quisque volutpat augue enim, pulvinar lobortis nibh lacinia at.Curabitur lobortis id lorem id bibendum. Ut id consectetur magna. Quisque volutpat augue enim, pulvinar lobortis nibh lacinia at.
+        Instagram is asking to prove that you own this account by verifying phone or email access.
       </div>
-      <div class="challenge-actions">
-        <div v-if="currentAccount.igChallenge">
-          <template v-if="transport">
-            <input :class="{ error }" @input="error = ''" v-model="codeValue" maxlength="6"/>
-            <div class="error-message" v-if="error">
-              {{ error }}
-            </div>
-            <div class="success-message" v-if="success">
-              {{ success }}
-            </div>
-            <div class="challenge-buttons">
-              <button @click="checkCode" :class="{ loading: loading.action }" :disabled="codeValue.length !== 6 || loading.action || loading.sending" >Check code</button>
-              <button @click="sendChallendge()" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">Re-send code</button>
-              <button @click="transport = ''" :disabled="loading.action || loading.sending">Change transport</button>
-            </div>
-          </template>
-          <template v-else>
-            <div class="challenge-buttons">
-              <button @click="sendChallendge('sms')" :disabled="loading.sending" :class="{ loading: loading.sending }" >SMS me code</button>
-              <button @click="sendChallendge('email')" :disabled="loading.sending" :class="{ loading: loading.sending }" >E-mail me code</button>
-            </div>
-          </template>
+      <template v-if="transport">
+        <div class="verify-controls">
+          <input :class="{ error }" @input="error = ''" v-model="codeValue" maxlength="6"/>
+          <button @click="checkCode" :class="{ loading: loading.action }" :disabled="codeValue.length !== 6 || loading.action || loading.sending" >Verify</button>
         </div>
-        <div v-if="currentAccount.igCheckpoint">
-          <span>Open IG app and click [<strong>It was me</strong>]</span><br />
-          <button @click="saveAccount" :disabled="loading.action" :class="{ loading: loading.action }">I did all that, go on</button>
+        <div class="challenge-controls">
+          <el-radio v-model="transport" label="sms">SMS</el-radio>
+          <el-radio v-model="transport" label="email">E-mail</el-radio>
+          <button @click="sendChallendge()" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">Re-send</button>
         </div>
+        <div class="status-message" v-if="!error && codeSendedTime">Code was sended at {{ codeSendedTime }}</div>
+        <div class="error-message" v-if="error">Entered code seems to be incorrect, please try again</div>
+      </template>
+      <template v-else>
+        <div class="challenge-buttons">
+          <button @click="sendChallendge('sms')" :disabled="loading.sending" :class="{ loading: loading.sending }" >SMS me code</button>
+          <button @click="sendChallendge('email')" :disabled="loading.sending" :class="{ loading: loading.sending }" >E-mail me code</button>
+        </div>
+      </template>
+    </div>
+    <template slot="title" v-if="isCheckpoint">
+      <div class="el-dialog__title">
+        Checkpoint verification
+      </div>
+    </template>
+    <div v-if="isCheckpoint">
+      <div class="dialog-description">
+        Please open your Instagram app and click [<strong>It was me</strong>] button
+      </div>
+      <div class="challenge-buttons">
+        <button @click="saveAccount" :disabled="loading.action" :class="{ loading: loading.action }">I did all that, go on</button>
+      </div>
+    </div>
+    <template slot="title" v-if="isSecurityWait">
+      <div class="el-dialog__title">
+        Security Wait Interval
+      </div>
+    </template>
+    <div v-if="isSecurityWait">
+      <div class="dialog-description">
+        It appears that we've caught a Security Wait-Time on Instagram side, it usually takes 3 to 24 hours. Please wait couple hours and then come back to try again; all your data is saved, and you'll continue from current point
+      </div>
+      <div class="challenge-buttons">
+        <button @click="setChallengeAgain">Retry now</button>
+        <button @click="isAddAccount = false">Ok, I’ll retry in 3 hours</button>
       </div>
     </div>
   </el-dialog>
 </template>
 <script>
-  import { Checkbox, Dialog, Collapse, CollapseItem } from 'element-ui'
+  import { Checkbox, Dialog, Radio } from 'element-ui'
   import axios from 'axios'
 
   export default {
@@ -87,9 +105,8 @@
           action: false
         },
         error: '',
-        codeSended: false,
+        codeSendedTime: '',
         codeValue: '',
-        success: '',
         transport: '', 
       }
     },
@@ -97,6 +114,7 @@
     components: {
       'el-dialog': Dialog,
       'el-checkbox': Checkbox,
+      'el-radio': Radio
     },
 
     computed: {
@@ -121,6 +139,18 @@
         const { accountState } = this.$store.state.newAccount;
 
         return accountState == 'challenge'
+      },
+
+      isSecurityWait() {
+        const { accountState } = this.$store.state.newAccount;
+
+        return accountState == 'security-wait'
+      },
+
+      isCheckpoint() {
+        const { accountState } = this.$store.state.newAccount;
+
+        return accountState == 'checkpoint'
       },
 
       accountState() {
@@ -162,6 +192,7 @@
         loading.action = true;
 
         this.error = ''
+        this.codeValue = ''
 
         accountToSend.password = this.$store.state.newAccount.password;
 
@@ -176,7 +207,7 @@
 
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: accountToSend.password })
-              $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
+              $store.commit('set', { path: 'newAccount.accountState', value: 'security-wait'})
             } else {
               this.isAddAccount = false;
               this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
@@ -189,7 +220,7 @@
       sendChallendge(transport) {
         const { currentAccount, loading } = this;
 
-        this.codeSended = true;
+        this.codeSendedTime = null;
 
         this.transport = transport || this.transport;
 
@@ -200,10 +231,10 @@
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/challenge/start`,
           params: { accountId: currentAccount.id, transport }
         }).then(({ data }) => {
-          this.success = "Code sended"
           loading.sending = false
+          this.codeSendedTime = (new Date()).toLocaleString('en-US');
         }).catch( error => {
-          this.error = 'Please, click re-send code again'
+          this.error = 'Server connection error, re-send code again after few minutes'
           loading.sending = false
         })
       },
@@ -225,7 +256,6 @@
             this.error = codeState.message;
             loading.action = false;
           } else {
-            this.success = "Code verified"
             setTimeout(() => {
               saveAccount().then(() => {
                 loading.action = false;
@@ -233,9 +263,13 @@
             }, 5000)
           }
         }).catch( error => {
-          this.error = 'Please, click re-send code again';
+          this.error = 'Server connection error, verify code again after few minutes';
           loading.action = false;
         })
+      },
+
+      setChallengeAgain() {
+        $store.commit('set', { path: 'newAccount.accountState', value: 'security-wait'})
       }
     },
 
@@ -251,19 +285,11 @@
 
         this.$store.state.newAccount.accountState = 'add'
         this.codeValue = '';
-        this.codeState = false;
+        this.transport = null;
       },
 
       accountState() {
         this.error = ''
-      },
-
-      success() {
-        if (!this.success) return;
-
-        setTimeout(()=> {
-          this.success = ''
-        }, 3000);
       }
     }
   }
@@ -278,6 +304,20 @@
       text-align: left;
     }
 
+    .dialog-description { 
+      margin-bottom: 15px;
+    }
+
+    .status-message {
+      font-size: 12px;
+      color: #b8b5c4;
+      margin-top: 5px;
+    }
+
+    .error-message {
+      margin-top: 5px;
+    }
+
     label {
       margin-top: 26px;
     }
@@ -286,23 +326,46 @@
       background-color: #85539C;
     }
 
-    .challenge-actions {
-      text-align: left;
-      margin: 20px 0 0;
+    .verify-controls {
+      display: flex;
+      justify-content: space-around;
 
       input {
-        margin: 10px 0 0; ;
+        margin-right: 10px;
       }
+    }
 
-      .challenge-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
+    .challenge-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      align-items: flex-start;
+      align-items: center
+    }
 
-        button {
-          white-space: nowrap;
-          margin-top: 10px;
+    .el-radio { 
+      margin: 0;
+
+      .el-radio__input.is-checked {
+        .el-radio__inner {
+          border-color: #85539C;
+          background: #85539C;
         }
+
+        & +.el-radio__label {
+          color: #85539C;
+        }
+      }
+    }
+
+    .challenge-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+
+      button {
+        white-space: nowrap;
+        margin-top: 10px;
       }
     }
   }

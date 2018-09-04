@@ -125,7 +125,7 @@
 
             if (account.igChallenge || account.igCheckpoint) {
               $store.commit('set', { path: 'newAccount.password', value: password })
-              $store.commit('set', { path: 'newAccount.accountState', value: 'challenge'})
+              $store.commit('set', { path: 'newAccount.accountState', value: account.igChallenge ? 'challenge' : 'checkpoint'})
               $store.commit('set', { path: 'newAccount.isAdd', value: true })
             }
           });
