@@ -2,9 +2,9 @@
   <div class="thread-content" v-if="currentThread">
     <div class="content-panel">
       <div class="title">
-        Thread — {{currentThread.name}}
+        Thread — {{currentCampaign.name}}
         <div>
-          {{currentThread.typeName}}
+          {{currentCampaign.typeName}}
           <img src="../assets/info.svg"/>
         </div>
       </div>
@@ -74,7 +74,8 @@
             {{thread.username}}
           </div>
           <div class="status">
-            {{thread.status}}
+            <font-awesome-icon :icon="getStatusIcon(thread.status)" />
+            <span>{{getStatusText(thread.status)}}</span>
           </div>
           <div class="template">
             {{thread.depth}}
@@ -124,6 +125,15 @@ export default {
       return this.$store.state.currentAccount
     },
 
+    currentCampaign() {
+      const { currentAccount } = this;
+      const { threadId } = this.$route.params;
+
+      if (!threadId || !currentAccount) return {};
+
+      return currentAccount.campaignList.find( campaign => campaign.id == threadId) || {};
+    },
+
     isAllCampaigns() {
       return ['all', 'ignore', 'stuck'].includes(this.$route.params.threadId)
     }
@@ -144,6 +154,26 @@ export default {
           this.currentThread = data.response.body.threadList;
         })
     },
+
+    getStatusIcon(status) {
+      const statusIcon = {
+        queued: ['far', 'clock'],
+        custom_message: 'user',
+        sent: ['far', 'envelope'],
+        seen: ['far', 'envelope-open'],
+        replied: 'check'
+      }
+
+      return statusIcon[status];
+    },
+
+    getStatusText(status) {
+      const statusText = {
+        custom_message: 'Manual',
+      }
+
+      return statusText[status] || status;
+    }
   },
 
   watch: {
@@ -183,6 +213,17 @@ export default {
       .status {
         width: 20%;
         min-width: 100px;
+        display: flex;
+        align-items: center;
+        
+        .svg-inline--fa {
+          opacity: .5;
+          margin-right: 5px;
+        }
+
+        span {
+          text-transform: capitalize;
+        }
       }
 
       .template {

@@ -26,10 +26,14 @@
         <div class="thread-list-item" v-for="message in threadMessages">
           <div class="from">
             {{message.senderUsername}}
+            <span class="bot-sign" v-if="isBot(message.senderUsername)">(Bot)</span>
           </div>
-          <div class="sent">
-            {{(new Date(message.sentAt)).toLocaleString('en-US')}}
-            <span v-if="message.isSeen">seen</span>
+          <div class="sent" if >
+            <span :class="{'seen-sign': true, 'is-seen': message.isSeen }">
+              <font-awesome-icon :icon="message.isSeen ? 'eye' : 'eye-slash'" />
+            </span>
+            <span v-if="message.sentAt">{{(new Date(message.sentAt)).toLocaleString('en-US')}}</span>
+            <span v-else> - </span>
           </div>
           <div class="text">
             {{message.text}}
@@ -54,6 +58,16 @@
     computed: {
       currentAccountId() {
         return this.$route.params.accountId
+      },
+
+      currentAccount() {
+        return this.$store.state.currentAccount;
+      }
+    },
+
+    methods: {
+      isBot(userName) {
+        return this.currentAccount.login === userName;
       }
     },
 
@@ -90,9 +104,22 @@
         min-width: 150px;
       }
 
+      .seen-sign {
+        color: rgb(255, 0, 0);
+
+        &.is-seen {
+          color: #494;
+        }
+      }
+
       .text {
         width: 30%;
         flex-grow: 1;
+      }
+
+      .bot-sign {
+        color: #494;
+        font-weight: bold;
       }
 
       &.thread-list-header {
