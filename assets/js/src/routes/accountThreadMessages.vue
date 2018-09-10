@@ -26,7 +26,7 @@
         <div class="thread-list-item" v-for="message in threadMessages">
           <div class="from">
             {{message.senderUsername}}
-            <span class="bot-sign" v-if="isBot(message.senderUsername)">(Bot)</span>
+            <span class="bot-sign" v-if="false">(Bot)</span>
           </div>
           <div class="sent" if >
             <span :class="{'seen-sign': true, 'is-seen': message.isSeen }">
