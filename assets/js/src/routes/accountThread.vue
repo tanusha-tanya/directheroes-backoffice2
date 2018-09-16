@@ -24,7 +24,7 @@
             Actions
           </div>
         </div>
-        <div class="thread-list-item" v-for="thread in currentThread">
+        <div class="thread-list-item" v-for="thread in currentThread" :key="thread.id">
           <div class="username">
             {{thread.username}}
           </div>

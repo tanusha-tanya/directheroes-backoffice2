@@ -63,7 +63,6 @@
             class="collapse-sub-item"
             :to="{ name: 'accountThread', params: { threadId: 'all', accountId: currentAccount.id } }"
             tag="div"
-            v-if="false"
            >
             <div class="sub-item-name">
               All
