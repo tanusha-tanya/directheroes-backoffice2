@@ -41,7 +41,8 @@
         messageText: '',
         defaultAvatar,
         inSending: false,
-        requestInterval: null
+        requestInterval: null,
+        lastMessage: null
       }
     },
 
@@ -53,6 +54,7 @@
       currentAccount() {
         return this.$store.state.currentAccount;
       },
+
     },
 
     methods: {
@@ -79,17 +81,18 @@
       getUpdates() {
         const { threadId } = this.$route.params;
         const { threadMessages } = this;
-        const lastMessage = threadMessages[ threadMessages.length - 1 ] || {};
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
           params: {
-            max_item_id: lastMessage.igItemId
+            max_item_id: this.lastMessage.igItemId
           }
         }).then(({ data }) => {
           const { body } = data.response;
 
           if (!body.messageList.length) return;
+
+          this.lastMessage = body.messageList[ body.messageList - 1 ] || {};
 
           this.threadMessages.push(...body.messageList);
         })
@@ -105,6 +108,7 @@
         const { body } = data.response;
 
         this.contactProfile = body.thread.contactProfile;
+        this.lastMessage = body.messageList[body.messageList.length - 1] || {};
         this.threadMessages = body.messageList;
       })
 
