@@ -1,24 +1,28 @@
 <template>
   <div class="thread-content-messages" v-if="threadMessages">
     <div class="content-panel">
-      <div class="avatar" :style="{'background-image': `${ clientData.profilePicUrl ? 'url(' + clientData.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-      <strong>{{ clientData.login }}</strong>
+      <div class="avatar" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
+      <strong>{{ contactProfile.username }}</strong>
     </div>
     <div class="thread-list-wrapper scroller" ref="threadMessages">
       <div class="thread-list">
         <div :class="{'thread-list-item': true,  'account-message': isMe(message.senderUsername)}" v-for="(message, index) in threadMessages" :key="message.id">
-          <div class="date" v-if="!index || true ||isEqualPrevDate(message.sendAt, index)">
+          <div class="date" v-if="(!index || true ||isEqualPrevDate(message.sendAt, index)) && message.sentAt">
             {{(new Date(message.sentAt)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}}
           </div>
           <div class="body">
-            <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ clientData.profilePicUrl ? 'url(' + clientData.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
+            <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
             <div class="text">{{message.text}}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="thread-message-send">
-      <textarea v-if="false" v-model="messageText" placeholder="Write a message..." @keyup.enter="sendMessage"></textarea>
+      <textarea class="scroller" row="3" v-model="messageText" placeholder="Write a message..." @keyup.ctrl.enter="sendMessage"></textarea>
+      <button @click="sendMessage">
+        <img src="../assets/send-white.svg"/>
+        Send
+      </button>
     </div>
   </div>
   <div class="loading-content" v-else>
@@ -33,6 +37,7 @@
     data() {
       return {
         threadMessages: null,
+        contactProfile: null,
         messageText: '',
         defaultAvatar
       }
@@ -46,17 +51,6 @@
       currentAccount() {
         return this.$store.state.currentAccount;
       },
-
-      clientData() {
-        const {currentAccount} = this;
-        let clientMessage;
-
-        if (!currentAccount) return;
-
-        clientMessage = this.threadMessages.find(message => message.senderUsername !== currentAccount.login);
-
-        return { login: clientMessage.senderUsername, profilePicUrl: clientMessage.senderProfilePicUrl  }
-      }
     },
 
     methods: {
@@ -65,22 +59,26 @@
       },
 
       sendMessage() {
+        const { threadId } = this.$route.params;
         const { threadMessages } = this.$refs;
+        const { uuidv4 } = this.utils;
+        
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/live/${ threadId }/send`,
+          params: {
+            text: this.messageText,
+            client_context: uuidv4()
+          }
+        }).then(({ data }) => {
+          console.log(data);
+          
 
-        this.threadMessages.push({
-          id: Math.random() * 10000,
-          isSeen: false,
-          senderProfilePicUrl: "https://scontent-lga3-1.cdninstagram.com/vp/36c45924e6d263e2baa53c5c2e4862c5/5BC7A46C/t51.2885-19/s150x150/23161043_359974764426840_1793873252444012544_n.jpg",
-          senderUsername: "direct.heroes",
-          sentAt: Date.now(),
-          text: this.messageText,
+          this.$nextTick(() => {
+            threadMessages.scrollTop = threadMessages.scrollHeight;
+          }); 
         })
 
         this.messageText = '';
-
-        this.$nextTick(() => {
-          threadMessages.scrollTop = threadMessages.scrollHeight;
-        })
       }
     },
 
@@ -90,8 +88,21 @@
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`
       }).then(({ data }) => {
-        this.threadMessages = data.response.body.messageList;
+        const { body } = data.response;
+
+        this.contactProfile = body.thread.contactProfile;
+        this.threadMessages = body.messageList;
       })
+    },
+
+    watch: {
+      threadMessages() {
+        this.$nextTick(() => {
+          const { threadMessages } = this.$refs;
+
+          threadMessages.scrollTop = threadMessages.scrollHeight;
+        })
+      }
     }
   }
 </script>
@@ -119,7 +130,7 @@
       margin: 0 auto;
       width: 450px;
       height: 100%;
-      max-height: calc(100% - 120px);
+      max-height: calc(100% - 155px);
       overflow-y: auto;
       overflow-x: hidden;
       padding: 15px;
@@ -128,6 +139,8 @@
     .thread-list {
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
+      min-height: 100%;
     }
 
     .thread-list-item {
@@ -146,6 +159,7 @@
         height: 32px;
         margin: 0 10px 5px 0;
         align-self: flex-end;
+        flex-shrink: 0;
       }
 
       .body {
@@ -182,15 +196,35 @@
 
     .thread-message-send {
       padding: 10px;
-      height: 55px;
+      height: 90px;
       background-color: #fff;
       margin: 0 auto;
       width: 450px;
+      display: flex;
 
-      input {
+
+      textarea {
+        width: 100%;
+        resize: none;
         border-color: #f1f1f1;
-        border-radius: 25px;
-        padding: 10px 15px;
+        border-radius: 15px;
+        padding: 0 15px;
+        outline: none;
+        line-height: 22px;
+        font-size: 16px;
+        height: 70px;
+      }
+
+      img {
+        width: 22px;
+        margin-right: 5px;
+      }
+
+      button {
+        padding: 12px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
       }
     }
   }
