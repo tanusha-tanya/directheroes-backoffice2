@@ -39,7 +39,9 @@
         threadMessages: null,
         contactProfile: null,
         messageText: '',
-        defaultAvatar
+        defaultAvatar,
+        inSending: false,
+        requestInterval: null
       }
     },
 
@@ -69,16 +71,28 @@
             text: this.messageText,
             client_context: uuidv4()
           }
-        }).then(({ data }) => {
-          console.log(data);
-          
-
-          this.$nextTick(() => {
-            threadMessages.scrollTop = threadMessages.scrollHeight;
-          }); 
-        })
+        }).then(({ data }) => { })
 
         this.messageText = '';
+      },
+
+      getUpdates() {
+        const { threadId } = this.$route.params;
+        const { threadMessages } = this;
+        const lastMessage = threadMessages[ threadMessages.length - 1 ] || {};
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
+          params: {
+            max_item_id: lastMessage.igItemId
+          }
+        }).then(({ data }) => {
+          const { body } = data.response;
+
+          if (!body.messageList.length) return;
+
+          this.threadMessages.push(...body.messageList);
+        })
       }
     },
 
@@ -93,6 +107,12 @@
         this.contactProfile = body.thread.contactProfile;
         this.threadMessages = body.messageList;
       })
+
+      this.requestInterval = setInterval(this.getUpdates, 2000);
+    },
+
+    beforeDestroy() {
+      clearInterval(this.requestInterval);
     },
 
     watch: {
