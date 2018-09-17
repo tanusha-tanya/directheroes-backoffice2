@@ -1,5 +1,5 @@
 <template>
-  <div class="thread-content-messages" v-if="threadMessages">
+  <div class="thread-content-messages" v-if="threadMessages.length">
     <div class="content-panel">
       <div class="avatar" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
       <strong>{{ contactProfile.username }}</strong>
@@ -36,12 +36,12 @@
   export default {
     data() {
       return {
-        threadMessages: null,
+        threadMessages: [],
         contactProfile: null,
         messageText: '',
         defaultAvatar,
-        inSending: false,
-        requestInterval: null
+        requestInterval: null,
+        lastMessage: {}
       }
     },
 
@@ -78,18 +78,22 @@
 
       getUpdates() {
         const { threadId } = this.$route.params;
-        const { threadMessages } = this;
-        const lastMessage = threadMessages[ threadMessages.length - 1 ] || {};
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
           params: {
-            max_item_id: lastMessage.igItemId
+            max_item_id: this.lastMessage.igItemId
           }
         }).then(({ data }) => {
           const { body } = data.response;
 
+          if (!this.contactProfile) {
+            this.contactProfile = body.thread.contactProfile;
+          }
+
           if (!body.messageList.length) return;
+
+          clearInterval(this.requestInterval);
 
           this.threadMessages.push(...body.messageList);
         })
@@ -97,18 +101,7 @@
     },
 
     created() {
-      const { threadId } = this.$route.params;
-
-      axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`
-      }).then(({ data }) => {
-        const { body } = data.response;
-
-        this.contactProfile = body.thread.contactProfile;
-        this.threadMessages = body.messageList;
-      })
-
-      this.requestInterval = setInterval(this.getUpdates, 2000);
+      this.getUpdates();
     },
 
     beforeDestroy() {
@@ -121,6 +114,10 @@
           const { threadMessages } = this.$refs;
 
           threadMessages.scrollTop = threadMessages.scrollHeight;
+
+          this.lastMessage = this.threadMessages[this.threadMessages.length - 1] || {};
+
+          this.requestInterval= setInterval(this.getUpdates, 2000);
         })
       }
     }
