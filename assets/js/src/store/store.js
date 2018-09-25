@@ -98,7 +98,7 @@ export default new VueX.Store({
       const { currentAccount } = state;
       const request = axios({
         method: 'post',
-        url: `${ dh.apiUrl }/ig/accounts/${ currentAccount.login }/build/campaigns/save`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/save`,
         data: {
           igAccount: { id: currentAccount.id },
           campaignList: campaigns,

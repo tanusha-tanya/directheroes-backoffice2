@@ -284,7 +284,8 @@ export default {
 
             this.$router.push({ name: 'accountCampaign', params: { campaignId: currentCampaign.id, accountId: currentAccount.id } })
           })
-          .catch(() => {
+          .catch((error) => {
+            console.log(error);
             this.$message.error({
               message: 'Add error',
               duration: 3000,
