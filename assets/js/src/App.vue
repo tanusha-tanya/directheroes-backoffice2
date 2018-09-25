@@ -35,10 +35,6 @@ export default {
   }
 
   #app {
-    font-family: sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #2c3e50;
     height: 100%;
   }
 
@@ -57,6 +53,10 @@ export default {
     height: 100%;
     font-size: 12px;
     line-height: 16px;
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
   }
 
   .container {
@@ -115,6 +115,7 @@ export default {
       background: url(./assets/triangle-error.svg) no-repeat;
     }
   }
+
   .success-message {
     color: #67c23a;
     font-weight: 600;
@@ -625,5 +626,9 @@ export default {
       font-size: 14px;
       margin-left: 10px;
     }
+  }
+
+  .el-dropdown-menu {
+    padding: 10px;
   }
 </style>

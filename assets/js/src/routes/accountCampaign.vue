@@ -9,6 +9,14 @@
         </div>
       </div>
       <div class="content-controls">
+        <el-dropdown class="content-button" trigger="click" v-if="currentCampaign.typeCode === 'postShareCampaign'">
+          <div>Settings</div>
+          <el-dropdown-menu slot="dropdown" class="share-settings">
+            <el-radio v-model="shareType" label="all"> All Posts</el-radio>
+            <el-radio v-model="shareType" label="special"> Special Post Link</el-radio>
+            <input v-model="currentCampaign.postLink" placeholder="Enter post link" :disabled="shareType !== 'special'"/>
+          </el-dropdown-menu>
+        </el-dropdown>
         <div v-if="false" class="content-button">
           <img src="../assets/send.svg"/>
           Test Campaign
@@ -29,7 +37,7 @@
       </div>
     </div>
     <el-collapse class="campaign-templates">
-      <el-collapse-item class="campaign-template" :title="`Template #${ templateIndex + 1 }`" v-for="template, templateIndex in currentCampaign.templateList" :key="template.id">
+      <el-collapse-item class="campaign-template" :title="`Template #${ templateIndex + 1 }`" v-for="(template, templateIndex) in currentCampaign.templateList" :key="template.id">
         <draggable v-model="template.rules" element="div" class="campaign-template-rules" :options="{ handle:'.rule-drag', animation: 300, forceFallback: true }">
           <div class="campaign-template-rule" v-for="rule, ruleIndex in template.ruleList">
             <div class="rule-controls">
@@ -39,7 +47,7 @@
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
             </div>
-            <div class="rule-messages"  v-if="!(currentCampaign.type === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
+            <div class="rule-messages"  v-if="!(currentCampaign.typeCode === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
               <div class="rule-messages-title">
                 <img src="../assets/star.svg"/>
                 If follower messages…
@@ -54,7 +62,7 @@
                 @keydown.native="selectChange($event, rule)"
               ></el-select>
             </div>
-            <div class="rule-replies-icon"  v-if="!(currentCampaign.type === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
+            <div class="rule-replies-icon"  v-if="!(currentCampaign.typeCode === 'welcomeCampaign' && !ruleIndex && !templateIndex)">
               <img src="../assets/comment.svg"/>
             </div>
             <div class="rule-replies">
@@ -76,7 +84,7 @@
             </div>
           </div>
         </draggable>
-        <div class="add-rule-button" v-if="currentCampaign.type !== 'welcomeCampaign' || templateIndex">
+        <div class="add-rule-button" v-if="currentCampaign.typeCode !== 'welcomeCampaign' || templateIndex">
           <div @click="addRule(template)">
             <img src="../assets/star-white.svg"/>
             Add rule
@@ -92,7 +100,7 @@
 <script>
   import draggable from 'vuedraggable'
   import debounce from 'lodash/debounce'
-  import { Switch, Collapse, CollapseItem, Select, Input } from 'element-ui'
+  import { Switch, Collapse, CollapseItem, Select, Radio, Input, Dropdown, DropdownMenu } from 'element-ui'
 
   const campaignsToSave = [];
 
@@ -114,6 +122,7 @@
       return {
         currentCampaign: null,
         updateState: false,
+        shareType: 'all'
       }
     },
 
@@ -123,7 +132,10 @@
       'el-select': Select,
       'el-switch': Switch,
       'el-collapse': Collapse,
-      'el-collapse-item': CollapseItem
+      'el-collapse-item': CollapseItem,
+      'el-dropdown': Dropdown,
+      'el-dropdown-menu': DropdownMenu,
+      'el-radio': Radio
     },
 
     methods: {
@@ -143,6 +155,10 @@
               this.currentCampaign = data.campaign;
             });
         }
+      },
+
+      setSettings(event) {
+        console.log(event);
       },
 
       addRule(template) {
@@ -280,6 +296,12 @@
           this.saveCampaigns();
         },
         deep: true
+      },
+
+      shareType(type) {
+        if (type !== 'all') return;
+
+        this.currentCampaign.postLink = '';
       }
     }
   }
@@ -292,6 +314,7 @@
         margin-left: 7px;
       }
     }
+
 
     .campaign-templates {
       margin: 24px 30px 24px 15px;
@@ -317,7 +340,7 @@
       }
 
       .el-collapse-item__header {
-        padding: 10px 8px 9px 8px;
+        padding: 10px 18px 9px 8px;
         outline: none;
         display: flex;
         border-radius: 30px;
@@ -588,6 +611,25 @@
           }
         }
       }
+    }
+  }
+
+  .share-settings {
+    // display: flex;
+    // flex-direction: column;
+    padding: 5px 15px 15px;
+
+    & > div {
+      font-size: 12px;
+    }
+
+    .el-radio {
+      margin-top: 10px;
+      display: block;
+    }
+
+    input {
+      margin-top: 5px;
     }
   }
 </style>

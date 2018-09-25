@@ -185,10 +185,16 @@ export default {
           templateList: [Object.assign({ type:"storyOpener", scarcity: null, hits: 0}, emptyTemplate)],
         },
         {
-          type: 'igtv',
-          name: 'IGTV Campaign',
+          type: 'postShareCampaign',
+          name: 'Post Share Campaign',
+          postLink: '',
           templateList: [Object.assign({}, emptyTemplate)],
         },
+        // {
+        //   type: 'igtv',
+        //   name: 'IGTV Campaign',
+        //   templateList: [Object.assign({}, emptyTemplate)],
+        // },
         {
           type: 'ad',
           name: 'AD Campaign',
@@ -256,6 +262,7 @@ export default {
         name: '',
         type: campaign.type,
         typeName: campaign.name,
+        postLink: campaign.postLink,
         enabled: false,
         templateList: campaign.templateList,
       }
@@ -475,6 +482,10 @@ export default {
 
         &.storyCampaign {
           background-image: url(../assets/copy.svg);
+        }
+
+        &.postShareCampaign {
+          background-image: url(../assets/send-campaign.svg);
         }
 
         &.igtv {
