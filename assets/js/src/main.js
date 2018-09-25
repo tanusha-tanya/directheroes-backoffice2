@@ -19,7 +19,9 @@ import store from './store/store'
 
 // import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/popper.css';
+import 'element-ui/lib/theme-chalk/popover.css';
 import 'element-ui/lib/theme-chalk/dropdown.css';
+import 'element-ui/lib/theme-chalk/date-picker.css';
 
 /**
  * Import routes components

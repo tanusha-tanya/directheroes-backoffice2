@@ -17,6 +17,27 @@
             <input v-model="currentCampaign.postLink" placeholder="Enter post link" :disabled="shareType !== 'special'"/>
           </el-dropdown-menu>
         </el-dropdown>
+        <!-- <div class="content-button" @click="triggerBroadCastSettings">Settings</div> -->
+        <el-popover class="content-button" placement="bottom" v-if="currentCampaign.typeCode === 'broadcastCampaign'">
+          <div class="broadcast-settings">
+            <div class="settings-title">Select date, time to broadcast</div>
+            <el-date-picker
+                v-model="currentCampaign.startsAt"
+                type="datetime"
+                placeholder="Select date and time">
+            </el-date-picker>
+            <div class="settings-title">Select subscribers to broadcast.</div>
+            <el-checkbox 
+              v-for="subscriber in currentAccount.subscriberCategoryList" 
+              :key="subscriber.id"
+              :checked="isCheckedSubscriber(subscriber.id)"
+              @change="checkSubscriber(subscriber, $event)"
+              >
+              {{ subscriber.name }}
+            </el-checkbox>
+          </div>
+          <div slot="reference">Settings</div>
+        </el-popover>
         <div v-if="false" class="content-button">
           <img src="../assets/send.svg"/>
           Test Campaign
@@ -100,7 +121,7 @@
 <script>
   import draggable from 'vuedraggable'
   import debounce from 'lodash/debounce'
-  import { Switch, Collapse, CollapseItem, Select, Radio, Input, Dropdown, DropdownMenu } from 'element-ui'
+  import { Switch, Collapse, CollapseItem, Select, Radio, Input, Popover, Dropdown, DropdownMenu, DatePicker, Checkbox } from 'element-ui'
 
   const campaignsToSave = [];
 
@@ -122,7 +143,7 @@
       return {
         currentCampaign: null,
         updateState: false,
-        shareType: 'all'
+        shareType: 'all',
       }
     },
 
@@ -135,10 +156,35 @@
       'el-collapse-item': CollapseItem,
       'el-dropdown': Dropdown,
       'el-dropdown-menu': DropdownMenu,
-      'el-radio': Radio
+      'el-radio': Radio,
+      'el-date-picker': DatePicker,
+      'el-popover': Popover,
+      'el-checkbox': Checkbox
+    },
+
+    computed: {
+      currentAccount() {
+        return this.$store.state.currentAccount;
+      }
     },
 
     methods: {
+      checkSubscriber(subscriber, checked) {
+        this.currentCampaign.subscriberCategoryList = this.currentCampaign.subscriberCategoryList || [];
+        
+        const { subscriberCategoryList } = this.currentCampaign;
+
+        if (checked) {
+          subscriberCategoryList.push(subscriber);
+        } else {
+          subscriberCategoryList.splice(subscriberCategoryList.indexOf(subscriberCategoryList.find(customer => customer.id === subscriber.id)), 1)
+        }
+      },
+
+      isCheckedSubscriber(id) {
+        return (this.currentCampaign.subscriberCategoryList || []).some(subscriber => subscriber.id == id)
+      },
+
       setCurrentCampaign(route) {
         const { campaignId } = route.params;
         const { campaignList } = this.$store.state.currentAccount;
@@ -155,10 +201,6 @@
               this.currentCampaign = data.campaign;
             });
         }
-      },
-
-      setSettings(event) {
-        console.log(event);
       },
 
       addRule(template) {
@@ -287,6 +329,10 @@
 
       currentCampaign: {
         handler: function (campaign, oldCampaign) {
+          if (campaign && campaign.typeCode === 'postShareCampaign') {
+            this.shareType = campaign.postLink ? 'special' : 'all'
+          }
+
           if (!oldCampaign || !campaign || campaign.uuid !== oldCampaign.uuid || this.updateState) return;
 
           if (!campaignsToSave.includes(campaign)) {
@@ -310,6 +356,11 @@
   .campaign-content {
 
     .content-button {
+      
+      & > div {
+        outline: none;
+      }
+
       .el-switch {
         margin-left: 7px;
       }
@@ -611,6 +662,17 @@
           }
         }
       }
+    }
+  }
+
+  .broadcast-settings {
+    .settings-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .el-date-editor {
+      margin-bottom: 16px;
     }
   }
 

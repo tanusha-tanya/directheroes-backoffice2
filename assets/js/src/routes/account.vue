@@ -187,7 +187,6 @@ export default {
         {
           type: 'postShareCampaign',
           name: 'Post Share Campaign',
-          postLink: '',
           templateList: [Object.assign({}, emptyTemplate)],
         },
         // {
@@ -203,7 +202,7 @@ export default {
         {
           type: 'broadcastCampaign',
           name: 'Broadcast Bot',
-          templateList: [Object.assign({ type:"storyOpener", scarcity: null, hits: 0}, emptyTemplate)],
+          templateList: [Object.assign({}, emptyTemplate)],
         },
       ]
     }
@@ -263,6 +262,7 @@ export default {
         type: campaign.type,
         typeName: campaign.name,
         postLink: campaign.postLink,
+        subscriberCategoryList: [],
         enabled: false,
         templateList: campaign.templateList,
       }
@@ -310,9 +310,9 @@ export default {
       switch(campaignType) {
         case 'ad':
         case 'igtv':
-        case 'broadcastCampaign':
           return false;
         break;
+        case 'broadcastCampaign':
         case 'messageRequestCampaign':
         case 'welcomeCampaign':
           return !campaignList.some(campaign => ['messageRequestCampaign', 'welcomeCampaign'].includes(campaign.type));
