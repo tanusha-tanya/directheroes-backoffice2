@@ -22,12 +22,14 @@
           <div class="broadcast-settings">
             <div class="settings-title">Select date, time to broadcast</div>
             <el-date-picker
-                v-model="currentCampaign.startsAt"
-                type="datetime"
-                placeholder="Select date and time">
+              :disabled="currentCampaign.isStarted"
+              v-model="currentCampaign.startsAt"
+              type="datetime"
+              placeholder="Select date and time">
             </el-date-picker>
             <div class="settings-title">Select subscribers to broadcast.</div>
-            <el-checkbox 
+            <el-checkbox
+              :disabled="currentCampaign.isStarted"
               v-for="subscriber in currentAccount.subscriberCategoryList" 
               :key="subscriber.id"
               :checked="isCheckedSubscriber(subscriber.id)"
