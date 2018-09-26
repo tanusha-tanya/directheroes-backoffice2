@@ -14,6 +14,7 @@ Vue.use(VueX)
 
 export default new VueX.Store({
   state: {
+    dhAccount: null,
     accounts: [],
     currentAccount: null,
     campaignToRename: null,
@@ -29,13 +30,14 @@ export default new VueX.Store({
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
-        const { accountList } = data.response.body;
+        const { accountList, dhAccount } = data.response.body;
 
-        accountList.forEach( account => {
-          // account.isPasswordValid = false;
-          // account.threadList = account.campaignList;
-        })
+        // accountList.forEach( account => {
+        //   // account.isPasswordValid = false;
+        //   // account.threadList = account.campaignList;
+        // })
 
+        commit('set', {path: 'dhAccount', value: dhAccount});
         commit('set', {path: 'accounts', value: accountList});
       })
     },

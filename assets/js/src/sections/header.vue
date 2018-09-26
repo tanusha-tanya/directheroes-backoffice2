@@ -13,7 +13,7 @@
         <div :class="{'account-avatar': true, 'logged-out': !account.isLoggedIn }" :style="{'background-image': `${ account.profilePicUrl ? 'url(' + account.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
         {{account.login}}
       </router-link>
-      <div class="add-account" @click="isAddAccount = true">
+      <div class="add-account" @click="isAddAccount = true" v-if="dhAccount && accounts.length < dhAccount.igAccountLimit">
         <div class="account-plus-ico">+</div>
         Add account
       </div>
@@ -40,6 +40,10 @@
     computed: {
       accounts() {
         return this.$store.state.accounts
+      },
+
+      dhAccount() {
+        return this.$store.state.dhAccount
       },
 
       currentAccount() {
