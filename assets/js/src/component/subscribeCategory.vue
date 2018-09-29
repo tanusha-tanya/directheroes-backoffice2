@@ -5,7 +5,7 @@
       <input v-model="searchCategory" placeholder="Enter category name"/>
       <div class="category-title">Select category to add</div>
       <div class="category-list">
-        <div @click="addCategory(category)" class="category-item" v-for="category in categoryList" :key="category.id">{{category.name}}</div>
+        <div @click="addCategory(category)" class="category-item" v-for="category in categoryList">{{category.name}}</div>
         <div @click="addNewCategory" class="category-item new-category" v-if="searchCategory">{{searchCategory}}</div>
       </div>
     </div>
@@ -20,7 +20,7 @@
     </div>
   </el-popover>
   <div class="selected-categories">
-    <div class="selected-category" v-for="(category, index) in categories" :key="category.id">
+    <div class="selected-category" v-for="(category, index) in categories">
       {{ category.name }}
       <img src="../assets/times-white.svg" @click="deleteCategory(index)"/>
     </div>

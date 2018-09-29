@@ -18,6 +18,9 @@
       </div>
     </div>
     <div class="thread-message-send">
+      <div class="upload-file">
+        <input type="file" @change="uploadFile"/>
+      </div>
       <textarea class="scroller" row="3" v-model="messageText" placeholder="Write a message..." @keyup.ctrl.enter="sendMessage"></textarea>
       <button @click="sendMessage">
         <img src="../assets/send-white.svg"/>
@@ -58,6 +61,31 @@
     methods: {
       isMe(userName) {
         return this.currentAccount.login === userName;
+      },
+
+      uploadFile(event) {
+        const files = event.target.files;
+        const formData = new FormData();
+
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i];
+          formData.append('file', file, file.name);
+        }
+
+        console.log(files);
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/upload`,
+          method: 'POST',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((req) => {
+          console.log(req);
+        });
+
+        event.preventDefault();
       },
 
       sendMessage() {
@@ -219,6 +247,27 @@
       width: 450px;
       display: flex;
 
+      .upload-file {
+        width: 50px;
+        position: relative;
+        background: url(../assets/clip.svg) no-repeat center;
+        opacity: .4;
+
+        &:hover {
+          cursor: pointer;
+          opacity: .6;
+        }
+
+        input {
+          cursor: pointer;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          opacity: 0;
+        }
+      }
 
       textarea {
         width: 100%;
