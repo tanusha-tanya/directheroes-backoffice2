@@ -94,10 +94,7 @@
                   <img src="../assets/ico-robot.png"/>
                   Replies with…
                 </span>
-                <span class="rule-replies-action">
-                  Add action
-                  <img src="../assets/valve.svg"/>
-                </span>
+                <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
               </div>
               <el-input
                 type="textarea"
@@ -122,6 +119,7 @@
 </template>
 <script>
   import draggable from 'vuedraggable'
+  import subscribeCategory from '../component/subscribeCategory.vue'
   import debounce from 'lodash/debounce'
   import { Switch, Collapse, CollapseItem, Select, Radio, Input, Popover, Dropdown, DropdownMenu, DatePicker, Checkbox } from 'element-ui'
 
@@ -150,6 +148,7 @@
     },
 
     components: {
+      'subscribe-category': subscribeCategory,
       draggable,
       'el-input': Input,
       'el-select': Select,
@@ -648,15 +647,6 @@
           span {
             display: flex;
             align-items: center;
-          }
-
-          .rule-replies-action {
-            color: #858099;
-
-            img {
-              opacity: .5;
-              width: 20px;
-            }
           }
 
           img {
