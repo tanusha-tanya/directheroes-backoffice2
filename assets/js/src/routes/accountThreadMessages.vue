@@ -18,6 +18,12 @@
       </div>
     </div>
     <div class="thread-message-send">
+      <el-popover class="upload-message" v-if="media.length" placement="right">
+          <div class="uploaded-files">
+            <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
+          </div>
+          <div slot="reference">Attached {{media.length}} file(s)</div>
+        </el-popover>
       <div class="upload-file">
         <input type="file" @change="uploadFile"/>
       </div>
@@ -34,7 +40,8 @@
 </template>
 <script>
   import defaultAvatar from '../assets/ig-avatar.jpg'
-  import axios from 'axios';
+  import axios from 'axios'
+  import { Popover } from "element-ui"
   
   export default {
     data() {
@@ -44,8 +51,13 @@
         messageText: '',
         defaultAvatar,
         requestInterval: null,
-        lastMessage: {}
+        lastMessage: {},
+        media: [],
       }
+    },
+
+    components: {
+      'el-popover': Popover,
     },
 
     computed: {
@@ -66,13 +78,12 @@
       uploadFile(event) {
         const files = event.target.files;
         const formData = new FormData();
+        const { uuidv4 } = this.utils;
 
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
           formData.append('file', file, file.name);
         }
-
-        console.log(files);
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/upload`,
@@ -81,8 +92,8 @@
           headers: {
             'Content-Type': 'multipart/form-data'
           }
-        }).then((req) => {
-          console.log(req);
+        }).then(({ data }) => {
+          this.media.push(Object.assign(data.response.body, { clientContext: uuidv4() }));
         });
 
         event.preventDefault();
@@ -95,11 +106,15 @@
         
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/live/${ threadId }/send`,
-          params: {
+          method: 'post',
+          data: {
             text: this.messageText,
-            client_context: uuidv4()
+            clientContext: uuidv4(),
+            medias: this.media
           }
-        }).then(({ data }) => { })
+        }).then(({ data }) => { 
+          this.media.splice(0, this.media.length)
+        })
 
         this.messageText = '';
       },
@@ -125,6 +140,10 @@
 
           this.threadMessages.push(...body.messageList);
         })
+      },
+
+      deleteFile(fileIndex) {
+        this.media.splice(fileIndex, 1);
       }
     },
 
@@ -152,6 +171,20 @@
   }
 </script>
 <style lang="scss">
+  .uploaded-files {
+    .file-item {
+      display: flex;
+      padding: 3px 0;
+      justify-content: space-between;
+      align-items: center;
+
+      img {
+        width: 10px;
+        height: 10px;
+      }
+    }  
+  }
+
   .thread-content-messages {
     height: calc(100vh - 50px);
 
@@ -246,12 +279,22 @@
       margin: 0 auto;
       width: 450px;
       display: flex;
+      position: relative;
+
+      .upload-message {
+        position: absolute;
+        bottom: 100%;
+        cursor: pointer;
+        background-color: #fff;
+        padding: 0 10px;
+      }
 
       .upload-file {
         width: 50px;
         position: relative;
         background: url(../assets/clip.svg) no-repeat center;
         opacity: .4;
+        overflow: hidden;
 
         &:hover {
           cursor: pointer;

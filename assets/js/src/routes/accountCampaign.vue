@@ -66,6 +66,17 @@
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
+              <div class="upload-button">
+                <el-popover class="upload-message" v-if="rule.medias.length" placement="right">
+                  <div class="uploaded-files">
+                    <div class="file-item" v-for="(file, index) in rule.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(rule, index)"/></div>
+                  </div>
+                  <div slot="reference">{{rule.medias.length}}</div>
+                </el-popover>
+                <div class="upload-file">
+                  <input type="file" @change="uploadFile($event, rule)"/>
+                </div>
+              </div>
               <img v-if="false" src="../assets/eye.svg"/>
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
@@ -94,7 +105,9 @@
                   <img src="../assets/ico-robot.png"/>
                   Replies with…
                 </span>
-                <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
+                <div>
+                  <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
+                </div>
               </div>
               <el-input
                 type="textarea"
@@ -118,6 +131,7 @@
   </div>
 </template>
 <script>
+  import axios from 'axios'
   import draggable from 'vuedraggable'
   import subscribeCategory from '../component/subscribeCategory.vue'
   import debounce from 'lodash/debounce'
@@ -318,7 +332,35 @@
 
           return false;
         }
-      }
+      },
+
+      deleteMedia(rule, mediaIndex) {
+        rule.medias.splice(mediaIndex, 1);
+      },
+
+      uploadFile(event, rule) {
+        const files = event.target.files;
+        const formData = new FormData();
+        const { uuidv4 } = this.utils;
+
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i];
+          formData.append('file', file, file.name);
+        }
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/upload`,
+          method: 'POST',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(({ data }) => {
+          rule.medias.push(data.response.body);
+        });
+
+        event.preventDefault();
+      },
     },
 
     watch: {
@@ -366,7 +408,6 @@
         margin-left: 7px;
       }
     }
-
 
     .campaign-templates {
       margin: 24px 30px 24px 15px;
@@ -445,9 +486,12 @@
         flex-direction: column;
         height: 100%;
         justify-content: space-between;
-        opacity: 0.2;
         margin-right: 20px;
         flex-shrink: 0;
+
+        & > *:not(div) {
+          opacity: 0.2;
+        }
 
         img {
           width: 24px;
@@ -685,5 +729,60 @@
     input {
       margin-top: 5px;
     }
+  }
+
+  .upload-file {
+    height: 25px;
+    position: relative;
+    background: url(../assets/clip.svg) no-repeat center;
+    overflow: hidden;
+    opacity: .4;
+
+    &:hover {
+      cursor: pointer;
+      opacity: .6;
+    }
+
+    input {
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+    }
+  }
+
+  .upload-button {
+    position: relative;
+  }
+
+  .upload-message {
+    background-color: #FF0000;
+    width: 15px !important;
+    height: 15px !important;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    border-radius: 15px;
+    z-index: 2;
+    cursor: pointer; 
+  }
+
+  .uploaded-files {
+    .file-item {
+      display: flex;
+      padding: 3px 0;
+      justify-content: space-between;
+      align-items: center;
+
+      img {
+        width: 10px;
+        height: 10px;
+      }
+    }  
   }
 </style>
