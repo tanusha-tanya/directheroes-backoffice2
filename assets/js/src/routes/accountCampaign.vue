@@ -703,7 +703,7 @@
         display: flex;
         align-items: center;
         margin: 0 20px;
-        height: 100%;
+        height: 134px;
         opacity: 0.2;
 
         img {
