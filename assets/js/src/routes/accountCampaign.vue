@@ -66,7 +66,7 @@
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
-              <div class="upload-button">
+              <div class="upload-button" v-if="false">
                 <el-popover class="upload-message" v-if="rule.medias.length" placement="right">
                   <div class="uploaded-files">
                     <div class="file-item" v-for="(file, index) in rule.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(rule, index)"/></div>
@@ -100,20 +100,49 @@
               <img src="../assets/comment.svg"/>
             </div>
             <div class="rule-replies">
-              <div class="rule-replies-title">
-                <span>
-                  <img src="../assets/ico-robot.png"/>
-                  Replies with…
-                </span>
-                <div>
-                  <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
+              <div class="rule-replies-body">
+                <div class="rule-replies-title">
+                  <span>
+                    <img src="../assets/ico-robot.png"/>
+                    Replies with…
+                  </span>
+                  <div>
+                    <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
+                  </div>
                 </div>
+                <el-input
+                  type="textarea"
+                  placeholder="Enter replies"
+                  v-model="rule.messageTemplate">
+                </el-input>
               </div>
-              <el-input
-                type="textarea"
-                placeholder="Enter replies"
-                v-model="rule.messageTemplate">
-              </el-input>
+              <template v-for="(action, index) in rule.actions">
+                <div class="delay-settings-area">
+                  <div class="delay-settings">
+                    <font-awesome-icon :icon="['far', 'clock']" />
+                    Delay:
+                    <input type="number" v-model="action.delayMs" min="0" step="50"/>
+                    ms
+                  </div>
+                </div>
+                <div class="rule-replies-body">
+                  <div class="rule-replies-title">
+                    <span>
+                      <img src="../assets/ico-robot.png"/>
+                      Replies with…
+                    </span>
+                    <img @click="deleteSequence(rule, index)" class="delete-action" src="../assets/times.svg"/>
+                  </div>
+                  <el-input
+                    type="textarea"
+                    placeholder="Enter replies"
+                    v-model="action.messageTemplate">
+                  </el-input>
+                </div>
+              </template>
+              <div class="add-sequence-area">
+                <div class="add-sequence-button" @click="addSequence(rule)">+</div>
+              </div>
             </div>
           </div>
         </draggable>
@@ -237,6 +266,18 @@
 
           templateList.splice(templateIndex, 1);
         }
+      },
+
+      addSequence(rule) {
+        rule.actions.push({
+          delayMs: 0,
+          medias: [],
+          messageTemplate: ""
+        })
+      },
+
+      deleteSequence(rule, actionIndex) {
+        rule.actions.splice(actionIndex, 1);
       },
 
       addTemplate() {
@@ -476,10 +517,63 @@
     }
 
     .campaign-template-rule {
-      padding: 30px 0;
-      height: 195px;
+      padding: 30px 0 0;
+      // height: 195px;
       border-bottom: 1px solid #E6E5E9;
       display: flex;
+
+      .delay-settings-area {
+        border: 1px solid #E6E5E9;
+        height: 0px;
+        margin: 20px 0;
+        display: flex;
+
+        .delay-settings {
+          background: #fff;
+          height: 30px;
+          border: 1px solid #E6E5E9;
+          border-radius: 15px;
+          margin: -15px auto 0;
+          font-size: 12px;
+          padding: 3px 10px;
+          color: #acacac;
+
+          input {
+            border: 0;
+            padding: 1px 4px;
+            font-size: 12px;
+            width: 70px;
+          }
+        }
+      }
+
+      .add-sequence-area {
+        border: 1px solid #E6E5E9;
+        height: 0px;
+        margin: 20px 0;
+
+        .add-sequence-button {
+          background: #fff;
+          height: 30px;
+          width: 30px;
+          border: 1px solid #E6E5E9;
+          border-radius: 15px;
+          margin: -15px auto 0;
+          color: #909399;
+          font-size: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all .2s;
+
+          &:hover {
+            background-color: #434890;
+            color: #fff;
+            border-color: #434890;
+          }
+        }
+      }
 
       .rule-controls {
         display: flex;
@@ -508,7 +602,7 @@
         background: #fff;
         padding: 13px;
         border-radius: 7px;
-        height: 100%;
+        height: 134px;
         flex-grow: 1;
         width: 50%;
 
@@ -618,12 +712,22 @@
       }
 
       .rule-replies {
-        background: #fff;
-        padding: 13px;
-        border-radius: 7px;
         height: 100%;
         flex-grow: 1;
         width: 50%;
+
+        .rule-replies-body {
+          background: #fff;
+          padding: 13px;
+          border-radius: 7px;
+          height: 134px;
+          margin-bottom: 15px;
+
+          .delete-action {
+            width: 18px;
+            margin: 0;
+          }
+        }
 
         .el-textarea {
           width: 100%;
