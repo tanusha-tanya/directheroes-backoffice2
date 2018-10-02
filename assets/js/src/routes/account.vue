@@ -170,11 +170,11 @@ export default {
       newCampaignName: '',
       isCampaignAdd: false,
       campaignTypes: [
-        {
-          type: 'welcomeCampaign',
-          name: 'Welcome Campaign',
-          templateList: [Object.assign({ type: 'welcomeOpener' }, emptyTemplate)],
-        },
+        // {
+        //   type: 'welcomeCampaign',
+        //   name: 'Welcome Campaign',
+        //   templateList: [Object.assign({ type: 'welcomeOpener' }, emptyTemplate)],
+        // },
         {
           type: 'messageRequestCampaign',
           name: 'Message Request Campaign',
@@ -311,11 +311,11 @@ export default {
       switch(campaignType) {
         case 'ad':
         case 'igtv':
+        // case 'welcomeCampaign':
           return false;
         break;
         case 'broadcastCampaign':
         case 'messageRequestCampaign':
-        case 'welcomeCampaign':
           return !campaignList.some(campaign => ['messageRequestCampaign', 'welcomeCampaign'].includes(campaign.type));
       }
 
