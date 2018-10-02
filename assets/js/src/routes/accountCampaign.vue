@@ -66,17 +66,6 @@
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
-              <div class="upload-button" v-if="false">
-                <el-popover class="upload-message" v-if="rule.medias.length" placement="right">
-                  <div class="uploaded-files">
-                    <div class="file-item" v-for="(file, index) in rule.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(rule, index)"/></div>
-                  </div>
-                  <div slot="reference">{{rule.medias.length}}</div>
-                </el-popover>
-                <div class="upload-file">
-                  <input type="file" @change="uploadFile($event, rule)"/>
-                </div>
-              </div>
               <img v-if="false" src="../assets/eye.svg"/>
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
@@ -100,24 +89,8 @@
               <img src="../assets/comment.svg"/>
             </div>
             <div class="rule-replies">
-              <div class="rule-replies-body">
-                <div class="rule-replies-title">
-                  <span>
-                    <img src="../assets/ico-robot.png"/>
-                    Replies with…
-                  </span>
-                  <div>
-                    <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
-                  </div>
-                </div>
-                <el-input
-                  type="textarea"
-                  placeholder="Enter replies"
-                  v-model="rule.messageTemplate">
-                </el-input>
-              </div>
               <template v-for="(action, index) in rule.actions">
-                <div class="delay-settings-area">
+                <div class="delay-settings-area" v-if="index">
                   <div class="delay-settings">
                     <font-awesome-icon :icon="['far', 'clock']" />
                     Delay:
@@ -131,13 +104,30 @@
                       <img src="../assets/ico-robot.png"/>
                       Replies with…
                     </span>
-                    <img @click="deleteSequence(rule, index)" class="delete-action" src="../assets/times.svg"/>
+                    <div v-if="!index">
+                      <subscribe-category :categories="rule.subscriberCategoryList"></subscribe-category>
+                    </div>
+                    <img v-if="index" @click="deleteSequence(rule, index)" class="delete-action" src="../assets/times.svg"/>
                   </div>
                   <el-input
                     type="textarea"
                     placeholder="Enter replies"
                     v-model="action.messageTemplate">
                   </el-input>
+                  <div class="upload-button">
+                    <div class="upload-file">
+                      <input type="file" @change="uploadFile($event, action.medias)"/>
+                      <span>Add files</span>
+                    </div>
+                    <el-popover class="upload-message" v-if="action.medias.length" placement="bottom">
+                      <div class="uploaded-files">
+                        <div class="file-item" v-for="(file, index) in action.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(action.medias, index)"/></div>
+                      </div>
+                      <div slot="reference">
+                        Attached {{action.medias.length}} file(s)
+                      </div>
+                    </el-popover>
+                  </div>
                 </div>
               </template>
               <div class="add-sequence-area">
@@ -375,11 +365,11 @@
         }
       },
 
-      deleteMedia(rule, mediaIndex) {
-        rule.medias.splice(mediaIndex, 1);
+      deleteMedia(medias, mediaIndex) {
+        medias.splice(mediaIndex, 1);
       },
 
-      uploadFile(event, rule) {
+      uploadFile(event, medias) {
         const files = event.target.files;
         const formData = new FormData();
         const { uuidv4 } = this.utils;
@@ -397,7 +387,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(({ data }) => {
-          rule.medias.push(data.response.body);
+          medias.push(data.response.body);
         });
 
         event.preventDefault();
@@ -602,7 +592,7 @@
         background: #fff;
         padding: 13px;
         border-radius: 7px;
-        height: 134px;
+        height: 150px;
         flex-grow: 1;
         width: 50%;
 
@@ -703,7 +693,7 @@
         display: flex;
         align-items: center;
         margin: 0 20px;
-        height: 134px;
+        height: 150spx;
         opacity: 0.2;
 
         img {
@@ -720,7 +710,7 @@
           background: #fff;
           padding: 13px;
           border-radius: 7px;
-          height: 134px;
+          height: 150px;
           margin-bottom: 15px;
 
           .delete-action {
@@ -732,7 +722,7 @@
         .el-textarea {
           width: 100%;
           height: 100%;
-          max-height: calc(100% - 34px);
+          max-height: calc(100% - 57px);
           border: 1px solid #E1E1E1;
           border-radius: 5px;
 
@@ -836,11 +826,12 @@
   }
 
   .upload-file {
-    height: 25px;
+    height: 15px;
     position: relative;
-    background: url(../assets/clip.svg) no-repeat center;
+    background: url(../assets/clip.svg) no-repeat left;
     overflow: hidden;
     opacity: .4;
+    padding-left: 15px;
 
     &:hover {
       cursor: pointer;
@@ -859,20 +850,12 @@
   }
 
   .upload-button {
-    position: relative;
+    display: flex;
+    margin: 10px 0;
+    justify-content: space-between;
   }
 
   .upload-message {
-    background-color: #FF0000;
-    width: 15px !important;
-    height: 15px !important;
-    color: #fff;
-    text-align: center;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    border-radius: 15px;
-    z-index: 2;
     cursor: pointer; 
   }
 

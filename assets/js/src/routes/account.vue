@@ -149,6 +149,7 @@ const emptyTemplate = {
   ruleList: [{
     triggerPhraseList: [],
     messageTemplate: "",
+    subscriberCategoryList: [],
   }],
 }
 
