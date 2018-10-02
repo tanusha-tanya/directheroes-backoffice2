@@ -70,7 +70,7 @@
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
               <span v-else></span>
             </div>
-            <div class="rule-messages"  v-if="!(['welcomeCampaign', 'broadcastCampaign'].includes(currentCampaign.typeCode) && !ruleIndex && !templateIndex)">
+            <div class="rule-messages"  v-if="!(onlyReplies && !ruleIndex && !templateIndex)">
               <div class="rule-messages-title">
                 <img src="../assets/star.svg"/>
                 If follower messages…
@@ -85,7 +85,7 @@
                 @keydown.native="selectChange($event, rule)"
               ></el-select>
             </div>
-            <div class="rule-replies-icon"  v-if="!(['welcomeCampaign', 'broadcastCampaign'].includes(currentCampaign.typeCode) && !ruleIndex && !templateIndex)">
+            <div class="rule-replies-icon"  v-if="!(onlyReplies && !ruleIndex && !templateIndex)">
               <img src="../assets/comment.svg"/>
             </div>
             <div class="rule-replies">
@@ -136,8 +136,8 @@
             </div>
           </div>
         </draggable>
-        <div class="add-rule-button" v-if="['welcomeCampaign', 'broadcastCampaign'].includes(currentCampaign.typeCode) || templateIndex">
-          <div @click="addRule(template)">
+        <div class="add-rule-button">
+          <div @click="addRule(template)" v-if="!onlyReplies || (onlyReplies && templateIndex) ">
             <img src="../assets/star-white.svg"/>
             Add rule
           </div>
@@ -199,6 +199,10 @@
     computed: {
       currentAccount() {
         return this.$store.state.currentAccount;
+      },
+
+      onlyReplies() {
+        return ['welcomeCampaign', 'broadcastCampaign'].includes(this.currentCampaign.typeCode);
       }
     },
 
