@@ -44,7 +44,7 @@ export default {
       const { categories, searchCategory } = this
       return this.$store.state.currentAccount.subscriberCategoryList
         .filter(categoryItem => {
-          return categoryItem.name.includes(searchCategory) && !categories.find(category => categoryItem.id == category.id);
+          return categoryItem.name.includes(searchCategory) && !(categories || []).find(category => categoryItem.id == category.id);
         });
     }
   },

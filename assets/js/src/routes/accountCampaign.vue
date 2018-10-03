@@ -67,7 +67,7 @@
               <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
               <img v-if="false" src="../assets/eye.svg"/>
-              <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="template.ruleList.length > 1"/>
+              <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="templateIndex || (!templateIndex && template.ruleList.length > 1)"/>
               <span v-else></span>
             </div>
             <div class="rule-messages"  v-if="!(onlyReplies && !ruleIndex && !templateIndex)">
@@ -242,10 +242,21 @@
       },
 
       addRule(template) {
-        template.ruleList.push({
-          triggerPhraseList: [],
+        const ruleObject = {
+          actions: [{
+            // triggerPhraseList: [],
+            messageTemplate: "",
+            delayMs: 0,
+            medias: []
+          }],
           messageTemplate: "",
-        });
+        }
+
+        if (!template.ruleList.length) {
+          ruleObject.subscriberCategoryList = [] 
+        }
+
+        template.ruleList.push(ruleObject);
       },
 
       deleteRule(template, rule) {
@@ -572,7 +583,7 @@
       .rule-controls {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        height: 150px;
         justify-content: space-between;
         margin-right: 20px;
         flex-shrink: 0;
@@ -697,7 +708,7 @@
         display: flex;
         align-items: center;
         margin: 0 20px;
-        height: 150spx;
+        height: 150px;
         opacity: 0.2;
 
         img {
