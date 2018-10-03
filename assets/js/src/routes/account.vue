@@ -148,13 +148,11 @@ const emptyTemplate = {
   name: "Template #",
   ruleList: [{
     actions: [{
-      triggerPhraseList: [],
       messageTemplate: "",
       delayMs: 0,
       medias: []
     }],
     triggerPhraseList: [],
-    messageTemplate: "",
     subscriberCategoryList: [],
   }],
 }
