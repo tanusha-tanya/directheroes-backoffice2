@@ -123,9 +123,12 @@
 
             load.save = false;
 
-            if (account.igChallenge || account.igCheckpoint) {
+            if (account.igChallenge || account.igCheckpoint || account.twoFactor) {
               $store.commit('set', { path: 'newAccount.password', value: password })
-              $store.commit('set', { path: 'newAccount.accountState', value: account.igChallenge ? 'challenge' : 'checkpoint'})
+              $store.commit('set', { 
+                path: 'newAccount.accountState',
+                value: account.twoFactor ? '2factor' : account.igChallenge ? 'challenge' : 'checkpoint'
+              })
               $store.commit('set', { path: 'newAccount.isAdd', value: true })
             }
           });

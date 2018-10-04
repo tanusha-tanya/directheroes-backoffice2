@@ -86,6 +86,22 @@
         <button @click="isAddAccount = false">Ok, I’ll retry in 3 hours</button>
       </div>
     </div>
+    <template slot="title" v-if="is2Factor">
+      <div class="el-dialog__title">
+        Two factor required
+      </div>
+    </template>
+    <div v-if="is2Factor">
+      <div class="dialog-description">
+        Two factor authorization is enabled on your account, you should receive an SMS with verification code in a minute
+      </div>
+      <div class="verify-controls">
+        <input :class="{ error }" @input="error = ''" v-model="codeValue" maxlength="6"/>
+        <button @click="check2FactorCode" :class="{ loading: loading.action && !loading.sending }" :disabled="codeValue.length !== 6 || loading.action || loading.sending">Verify</button>
+        <button @click="resendCode" :class="{ loading: loading.sending }" :disabled="loading.action || loading.sending">Re-send</button>
+      </div>
+      <div class="error-message" v-if="error">Entered code seems to be incorrect, please try again</div>
+    </div>
   </el-dialog>
 </template>
 <script>
@@ -108,6 +124,7 @@
         codeSendedTime: '',
         codeValue: '',
         transport: '', 
+        twoAFresend: false,
       }
     },
 
@@ -145,6 +162,12 @@
         const { accountState } = this.$store.state.newAccount;
 
         return accountState == 'security-wait'
+      },
+
+      is2Factor() {
+        const { accountState } = this.$store.state.newAccount;
+
+        return accountState == '2factor'
       },
 
       isCheckpoint() {
@@ -192,7 +215,10 @@
         loading.action = true;
 
         this.error = ''
-        this.codeValue = ''
+
+        if (!accountToSend.twoFactor) {
+          this.codeValue = ''
+        }
 
         accountToSend.password = this.$store.state.newAccount.password;
 
@@ -205,13 +231,22 @@
 
             loading.action = false;
 
-            if (account.igChallenge || account.igCheckpoint) {
+            if (account.igChallenge || account.igCheckpoint || account.twoFactor) {
               $store.commit('set', { path: 'newAccount.password', value: accountToSend.password })
-              $store.commit('set', { path: 'newAccount.accountState', value: 'security-wait'})
+              $store.commit('set', { 
+                path: 'newAccount.accountState',
+                value: account.twoFactor ? '2factor' : 'security-wait'
+              })
+
+              if (account.twoFactor && !this.twoAFresend) {
+                this.error = true;
+              }
             } else {
               this.isAddAccount = false;
               this.$router.push({ name: 'accountCurrent', params: { accountId: account.id } });
             }
+
+            this.twoAFresend = false;
           });
 
         return request;
@@ -266,6 +301,23 @@
           this.error = 'Server connection error, verify code again after few minutes';
           loading.action = false;
         })
+      },
+
+      check2FactorCode() {
+        const { currentAccount, codeValue, saveAccount } = this;
+
+        currentAccount.twoFactor.verificationCode = codeValue;
+
+        saveAccount();
+      },
+
+      resendCode() {
+        this.twoAFresend = true;
+
+        this.loading.sending = true;
+        this.saveAccount().then(() => {
+          this.loading.sending = false;
+        });
       },
 
       setChallengeAgain() {
@@ -330,8 +382,9 @@
       display: flex;
       justify-content: space-around;
 
-      input {
-        margin-right: 10px;
+      button {
+        margin-left: 10px;
+        white-space: nowrap;
       }
     }
 
