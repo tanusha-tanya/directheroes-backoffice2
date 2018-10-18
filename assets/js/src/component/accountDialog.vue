@@ -264,7 +264,7 @@
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/challenge/start`,
-          params: { accountId: currentAccount.id, transport }
+          params: { accountId: currentAccount.id, transport: this.transport }
         }).then(({ data }) => {
           loading.sending = false
           this.codeSendedTime = (new Date()).toLocaleString('en-US');
