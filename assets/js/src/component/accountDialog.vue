@@ -50,7 +50,7 @@
           <button @click="sendChallendge()" :disabled="loading.action || loading.sending" :class="{ loading: loading.sending }">Re-send</button>
         </div>
         <div class="status-message" v-if="!error && codeSendedTime">Code was sended at {{ codeSendedTime }}</div>
-        <div class="error-message" v-if="error">Entered code seems to be incorrect, please try again</div>
+        <div class="error-message" v-if="error">{{ error }}</div>
       </template>
       <template v-else>
         <div class="challenge-buttons">
