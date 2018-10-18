@@ -31,11 +31,14 @@
                 Instagram Username<br />
                 <input readonly v-model="currentAccount.login" />
               </label>
-              <label>
+              <label v-if="!currentAccount.keepPassword || !currentAccount.isPasswordValid">
                 Account Password<br />
                 <input type="password" v-model="password" :placeholder="currentAccount.isPasswordSet && '••••••••'" :readonly="currentAccount.isLoggedIn"/>
               </label>
-              <button @click="saveAccount" :class="{ loading: load.save }" :disabled="load.save || !password">Save</button>
+              <button v-if="!currentAccount.keepPassword || !currentAccount.isPasswordValid" @click="saveAccount" :class="{ loading: load.save }" :disabled="load.save || !password">Save</button>
+              <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.igChallenge" @click="setAccountState('challenge')">Finish challenge</button>
+              <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.igCheckpoint" @click="setAccountState('checkpoint')">Finish checkpoint</button>
+              <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.twoFactor" @click="setAccountState('2factor')">Finish two factor auth</button>
             </div>
             <el-checkbox v-model="currentAccount.keepPassword">Remember details</el-checkbox>
           </div>
@@ -106,6 +109,13 @@
 
             this.load.remove = false;
           })
+      },
+
+      setAccountState(state) {
+        const { $store } = this;
+        
+        $store.commit('set', { path: 'newAccount.accountState', value: state })
+        $store.commit('set', { path: 'newAccount.isAdd', value: true })
       },
 
       saveAccount() {
