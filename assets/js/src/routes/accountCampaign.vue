@@ -255,10 +255,7 @@
             medias: []
           }],
           messageTemplate: "",
-        }
-
-        if (!template.ruleList.length) {
-          ruleObject.subscriberCategoryList = [] 
+          subscriberCategoryList: []
         }
 
         template.ruleList.push(ruleObject);
