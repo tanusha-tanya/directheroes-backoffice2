@@ -99,6 +99,15 @@ export default {
     height: 100%;
   }
 
+  .message-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 32px;
+    font-weight: bold;
+  }
+
   .error-message {
     color: #ff0048;
     font-size: 12px;

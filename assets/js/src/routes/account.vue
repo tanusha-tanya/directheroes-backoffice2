@@ -137,7 +137,10 @@
       </template>
     </el-dialog>
   </div>
-  <div class="loading-content"v-else>
+  <div class="message-content" v-else-if="noAccounts">
+    Add your Instagram account
+  </div>
+  <div class="loading-content" v-else>
     <div class="pre-loader"></div>
   </div>
 </template>
@@ -173,6 +176,7 @@ export default {
     return {
       newCampaignName: '',
       isCampaignAdd: false,
+      noAccounts: false,
       campaignTypes: [
         // {
         //   type: 'welcomeCampaign',
@@ -229,7 +233,7 @@ export default {
       set() {
         this.$store.state.campaignToRename = null;
       }
-    }
+    },
   },
 
   components: {
@@ -334,6 +338,11 @@ export default {
 
     '$store.state.accounts'() {
       if (this.currentAccount) return;
+
+      if (!this.$store.state.accounts.length) {
+        this.noAccounts = true;
+        return;
+      }
 
       this.selectAccount(this.$route);
     },
