@@ -82,6 +82,7 @@
                 filterable
                 allow-create
                 default-first-option
+                @change="checkTrigger($event, rule)"
                 @keydown.native="selectChange($event, rule)"
               ></el-select>
             </div>
@@ -145,7 +146,7 @@
       </el-collapse-item>
     </el-collapse>
   </div>
-  <div class="loading-content"v-else>
+  <div class="loading-content" v-else>
     <div class="pre-loader"></div>
   </div>
 </template>
@@ -217,6 +218,10 @@
         } else {
           subscriberCategoryList.splice(subscriberCategoryList.indexOf(subscriberCategoryList.find(customer => customer.id === subscriber.id)), 1)
         }
+      },
+
+      checkTrigger(triggerList, rule) {
+        rule.triggerPhraseList = triggerList.filter(trigger => trigger.trim())
       },
 
       isCheckedSubscriber(id) {
