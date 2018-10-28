@@ -18,6 +18,18 @@
         Add account
       </div>
     </div>
+    <el-popover placement="bottom" trigger="hover" v-if="dhAccount">
+      <div class="dh-account-popover">
+        <strong>Plan:</strong> {{dhAccount.subscription.planName}}
+        <a href="/logout">
+          Login out
+        </a>
+      </div>
+      <div class="dh-account account-item" slot="reference">
+        <div class="account-avatar" :style="{'background-image': `${ dhAvatar ? 'url(' + dhAvatar + '), ' : ''}url(${ defaultAvatar })`}"></div>
+        {{dhAccount.username}}
+      </div>
+    </el-popover>
     <account-dialog>
     </account-dialog>
   </header>
@@ -25,6 +37,7 @@
 <script>
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import accountDialog from '../component/accountDialog.vue'
+  import { Popover } from 'element-ui'
 
   export default {
     data() {
@@ -34,7 +47,8 @@
     },
 
     components: {
-      'account-dialog': accountDialog
+      'account-dialog': accountDialog,
+      'el-popover': Popover
     },
 
     computed: {
@@ -44,6 +58,10 @@
 
       dhAccount() {
         return this.$store.state.dhAccount
+      },
+
+      dhAvatar() {
+        return (this.accounts.find(account => account.profilePicUrl) || {}).profilePicUrl;
       },
 
       currentAccount() {
@@ -62,6 +80,24 @@
   }
 </script>
 <style lang="scss">
+.dh-account-popover {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    margin-top: 5px;
+    background-color: #434890;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 8px 26px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
   header {
     display: flex;
     min-height: 50px;
@@ -79,6 +115,7 @@
 
     .account-list {
       display: flex;
+      flex-grow: 1;
       // overflow-x: auto;
       // overflow-y: hidden;
     }
@@ -134,6 +171,13 @@
           content: '';
         }
       }
+    }
+
+    .dh-account {
+      background-color: #31356A;
+      opacity: 1;
+      font-size: 13px;
+      height: 100%;
     }
 
     .add-account {
