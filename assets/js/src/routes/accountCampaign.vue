@@ -9,10 +9,13 @@
         </div>
       </div>
       <div class="content-controls">
+        <div class="info">
+          <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
+        </div>
         <el-dropdown class="content-button" trigger="click" v-if="currentCampaign.typeCode === 'postShareCampaign'">
           <div>Settings</div>
           <el-dropdown-menu slot="dropdown" class="share-settings">
-            <el-radio v-model="shareType" label="all"> All Posts</el-radio>
+            <el-radio v-model="shareType" label="all">All Posts</el-radio>
             <el-radio v-model="shareType" label="special"> Special Post Link</el-radio>
             <input v-model="currentCampaign.postLink" placeholder="Enter post link" :disabled="shareType !== 'special'"/>
           </el-dropdown-menu>
@@ -25,6 +28,7 @@
               :disabled="currentCampaign.isStarted"
               v-model="currentCampaign.startsAt"
               type="datetime"
+              @change="setCurrentTime"
               placeholder="Select date and time">
             </el-date-picker>
             <div class="settings-title">Select subscribers to broadcast.</div>
@@ -151,6 +155,7 @@
   </div>
 </template>
 <script>
+  import moment from 'moment'
   import axios from 'axios'
   import draggable from 'vuedraggable'
   import subscribeCategory from '../component/subscribeCategory.vue'
@@ -204,6 +209,14 @@
 
       onlyReplies() {
         return ['welcomeCampaign', 'broadcastCampaign'].includes(this.currentCampaign.typeCode);
+      },
+
+      timeToStart() {
+        const { startsAt } = this.currentCampaign
+        
+        if (!startsAt || moment().diff(new Date(startsAt)) > 0) return;
+
+        return `${moment().from(new Date(startsAt), true)} to start`
       }
     },
 
@@ -226,6 +239,10 @@
 
       isCheckedSubscriber(id) {
         return (this.currentCampaign.subscriberCategoryList || []).some(subscriber => subscriber.id == id)
+      },
+
+      setCurrentTime(value) {
+        this.currentCampaign.clientTimeNow = moment().format();
       },
 
       setCurrentCampaign(route) {
@@ -426,6 +443,7 @@
 
           if (!oldCampaign || !campaign || campaign.uuid !== oldCampaign.uuid || this.updateState) return;
 
+      
           if (!campaignsToSave.includes(campaign)) {
             campaignsToSave.push(campaign);
           }
@@ -439,12 +457,26 @@
         if (type !== 'all') return;
 
         this.currentCampaign.postLink = '';
-      }
+      },
     }
   }
 </script>
 <style lang="scss">
   .campaign-content {
+
+    .info {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+
+      .start-message {
+        color: #67c23a;
+        
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
+    }
 
     .content-button {
       
