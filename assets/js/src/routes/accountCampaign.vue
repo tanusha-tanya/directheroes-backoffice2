@@ -11,6 +11,8 @@
       <div class="content-controls">
         <div class="info">
           <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
+          <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
+          <div v-if="!notStarted && !timeToStart">Time to start not setted</div>
         </div>
         <el-dropdown class="content-button" trigger="click" v-if="currentCampaign.typeCode === 'postShareCampaign'">
           <div>Settings</div>
@@ -28,6 +30,7 @@
               :disabled="currentCampaign.isStarted"
               v-model="currentCampaign.startsAt"
               type="datetime"
+              :picker-options="pickerOptions"
               @change="setCurrentTime"
               placeholder="Select date and time">
             </el-date-picker>
@@ -183,6 +186,11 @@
         currentCampaign: null,
         updateState: false,
         shareType: 'all',
+        pickerOptions: {
+          disabledDate(time) {
+           return time.getTime() < Date.now();
+          }
+        }
       }
     },
 
@@ -217,6 +225,12 @@
         if (!startsAt || moment().diff(new Date(startsAt)) > 0) return;
 
         return `${moment().from(new Date(startsAt), true)} to start`
+      },
+
+      notStarted() {
+        const { startsAt } = this.currentCampaign
+        
+        return startsAt && moment().diff(new Date(startsAt)) > 0
       }
     },
 
@@ -469,12 +483,16 @@
       align-items: center;
       white-space: nowrap;
 
+      & > div::first-letter {
+        text-transform: uppercase;
+      }
+
       .start-message {
         color: #67c23a;
-        
-        &::first-letter {
-          text-transform: uppercase;
-        }
+      }
+
+      .fail-message {
+        color: #ff0048;
       }
     }
 
