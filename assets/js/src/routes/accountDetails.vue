@@ -31,7 +31,7 @@
                 Instagram Username<br />
                 <input readonly v-model="currentAccount.login" />
               </label>
-              <label v-if="!currentAccount.keepPassword || !currentAccount.isPasswordValid || !currentAccount.isLoggedIn">
+              <label v-if="(!currentAccount.keepPassword || !currentAccount.isPasswordValid || !currentAccount.isLoggedIn) && !(currentAccount.igChallenge || currentAccount.igCheckpoint || currentAccount.twoFactor) ">
                 Account Password<br />
                 <input type="password" v-model="password" :placeholder="currentAccount.isPasswordSet && '••••••••'" :readonly="currentAccount.isLoggedIn"/>
               </label>
