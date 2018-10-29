@@ -73,7 +73,6 @@
             <div class="rule-controls">
               <img class="rule-drag" src="../assets/drag.svg" v-if="template.ruleList.length > 1" />
               <span v-else></span>
-              <img v-if="false" src="../assets/eye.svg"/>
               <img @click="deleteRule(template, rule)" src="../assets/delete.svg" v-if="templateIndex || (!templateIndex && template.ruleList.length > 1)"/>
               <span v-else></span>
             </div>
@@ -122,19 +121,22 @@
                     placeholder="Enter replies"
                     v-model="action.messageTemplate">
                   </el-input>
-                  <div class="upload-button">
-                    <div class="upload-file">
-                      <input type="file" @change="uploadFile($event, action.medias)"/>
-                      <span>Add files</span>
+                  <div class="rule-replies-controls">
+                    <div class="upload-button">
+                      <div class="upload-file">
+                        <input type="file" @change="uploadFile($event, action.medias)"/>
+                        <span>Add files</span>
+                      </div>
+                      <el-popover class="upload-message" v-if="action.medias.length" placement="bottom">
+                        <div class="uploaded-files">
+                          <div class="file-item" v-for="(file, index) in action.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(action.medias, index)"/></div>
+                        </div>
+                        <div slot="reference">
+                          Attached {{action.medias.length}} file(s)
+                        </div>
+                      </el-popover>
                     </div>
-                    <el-popover class="upload-message" v-if="action.medias.length" placement="bottom">
-                      <div class="uploaded-files">
-                        <div class="file-item" v-for="(file, index) in action.medias" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteMedia(action.medias, index)"/></div>
-                      </div>
-                      <div slot="reference">
-                        Attached {{action.medias.length}} file(s)
-                      </div>
-                    </el-popover>
+                    <img @click="repliePreview = action" src="../assets/eye.svg"/>
                   </div>
                 </div>
               </template>
@@ -152,6 +154,7 @@
         </div>
       </el-collapse-item>
     </el-collapse>
+    <preview-dialog :replie="repliePreview" @close="repliePreview = null"></preview-dialog>
   </div>
   <div class="loading-content" v-else>
     <div class="pre-loader"></div>
@@ -161,6 +164,7 @@
   import moment from 'moment'
   import axios from 'axios'
   import draggable from 'vuedraggable'
+  import previewDialog from '../component/previewDialog.vue'
   import subscribeCategory from '../component/subscribeCategory.vue'
   import debounce from 'lodash/debounce'
   import { Switch, Collapse, CollapseItem, Select, Radio, Input, Popover, Dropdown, DropdownMenu, DatePicker, Checkbox } from 'element-ui'
@@ -186,6 +190,7 @@
         currentCampaign: null,
         updateState: false,
         shareType: 'all',
+        repliePreview: null,
         pickerOptions: {
           disabledDate(time) {
            return time.getTime() < Date.now();
@@ -195,8 +200,9 @@
     },
 
     components: {
-      'subscribe-category': subscribeCategory,
+      subscribeCategory,
       draggable,
+      previewDialog,
       'el-input': Input,
       'el-select': Select,
       'el-switch': Switch,
@@ -858,6 +864,19 @@
             margin-right: 8px;
           }
         }
+      }
+    }
+
+    .rule-replies-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & > img {
+        width: 20px;
+        height: 20px;
+        opacity: .3;
+        cursor: pointer;
       }
     }
   }

@@ -20,9 +20,11 @@
     </div>
     <el-popover placement="bottom" trigger="hover" v-if="dhAccount">
       <div class="dh-account-popover">
-        <strong>Plan:</strong> {{dhAccount.subscription.planName}}
+        <strong>Plan:</strong>
+        <template v-if="dhAccount.subscription">{{dhAccount.subscription.planName}}</template>
+        <template>—</template>
         <a href="/logout">
-          Login out
+          Log out
         </a>
       </div>
       <div class="dh-account account-item" slot="reference">
