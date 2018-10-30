@@ -118,15 +118,20 @@ export default new VueX.Store({
             newCampaign.templateList.forEach((template, index) => {
               const campaignTemplate = oldCampaign.templateList[index];
 
-              if (!template.oldId) return;
-
               Object.keys(template).forEach(templateProperty => {
-                if (templateProperty === 'ruleList') return;
+                if (templateProperty === 'ruleList') {
+                  template.ruleList.forEach((rule, ruleIndex) => {
+                    rule.actions.forEach((action, actionIndex) => {
+                      campaignTemplate.ruleList[ruleIndex].actions[actionIndex].previewText = action.previewText;
+                    })
+                  })
+
+                  return;
+                };
 
                 campaignTemplate[templateProperty] = template[templateProperty];
               })
             });
-
             // currentAccount.campaignList.splice(currentAccount.campaignList.indexOf(oldCampaign), 1, newCampaign);
           } else {
             currentAccount.campaignList.push(newCampaign);

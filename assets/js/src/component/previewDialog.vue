@@ -30,13 +30,21 @@ export default {
     }
   },
 
-  mounted() {
-    this.$el
-      .querySelector('.el-dialog__body')
-      .addEventListener('scroll', event => {
-        event.preventDefault();
-        return false;
-      });
+  watch: {
+    replie(value) {
+      if (!value) return;
+
+      this.$nextTick(() => {
+        this.$el
+          .querySelector('.el-dialog__body')
+          .addEventListener('scroll', event => {
+            console.log('Block');
+            
+            event.preventDefault();
+            return false;
+          });
+      })
+    }
   }
 }
 </script>

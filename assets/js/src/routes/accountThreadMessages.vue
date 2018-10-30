@@ -252,6 +252,7 @@
         border-radius: 25px;
         line-height: 22px;
         font-size: 16px;
+        word-break: break-word;
       }
 
       &:not(:last-child) {
