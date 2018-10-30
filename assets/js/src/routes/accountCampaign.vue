@@ -97,14 +97,7 @@
             </div>
             <div class="rule-replies">
               <template v-for="(action, index) in rule.actions">
-                <div class="delay-settings-area" v-if="index">
-                  <div class="delay-settings">
-                    <font-awesome-icon :icon="['far', 'clock']" />
-                    Delay:
-                    <input type="number" v-model="action.delayMs" min="0" step="50"/>
-                    ms
-                  </div>
-                </div>
+                <delay-control v-if="index" :delay="action.delay" @change="action.delay = $event"></delay-control>
                 <div class="rule-replies-body">
                   <div class="rule-replies-title">
                     <span>
@@ -165,6 +158,7 @@
   import axios from 'axios'
   import draggable from 'vuedraggable'
   import previewDialog from '../component/previewDialog.vue'
+  import delayControl from '../component/delayControl.vue'
   import subscribeCategory from '../component/subscribeCategory.vue'
   import debounce from 'lodash/debounce'
   import { Switch, Collapse, CollapseItem, Select, Radio, Input, Popover, Dropdown, DropdownMenu, DatePicker, Checkbox } from 'element-ui'
@@ -202,6 +196,7 @@
     components: {
       subscribeCategory,
       draggable,
+      delayControl,
       previewDialog,
       'el-input': Input,
       'el-select': Select,
@@ -252,6 +247,7 @@
           subscriberCategoryList.splice(subscriberCategoryList.indexOf(subscriberCategoryList.find(customer => customer.id === subscriber.id)), 1)
         }
       },
+
 
       checkTrigger(triggerList, rule) {
         rule.triggerPhraseList = triggerList.filter(trigger => trigger.trim())
@@ -598,14 +594,15 @@
           border-radius: 15px;
           margin: -15px auto 0;
           font-size: 12px;
-          padding: 3px 10px;
+          padding: 2px 10px;
           color: #acacac;
 
           input {
-            border: 0;
+            border: 1px solid #e3e5e8;
+            border-radius: 2px;
             padding: 1px 4px;
             font-size: 12px;
-            width: 70px;
+            width: 37px;
           }
         }
       }
