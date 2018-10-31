@@ -35,7 +35,7 @@
                 Account Password<br />
                 <input type="password" v-model="password" :placeholder="currentAccount.isPasswordSet && '••••••••'" :readonly="currentAccount.isLoggedIn"/>
               </label>
-              <button v-if="!currentAccount.keepPassword || !currentAccount.isPasswordValid" @click="saveAccount" :class="{ loading: load.save }" :disabled="load.save || !password">Save</button>
+              <button v-if="(!currentAccount.keepPassword || !currentAccount.isPasswordValid || !currentAccount.isLoggedIn) && !(currentAccount.igChallenge || currentAccount.igCheckpoint || currentAccount.twoFactor)" @click="saveAccount" :class="{ loading: load.save }" :disabled="load.save || !password">Save</button>
               <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.igChallenge" @click="setAccountState('challenge')">Finish challenge</button>
               <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.igCheckpoint" @click="setAccountState('checkpoint')">Finish checkpoint</button>
               <button v-if="currentAccount.keepPassword && currentAccount.isPasswordValid && currentAccount.twoFactor" @click="setAccountState('2factor')">Finish two factor auth</button>
