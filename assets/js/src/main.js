@@ -17,18 +17,24 @@ Vue.prototype.$message = Message;
 
 import store from './store/store'
 
+
+import './assets/fonts/stylesheet.css'
+
 // import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/popper.css';
 import 'element-ui/lib/theme-chalk/popover.css';
 import 'element-ui/lib/theme-chalk/dropdown.css';
 import 'element-ui/lib/theme-chalk/date-picker.css';
 
+import './element'
+
 /**
  * Import routes components
  */
 import account from './routes/account.vue'
 import accountDetails from './routes/accountDetails.vue'
-import accountCampaign from './routes/accountCampaign.vue'
+// import accountCampaign from './routes/accountCampaign.vue'
+import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
 import accountThreadMessages from './routes/accountThreadMessages.vue'
 
@@ -37,7 +43,7 @@ const router = new VueRouter({
     { path: '/', component: account,
       children: [
         { name: 'home', path: '', component: accountDetails },
-        { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: accountCampaign },
+        { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: campaignBuilder },
         { name: 'accountThread', path: ':accountId/thread/:threadId', component: accountThread },
         { name: 'accountThreadMessages', path: ':accountId/messages/:threadId', component: accountThreadMessages },
         { name: 'accountCurrent', path: ':accountId', component: accountDetails }
