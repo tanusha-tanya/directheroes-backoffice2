@@ -97,7 +97,7 @@
             </div>
             <div class="rule-replies">
               <template v-for="(action, index) in rule.actions">
-                <delay-control v-if="index" :delay="action.delay" @change="action.delay = $event"></delay-control>
+                <delay-control :delay="action.delay" @change="action.delay = $event"></delay-control>
                 <div class="rule-replies-body">
                   <div class="rule-replies-title">
                     <span>
