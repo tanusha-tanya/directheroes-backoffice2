@@ -155,6 +155,7 @@
   </div>
 </template>
 <script>
+  import Vue from 'vue'
   import moment from 'moment'
   import axios from 'axios'
   import draggable from 'vuedraggable'
@@ -235,7 +236,7 @@
         }, 
         set(value) {
           this.currentCampaign.clientTimeNow = moment().utc().format();
-          this.currentCampaign.startsAt = moment(value).utc().format();
+          Vue.set(this.currentCampaign, 'startsAt', moment(value).utc().format())
         }
       },
 
