@@ -2,8 +2,13 @@
     <builder-card class="campaign-card">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="body">
-        <el-select :class="[{'campaign-type': true}, campaign.typeCode]" v-model="campaign.typeCode">
+        <el-select 
+          :class="[{'campaign-type': true}, campaign.typeCode]" 
+          v-model="campaign.typeCode"
+          popper-class="campaign-type-dropdown"
+        >
           <el-option class="story" label="Keywords" value="story">Keywords</el-option>
+          <el-option class="story-mention" label="Story Mention" value="story-mention">Story Mention</el-option>
           <el-option class="post-share" label="Link" value="post-share">Link</el-option>
         </el-select>
         <template v-if="campaign.typeCode == 'story'">
@@ -44,6 +49,7 @@ export default {
     .campaign-type {
       width: 100%;
       margin-bottom: 7px;
+      margin-top: 10px;
 
       .el-input--suffix {
         &:before {
@@ -80,6 +86,49 @@ export default {
 
     .keywords {
       width: 100%;
+    }
+  }
+
+  .campaign-type-dropdown {
+    border-color: #C34794;
+    margin-top: 2px;
+
+    .popper__arrow {
+      left: auto !important;
+      right: 7px;
+      border-bottom-color: #C34794 !important;
+    }
+
+    .el-select-dropdown__list {
+      padding: 0;
+    }
+
+    .el-input__suffix-inner {
+      display: none
+    }
+
+    .el-select-dropdown__item {
+      color: #A9A9A9;
+
+      &:first-child {
+        border-radius: 4px 4px 0 0;
+      }
+
+       &:last-child {
+        border-radius: 0 0 4px 4px;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #DDDDDD;
+      }
+
+      &.hover:not(.selected) {
+        background-color: #F6F6F6;
+      }
+
+      &.selected {
+        background-color: #F1F1F1;
+      }
     }
   }
 </style>

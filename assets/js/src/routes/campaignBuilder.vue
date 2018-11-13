@@ -12,7 +12,7 @@ export default {
       campaign: {
         name: 'Campaign Name',
         typeCode: 'story',
-        keywords: [],
+        keywords: ['Hero', 'Yes'],
         link:''
       }
     }
