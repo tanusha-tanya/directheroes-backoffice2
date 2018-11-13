@@ -12,7 +12,7 @@
           </div>
           <div class="body">
             <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-            <div class="text">{{message.text}}</div>
+            <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
           </div>
         </div>
       </div>
