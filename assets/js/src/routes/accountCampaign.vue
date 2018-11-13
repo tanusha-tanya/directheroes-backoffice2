@@ -34,15 +34,17 @@
               placeholder="Select date and time">
             </el-date-picker>
             <div class="settings-title">Select subscribers to broadcast.</div>
-            <el-checkbox
-              :disabled="currentCampaign.isStarted"
-              v-for="subscriber in currentAccount.subscriberCategoryList" 
-              :key="subscriber.id"
-              :checked="isCheckedSubscriber(subscriber.id)"
-              @change="checkSubscriber(subscriber, $event)"
-              >
-              {{ subscriber.name }}
-            </el-checkbox>
+            <div class="category-list">
+              <el-checkbox
+                :disabled="currentCampaign.isStarted"
+                v-for="subscriber in currentAccount.subscriberCategoryList" 
+                :key="subscriber.id"
+                :checked="isCheckedSubscriber(subscriber.id)"
+                @change="checkSubscriber(subscriber, $event)"
+                >
+                {{ subscriber.name }}
+              </el-checkbox>
+            </div>
           </div>
           <div slot="reference">Settings</div>
         </el-popover>
@@ -891,6 +893,11 @@
 
     .el-date-editor {
       margin-bottom: 16px;
+    }
+
+    .category-list {
+      max-height: 30vh;
+      overflow: auto;
     }
   }
 
