@@ -59,6 +59,7 @@ export default {
   position: absolute;
   user-select: none;
   background-color: #000;
+  z-index: 1;
 }
 
 .builder-card-header {

@@ -47,7 +47,7 @@ export default {
     }
 
     .el-tag__close {
-      background-color: transparent;
+      background-color: transparent !important;
 
       &:hover {
         background-color: transparent !important;

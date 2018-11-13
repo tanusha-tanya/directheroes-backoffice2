@@ -27,6 +27,7 @@ import 'element-ui/lib/theme-chalk/dropdown.css';
 import 'element-ui/lib/theme-chalk/date-picker.css';
 
 import './element'
+import './styles/main.scss'
 
 /**
  * Import routes components

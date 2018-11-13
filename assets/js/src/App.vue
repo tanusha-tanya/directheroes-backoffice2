@@ -18,47 +18,6 @@ export default {
 </script>
 
 <style lang="scss">
-  @keyframes rotation {
-    0% { transform:rotate(0deg); }
-    100% { transform:rotate(360deg); }
-  }
-
-  @keyframes preloader-wave {
-    0% {
-        opacity: 1;
-        transform: scale(0, 0);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1, 1);
-    }
-  }
-
-  #app {
-    height: 100%;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    height: 100%;
-  }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background-color: #F5F5F5;
-    height: 100%;
-    font-size: 12px;
-    line-height: 16px;
-    font-family: sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #2c3e50;
-  }
-
   .container {
     min-height: calc(100% - 50px);
     display: flex;
@@ -175,21 +134,6 @@ export default {
     color: #858099;
     font-size: 12px;
     line-height: 16px;
-  }
-
-  input {
-    outline: none;
-    border: 1px solid #858099;
-    border-radius: 3px;
-    font-size: 14px;
-    line-height: 20px;
-    padding: 8px;
-    color: #0C0033;
-    width: 100%;
-
-    &.error {
-      border-color: #ff0048;
-    }
   }
 
   .content {

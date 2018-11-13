@@ -1,10 +1,12 @@
 <template>
   <div class="campaign-builder">
     <campaign-card :campaign="campaign"></campaign-card>
+    <step-card :step="step" v-for="step in campaign.steps" :key="step.id"></step-card>
   </div>    
 </template>
 <script>
 import campaignCard from '../component/campaignCard.vue'
+import stepCard from '../component/stepCard.vue'
 
 export default {
   data() {
@@ -13,13 +15,24 @@ export default {
         name: 'Campaign Name',
         typeCode: 'story',
         keywords: ['Hero', 'Yes'],
-        link:''
+        link:'',
+        steps:[
+          {
+            name: 'Step One',
+            id: 1,
+            content: [],
+            position: {
+              x: 500, y: 200
+            }
+          }
+        ]
       }
     }
   },
 
   components: {
-    campaignCard
+    campaignCard,
+    stepCard
   }    
 }
 </script>
