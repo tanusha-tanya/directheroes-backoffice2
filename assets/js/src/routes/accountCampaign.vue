@@ -28,10 +28,9 @@
             <div class="settings-title">Select date, time to broadcast</div>
             <el-date-picker
               :disabled="currentCampaign.isStarted"
-              v-model="currentCampaign.startsAt"
+              v-model="startsAt"
               type="datetime"
               :picker-options="pickerOptions"
-              @change="setCurrentTime"
               placeholder="Select date and time">
             </el-date-picker>
             <div class="settings-title">Select subscribers to broadcast.</div>
@@ -228,6 +227,16 @@
         return `${moment().from(new Date(startsAt), true)} to start`
       },
 
+      startsAt: {
+        get() {
+          return this.currentCampaign.startsAt;
+        }, 
+        set(value) {
+          this.currentCampaign.clientTimeNow = moment().format();
+          this.currentCampaign.startsAt = moment(value).format();
+        }
+      },
+
       notStarted() {
         const { startsAt } = this.currentCampaign
         
@@ -255,10 +264,6 @@
 
       isCheckedSubscriber(id) {
         return (this.currentCampaign.subscriberCategoryList || []).some(subscriber => subscriber.id == id)
-      },
-
-      setCurrentTime(value) {
-        this.currentCampaign.clientTimeNow = moment().format();
       },
 
       setCurrentCampaign(route) {
