@@ -232,8 +232,8 @@
           return this.currentCampaign.startsAt;
         }, 
         set(value) {
-          this.currentCampaign.clientTimeNow = moment().format();
-          this.currentCampaign.startsAt = moment(value).format();
+          this.currentCampaign.clientTimeNow = moment().utc().format();
+          this.currentCampaign.startsAt = moment(value).utc().format();
         }
       },
 

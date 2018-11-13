@@ -115,8 +115,6 @@ export default new VueX.Store({
           const oldCampaign = currentAccount.campaignList.find(campaign => campaign.uuid == newCampaign.uuid)
 
           if (oldCampaign) {
-            oldCampaign.startsAt = newCampaign.startsAt;
-            
             newCampaign.templateList.forEach((template, index) => {
               const campaignTemplate = oldCampaign.templateList[index];
 
