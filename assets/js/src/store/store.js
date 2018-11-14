@@ -82,15 +82,17 @@ export default new VueX.Store({
       return request;
     },
 
-    getCampaignTemplates({ state, commit }, campaign) {
+    getCampaignTemplates({ state, commit }, params) {
       const { campaignList } = state.currentAccount;
       const request = axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/get`,
-        params: { id: campaign.id }
+        params: { id: params.campaign.id }
       })
 
       request.then(({ data }) => {
-        campaignList.splice(campaignList.indexOf(campaign), 1, data.campaign);
+        if (params.noUpdates) return 
+
+        campaignList.splice(campaignList.indexOf(params.campaign), 1, data.campaign);
       })
 
       return request;
