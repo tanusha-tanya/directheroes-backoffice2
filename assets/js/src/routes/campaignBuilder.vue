@@ -2,11 +2,13 @@
   <div class="campaign-builder">
     <campaign-card :campaign="campaign"></campaign-card>
     <step-card :step="step" v-for="step in campaign.steps" :key="step.id"></step-card>
+    <builder-elements></builder-elements>
   </div>    
 </template>
 <script>
 import campaignCard from '../component/campaignCard.vue'
 import stepCard from '../component/stepCard.vue'
+import builderElements from '../component/builderElements.vue'
 
 export default {
   data() {
@@ -23,7 +25,10 @@ export default {
             content: [],
             position: {
               x: 500, y: 200
-            }
+            },
+            elements:[
+
+            ]
           }
         ]
       }
@@ -31,6 +36,7 @@ export default {
   },
 
   components: {
+    builderElements,
     campaignCard,
     stepCard
   }    

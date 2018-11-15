@@ -42,7 +42,6 @@ export default {
 </script>
 <style lang="scss">
   div.campaign-card {
-    border-color: #2A4294;
     background-color: #2A4294;
     left: 100px;
     top: calc(50% - 100px);
@@ -102,6 +101,11 @@ export default {
         line-height: normal;
         border-radius: 18px;
       }
+    }
+
+    .builder-card-body {
+      min-height: 140px;
+      border-color: #2A4294;
     }
 
     input {

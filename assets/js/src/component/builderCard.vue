@@ -54,7 +54,6 @@ export default {
 <style lang="scss">
 .builder-card {
   border-radius: 10px;
-  border: 2px solid;
   width: 328px;
   position: absolute;
   user-select: none;
@@ -64,7 +63,7 @@ export default {
 
 .builder-card-header {
   font-size: 15px;
-  padding: 7px 10px 10px;
+  padding: 10px;
   color: #fff;
   display: flex;
   align-items: center;
@@ -108,7 +107,8 @@ export default {
   padding: 10px;
   background-color: #fff;
   border-radius: 0 0 10px 10px;
-  min-height: 140px;
+  border: 2px solid;
+  border-top-width: 0;
 }
 </style>
 
