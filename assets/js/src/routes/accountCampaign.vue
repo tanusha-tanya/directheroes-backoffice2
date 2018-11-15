@@ -12,7 +12,7 @@
         <div class="info">
           <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
           <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
-          <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted">Prepare to start</div>
+          <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startsAt">Prepare to start</div>
           <div class="start-message" v-if="isStarted">Broadcast was started</div>
           <div v-if="!startsAt">Time to start not setted</div>
         </div>
@@ -150,7 +150,7 @@
         </div>
       </el-collapse-item>
     </el-collapse>
-    <preview-dialog :replie="repliePreview" @close="repliePreview = null"></preview-dialog>
+    <preview-dialog :reply="repliePreview" @close="repliePreview = null"></preview-dialog>
   </div>
   <div class="loading-content" v-else>
     <div class="pre-loader"></div>
@@ -190,7 +190,7 @@
         shareType: 'all',
         repliePreview: null,
         isStarted: false,
-        startTime: null,
+        notStarted: null,
         timeToStart: null,
         broadcastTimeout: null,
         pickerOptions: {
@@ -327,8 +327,6 @@
         this.timeToStart = (!startsAt || moment().diff(new Date(startsAt)) > 0) ? null : `${moment().from(new Date(startsAt), true)} to start`
         this.notStarted = !isStarted && startsAt && moment().diff(new Date(startsAt), 'minutes') > 1 
         
-                console.log(this.timeToStart, this.notStarted);
-
         if ((diff > 60 * 60 * 1000) || isStarted || this.notStarted) return;
 
         if (diff < 60 * 1000 && diff > 0) {
