@@ -12,7 +12,9 @@
         <div class="info">
           <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
           <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
-          <div v-if="!notStarted && !timeToStart">Time to start not setted</div>
+          <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startsAt">Prepare to start</div>
+          <div class="start-message" v-if="isStarted">Broadcast was started</div>
+          <div v-if="!startsAt">Time to start not setted</div>
         </div>
         <el-dropdown class="content-button" trigger="click" v-if="currentCampaign.typeCode === 'postShareCampaign'">
           <div>Settings</div>
@@ -28,22 +30,23 @@
             <div class="settings-title">Select date, time to broadcast</div>
             <el-date-picker
               :disabled="currentCampaign.isStarted"
-              v-model="currentCampaign.startsAt"
+              v-model="startsAt"
               type="datetime"
               :picker-options="pickerOptions"
-              @change="setCurrentTime"
               placeholder="Select date and time">
             </el-date-picker>
             <div class="settings-title">Select subscribers to broadcast.</div>
-            <el-checkbox
-              :disabled="currentCampaign.isStarted"
-              v-for="subscriber in currentAccount.subscriberCategoryList" 
-              :key="subscriber.id"
-              :checked="isCheckedSubscriber(subscriber.id)"
-              @change="checkSubscriber(subscriber, $event)"
-              >
-              {{ subscriber.name }}
-            </el-checkbox>
+            <div class="category-list">
+              <el-checkbox
+                :disabled="currentCampaign.isStarted"
+                v-for="subscriber in currentAccount.subscriberCategoryList" 
+                :key="subscriber.id"
+                :checked="isCheckedSubscriber(subscriber.id)"
+                @change="checkSubscriber(subscriber, $event)"
+                >
+                {{ subscriber.name }}
+              </el-checkbox>
+            </div>
           </div>
           <div slot="reference">Settings</div>
         </el-popover>
@@ -97,7 +100,7 @@
             </div>
             <div class="rule-replies">
               <template v-for="(action, index) in rule.actions">
-                <delay-control v-if="index" :delay="action.delay" @change="action.delay = $event"></delay-control>
+                <delay-control :delay="action.delay" @change="action.delay = $event"></delay-control>
                 <div class="rule-replies-body">
                   <div class="rule-replies-title">
                     <span>
@@ -147,13 +150,14 @@
         </div>
       </el-collapse-item>
     </el-collapse>
-    <preview-dialog :replie="repliePreview" @close="repliePreview = null"></preview-dialog>
+    <preview-dialog :reply="repliePreview" @close="repliePreview = null"></preview-dialog>
   </div>
   <div class="loading-content" v-else>
     <div class="pre-loader"></div>
   </div>
 </template>
 <script>
+  import Vue from 'vue'
   import moment from 'moment'
   import axios from 'axios'
   import draggable from 'vuedraggable'
@@ -185,6 +189,10 @@
         updateState: false,
         shareType: 'all',
         repliePreview: null,
+        isStarted: false,
+        notStarted: null,
+        timeToStart: null,
+        broadcastTimeout: null,
         pickerOptions: {
           disabledDate(time) {
            return time.getTime() < Date.now();
@@ -220,19 +228,17 @@
         return ['welcomeCampaign', 'broadcastCampaign'].includes(this.currentCampaign.typeCode);
       },
 
-      timeToStart() {
-        const { startsAt } = this.currentCampaign
-        
-        if (!startsAt || moment().diff(new Date(startsAt)) > 0) return;
+      startsAt: {
+        get() {
+          return this.currentCampaign.startsAt;
+        }, 
+        set(value) {
+          this.updateBroadcastStatus();
 
-        return `${moment().from(new Date(startsAt), true)} to start`
+          this.currentCampaign.clientTimeNow = moment().utc().format();
+          Vue.set(this.currentCampaign, 'startsAt', moment(value).utc().format())
+        }
       },
-
-      notStarted() {
-        const { startsAt } = this.currentCampaign
-        
-        return startsAt && moment().diff(new Date(startsAt)) > 0
-      }
     },
 
     methods: {
@@ -248,17 +254,12 @@
         }
       },
 
-
       checkTrigger(triggerList, rule) {
         rule.triggerPhraseList = triggerList.filter(trigger => trigger.trim())
       },
 
       isCheckedSubscriber(id) {
         return (this.currentCampaign.subscriberCategoryList || []).some(subscriber => subscriber.id == id)
-      },
-
-      setCurrentTime(value) {
-        this.currentCampaign.clientTimeNow = moment().format();
       },
 
       setCurrentCampaign(route) {
@@ -272,7 +273,7 @@
         if (currentCampaign.templateList) {
           this.currentCampaign = currentCampaign;
         } else {
-          this.$store.dispatch('getCampaignTemplates', currentCampaign)
+          this.$store.dispatch('getCampaignTemplates', { campaign:currentCampaign })
             .then(({ data }) => {
               this.currentCampaign = data.campaign;
             });
@@ -314,6 +315,37 @@
           medias: [],
           messageTemplate: ""
         })
+      },
+
+      updateBroadcastStatus() {
+        const { isStarted, startsAt, currentCampaign} = this;
+        const diff = moment(new Date(startsAt)).diff();
+        let timeout = 60 * 1000;
+
+        clearTimeout(this.broadcastTimeout)
+
+        this.timeToStart = (!startsAt || moment().diff(new Date(startsAt)) > 0) ? null : `${moment().from(new Date(startsAt), true)} to start`
+        this.notStarted = !isStarted && startsAt && moment().diff(new Date(startsAt), 'minutes') > 1 
+        
+        if ((diff > 60 * 60 * 1000) || isStarted || this.notStarted) return;
+
+        if (diff < 60 * 1000 && diff > 0) {
+          timeout = 1000;
+        } else if (!this.timeToStart) {
+           this.$store.dispatch('getCampaignTemplates', { campaign:currentCampaign, noUpdates: true })
+            .then(({ data }) => {
+              this.isStarted = data.campaign.isStarted;
+
+              this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 10 * 1000)
+            })
+            .catch(() => {
+              this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 30 * 1000)
+            });
+
+          return;
+        }
+        
+        this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
       },
 
       deleteSequence(rule, actionIndex) {
@@ -444,6 +476,7 @@
       },
     },
 
+
     watch: {
       '$store.state.accounts'() {
         if (this.currentCampaign) return;
@@ -455,6 +488,11 @@
         handler: function (campaign, oldCampaign) {
           if (campaign && campaign.typeCode === 'postShareCampaign') {
             this.shareType = campaign.postLink ? 'special' : 'all'
+          }
+
+          if (campaign && campaign.typeCode === 'broadcastCampaign') {
+            this.isStarted = campaign.isStarted;
+            this.updateBroadcastStatus();
           }
 
           if (!oldCampaign || !campaign || campaign.uuid !== oldCampaign.uuid || this.updateState) return;
@@ -886,6 +924,11 @@
 
     .el-date-editor {
       margin-bottom: 16px;
+    }
+
+    .category-list {
+      max-height: 30vh;
+      overflow: auto;
     }
   }
 

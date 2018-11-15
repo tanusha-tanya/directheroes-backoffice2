@@ -1,11 +1,11 @@
 <template>
   <el-dialog 
-  title="Replie preview"
+  title="Reply preview"
   :visible.sync="showPreview"
   width="450px"
   custom-class="preview-replie-dialog">
     <div class="message-container">
-      <div class="replie-message" v-if="replie" v-html="replie.previewText.replace(/\n/ig, '<br />')"></div>
+      <div class="replie-message" v-if="reply" v-html="reply.previewText.replace(/\n/ig, '<br />')"></div>
     </div>  
   </el-dialog>
 </template>
@@ -17,12 +17,12 @@ export default {
     'el-dialog': Dialog,
   },
 
-  props: ['replie'],
+  props: ['reply'],
 
   computed: {
     showPreview: {
       get() {
-        return Boolean(this.replie)
+        return Boolean(this.reply)
       },
       set(value) {
         this.$emit('close');
@@ -38,8 +38,6 @@ export default {
         this.$el
           .querySelector('.el-dialog__body')
           .addEventListener('scroll', event => {
-            console.log('Block');
-            
             event.preventDefault();
             return false;
           });
@@ -114,6 +112,7 @@ export default {
     background-color: #EFEFEF;
     max-width: 70%;
     margin-top: 70px;
+    word-wrap: break-word;
   }
 }
 </style>
