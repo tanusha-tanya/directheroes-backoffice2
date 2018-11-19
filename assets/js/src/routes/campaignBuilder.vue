@@ -44,8 +44,9 @@ export default {
 </script>
 <style lang="scss">
 .campaign-builder {
-  position: relative;
+  position: absolute;
   overflow: auto;
   height: 100%;
+  width:100%;
 }
 </style>
