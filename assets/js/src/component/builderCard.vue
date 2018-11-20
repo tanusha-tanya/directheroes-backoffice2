@@ -1,12 +1,12 @@
 <template>
-  <div class="builder-card">
+  <div class="builder-card" :style="{ top: `${ settings.position.y }px`, left: `${ settings.position.x }px` }">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
       </span>
-      <div :class="{ 'collapse-toggler':true, collapsed: isCollapsed }" @click="isCollapsed = !isCollapsed"></div>
+      <div :class="{ 'collapse-toggler':true, collapsed: settings.collapsed }" @click="settings.collapsed  = !settings.collapsed "></div>
     </div>
-    <div class="builder-card-body" v-if="!isCollapsed">
+    <div class="builder-card-body" v-if="!settings.collapsed">
       <slot name="body"></slot>
     </div>
   </div>
@@ -15,19 +15,14 @@
 let startX, startY, initialMouseX, initialMouseY;
 
 export default {
-  data() {
-    return {
-      isCollapsed: false
-    }
-  },
-
   methods: {
     mouseDown(event) {
+      const { position } = this.settings;
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX);
-        const top = startY + (event.clientY - initialMouseY);
-        this.$el.style.top = `${ top < 0 ? 0 : top }px`;
-        this.$el.style.left = `${ left < 0 ? 0 : left }px`;
+        const top = startY+ (event.clientY - initialMouseY);
+        position.y = top < 0 ? 0 : top;
+        position.x = left < 0 ? 0 : left;
         return false;
       }
 
@@ -46,9 +41,7 @@ export default {
     },
   },
 
-  mounted() {
-
-  }
+  props: ['settings']
 };
 </script>
 <style lang="scss">

@@ -1,21 +1,21 @@
 <template>
-    <builder-card class="campaign-card">
+    <builder-card class="campaign-card" :settings="campaignStep.displaySettings">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="body">
         <el-select 
-          :class="[{'campaign-type': true}, campaign.typeCode]" 
-          v-model="campaign.typeCode"
+          :class="[{'campaign-type': true}, campaignData.messageType]" 
+          v-model="campaignData.messageType"
           popper-class="campaign-type-dropdown"
         >
           <el-option class="story" label="Keywords" value="story">Keywords</el-option>
           <!-- <el-option class="story-mention" label="Story Mention" value="story-mention">Story Mention</el-option> -->
           <el-option class="post-share" label="Link" value="post-share">Link</el-option>
         </el-select>
-        <template v-if="campaign.typeCode == 'story'">
-          <keywords v-model="campaign.keywords"></keywords>
+        <template v-if="campaignData.messageType == 'story'">
+          <keywords v-model="campaignData.value.keywords"></keywords>
         </template>
-        <template v-if="campaign.typeCode == 'post-share'">
-         <input placeholder="Please enter URL" v-model="campaign.link">
+        <template v-if="campaignData.messageType == 'post-share'">
+         <input placeholder="Please enter URL" v-model="campaignData.value.link">
          <div class="notice">Leave empty to target any url.</div>
         </template>
       </template>
@@ -31,6 +31,15 @@ export default {
   //   //   campaignTypes: ['story', 'post-share']
   //   // }
   // },
+  computed: {
+    campaignStep() {
+      return this.campaign.steps.find(step => step.type = 'campaignEntry')
+    },
+
+    campaignData() {
+      return this.campaignStep.elements.find(element => element.type === 'messageCondition')
+    },
+  },
 
   components: {
     builderCard,
@@ -43,8 +52,6 @@ export default {
 <style lang="scss">
   div.campaign-card {
     background-color: #2A4294;
-    left: 100px;
-    top: calc(50% - 100px);
 
     .campaign-type {
       width: 100%;

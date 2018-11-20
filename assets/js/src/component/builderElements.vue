@@ -2,7 +2,7 @@
   <div class="builder-elements">
     <component 
       :is="Drag" 
-      :transfer-data="element"
+      :transfer-data="element.template"
       class="builder-element" 
       v-for="element in elements" 
       :key="element.name"
@@ -26,13 +26,44 @@ export default {
   data() {
     return {
       elements: [
-        { name: 'Image', svg: image },
-        { name: 'Text', svg: chatbubble },
-        { name: 'Triggers', svg: flash },
-        { name: 'Delay', svg: stopwatch },
-        { name: 'Video', svg: socialYoutube },
-        { name: 'List', svg: navicon },
-        { name: 'User Input', svg: infinite },
+        { 
+          name: 'Image', 
+          svg: image,
+          template: {
+            class: 'action',
+            type: 'sendImageAction',
+            value: null
+          }
+        },
+        { 
+          name: 'Text', 
+          svg: chatbubble, 
+          template: {
+            class: 'action',
+            type: 'sendTextAction',
+            message: {
+              messageText: ''
+            }
+          }
+        },
+        // { name: 'Triggers', svg: flash },
+        { 
+          name: 'Delay', 
+          svg: stopwatch,
+          template: {
+            class: 'condition',
+            type: 'basicDelay',
+            value: {
+              seconds: 0
+            }
+          }  
+        },
+        // { 
+        //   name: 'Video', 
+        //   svg: socialYoutube,
+        // },
+        // { name: 'List', svg: navicon },
+        // { name: 'User Input', svg: infinite },
       ],
       Drag
     }

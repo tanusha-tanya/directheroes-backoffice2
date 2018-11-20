@@ -1,9 +1,9 @@
 <template>
-    <builder-card class="step-card" :style="{top: `${ step.position.y }px`, left: `${ step.position.x }px`}">
+    <builder-card class="step-card" :settings="step.displaySettings">
       <template slot="header">{{ step.name }}</template>
       <template slot="body">
         <div class="step-element" v-for="element in step.elements">
-          {{element.name}}
+          {{elementsNames[element.type]}}
           <div>+</div>
         </div>
         <component 
@@ -23,6 +23,11 @@ import { Drop } from 'vue-drag-drop';
 export default {
   data() {
     return {
+      elementsNames: {
+        sendTextAction: 'Text',
+        sendImageAction: 'Image',
+        basicDelay: 'Delay'
+      },
       dragged: false,
       Drop
     }
