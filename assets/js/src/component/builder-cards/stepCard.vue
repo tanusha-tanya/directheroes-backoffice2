@@ -2,10 +2,15 @@
     <builder-card class="step-card" :settings="step.displaySettings">
       <template slot="header">{{ step.name }}</template>
       <template slot="body">
-        <div class="step-element" v-for="element in step.elements">
-          {{elementsNames[element.type]}}
-          <div>+</div>
-        </div>
+        <div class="element-container" v-for="element in step.elements">
+          <div :class="{'element-title': true, 'is-collapsed': element.displaySettings.collapsed}" @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
+            {{elementsNames[element.type]}}
+            <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
+          </div>
+          <div class="element-body" v-if="!element.displaySettings.collapsed">
+            <component :is="elementComponents[element.type]" :element="element"></component>
+          </div>
+        </div> 
         <component 
           :is="Drop" 
           :class="{'add-element': true, 'in-drag':  dragged}"
@@ -19,6 +24,8 @@
 <script>
 import builderCard from "./builderCard.vue";
 import { Drop } from 'vue-drag-drop';
+import sendImageAction from '../elements/sendImageAction.vue'
+import sendTextAction from '../elements/sendTextAction.vue'
 
 export default {
   data() {
@@ -27,6 +34,10 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay'
+      },
+      elementComponents: {
+        sendImageAction,
+        sendTextAction
       },
       dragged: false,
       Drop
@@ -42,7 +53,7 @@ export default {
   methods: {
     dropHandler(data) {
       this.dragged = false;
-      this.step.elements.push(data);
+      this.step.elements.push({ ...data, displaySettings: { collapsed: false }});
     }
   }
 }
@@ -76,19 +87,33 @@ export default {
       }
     }
 
-    .step-element {
-      background: linear-gradient(180deg, #FAFAFA 0%, #F2F2F2 98.27%);
+    .element-container {
       border: 1px solid #DDDDDD;
-      box-sizing: border-box;
       border-radius: 4px;
-      font-family: 'AbeatbyKai';
-      font-size: 16px;
-      padding: 10px 21px;
       margin-bottom: 6px;
-      color: #A9A9A9;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+
+      .element-title {
+        background: linear-gradient(180deg, #FAFAFA 0%, #F2F2F2 98.27%);
+        font-family: 'AbeatbyKai';
+        font-size: 16px;
+        padding: 10px 11px 10px 21px;
+        color: #A9A9A9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #DDDDDD;
+        border-radius: 4px 4px 0 0;
+        cursor: pointer;
+
+        &.is-collapsed {
+          border-bottom: none;
+          border-radius: 4px;
+        }
+      }
+
+      .element-body {
+        min-height: 70px;
+      }
     }
   }
 </style>

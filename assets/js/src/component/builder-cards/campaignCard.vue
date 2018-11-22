@@ -23,7 +23,7 @@
 </template>
 <script>
 import builderCard from "./builderCard.vue";
-import keywords from "./keywords.vue";
+import keywords from "../keywords.vue";
 
 export default {
   // data() {
@@ -63,19 +63,19 @@ export default {
       }
 
       &.story .el-input--suffix:before {
-        background-image: url(../assets/svg/bubble-w.svg);
+        background-image: url(../../assets/svg/bubble-w.svg);
         height: 11px;
         top: 10px;
       }
 
       &.story-mention .el-input--suffix:before {
-        background-image: url(../assets/svg/timer-w.svg);
+        background-image: url(../../assets/svg/timer-w.svg);
         height: 13px;
         top: 8px;
       }
 
       &.post-share .el-input--suffix:before {
-        background-image: url(../assets/svg/link-w.svg);
+        background-image: url(../../assets/svg/link-w.svg);
         height: 7px;
         top: 12px;
       }
@@ -90,7 +90,7 @@ export default {
 
         &:after {
           content: '';
-          background-image: url(../assets/svg/arrow.svg);
+          background-image: url(../../assets/svg/arrow.svg);
           width: 11px;
           height: 6px;
           position: absolute;
@@ -162,19 +162,19 @@ export default {
       }
 
       &.story:before {
-        background-image: url(../assets/svg/bubble.svg);
+        background-image: url(../../assets/svg/bubble.svg);
         height: 11px;
         top: 12px;
       }
 
       &.story-mention:before {
-        background-image: url(../assets/svg/timer.svg);
+        background-image: url(../../assets/svg/timer.svg);
         height: 13px;
         top: 10px;
       }
 
       &.post-share:before {
-        background-image: url(../assets/svg/link.svg);
+        background-image: url(../../assets/svg/link.svg);
         height: 7px;
         top: 14px;
       }

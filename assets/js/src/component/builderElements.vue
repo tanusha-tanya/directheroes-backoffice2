@@ -41,8 +41,8 @@ export default {
           template: {
             class: 'action',
             type: 'sendTextAction',
-            message: {
-              messageText: ''
+            value: {
+              text: 'Heyyyy!!\nThanks for reaching out to us! We are really excited about Direct Heroes and what it is going to be able to do for you and your businesses.'
             }
           }
         },

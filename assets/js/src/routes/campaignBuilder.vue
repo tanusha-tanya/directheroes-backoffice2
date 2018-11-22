@@ -1,13 +1,15 @@
 <template>
   <div class="campaign-builder">
-    <campaign-card :campaign="campaign"></campaign-card>
-    <step-card :step="step" v-for="step in steps" :key="step.uuid"></step-card>
+    <campaign-card :campaign="campaign" :ref="campaignStep.uuid"></campaign-card>
+    <step-card :step="step" v-for="step in steps" :key="step.uuid" :ref="step.uuid"></step-card>
     <builder-elements></builder-elements>
+    <arrows ref="arrows" :refs="$refs" :arrows="arrows"></arrows>
   </div>    
 </template>
 <script>
-import campaignCard from '../component/campaignCard.vue'
-import stepCard from '../component/stepCard.vue'
+import campaignCard from '../component/builder-cards/campaignCard.vue'
+import stepCard from '../component/builder-cards/stepCard.vue'
+import arrows from '../component/arrows.vue'
 import builderElements from '../component/builderElements.vue'
 
 export default {
@@ -19,6 +21,7 @@ export default {
         steps: [
           {
             type: 'campaignEntry',
+            uuid: '2ee5588a-f51e-4f7b-bee9-155385963b07',
             elements: [
               {
                 class: 'condition',
@@ -51,8 +54,8 @@ export default {
             displaySettings: {
               collapsed: false,
               position: {
-                  x: 400,
-                  y: 200
+                  x: 200,
+                  y: 600
               },
             }
               // elements: [
@@ -123,17 +126,46 @@ export default {
     }
   },
 
-  computed:{
-    steps() {
-      return this.campaign.steps.filter(step => step.type == 'regular')
-    }
-  },
-
   components: {
     builderElements,
     campaignCard,
-    stepCard
-  }    
+    stepCard,
+    arrows
+  },  
+
+  computed:{
+    steps() {
+      return this.campaign.steps.filter(step => step.type == 'regular')
+    },
+
+    campaignStep() {
+      return this.campaign.steps.find(step => step.type = 'campaignEntry')
+    },
+
+    arrows() {
+      const { campaign } = this
+      const arrows = [];
+
+      campaign.steps.forEach(step => step.elements.find(element => {
+        if (element.type != 'goToStepAction') return;
+
+        arrows.push({ parent: step.uuid, child: element.stepId});
+
+        return true;
+      }))
+      
+      return arrows;
+    }
+  },
+
+  watch:{
+    campaign: {
+      handler: function (campaign, oldCampaign) {
+        this.$refs.arrows.recalcPathes();
+      },
+      deep: true
+    },
+  }
 }
 </script>
 <style lang="scss">
