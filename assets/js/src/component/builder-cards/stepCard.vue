@@ -26,6 +26,7 @@ import builderCard from "./builderCard.vue";
 import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
+import listKeywords from '../elements/listKeywords.vue'
 
 export default {
   data() {
@@ -33,11 +34,13 @@ export default {
       elementsNames: {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
-        basicDelay: 'Delay'
+        basicDelay: 'Delay',
+        listKeywords: 'List'
       },
       elementComponents: {
         sendImageAction,
-        sendTextAction
+        sendTextAction,
+        listKeywords
       },
       dragged: false,
       Drop

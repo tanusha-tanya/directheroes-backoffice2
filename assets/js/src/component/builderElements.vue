@@ -58,6 +58,15 @@ export default {
             }
           }  
         },
+        { 
+          name: 'List', 
+          svg: navicon,
+          template: {
+            class: 'action',
+            type: 'listKeywords',
+            value: []
+          }  
+        },
         // { 
         //   name: 'Video', 
         //   svg: socialYoutube,
