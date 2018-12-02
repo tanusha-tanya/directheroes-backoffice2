@@ -42,7 +42,7 @@ export default {
             class: 'action',
             type: 'sendTextAction',
             value: {
-              text: 'Heyyyy!!\nThanks for reaching out to us! We are really excited about Direct Heroes and what it is going to be able to do for you and your businesses.'
+              text: ''
             }
           }
         },
@@ -56,6 +56,15 @@ export default {
             value: {
               seconds: 0
             }
+          }  
+        },
+        { 
+          name: 'List', 
+          svg: navicon,
+          template: {
+            class: 'action',
+            type: 'listKeywords',
+            value: []
           }  
         },
         // { 
