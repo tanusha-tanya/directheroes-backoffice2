@@ -128,12 +128,12 @@ export default {
 
     currentCampaign: {
       handler: function (campaign, oldCampaign) {
+        console.log(this._isMounted);
+        
+        if(this._isMounted && this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
         
         if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id) return;
-        
-        const { recalcPathes } = this.$refs.arrows;
 
-        this.$nextTick(recalcPathes)
         this.saveCampaign();
       },
       deep: true
