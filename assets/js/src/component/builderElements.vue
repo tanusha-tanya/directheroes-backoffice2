@@ -30,7 +30,6 @@ export default {
           name: 'Image', 
           svg: image,
           template: {
-            class: 'action',
             type: 'sendImageAction',
             value: null
           }
@@ -39,19 +38,28 @@ export default {
           name: 'Text', 
           svg: chatbubble, 
           template: {
-            class: 'action',
             type: 'sendTextAction',
             value: {
               text: ''
             }
           }
         },
-        // { name: 'Triggers', svg: flash },
+        { 
+          name: 'Triggers', 
+          svg: flash,
+          template: {
+            type: 'messageCondition',
+            value: {
+              keywords: [],
+              messageType: 'storyShare',
+              link: ''
+            }
+          }
+        },
         { 
           name: 'Delay', 
           svg: stopwatch,
           template: {
-            class: 'condition',
             type: 'basicDelay',
             value: {
               seconds: 0
@@ -62,9 +70,10 @@ export default {
           name: 'List', 
           svg: navicon,
           template: {
-            class: 'action',
-            type: 'listKeywords',
-            value: []
+            type: 'messageTextConditionMultiple',
+            value: {
+              conditionList:[]
+            }
           }  
         },
         // { 

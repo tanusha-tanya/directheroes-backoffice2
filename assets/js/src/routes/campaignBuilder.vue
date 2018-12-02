@@ -1,7 +1,7 @@
 <template>
   <div class="campaign-builder">
-    <campaign-card :campaign="campaign" :ref="campaignStep.uuid"></campaign-card>
-    <step-card :step="step" v-for="step in steps" :key="step.uuid" :ref="step.uuid"></step-card>
+    <campaign-card :campaign="campaign" :ref="campaignStep.id"></campaign-card>
+    <step-card :step="step" v-for="step in steps" :key="step.id" ref="steps"></step-card>
     <builder-elements></builder-elements>
     <arrows ref="arrows" :refs="$refs" :arrows="arrows"></arrows>
   </div>    
@@ -17,24 +17,22 @@ export default {
     return {
       campaign: {
         name: 'Campaign Name',
-        uuid: 'd35f8608-2d8a-47a7-96c7-cdec7f2886fe',
+        id: 'd35f8608-2d8a-47a7-96c7-cdec7f2886fe',
         steps: [
           {
             type: 'campaignEntry',
-            uuid: '2ee5588a-f51e-4f7b-bee9-155385963b07',
+            id: '2ee5588a-f51e-4f7b-bee9-155385963b07',
             elements: [
               {
-                class: 'condition',
                 type: 'messageCondition',
-                messageType: 'story',
                 value: {
+                  messageType: 'storyShare',
                   keywords: ['Hero', 'Yes'],
                   link: ''
                 }
               },
               {
-                class: 'action',
-                type: 'goToStepAction',
+                type: 'goToStep',
                 stepId: '374269bc-3f44-49e0-aa14-30ca80d98c4b'
               }
             ],
@@ -49,7 +47,7 @@ export default {
           {
             type: 'regular',
             name: 'Step One',
-            uuid: '374269bc-3f44-49e0-aa14-30ca80d98c4b',
+            id: '374269bc-3f44-49e0-aa14-30ca80d98c4b',
             elements: [],
             displaySettings: {
               collapsed: false,
@@ -147,21 +145,28 @@ export default {
       const arrows = [];
 
       campaign.steps.forEach(step => step.elements.find(element => {
-        if (element.type != 'goToStepAction') return;
+        if (element.type != 'goToStep') return;
 
-        arrows.push({ parent: step.uuid, child: element.stepId});
+        arrows.push({ parent: step.id, child: element.stepId});
 
         return true;
       }))
-      
+
       return arrows;
     }
+  },
+
+  mounted() {
+    console.log(this.$refs);
+    
   },
 
   watch:{
     campaign: {
       handler: function (campaign, oldCampaign) {
-        this.$refs.arrows.recalcPathes();
+        const { recalcPathes } = this.$refs.arrows;
+
+        this.$nextTick(recalcPathes)
       },
       deep: true
     },

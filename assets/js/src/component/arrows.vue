@@ -31,14 +31,14 @@ export default {
   
   methods: {
     recalcPathes() {
-      const { refs } = this;
+      const { refs, getElement } = this;
       const areaRect = this.$el.getBoundingClientRect();
       
       this.pathes = this.arrows.map(arrow => {
         const coords = {};
         let startX, startY, endX, endY, deltaX, deltaY, angle = 0;
-        let startRect = refs[arrow.parent].$el.getBoundingClientRect();
-        let endRect = refs[arrow.child][0].$el.getBoundingClientRect();
+        let startRect = getElement(arrow.parent).$el.getBoundingClientRect();
+        let endRect = getElement(arrow.child).$el.getBoundingClientRect();
         let path = '';
         
         if (startRect.top + startRect.height < endRect.top) {
@@ -104,6 +104,16 @@ export default {
           }
         }
       })
+    },
+
+    getElement(id) {
+      const { refs } = this;
+      
+      if (refs.hasOwnProperty(id)) return refs[id];
+
+      const step = refs.steps.find(step => step.$refs.hasOwnProperty(id))
+
+      return step && step.$refs[id];
     }
   },
 

@@ -1,32 +1,33 @@
 <template>
-    <builder-card class="step-card" :settings="step.displaySettings">
-      <template slot="header">{{ step.name }}</template>
-      <template slot="body">
-        <div class="element-container" v-for="element in step.elements">
-          <div :class="{'element-title': true, 'is-collapsed': element.displaySettings.collapsed}" @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
-            {{elementsNames[element.type]}}
-            <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
-          </div>
-          <div class="element-body" v-if="!element.displaySettings.collapsed">
-            <component :is="elementComponents[element.type]" :element="element"></component>
-          </div>
-        </div> 
-        <component 
-          :is="Drop" 
-          :class="{'add-element': true, 'in-drag':  dragged}"
-          @dragenter="dragged = true"
-          @dragleave="dragged = false"
-          @drop="dropHandler"
-        >+</component>
-      </template>
-    </builder-card>
+  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
+    <template slot="header">{{ step.name }}</template>
+    <template slot="body">
+      <div class="element-container" v-for="element in step.elements">
+        <div class="element-title">
+          {{elementsNames[element.type]}}
+          <div v-if="false" class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
+        </div>
+        <div class="element-body" v-if="!element.displaySettings.collapsed">
+          <component :is="elementComponents[element.type]" :element="element"></component>
+        </div>
+      </div> 
+      <component 
+        :is="Drop" 
+        :class="{'add-element': true, 'in-drag':  dragged}"
+        @dragenter="dragged = true"
+        @dragleave="dragged = false"
+        @drop="dropHandler"
+      >+</component>
+    </template>
+  </builder-card>
 </template>
 <script>
 import builderCard from "./builderCard.vue";
 import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
-import listKeywords from '../elements/listKeywords.vue'
+import messageCondition from "../elements/messageCondition.vue";
+import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
 
 export default {
   data() {
@@ -35,12 +36,14 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay',
-        listKeywords: 'List'
+        messageTextConditionMultiple: 'List',
+        messageCondition: 'Trigger'
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
-        listKeywords
+        messageCondition,
+        messageTextConditionMultiple
       },
       dragged: false,
       Drop
@@ -117,6 +120,10 @@ export default {
       .element-body {
         min-height: 70px;
       }
+    }
+
+    .message-condition {
+      padding: 10px;
     }
   }
 </style>
