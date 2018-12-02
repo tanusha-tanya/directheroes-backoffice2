@@ -1,6 +1,9 @@
 <template>
   <svg class="arrows" width="100%" height="100%">
-    <path :d="path" v-for="path in pathes" fill="none" stroke="#DDDDDD" stroke-width="2px"></path>
+    <template v-for="path in pathes">
+      <path :d="path.line"  fill="none" stroke="#DDDDDD" stroke-width="2"></path>
+      <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 8}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" fill="#E7E7E7"/>
+    </template>
     <!-- <circle cx="10" cy="10" r="5" fill="#FAFAFA" stroke="#DDDDDD" stroke-width="2"/>
     <circle cx="726" cy="180" r="5"          fill="#FAFAFA" stroke="#DDDDDD" />
     <path   d="M 726 180 C 276 87 270 10 0 0" fill="none" stroke="#DDDDDD"/> -->
@@ -33,7 +36,7 @@ export default {
       
       this.pathes = this.arrows.map(arrow => {
         const coords = {};
-        let startX, startY, endX, endY, deltaX, deltaY, delta, arc1, arc2
+        let startX, startY, endX, endY, deltaX, deltaY, angle = 0;
         let startRect = refs[arrow.parent].$el.getBoundingClientRect();
         let endRect = refs[arrow.child][0].$el.getBoundingClientRect();
         let path = '';
@@ -48,6 +51,8 @@ export default {
           deltaX = (endX - startX) * .5
           deltaY = (endY - startY) * .5
 
+          angle = 90
+
           path = `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
         } else if (startRect.top > endRect.top + endRect.height) {
           startX = startRect.left + 0.5 * startRect.width - areaRect.left
@@ -58,6 +63,8 @@ export default {
 
           deltaX = (endX - startX) * .5
           deltaY = (endY - startY) * .5
+
+          angle = 270
 
           path = `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
         } else {
@@ -82,11 +89,20 @@ export default {
             deltaX = (endX - startX) * .5
             deltaY = (endY - startY) * .5
 
+            angle = 180
+
             path = `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
           }
         }
         
-        return path
+        return {
+          line: path, 
+          arrow: {
+            x: endX,
+            y: endY,
+            angle
+          }
+        }
       })
     }
   },
