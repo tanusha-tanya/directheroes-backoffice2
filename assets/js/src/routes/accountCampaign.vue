@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="content-controls">
-        <div class="info">
+        <div class="info" v-if="currentCampaign.typeCode === 'broadcastCampaign'">
           <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
           <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
           <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startsAt">Prepare to start</div>
@@ -39,7 +39,7 @@
             <div class="category-list">
               <el-checkbox
                 :disabled="currentCampaign.isStarted"
-                v-for="subscriber in currentAccount.subscriberCategoryList" 
+                v-for="subscriber in currentAccount.subscriberCategoryList"
                 :key="subscriber.id"
                 :checked="isCheckedSubscriber(subscriber.id)"
                 @change="checkSubscriber(subscriber, $event)"
@@ -231,7 +231,7 @@
       startsAt: {
         get() {
           return this.currentCampaign.startsAt;
-        }, 
+        },
         set(value) {
           this.updateBroadcastStatus();
 
@@ -244,7 +244,7 @@
     methods: {
       checkSubscriber(subscriber, checked) {
         this.currentCampaign.subscriberCategoryList = this.currentCampaign.subscriberCategoryList || [];
-        
+
         const { subscriberCategoryList } = this.currentCampaign;
 
         if (checked) {
@@ -325,8 +325,8 @@
         clearTimeout(this.broadcastTimeout)
 
         this.timeToStart = (!startsAt || moment().diff(new Date(startsAt)) > 0) ? null : `${moment().from(new Date(startsAt), true)} to start`
-        this.notStarted = !isStarted && startsAt && moment().diff(new Date(startsAt), 'minutes') > 1 
-        
+        this.notStarted = !isStarted && startsAt && moment().diff(new Date(startsAt), 'minutes') > 1
+
         if ((diff > 60 * 60 * 1000) || isStarted || this.notStarted) return;
 
         if (diff < 60 * 1000 && diff > 0) {
@@ -344,7 +344,7 @@
 
           return;
         }
-        
+
         this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
       },
 
@@ -497,7 +497,7 @@
 
           if (!oldCampaign || !campaign || campaign.uuid !== oldCampaign.uuid || this.updateState) return;
 
-      
+
           if (!campaignsToSave.includes(campaign)) {
             campaignsToSave.push(campaign);
           }
@@ -537,7 +537,7 @@
     }
 
     .content-button {
-      
+
       & > div {
         outline: none;
       }
@@ -982,7 +982,7 @@
   }
 
   .upload-message {
-    cursor: pointer; 
+    cursor: pointer;
   }
 
   .uploaded-files {
@@ -996,6 +996,6 @@
         width: 10px;
         height: 10px;
       }
-    }  
+    }
   }
 </style>

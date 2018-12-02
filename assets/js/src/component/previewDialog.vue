@@ -59,7 +59,7 @@ export default {
   .el-dialog__body {
     overflow-x: hidden;
     overflow-y: auto; 
-    height: calc(100% - 50px);
+    // height: calc(100% - 50px);
 
     &::-webkit-scrollbar {
       width: 4px;

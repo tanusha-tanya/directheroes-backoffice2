@@ -25,7 +25,7 @@
       <img src="../assets/times-white.svg" @click="deleteCategory(index)"/>
     </div>
   </div>
-</div>    
+</div>
 </template>
 
 <script>
@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       searchCategory: '',
-      isCategoryList: false, 
+      isCategoryList: false,
     }
   },
 
@@ -86,6 +86,9 @@ export default {
   }
 
   .category-list {
+    max-height: 30vh;
+    overflow: auto;
+
     .category-item {
       padding: 5px;
       cursor: pointer;
@@ -109,7 +112,7 @@ export default {
           color: rgb(63, 160, 63)
         }
       }
-      
+
     }
   }
 }
@@ -148,18 +151,18 @@ export default {
 
       &:last-child {
         border-right: none;
-        border-radius: 0 24px 24px 0;	
+        border-radius: 0 24px 24px 0;
       }
     }
   }
 
   .add-category-more {
-    height: 24px;	
+    height: 24px;
     width: 24px;
     padding-left: 3px;
-    border-radius: 24px 0 0 24px;	
+    border-radius: 24px 0 0 24px;
     background-color:#3B81C4;
-    
+
     img {
       width: 20px;
     }

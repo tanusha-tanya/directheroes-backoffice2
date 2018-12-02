@@ -45,8 +45,7 @@ services:
             nginx-proxy: ~
             application-network:
                 aliases:
-                - backoffice.app.directheroes
-
+                    - ${BACKOFFICE_APN_HOSTNAME}
     redis:
         restart: always
         build: ./redis
