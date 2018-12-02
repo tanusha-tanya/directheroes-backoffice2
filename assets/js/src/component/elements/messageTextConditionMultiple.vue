@@ -1,6 +1,6 @@
 <template>
   <div class="list-keywords">
-    <div class="list-item" v-for="item in element.value">
+    <div class="list-item" v-for="item in element.value.conditionList">
       <keywords v-model="item.keywords"></keywords>
     </div>
     <div class="add-keywords" @click="addKeywords">+</div>
@@ -20,7 +20,7 @@ export default {
     addKeywords() {
       const { element } = this;
 
-      element.value.push({
+      element.value.conditionList.push({
         keywords: []
       })
     }
