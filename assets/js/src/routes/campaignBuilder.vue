@@ -1,126 +1,35 @@
 <template>
-  <div class="campaign-builder">
-    <campaign-card :campaign="campaign" :ref="campaignStep.id"></campaign-card>
+  <div class="campaign-builder" v-if="currentCampaign">
+    <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
     <step-card :step="step" v-for="step in steps" :key="step.id" ref="steps"></step-card>
     <builder-elements></builder-elements>
     <arrows ref="arrows" :refs="$refs" :arrows="arrows"></arrows>
   </div>    
 </template>
 <script>
+import debounce from 'lodash/debounce'
 import campaignCard from '../component/builder-cards/campaignCard.vue'
 import stepCard from '../component/builder-cards/stepCard.vue'
 import arrows from '../component/arrows.vue'
 import builderElements from '../component/builderElements.vue'
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next(accountCampaign => {
+      accountCampaign.setCurrentCampaign(to);
+    })
+  },
+
+  beforeRouteUpdate(to, from, next) {
+    this.currentCampaign = null;
+
+    this.setCurrentCampaign(to);
+    next();
+  },
+
   data() {
     return {
-      campaign: {
-        name: 'Campaign Name',
-        id: 'd35f8608-2d8a-47a7-96c7-cdec7f2886fe',
-        steps: [
-          {
-            type: 'campaignEntry',
-            id: '2ee5588a-f51e-4f7b-bee9-155385963b07',
-            elements: [
-              {
-                type: 'messageCondition',
-                value: {
-                  messageType: 'storyShare',
-                  keywords: ['Hero', 'Yes'],
-                  link: ''
-                }
-              },
-              {
-                type: 'goToStep',
-                stepId: '374269bc-3f44-49e0-aa14-30ca80d98c4b'
-              }
-            ],
-            displaySettings: {
-              collapsed: false,
-              position: {
-                  x: 50,
-                  y: 200
-              },
-            }
-          },
-          {
-            type: 'regular',
-            name: 'Step One',
-            id: '374269bc-3f44-49e0-aa14-30ca80d98c4b',
-            elements: [],
-            displaySettings: {
-              collapsed: false,
-              position: {
-                  x: 200,
-                  y: 600
-              },
-            }
-              // elements: [
-              //     {
-              //         class: condition,
-              //         type: basicDelay,
-              //         value: 300,
-              //         displaySettings: {
-              //             visible: false
-              //         }
-              //     },
-              //     {
-              //         class: action,
-              //         type: sendTextAction,
-              //         message: {
-              //             messageText: “{{Hi|Hello|Hey}}, {{username}}, nice to meet you!”,
-              //             previewText: “Hi, sixteencharsusr, nice to meet you!”,
-              //             minLength: 24,
-              //             maxLength: 42
-              //         },
-              //         displaySettings: {
-              //             isClollapsed: true
-              //         }
-              //     },
-              //     {
-              //         class: condition,
-              //         type: basicDelay,
-              //         delay: 300
-              //     },
-              //     {
-              //           class: action,
-              //           type: sendImageAction,
-
-              //       value: {
-              //           id: 123,
-              //           name: “directheroes logo.png”,
-              //           url: “/media/123.png",
-              //       },
-
-              //     },
-              //     {
-              //         class: condition,
-              //         type: timeCondition,
-              //         value: {
-
-              //           or: {
-              //               weekDay: “Monday”,
-              //               weekDay: “Friday”
-              //           }
-
-              //         }
-              //     },
-                  
-              // ],
-              // displaySettings: {
-              //       collapsed: false,
-
-              //   position: {
-              //       x: 500,
-              //       y: 200
-              //   },
-
-              // }
-
-          }
-        ]
-      }
+      currentCampaign: null,
     }
   },
 
@@ -133,21 +42,21 @@ export default {
 
   computed:{
     steps() {
-      return this.campaign.steps.filter(step => step.type == 'regular')
+      return this.currentCampaign.steps.filter(step => step.type == 'regular')
     },
 
     campaignStep() {
-      return this.campaign.steps.find(step => step.type = 'campaignEntry')
+      return this.currentCampaign.steps.find(step => step.type = 'campaignEntry')
     },
 
     arrows() {
-      const { campaign } = this
+      const { currentCampaign } = this
       const arrows = [];
 
-      campaign.steps.forEach(step => step.elements.find(element => {
+      currentCampaign.steps.forEach(step => step.elements.find(element => {
         if (element.type != 'goToStep') return;
 
-        arrows.push({ parent: step.id, child: element.stepId});
+        arrows.push({ parent: step.id, child: element.value.stepId});
 
         return true;
       }))
@@ -156,17 +65,76 @@ export default {
     }
   },
 
-  mounted() {
-    console.log(this.$refs);
-    
+  methods: {
+    setCurrentCampaign(route) {
+      const { campaignId } = route.params;
+      const { campaignList } = this.$store.state.currentAccount;
+
+      if (!campaignList || !campaignId) return;
+
+      const currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
+
+      currentCampaign.steps.forEach(step => {
+        if (step.displaySettings) return;
+
+        Object.assign(step, {
+          displaySettings: {
+            positionX: null,
+            positionY: null,
+            collapsed: false
+          }
+        })
+      })
+
+      if (currentCampaign) {
+        this.currentCampaign = currentCampaign;
+      } else {
+        this.$store.dispatch('getCampaignTemplates', { campaign:currentCampaign })
+          .then(({ data }) => {
+            this.currentCampaign = data.campaign;
+          });
+      }
+    },
+
+    saveCampaign: debounce(function() {
+
+      this.$store.dispatch('saveCampaign', this.currentCampaign)
+        .then(({ data }) => {
+          this.updateState = false;
+
+          this.$message.success({
+            message: 'Success saved',
+            duration: 3000,
+            center: true
+          });
+        })
+        .catch(() => {
+          this.$message.error({
+            message: 'Error saved',
+            duration: 3000,
+            center: true
+          })
+        });
+    }, 3000),
   },
 
+
   watch:{
-    campaign: {
+    '$store.state.accounts'() {
+      if (this.currentCampaign) return;
+
+      this.setCurrentCampaign(this.$route);
+    },
+
+    currentCampaign: {
       handler: function (campaign, oldCampaign) {
+        
+        if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id) return;
+        
         const { recalcPathes } = this.$refs.arrows;
 
         this.$nextTick(recalcPathes)
+        this.saveCampaign();
       },
       deep: true
     },

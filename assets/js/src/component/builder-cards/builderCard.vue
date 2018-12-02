@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" :style="{ top: `${ settings.position.y }px`, left: `${ settings.position.x }px` }">
+  <div class="builder-card" :style="{ top: `${ settings.positionY }px`, left: `${ settings.positionX }px` }">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -17,12 +17,12 @@ let startX, startY, initialMouseX, initialMouseY;
 export default {
   methods: {
     mouseDown(event) {
-      const { position } = this.settings;
+      const { settings } = this;
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX);
         const top = startY+ (event.clientY - initialMouseY);
-        position.y = top < 0 ? 0 : top;
-        position.x = left < 0 ? 0 : left;
+        settings.positionY = top < 0 ? 0 : top;
+        settings.positionX = left < 0 ? 0 : left;
         return false;
       }
 

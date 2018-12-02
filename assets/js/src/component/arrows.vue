@@ -1,6 +1,6 @@
 <template>
   <svg class="arrows" width="100%" height="100%">
-    <template v-for="path in pathes">
+    <template v-for="path in pathes" v-if="path.line">
       <path :d="path.line"  fill="none" stroke="#DDDDDD" stroke-width="2"></path>
       <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 8}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" fill="#E7E7E7"/>
     </template>

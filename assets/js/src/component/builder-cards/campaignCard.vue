@@ -32,6 +32,8 @@ export default {
 <style lang="scss">
   div.campaign-card {
     background-color: #2A4294;
+    top: 100px;
+    left: 50px;
 
     .builder-card-body {
       min-height: 140px;

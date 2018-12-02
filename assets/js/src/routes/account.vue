@@ -109,30 +109,18 @@
     <div class="content">
       <router-view></router-view>
     </div>
-    <el-dialog title="Add New Campaign":visible.sync="isCampaignAdd" custom-class="add-campagin-dialog">
-      <div class="dialog-description">
-        What kind of campaign are you adding?
-      </div>
-      <div class="campaign-list">
-        <button :disabled="!canAddCampaign(campaign.type)" class="campaign-type" v-for="campaign in campaignTypes" @click="addCompaign(campaign)">
-          <div :class="[{ 'campaign-type-icon': true }, campaign.type]"></div>
-          {{ campaign.name }}
-        </button>
-      </div>
-    </el-dialog>
     <el-dialog
-      v-if ="Boolean(campaignToRename)"
-      :title="campaignToRename.id ? `Rename Your Campaign ${ campaignToRename.typeName }` : `Name Your New ${ campaignToRename.typeName }`"
-      :visible.sync="showRenameCampaign"
+      title="Add New Campaign"
+      :visible.sync="isCampaignAdd"
       custom-class="rename-campagin-dialog"
     >
       <div class="dialog-description">
-        Nam porttitor blandit accumsan. Ut vel dictum sem, a pretium dui. In malesuada enim in dolor euismod, id commodo mi consectetur. Curabitur at vestibulum nisi
+        Enter name of your campaign
       </div>
       <input v-model="newCampaignName" placeholder="Name of campaign"></input>
       <template slot="footer">
-        <button :disabled="!newCampaignName" @click="renameAddCampaign">
-          {{ campaignToRename.id ? 'Rename Campaign' : 'Add Campaign' }}
+        <button :disabled="!newCampaignName" @click="addCampaign">
+          'Add Campaign'
         </button>
       </template>
     </el-dialog>
@@ -146,19 +134,6 @@
 </template>
 <script>
 import { Collapse, CollapseItem, Dialog, Input } from 'element-ui'
-
-const emptyTemplate = {
-  name: "Template #",
-  ruleList: [{
-    actions: [{
-      messageTemplate: "",
-      delayMs: 0,
-      medias: []
-    }],
-    triggerPhraseList: [],
-    subscriberCategoryList: [],
-  }],
-}
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -177,62 +152,12 @@ export default {
       newCampaignName: '',
       isCampaignAdd: false,
       noAccounts: false,
-      campaignTypes: [
-        // {
-        //   type: 'welcomeCampaign',
-        //   name: 'Welcome Campaign',
-        //   templateList: [Object.assign({ type: 'welcomeOpener' }, emptyTemplate)],
-        // },
-        {
-          type: 'messageRequestCampaign',
-          name: 'Message Request Campaign',
-          templateList: [Object.assign({ type: "generic" }, emptyTemplate)],
-        },
-        {
-          type: 'storyCampaign',
-          name: 'Story Campaign',
-          templateList: [Object.assign({ type:"storyOpener", scarcity: null, hits: 0}, emptyTemplate)],
-        },
-        {
-          type: 'postShareCampaign',
-          name: 'Post Share Campaign',
-          templateList: [Object.assign({}, emptyTemplate)],
-        },
-        // {
-        //   type: 'igtv',
-        //   name: 'IGTV Campaign',
-        //   templateList: [Object.assign({}, emptyTemplate)],
-        // },
-        {
-          type: 'ad',
-          name: 'AD Campaign',
-          templateList: [Object.assign({}, emptyTemplate)],
-        },
-        {
-          type: 'broadcastCampaign',
-          name: 'Broadcast Bot',
-          templateList: [Object.assign({}, emptyTemplate)],
-        },
-      ]
     }
   },
 
   computed: {
     currentAccount() {
       return this.$store.state.currentAccount;
-    },
-
-    campaignToRename() {
-      return this.$store.state.campaignToRename;
-    },
-
-    showRenameCampaign: {
-      get() {
-        return  Boolean(this.campaignToRename);
-      },
-      set() {
-        this.$store.state.campaignToRename = null;
-      }
     },
   },
 
@@ -256,86 +181,22 @@ export default {
       }
     },
 
-    addCompaign(campaign) {
-      const { dynId, uuidv4 } = this.utils;
+    addCampaign() {
+      const { currentAccount } = this;
 
-      this.isCampaignAdd = false;
+      this.$store.dispatch('createCampaign', {
+        name: this.newCampaignName
+      }).then(({ data }) => {
+        const { campaign } = data;
+        
+        this.isCampaignAdd = false;
 
-      Object.assign(campaign.templateList[0], {
-        id: dynId(),
-        uuid: uuidv4(),
+        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
       })
-
-      this.$store.state.campaignToRename = {
-        name: '',
-        type: campaign.type,
-        typeName: campaign.name,
-        postLink: campaign.postLink,
-        subscriberCategoryList: [],
-        enabled: false,
-        templateList: campaign.templateList,
-      }
-    },
-
-    renameAddCampaign() {
-      const { campaignToRename, currentAccount } = this;
-      const { dynId, uuidv4 } = this.utils;
-
-      campaignToRename.name = this.newCampaignName;
-
-      if (!campaignToRename.id) {
-        campaignToRename.id = dynId();
-        campaignToRename.uuid = uuidv4();
-
-        this.$store.dispatch('saveCampaigns', [campaignToRename])
-          .then(({ data }) => {
-            const { campaignList } = data;
-            const currentCampaign = campaignList.find(campaign => campaign.uuid === campaignToRename.uuid);
-
-            this.$message.success({
-              message: 'Success add',
-              duration: 3000,
-              center: true
-            })
-
-            this.$router.push({ name: 'accountCampaign', params: { campaignId: currentCampaign.id, accountId: currentAccount.id } })
-          })
-          .catch((error) => {
-            console.log(error);
-            this.$message.error({
-              message: 'Add error',
-              duration: 3000,
-              center: true
-            })
-          });
-      }
-
-      this.showRenameCampaign = null;
-    },
-
-    canAddCampaign(campaignType) {
-      const { campaignList } = this.currentAccount;
-
-      switch(campaignType) {
-        case 'ad':
-        case 'igtv':
-        // case 'welcomeCampaign':
-          return false;
-        break;
-        case 'broadcastCampaign':
-        case 'messageRequestCampaign':
-          return !campaignList.some(campaign => ['messageRequestCampaign', 'welcomeCampaign'].includes(campaign.type));
-      }
-
-      return true;
     },
   },
 
   watch: {
-    showRenameCampaign() {
-      this.newCampaignName = this.campaignToRename ? this.campaignToRename.name : '';
-    },
-
     '$store.state.accounts'() {
       if (this.currentAccount) return;
 
@@ -519,6 +380,7 @@ export default {
     .rename-campagin-dialog {
       input {
         margin-top: 42px;
+        width: 100%;
       }
     }
   }

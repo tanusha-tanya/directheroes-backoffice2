@@ -85,7 +85,7 @@ export default new VueX.Store({
     getCampaignTemplates({ state, commit }, params) {
       const { campaignList } = state.currentAccount;
       const request = axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/get`,
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/get`,
         params: { id: params.campaign.id }
       })
 
@@ -98,52 +98,43 @@ export default new VueX.Store({
       return request;
     },
 
-    saveCampaigns({ state, commit }, campaigns) {
+    saveCampaign({state, commit }, campaign) {
       const { currentAccount } = state;
       const request = axios({
         method: 'post',
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/save`,
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/save`,
         data: {
           igAccount: { id: currentAccount.id },
-          campaignList: campaigns,
-          campaignTypeList: [campaigns[0].type]
+          campaign
         }
       })
 
       request.then(({ data }) => {
-        const { campaignList } = data;
-
-        campaignList.forEach(newCampaign => {
-          const oldCampaign = currentAccount.campaignList.find(campaign => campaign.uuid == newCampaign.uuid)
-
-          if (oldCampaign) {
-            newCampaign.templateList.forEach((template, index) => {
-              const campaignTemplate = oldCampaign.templateList[index];
-
-              Object.keys(template).forEach(templateProperty => {
-                if (templateProperty === 'ruleList') {
-                  template.ruleList.forEach((rule, ruleIndex) => {
-                    rule.actions.forEach((action, actionIndex) => {
-                      campaignTemplate.ruleList[ruleIndex].actions[actionIndex].previewText = action.previewText;
-                    })
-                  })
-
-                  return;
-                };
-
-                campaignTemplate[templateProperty] = template[templateProperty];
-              })
-            });
-            // currentAccount.campaignList.splice(currentAccount.campaignList.indexOf(oldCampaign), 1, newCampaign);
-          } else {
-            currentAccount.campaignList.push(newCampaign);
-          }
-        })
+        console.log(data);
+        
       }).catch( error => {
         console.log(error);
       })
 
       return request;
+    },
+
+    createCampaign({ state, commit }, campaign) {
+      const { currentAccount } = state;
+      const request = axios({
+        method: 'post',
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/create`,
+        data: {
+          igAccount: { id: currentAccount.id },
+          campaign
+        }
+      })
+
+      request.then(({ data }) => {
+        currentAccount.campaignList.push(data.campaign);
+      })
+
+      return request
     },
 
     deleteCampaign({ state, commit }, campaign) {

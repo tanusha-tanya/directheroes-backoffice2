@@ -6,8 +6,7 @@
     popper-class="campaign-type-dropdown"
   >
     <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
-    <!-- <el-option class="story-mention" label="Story Mention" value="story-mention">Story Mention</el-option> -->
-    <el-option class="post-share" label="Post Share" value="postShare">Link</el-option>
+    <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
     <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
   </el-select>
   <template v-if="['storyShare', 'any'].includes(element.value.messageType)">

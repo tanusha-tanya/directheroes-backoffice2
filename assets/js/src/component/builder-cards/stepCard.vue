@@ -68,6 +68,8 @@ export default {
   div.step-card {
     border-color: #2E9E7B;
     background-color: #2E9E7B;
+    top: 130px;
+    left: 450px;
 
     .builder-card-header {
       font-family: 'AbeatbyKai';
