@@ -1,16 +1,24 @@
 <template>
-  <div class="campaign-builder" v-if="currentCampaign">
+  <drop 
+    :class="{'campaign-builder': true, dragged}" 
+    v-if="currentCampaign" 
+    tag="div"
+    @dragover="dragEnter"
+    @dragleave="dragLeave"
+    @drop="dropHandler"
+  >
     <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
-    <step-card :step="step" v-for="step in steps" :key="step.id" ref="steps"></step-card>
+    <step-card :step="step" v-for="step in steps" :key="step.id" ref="steps" @delete-step="deleteStep"></step-card>
     <builder-elements></builder-elements>
     <arrows ref="arrows" :refs="$refs" :arrows="arrows"></arrows>
-  </div>    
+  </drop>    
 </template>
 <script>
 import debounce from 'lodash/debounce'
 import campaignCard from '../component/builder-cards/campaignCard.vue'
 import stepCard from '../component/builder-cards/stepCard.vue'
 import arrows from '../component/arrows.vue'
+import { Drop } from 'vue-drag-drop';
 import builderElements from '../component/builderElements.vue'
 
 export default {
@@ -30,6 +38,7 @@ export default {
   data() {
     return {
       currentCampaign: null,
+      dragged: false
     }
   },
 
@@ -37,6 +46,7 @@ export default {
     builderElements,
     campaignCard,
     stepCard,
+    Drop,
     arrows
   },  
 
@@ -100,8 +110,6 @@ export default {
 
       this.$store.dispatch('saveCampaign', this.currentCampaign)
         .then(({ data }) => {
-          this.updateState = false;
-
           this.$message.success({
             message: 'Success saved',
             duration: 3000,
@@ -116,6 +124,41 @@ export default {
           })
         });
     }, 3000),
+
+    dragEnter(data) {
+      if (data.type != "regular") return;
+
+      this.dragged = true;
+    },
+
+    dragLeave(data) {
+      if (data.type != "regular") return;
+      
+      this.dragged = false;
+    },
+
+    dropHandler(data, event) {
+      this.dragged = false;
+
+      if (data.type != "regular") return;
+
+      data.id = this.utils.uuidv4();
+
+      this.currentCampaign.steps.push({
+        ...data, 
+        displaySettings:{ 
+          positionX: event.offsetX - 20, 
+          positionY: event.offsetY - 20, 
+          collapsed: false
+        } 
+      });
+    },
+
+    deleteStep(step) {
+      const { steps } = this.currentCampaign;
+      
+      steps.splice(steps.indexOf(step),1)
+    }
   },
 
 
@@ -128,9 +171,7 @@ export default {
 
     currentCampaign: {
       handler: function (campaign, oldCampaign) {
-        console.log(this._isMounted);
-        
-        if(this._isMounted && this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
         
         if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id) return;
 
@@ -147,5 +188,10 @@ export default {
   overflow: auto;
   height: 100%;
   width:100%;
+  transition: background-color .4s;
+
+  &.dragged {
+    background-color:#E2E2E2
+  }
 }
 </style>
