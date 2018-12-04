@@ -2,6 +2,13 @@
   <div class="builder-elements">
     <component 
       :is="Drag" 
+      :transfer-data="stepData"
+      class="builder-element step-add"
+    >
+      <img src="../assets/svg/plus-outline.svg"/>
+    </component>
+    <component 
+      :is="Drag" 
       :transfer-data="element.template"
       class="builder-element" 
       v-for="element in elements" 
@@ -25,6 +32,11 @@ import infinite from '../assets/svg/infinite.svg'
 export default {
   data() {
     return {
+      stepData: {
+        elements: [],
+        name: "New Step",
+        type: "regular",
+      },
       elements: [
         { 
           name: 'Image', 
@@ -108,6 +120,11 @@ export default {
       color: #A9A9A9;
       height: 75px;
       width: 100%;
+
+      &.step-add img{
+        max-width: 43px;
+        max-height: 43px;
+      }
 
       img {
         max-width: 23px;

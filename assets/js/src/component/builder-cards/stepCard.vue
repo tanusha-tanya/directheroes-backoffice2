@@ -5,6 +5,7 @@
       <div class="element-container" v-for="element in step.elements">
         <div class="element-title">
           {{elementsNames[element.type]}}
+          <div @click="elementRemove(element)">&times</div>
           <div v-if="false" class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
@@ -14,10 +15,11 @@
       <component 
         :is="Drop" 
         :class="{'add-element': true, 'in-drag':  dragged}"
-        @dragenter="dragged = true"
-        @dragleave="dragged = false"
+        @dragenter="dragEnter"
+        @dragleave="dragLeave"
         @drop="dropHandler"
       >+</component>
+      <div class="remove-step" @click="$emit('delete-step', step)">remove step</div>
     </template>
   </builder-card>
 </template>
@@ -57,9 +59,29 @@ export default {
   props: ['step'],
 
   methods: {
+    dragEnter(data) {
+      if (data.type == "regular") return;
+      this.dragged = true;
+    },
+
+    dragLeave(data) {
+      if (data.type == "regular") return;
+      this.dragged = false;
+    },
+
     dropHandler(data) {
+      if (data.type == "regular") return;
+
+      data.id = this.utils.uuidv4();
+
       this.dragged = false;
       this.step.elements.push({ ...data, displaySettings: { collapsed: false }});
+    },
+
+    elementRemove(element) {
+      const { elements } = this.step;
+
+      elements.splice(elements.indexOf(element), 1);
     }
   }
 }
@@ -126,6 +148,19 @@ export default {
 
     .message-condition {
       padding: 10px;
+    }
+
+    .remove-step {
+      padding: 10px;
+      text-transform: uppercase;
+      text-align: center;
+      cursor: pointer;
+      color:#dcdfe6;
+      transition: color .3s;
+
+      &:hover {
+        color: #000;
+      }
     }
   }
 </style>
