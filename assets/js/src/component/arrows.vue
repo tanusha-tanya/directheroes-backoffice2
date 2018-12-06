@@ -67,56 +67,6 @@ export default {
           ((isOnLeft || isOnRight) && `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`)
        
         let angle = (isOnTop && 90) || (isOnBottom && 270) || (isOnLeft && 180) || 0;
-        // if (startRect.top + startRect.height < endRect.top) {
-        //   endX = endRect.left + 0.5 * endRect.width - areaRect.left
-        //   endY = endRect.top - areaRect.top
-
-        //   deltaX = (endX - startX) * .5
-        //   deltaY = (endY - startY) * .5
-
-        //   angle = 90
-
-        //   path = `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
-        // } else if (startRect.top > endRect.top + endRect.height) {
-        //   startX = startRect.left + 0.5 * startRect.width - areaRect.left
-        //   startY = startRect.top - areaRect.top
-
-        //   endX = endRect.left + 0.5 * endRect.width - areaRect.left
-        //   endY = endRect.top + endRect.height - areaRect.top
-
-        //   deltaX = (endX - startX) * .5
-        //   deltaY = (endY - startY) * .5
-
-        //   angle = 270
-
-        //   path = `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
-        // } else {
-        //   if (startRect.left + startRect.width < endRect.left) {
-        //     startX = startRect.left + startRect.width - areaRect.left
-        //     startY = startRect.top + 0.5 * startRect.height - areaRect.top
-
-        //     endX = endRect.left - areaRect.left
-        //     endY = endRect.top + 0.5 * endRect.height - areaRect.top
-
-        //     deltaX = (endX - startX) * .5
-        //     deltaY = (endY - startY) * .5
-
-        //     path = `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
-        //   } else if (startRect.left > endRect.left + endRect.width) {
-        //     startX = startRect.left - areaRect.left
-        //     startY = startRect.top + 0.5 * startRect.height - areaRect.top
-
-        //     endX = endRect.left + endRect.width - areaRect.left
-        //     endY = endRect.top + 0.5 * endRect.height - areaRect.top
-
-        //     deltaX = (endX - startX) * .5
-        //     deltaY = (endY - startY) * .5
-
-        //     angle = 180
-
-        //     path = `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`
-        //   }
-        // }
         
         return {
           line: path, 
