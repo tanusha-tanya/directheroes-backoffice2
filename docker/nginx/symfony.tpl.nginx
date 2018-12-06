@@ -74,7 +74,7 @@ server {
     # End landing page URLs
 
     # Static files headers
-    location ~ ^/(js|css) {
+    location ~ ^/(js|css|build) {
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '*';
             #
