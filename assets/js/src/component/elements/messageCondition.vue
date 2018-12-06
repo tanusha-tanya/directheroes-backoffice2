@@ -10,23 +10,32 @@
     <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
   </el-select>
   <template v-if="['storyShare', 'any'].includes(element.value.messageType)">
-    <keywords v-model="element.value.keywords"></keywords>
+    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
+    <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
   <template v-if="element.value.messageType == 'postShare'">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
-    <keywords v-model="element.value.keywords"></keywords>
+    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
+    <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
 </div>  
 </template>
 <script>
+import messageConditionMultiple from "./messageConditionMultiple.vue";
 import keywords from "../keywords.vue";
 
 export default {
-  props:['element'],
+  props:['element', 'mode'],
 
   components: {
+    conditionList: messageConditionMultiple,
     keywords
+  },
+
+  mounted() {
+    console.log(this);
+    
   }
 }
 </script>

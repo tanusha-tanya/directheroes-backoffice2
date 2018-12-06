@@ -14,6 +14,7 @@
   </drop>    
 </template>
 <script>
+import ObjectId from '../utils/ObjectId'
 import debounce from 'lodash/debounce'
 import campaignCard from '../component/builder-cards/campaignCard.vue'
 import stepCard from '../component/builder-cards/stepCard.vue'
@@ -138,11 +139,12 @@ export default {
     },
 
     dropHandler(data, event) {
+      const ObjId = new ObjectId;
       this.dragged = false;
 
       if (data.type != "regular") return;
 
-      data.id = this.utils.uuidv4();
+      data.id = ObjId.toString();
 
       this.currentCampaign.steps.push({
         ...data, 

@@ -82,7 +82,7 @@ export default {
           name: 'List', 
           svg: navicon,
           template: {
-            type: 'messageTextConditionMultiple',
+            type: 'messageConditionMultiple',
             value: {
               conditionList:[]
             }

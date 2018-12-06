@@ -2,7 +2,7 @@
   <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
     <template slot="header">{{ step.name }}</template>
     <template slot="body">
-      <div class="element-container" v-for="element in step.elements">
+      <div class="element-container" v-for="element in step.elements" :key="element.id">
         <div class="element-title">
           {{elementsNames[element.type]}}
           <div @click="elementRemove(element)">&times</div>
@@ -29,7 +29,7 @@ import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
+import messageConditionMultiple from '../elements/messageConditionMultiple.vue'
 
 export default {
   data() {
@@ -38,14 +38,14 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay',
-        messageTextConditionMultiple: 'List',
+        messageConditionMultiple: 'List',
         messageCondition: 'Trigger'
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
         messageCondition,
-        messageTextConditionMultiple
+        messageConditionMultiple
       },
       dragged: false,
       Drop

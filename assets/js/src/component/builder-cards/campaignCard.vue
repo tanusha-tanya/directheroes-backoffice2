@@ -2,7 +2,7 @@
     <builder-card class="campaign-card" :settings="campaignStep.displaySettings">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="body">
-        <message-condition :element="campaignData"></message-condition>
+        <message-condition :element="campaignData" mode="list-conditions"></message-condition>
       </template>
     </builder-card>
 </template>
@@ -13,7 +13,7 @@ import messageCondition from "../elements/messageCondition.vue";
 export default {
   computed: {
     campaignStep() {
-      return this.campaign.steps.find(step => step.type = 'campaignEntry')
+      return this.campaign.steps.find(step => step.type == 'campaignEntry')
     },
 
     campaignData() {
@@ -26,7 +26,7 @@ export default {
     messageCondition
   },
 
-  props: ['campaign'],
+  props: ['campaign']
 }
 </script>
 <style lang="scss">
