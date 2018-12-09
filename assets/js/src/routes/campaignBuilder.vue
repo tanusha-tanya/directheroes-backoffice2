@@ -8,9 +8,9 @@
     @drop="dropHandler"
   >
     <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
-    <step-card :step="step" v-for="step in steps" :key="step.id" ref="steps" @delete-step="deleteStep"></step-card>
+    <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
     <builder-elements></builder-elements>
-    <arrows ref="arrows" :refs="$refs" :arrows="arrows"></arrows>
+    <arrows ref="arrows" :refs="builder" :arrows="arrows"></arrows>
   </drop>    
 </template>
 <script>
@@ -65,14 +65,24 @@ export default {
       const arrows = [];
 
       currentCampaign.steps.forEach(step => step.elements.find(element => {
-        if (element.type != 'goToStep') return;
 
-        arrows.push({ parent: step.id, child: element.value.stepId});
+        switch(element.type) {
+          case 'messageConditionMultiple':
+          element.value.conditionList.forEach(item => {
+            if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
-        return true;
+            arrows.push({ parent: item.id || element.id, child: item.onMatch.value.stepId});
+          })
+
+          break;
+        }
       }))
 
       return arrows;
+    },
+
+    builder() {
+      return this;
     }
   },
 

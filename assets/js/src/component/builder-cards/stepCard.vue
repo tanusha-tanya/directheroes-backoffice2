@@ -9,7 +9,7 @@
           <div v-if="false" class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
-          <component :is="elementComponents[element.type]" :element="element"></component>
+          <component :is="elementComponents[element.type]" :element="element" :ref="element.id"></component>
         </div>
       </div> 
       <component 

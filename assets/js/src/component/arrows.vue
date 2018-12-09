@@ -10,15 +10,6 @@
   </svg>  
 </template>
 <script>
-const config = {
-  // elementDistance: 50,
-};
-const absolute = function(x) {
-    return (x < 0) ? -x : x;
-}
-const signum = function(x) {
-    return (x < 0) ? -1 : 1;
-}
 
 export default {
   data() {
@@ -35,8 +26,14 @@ export default {
       const areaRect = this.$el.getBoundingClientRect();
       
       this.pathes = this.arrows.map(arrow => {
-        const startRect = getElement(arrow.parent).$el.getBoundingClientRect();
-        const endRect = getElement(arrow.child).$el.getBoundingClientRect();
+        let parent = getElement(arrow.parent);
+        let child = getElement(arrow.child);
+
+        parent = parent[0] || parent;
+        child = child[0] || child; 
+        
+        const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
+        const endRect = (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
         const isOnTop = startRect.top + startRect.height < endRect.top;
         const isOnBottom = startRect.top > endRect.top + endRect.height;
         const isOnRight = startRect.left + startRect.width < endRect.left;
@@ -80,13 +77,20 @@ export default {
     },
 
     getElement(id) {
+      const findElement = container => {
+        if (container.$refs.hasOwnProperty(id)) {
+          element = container.$refs[id];
+          return true
+        }
+        
+        container.$children.find(child => findElement(child));
+      }
       const { refs } = this;
+      let element = null;
+
+      findElement(refs);
       
-      if (refs.hasOwnProperty(id)) return refs[id];
-
-      const step = refs.steps.find(step => step.$refs.hasOwnProperty(id))
-
-      return step && step.$refs[id];
+      return element
     }
   },
 

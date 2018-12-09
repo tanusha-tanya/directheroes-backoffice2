@@ -31,12 +31,7 @@ export default {
   components: {
     conditionList: messageConditionMultiple,
     keywords
-  },
-
-  mounted() {
-    console.log(this);
-    
-  }
+  } 
 }
 </script>
 <style lang="scss">

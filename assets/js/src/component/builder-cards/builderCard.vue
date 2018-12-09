@@ -12,6 +12,8 @@
   </div>
 </template>
 <script>
+import Vue from 'vue';
+
 let startX, startY, initialMouseX, initialMouseY;
 
 export default {
@@ -21,8 +23,8 @@ export default {
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX);
         const top = startY+ (event.clientY - initialMouseY);
-        settings.positionY = top < 0 ? 0 : top;
-        settings.positionX = left < 0 ? 0 : left;
+        Vue.set(settings, 'positionY', top < 0 ? 0 : top);
+        Vue.set(settings, 'positionX', left < 0 ? 0 : left);
         return false;
       }
 

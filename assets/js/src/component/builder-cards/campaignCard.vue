@@ -17,7 +17,7 @@ export default {
     },
 
     campaignData() {
-      return this.campaignStep.elements.find(element => element.type === 'messageCondition')
+      return this.campaignStep.elements.find(element => element.type === 'messageConditionMultiple')
     },
   },
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="list-keywords">
+  <div class="list-keywords" :ref="element.id">
     <div class="list-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
       <arrow-born></arrow-born>
@@ -39,10 +39,6 @@ export default {
     }
   },
 
-  mounted() {
-    console.log(this.$refs, this);
-    
-  }
 }
 </script>
 <style lang="scss">
