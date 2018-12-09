@@ -1,6 +1,6 @@
 <template>
   <svg class="arrows" width="100%" height="100%">
-    <template v-for="path in pathes" v-if="path.line">
+    <template v-for="path in pathes" v-if="path && path.line">
       <path :d="path.line"  fill="none" stroke="#DDDDDD" stroke-width="2"></path>
       <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 8}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" fill="#E7E7E7"/>
     </template>
@@ -26,14 +26,15 @@ export default {
       const areaRect = this.$el.getBoundingClientRect();
       
       this.pathes = this.arrows.map(arrow => {
+        const isToPoint = arrow.child == 'toPoint';
         let parent = getElement(arrow.parent);
-        let child = getElement(arrow.child);
+        let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
 
         parent = parent[0] || parent;
         child = child[0] || child; 
         
         const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
-        const endRect = (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
+        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
         const isOnTop = startRect.top + startRect.height < endRect.top;
         const isOnBottom = startRect.top > endRect.top + endRect.height;
         const isOnRight = startRect.left + startRect.width < endRect.left;
@@ -96,6 +97,19 @@ export default {
 
   mounted() {
     this.recalcPathes()
+  },
+
+  watch: {
+    '$store.state.newPoint'(newValue) {
+      if (newValue) {
+        this.recalcPathes()
+      } else {
+        const { arrows } = this.$store.state;
+
+        arrows.splice(arrows.length - 1, 1);
+        this.recalcPathes()
+      }
+    },
   }
 }
 </script>

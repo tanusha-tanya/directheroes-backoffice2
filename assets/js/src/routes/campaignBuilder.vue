@@ -6,6 +6,7 @@
     @dragover="dragEnter"
     @dragleave="dragLeave"
     @drop="dropHandler"
+    @click="removePoint"
   >
     <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
     <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
@@ -61,22 +62,24 @@ export default {
     },
 
     arrows() {
-      const { currentCampaign } = this
+      const { currentCampaign, $store } = this
       const arrows = [];
 
       currentCampaign.steps.forEach(step => step.elements.find(element => {
 
         switch(element.type) {
           case 'messageConditionMultiple':
-          element.value.conditionList.forEach(item => {
-            if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
+            element.value.conditionList.forEach(item => {
+              if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
-            arrows.push({ parent: item.id || element.id, child: item.onMatch.value.stepId});
-          })
+              arrows.push({ parent: item.id || element.id, child: item.onMatch.value.stepId});
+            })
 
           break;
         }
       }))
+
+      $store.commit('set', { path: 'arrows', value: arrows});
 
       return arrows;
     },
@@ -170,6 +173,22 @@ export default {
       const { steps } = this.currentCampaign;
       
       steps.splice(steps.indexOf(step),1)
+    },
+
+    arrowPoint(event) {
+      this.$store.commit('set', { 
+        path: 'newPoint', 
+        value: {
+          top: event.clientY,
+          left: event.clientX,
+          height: 0,
+          width: 0
+        }
+      })
+    },
+
+    removePoint() {
+      this.$store.commit('set', {path: 'newPoint', value: null});
     }
   },
 
@@ -179,6 +198,13 @@ export default {
       if (this.currentCampaign) return;
 
       this.setCurrentCampaign(this.$route);
+    },
+
+    '$store.state.newPoint'(newValue, oldValue) {
+      if (oldValue && newValue) return;
+      
+      this.$el[newValue ? 'addEventListener' : 'removeEventListener']('mousemove', this.arrowPoint)
+      this.$el[newValue ? 'addEventListener' : 'removeEventListener']('click', this.removePoint)
     },
 
     currentCampaign: {

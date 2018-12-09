@@ -2,6 +2,7 @@
   <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
     <template slot="header">{{ step.name }}</template>
     <template slot="body">
+      <div class="arrow-connect" v-if="$store.state.newPoint"></div>
       <div class="element-container" v-for="element in step.elements" :key="element.id">
         <div class="element-title">
           {{elementsNames[element.type]}}
@@ -87,6 +88,11 @@ export default {
 }
 </script>
 <style lang="scss">
+  @keyframes scale-element {
+    from {transform: scale(1)}
+    50% {transform: scale(1.5)}
+    to {transform: scale(1)}
+  }
   div.step-card {
     border-color: #2E9E7B;
     background-color: #2E9E7B;
@@ -114,6 +120,22 @@ export default {
       &.in-drag {
         border-color: #96B5FF;
         color: #96B5FF;
+      }
+    }
+
+    .arrow-connect {
+      height: 20px;
+      width: 20px;
+      border: 2px solid #2E9E7B;
+      border-radius: 10px;
+      position: absolute;
+      top: calc(50% - 10px);
+      left: -10px;
+      background-color: #fff;
+      animation: scale-element 1s infinite;
+
+      &:hover {
+        background-color: #2E9E7B;
       }
     }
 

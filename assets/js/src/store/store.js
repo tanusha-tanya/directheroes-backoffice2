@@ -16,6 +16,8 @@ export default new VueX.Store({
   state: {
     dhAccount: null,
     accounts: [],
+    newPoint: null,
+    arrows: [],
     currentAccount: null,
     campaignToRename: null,
     newAccount: {
