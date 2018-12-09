@@ -74,7 +74,9 @@ export default {
 
               arrows.push({ parent: item.id || element.id, child: item.onMatch.value.stepId});
             })
-
+          break;
+          case 'goToStep':
+            arrows.push({ parent: step.id, child: element.value.stepId});
           break;
         }
       }))
