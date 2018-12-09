@@ -1,6 +1,6 @@
 <template>
   <div class="image-action">
-    <div :class="{'image-preview': true, blank: !element.value}" :style="{'background-image': element.value && `url(${ element.value.url })` }"></div>
+    <div :class="{'image-preview': true, blank: !element.value}" :style="{'background-image': element.value && `url(${ element.value.previewUrl })` }"></div>
     <div class="upload-button">
        <input type="file" @change="uploadImage"/>
     </div>
