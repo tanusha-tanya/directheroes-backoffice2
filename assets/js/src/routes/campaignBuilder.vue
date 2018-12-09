@@ -69,6 +69,7 @@ export default {
 
         switch(element.type) {
           case 'messageConditionMultiple':
+          case 'messageTextConditionMultiple':
             element.value.conditionList.forEach(item => {
               if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
