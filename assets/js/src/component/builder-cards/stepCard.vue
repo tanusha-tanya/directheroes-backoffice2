@@ -3,14 +3,14 @@
     <template slot="header">{{ step.name }}</template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint"></div>
-      <div class="element-container" v-for="element in step.elements" :key="element.id">
+      <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
         <div class="element-title">
-          {{elementsNames[element.type]}}
+          {{elementsNames[element.type]}} 
           <div @click="elementRemove(element)">&times</div>
           <div v-if="false" class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
-          <component :is="elementComponents[element.type]" :element="element" :ref="element.id"></component>
+          <component  :is="elementComponents[element.type]" :element="element" :ref="element.id"></component>
         </div>
       </div> 
       <component 
@@ -30,7 +30,7 @@ import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageConditionMultiple from '../elements/messageConditionMultiple.vue'
+import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
 
 export default {
   data() {
@@ -39,14 +39,14 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay',
-        messageConditionMultiple: 'List',
+        messageTextConditionMultiple: 'List',
         messageCondition: 'Trigger'
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
         messageCondition,
-        messageConditionMultiple
+        messageTextConditionMultiple
       },
       dragged: false,
       Drop

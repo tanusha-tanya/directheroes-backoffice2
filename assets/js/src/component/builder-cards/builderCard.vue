@@ -95,6 +95,7 @@ export default {
 .builder-card-drag-handler {
   flex-grow: 1;
   cursor: move;
+  min-height: 15px;
 }
 
 .builder-card-body {
