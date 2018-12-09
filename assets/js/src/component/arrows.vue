@@ -110,6 +110,12 @@ export default {
         this.recalcPathes()
       }
     },
+
+    '$store.state.arrowConnectData'(value) {
+      if (value) return;
+
+      this.recalcPathes()
+    },
   }
 }
 </script>

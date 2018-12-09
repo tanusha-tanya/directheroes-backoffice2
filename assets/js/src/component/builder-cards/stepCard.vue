@@ -2,7 +2,7 @@
   <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
     <template slot="header">{{ step.name }}</template>
     <template slot="body">
-      <div class="arrow-connect" v-if="$store.state.newPoint"></div>
+      <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
       <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
         <div class="element-title">
           {{elementsNames[element.type]}} 
@@ -25,6 +25,7 @@
   </builder-card>
 </template>
 <script>
+import ObjectId from '../../utils/ObjectId'
 import builderCard from "./builderCard.vue";
 import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
@@ -73,7 +74,7 @@ export default {
     dropHandler(data) {
       if (data.type == "regular") return;
 
-      data.id = this.utils.uuidv4();
+      data.id = (new ObjectId).toString();
 
       this.dragged = false;
       this.step.elements.push({ ...data, displaySettings: { collapsed: false }});
@@ -83,6 +84,19 @@ export default {
       const { elements } = this.step;
 
       elements.splice(elements.indexOf(element), 1);
+    },
+
+    setArrowConnect() {
+      const { $store, step } = this;
+      const { arrows } = $store.state;
+
+      $store.commit('set', { 
+        path: 'arrowConnectData', 
+        value: {
+          parent: arrows[arrows.length - 1].parent,
+          child: step.id
+        } 
+      })
     }
   }
 }

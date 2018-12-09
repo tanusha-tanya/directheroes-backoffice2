@@ -17,6 +17,7 @@ export default new VueX.Store({
     dhAccount: null,
     accounts: [],
     newPoint: null,
+    arrowConnectData: null,
     arrows: [],
     currentAccount: null,
     campaignToRename: null,
