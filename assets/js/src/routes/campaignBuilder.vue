@@ -78,7 +78,7 @@ export default {
           break;
           case 'goToStep':
             arrows.push({ parent: step.id, child: element.value.stepId});
-          break;
+           break;
         }
       }))
 
