@@ -58,7 +58,6 @@ export default {
 
 .builder-card-header {
   font-size: 15px;
-  padding: 10px;
   color: #fff;
   display: flex;
   align-items: center;
@@ -67,6 +66,7 @@ export default {
   .collapse-toggler {
     width: 16px;
     height: 16px;
+    margin: 10px;
     position: relative;
     flex-shrink: 0;
 
@@ -96,6 +96,7 @@ export default {
   flex-grow: 1;
   cursor: move;
   min-height: 15px;
+  padding: 10px;
 }
 
 .builder-card-body {

@@ -1,5 +1,5 @@
 <template>
-  <svg class="arrows" width="100%" height="100%">
+  <svg class="arrows" :width="width" :height="height">
     <template v-for="path in pathes" v-if="path && path.line">
       <path :d="path.line"  fill="none" stroke="#DDDDDD" stroke-width="2"></path>
       <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 8}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" fill="#E7E7E7"/>
@@ -14,7 +14,9 @@
 export default {
   data() {
     return {
-      pathes: []
+      pathes: [],
+      width: '100%',
+      height: '100%'
     }
   },
 
@@ -22,7 +24,7 @@ export default {
   
   methods: {
     recalcPathes() {
-      const { refs, getElement } = this;
+      const { refs, getElement, $parent } = this;
       const areaRect = this.$el.getBoundingClientRect();
       
       this.pathes = this.arrows.map(arrow => {
@@ -75,6 +77,11 @@ export default {
           }
         }
       })
+
+      if ($parent) {
+        this.width = `${ $parent.$el.scrollWidth}px`
+        this.height = `${ $parent.$el.scrollHeight}px`
+      }
     },
 
     getElement(id) {

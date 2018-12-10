@@ -1,6 +1,6 @@
 <template>
   <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
-    <template slot="header">{{ step.name }}</template>
+    <template slot="header">{{ step.name || '&nbsp;'}}</template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
       <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
@@ -110,6 +110,7 @@ export default {
   div.step-card {
     border-color: #2E9E7B;
     background-color: #2E9E7B;
+    box-shadow: 0 0 10px #F5F5F5;
     top: 130px;
     left: 450px;
 
