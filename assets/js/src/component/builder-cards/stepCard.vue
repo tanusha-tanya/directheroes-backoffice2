@@ -4,13 +4,15 @@
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
       <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
-        <div class="element-title">
-          {{elementsNames[element.type]}} 
-          <div @click="elementRemove(element)">&times</div>
-          <div v-if="false" class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
+        <div class="element-title" :ref="element.id">
+          <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
+            {{elementsNames[element.type]}}
+            <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
+          </span>
+          <div class="remove-element" @click="elementRemove(element)">&times</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
-          <component  :is="elementComponents[element.type]" :element="element" :ref="element.id"></component>
+          <component :is="elementComponents[element.type]" :element="element"></component>
         </div>
       </div> 
       <component 
@@ -161,25 +163,59 @@ export default {
 
       .element-title {
         background: linear-gradient(180deg, #FAFAFA 0%, #F2F2F2 98.27%);
-        font-family: 'AbeatbyKai';
-        font-size: 16px;
-        padding: 10px 11px 10px 21px;
-        color: #A9A9A9;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         border-bottom: 1px solid #DDDDDD;
         border-radius: 4px 4px 0 0;
+        position: relative;
         cursor: pointer;
+
+        span {
+          padding: 10px 10px 10px 21px;
+          font-family: 'AbeatbyKai';
+          font-size: 16px;
+          color: #A9A9A9;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
 
         &.is-collapsed {
           border-bottom: none;
           border-radius: 4px;
         }
+
+        .remove-element {
+          opacity: 0;
+          color: #ddd;
+          height: 15px;
+          width: 15px;
+          font-size: 16px;
+          position: absolute;
+          z-index: 2;
+          border-radius: 7px;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          line-height: 16px;
+          text-align: center;
+          left: calc(50% - 7px);
+          top: -7px;
+          cursor: pointer;
+
+          &:hover {
+            color: #000
+          }
+        }
+
+        .collapse-toggle {
+          margin: 0 11px
+        }
       }
 
       .element-body {
         min-height: 70px;
+      }
+
+       &:hover .remove-element{
+        opacity: 1;
       }
     }
 

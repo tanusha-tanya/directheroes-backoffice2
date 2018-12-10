@@ -67,14 +67,16 @@ export default {
 
       currentCampaign.steps.forEach(step => step.elements.find(element => {
         const { collapsed } = step.displaySettings
-        
+        const { collapsed: elementCollapsed } = element.displaySettings
+        const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
+      
         switch(element.type) {
           case 'messageConditionMultiple':
           case 'messageTextConditionMultiple':
             element.value.conditionList.forEach(item => {
               if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
-              arrows.push({ parent: collapsed ? step.id : item.id , child: item.onMatch.value.stepId});
+              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId});
             })
           break;
           case 'goToStep':
