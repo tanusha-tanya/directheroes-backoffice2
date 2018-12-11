@@ -24,64 +24,66 @@ export default {
   
   methods: {
     recalcPathes() {
-      const { refs, getElement, $parent } = this;
-      const areaRect = this.$el.getBoundingClientRect();
-      
-      this.pathes = this.arrows.map(arrow => {
-        const isToPoint = arrow.child == 'toPoint';
-        let parent = getElement(arrow.parent);
-        let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
-
-        parent = parent[0] || parent;
-        child = child[0] || child; 
+      setTimeout(() => {
+        const { refs, getElement, $parent } = this;
+        const areaRect = this.$el.getBoundingClientRect();
         
-        const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
-        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
-        const isOnTop = startRect.top + startRect.height < endRect.top;
-        const isOnBottom = startRect.top > endRect.top + endRect.height;
-        const isOnRight = startRect.left + startRect.width < endRect.left;
-        const isOnLeft = startRect.left > endRect.left + endRect.width
+        this.pathes = this.arrows.map(arrow => {
+          const isToPoint = arrow.child == 'toPoint';
+          let parent = getElement(arrow.parent);
+          let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
 
-        if(!isOnTop && !isOnBottom && !isOnRight && !isOnLeft) return;
+          parent = parent[0] || parent;
+          child = child[0] || child; 
+          
+          const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
+          const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
+          const isOnTop = startRect.top + startRect.height < endRect.top;
+          const isOnBottom = startRect.top > endRect.top + endRect.height;
+          const isOnRight = startRect.left + startRect.width < endRect.left;
+          const isOnLeft = startRect.left > endRect.left + endRect.width
 
-        const startX = (((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
-          (isOnRight && startRect.left + startRect.width) ||
-          (isOnLeft && startRect.left)) - areaRect.left;
+          if(!isOnTop && !isOnBottom && !isOnRight && !isOnLeft) return;
 
-        const startY = ((isOnTop && startRect.top + startRect.height) || 
-          (isOnBottom && startRect.top) ||
-          ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height)) - areaRect.top
+          const startX = (((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
+            (isOnRight && startRect.left + startRect.width) ||
+            (isOnLeft && startRect.left)) - areaRect.left;
 
-        const endX = (((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
-          (isOnRight && endRect.left) ||
-          (isOnLeft && endRect.left + endRect.width)) - areaRect.left;
+          const startY = ((isOnTop && startRect.top + startRect.height) || 
+            (isOnBottom && startRect.top) ||
+            ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height)) - areaRect.top
 
-        const endY = ((isOnTop && endRect.top) || 
-          (isOnBottom && endRect.top + endRect.height) ||
-          ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top
+          const endX = (((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
+            (isOnRight && endRect.left) ||
+            (isOnLeft && endRect.left + endRect.width)) - areaRect.left;
+
+          const endY = ((isOnTop && endRect.top) || 
+            (isOnBottom && endRect.top + endRect.height) ||
+            ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top
+          
+          const deltaX = (endX - startX) * .5
+          const deltaY = (endY - startY) * .5
+          
+          let path = ((isOnTop || isOnBottom) && `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`) || 
+            ((isOnLeft || isOnRight) && `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`)
         
-        const deltaX = (endX - startX) * .5
-        const deltaY = (endY - startY) * .5
-        
-        let path = ((isOnTop || isOnBottom) && `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`) || 
-          ((isOnLeft || isOnRight) && `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`)
-       
-        let angle = (isOnTop && 90) || (isOnBottom && 270) || (isOnLeft && 180) || 0;
-        
-        return {
-          line: path, 
-          arrow: {
-            x: endX,
-            y: endY,
-            angle
+          let angle = (isOnTop && 90) || (isOnBottom && 270) || (isOnLeft && 180) || 0;
+          
+          return {
+            line: path, 
+            arrow: {
+              x: endX,
+              y: endY,
+              angle
+            }
           }
-        }
-      })
+        })
 
-      if ($parent) {
-        this.width = `${ $parent.$el.scrollWidth}px`
-        this.height = `${ $parent.$el.scrollHeight}px`
-      }
+        if ($parent) {
+          this.width = `${ $parent.$el.scrollWidth}px`
+          this.height = `${ $parent.$el.scrollHeight}px`
+        }
+      }, 100)
     },
 
     getElement(id) {
