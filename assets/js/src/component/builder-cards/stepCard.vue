@@ -31,6 +31,7 @@ import ObjectId from '../../utils/ObjectId'
 import builderCard from "./builderCard.vue";
 import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
+import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
 import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
@@ -49,7 +50,8 @@ export default {
         sendImageAction,
         sendTextAction,
         messageCondition,
-        messageTextConditionMultiple
+        messageTextConditionMultiple,
+        basicDelay
       },
       dragged: false,
       Drop

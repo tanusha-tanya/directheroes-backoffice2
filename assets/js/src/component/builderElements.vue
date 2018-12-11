@@ -74,7 +74,7 @@ export default {
           template: {
             type: 'basicDelay',
             value: {
-              seconds: 0
+              seconds: 1
             }
           }  
         },
