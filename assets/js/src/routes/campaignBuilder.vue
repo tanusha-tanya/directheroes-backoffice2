@@ -1,18 +1,28 @@
 <template>
-  <drop 
+  <div 
     :class="{'campaign-builder': true, dragged}" 
     v-if="currentCampaign" 
     tag="div"
     @dragover="dragEnter"
     @dragleave="dragLeave"
     @drop="dropHandler"
-    @click="removePoint"
   >
-    <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
-    <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
+    <div class="builder-area" :style="{ width, height, zoom: `${scale}%`}">
+      <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
+      <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
+      <arrows ref="arrows" :refs="builder" :arrows="arrows"></arrows> 
+    </div>
     <builder-elements></builder-elements>
-    <arrows ref="arrows" :refs="builder" :arrows="arrows"></arrows>
-  </drop>    
+    <div class="zoom-element">
+      <el-slider
+        v-model="scale"
+        :min="50"
+        :max="150"
+        :step="10"
+      >
+      </el-slider>
+    </div>
+  </div>    
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
@@ -40,7 +50,8 @@ export default {
   data() {
     return {
       currentCampaign: null,
-      dragged: false
+      dragged: false,
+      scale: 100
     }
   },
 
@@ -198,7 +209,6 @@ export default {
     }
   },
 
-
   watch:{
     '$store.state.accounts'() {
       if (this.currentCampaign) return;
@@ -215,8 +225,14 @@ export default {
 
     currentCampaign: {
       handler: function (campaign, oldCampaign) {
-        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
         
+        setTimeout(() => {
+          this.width = `${ this.$el.scrollWidth }px`
+          this.height = `${ this.$el.scrollHeight }px`
+        }, 100)
+
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+         
         if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id) return;
 
         this.saveCampaign();
@@ -236,6 +252,27 @@ export default {
 
   &.dragged {
     background-color:#E2E2E2
+  }
+
+  .builder-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  .zoom-element {
+    position: fixed;
+    background-color: #fff;
+    padding: 0 10px;
+    z-index: 10;
+    top: 50px;
+    left: calc(50% - 10px);
+    width: 200px;
+    border: 2px solid #E8E8E8;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
   }
 }
 </style>
