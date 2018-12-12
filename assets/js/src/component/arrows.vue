@@ -18,13 +18,16 @@ export default {
     }
   },
 
-  props: ['refs', 'arrows'],
+  props: ['refs', 'arrows', 'scale'],
   
   methods: {
     recalcPathes() {
       setTimeout(() => {
-        const { refs, getElement, $parent } = this;
+        const { refs, getElement, scale } = this;
         const areaRect = this.$el.getBoundingClientRect();
+
+        console.log(scale);
+        
         
         this.pathes = this.arrows.map(arrow => {
           const isToPoint = arrow.child == 'toPoint';
@@ -43,21 +46,21 @@ export default {
 
           if(!isOnTop && !isOnBottom && !isOnRight && !isOnLeft) return;
 
-          const startX = (((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
+          const startX = ((((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
             (isOnRight && startRect.left + startRect.width) ||
-            (isOnLeft && startRect.left)) - areaRect.left;
+            (isOnLeft && startRect.left)) - areaRect.left) / scale
 
-          const startY = ((isOnTop && startRect.top + startRect.height) || 
+          const startY = (((isOnTop && startRect.top + startRect.height) || 
             (isOnBottom && startRect.top) ||
-            ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height)) - areaRect.top
+            ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height)) - areaRect.top) / scale
 
-          const endX = (((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
+          const endX = ((((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
             (isOnRight && endRect.left) ||
-            (isOnLeft && endRect.left + endRect.width)) - areaRect.left;
+            (isOnLeft && endRect.left + endRect.width)) - areaRect.left) / scale
 
-          const endY = ((isOnTop && endRect.top) || 
+          const endY = (((isOnTop && endRect.top) || 
             (isOnBottom && endRect.top + endRect.height) ||
-            ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top
+            ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
           
           const deltaX = (endX - startX) * .5
           const deltaY = (endY - startY) * .5

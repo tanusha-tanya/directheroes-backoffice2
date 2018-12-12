@@ -7,18 +7,18 @@
     @dragleave="dragLeave"
     @drop="dropHandler"
   >
-    <div class="builder-area" :style="{ width, height, zoom: `${scale}%`}">
+    <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`}">
       <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
       <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
-      <arrows ref="arrows" :refs="builder" :arrows="arrows"></arrows> 
+      <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows> 
     </div>
     <builder-elements></builder-elements>
     <div class="zoom-element">
       <el-slider
         v-model="scale"
-        :min="50"
-        :max="150"
-        :step="10"
+        :min=".5"
+        :max="1.5"
+        :step=".1"
       >
       </el-slider>
     </div>
@@ -51,7 +51,7 @@ export default {
     return {
       currentCampaign: null,
       dragged: false,
-      scale: 100
+      scale: 1
     }
   },
 
@@ -227,8 +227,8 @@ export default {
       handler: function (campaign, oldCampaign) {
         
         setTimeout(() => {
-          this.width = `${ this.$el.scrollWidth }px`
-          this.height = `${ this.$el.scrollHeight }px`
+          this.width = `${ this.$el.scrollWidth / this.scale }px`
+          this.height = `${ this.$el.scrollHeight / this.scale }px`
         }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
@@ -260,6 +260,7 @@ export default {
     left: 0;
     min-width: 100%;
     min-height: 100%;
+    transform-origin: left top;
   }
 
   .zoom-element {
