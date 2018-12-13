@@ -9,12 +9,13 @@
     allow-create
     default-first-option
     @change="keywordsChange"
+    :data-tag="tag"
   >
   </el-select>
 </template>
 <script>
 export default {
-  props: ['value'],
+  props: ['value', 'tag'],
 
   methods: {
     keywordsChange(value) {
@@ -25,11 +26,25 @@ export default {
 </script>
 <style lang="scss">
   .keywords {
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    background-color: #fff;
+
+    &:after {
+      content: attr(data-tag);
+      font: 9px 'AbeatbyKai';
+      color: #A9A9A9;
+      padding: 0 7px;
+      line-height: 9px;
+    }
+
     .el-input__inner {
       padding-right: 0;
-      border-color: #DDDDDD;
-      border-radius: 8px;
+      border: none;
+      // border-color: #DDDDDD;
+      // border-radius: 8px;
       min-height: 68px;
+      background-color: transparent;
     }
 
     .el-select__tags {

@@ -3,7 +3,7 @@
     <div class="list-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
       <arrow-born :element="item"></arrow-born>
-      <keywords v-model="item.keywords"></keywords>
+      <keywords v-model="item.keywords" :tag="item.name"></keywords>
     </div>
     <div class="add-keywords" @click="addKeywords">+</div>
   </div>
