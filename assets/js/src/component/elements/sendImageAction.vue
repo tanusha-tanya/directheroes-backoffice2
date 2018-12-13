@@ -2,17 +2,38 @@
   <div class="image-action">
     <div :class="{'image-preview': true, blank: !element.value}" :style="{'background-image': element.value && `url(${ element.value.previewUrl })` }"></div>
     <div class="upload-button">
-       <input type="file" @change="uploadImage"/>
+       <input type="file" accept="image/jpeg,image/png,image/gif" @change="uploadImage"/>
     </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
+
 export default {
   props:['element'],
 
   methods: {
     uploadImage() {
+      const files = event.target.files;
+      const formData = new FormData();
 
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        formData.append('file', file, file.name);
+      }
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/upload`,
+        method: 'POST',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(({ data }) => {
+        this.element.value = data.response.body
+      });
+
+      event.preventDefault();
     }
   }
 }
