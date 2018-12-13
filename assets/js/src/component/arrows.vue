@@ -25,10 +25,7 @@ export default {
       setTimeout(() => {
         const { refs, getElement, scale } = this;
         const areaRect = this.$el.getBoundingClientRect();
-
-        console.log(scale);
-        
-        
+       
         this.pathes = this.arrows.map(arrow => {
           const isToPoint = arrow.child == 'toPoint';
           let parent = getElement(arrow.parent);

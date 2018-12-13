@@ -51,6 +51,8 @@ export default {
     return {
       currentCampaign: null,
       dragged: false,
+      width: '100%',
+      height: '100%',
       scale: 1
     }
   },
@@ -95,8 +97,6 @@ export default {
           break;
         }
       }))
-
-      $store.commit('set', { path: 'arrows', value: arrows});
 
       return arrows;
     },
@@ -227,8 +227,8 @@ export default {
       handler: function (campaign, oldCampaign) {
         
         setTimeout(() => {
-          this.width = `${ this.$el.scrollWidth / this.scale }px`
-          this.height = `${ this.$el.scrollHeight / this.scale }px`
+          this.width = `${ this.$el.scrollWidth * this.scale }px`
+          this.height = `${ this.$el.scrollHeight * this.scale }px`
         }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
