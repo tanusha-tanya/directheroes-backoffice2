@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <drop 
     :class="{'campaign-builder': true, dragged}" 
     v-if="currentCampaign" 
     tag="div"
@@ -22,7 +22,7 @@
       >
       </el-slider>
     </div>
-  </div>    
+  </drop>    
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
@@ -157,7 +157,7 @@ export default {
     }, 3000),
 
     dragEnter(data) {
-      if (data.type != "regular") return;
+     if (data.type != "regular") return;
 
       this.dragged = true;
     },
@@ -171,16 +171,16 @@ export default {
     dropHandler(data, event) {
       const ObjId = new ObjectId;
       this.dragged = false;
-
-      if (data.type != "regular") return;
+  
+  if (data.type != "regular") return;
 
       data.id = ObjId.toString();
 
       this.currentCampaign.steps.push({
         ...data, 
         displaySettings:{ 
-          positionX: event.offsetX - 20, 
-          positionY: event.offsetY - 20, 
+          positionX: (event.offsetX - 20) / this.scale, 
+          positionY: (event.offsetY - 20) / this.scale, 
           collapsed: false
         } 
       });
