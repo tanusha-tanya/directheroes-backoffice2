@@ -23,12 +23,14 @@
         @drop="dropHandler"
       >+</component>
       <div class="remove-step" @click="$emit('delete-step', step)">remove step</div>
+      <arrow-born :element="step" @connect-arrow="connectArrow"></arrow-born>
     </template>
   </builder-card>
 </template>
 <script>
 import ObjectId from '../../utils/ObjectId'
 import builderCard from "./builderCard.vue";
+import arrowBorn from '../arrowBorn.vue'
 import { Drop } from 'vue-drag-drop';
 import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
@@ -60,6 +62,7 @@ export default {
 
   components: {
     builderCard,
+    arrowBorn
   },
 
   props: ['step'],
@@ -101,6 +104,20 @@ export default {
           child: step.id
         } 
       })
+    },
+
+    connectArrow(value) {
+      const { elements } = this.step;
+
+      elements.push({
+        type: 'goToStep',
+        id: (new ObjectId).toString(),
+        value: {
+          stepId: value.child
+        }
+      })
+     
+      this.$store.commit('set', {path: 'arrowConnectData', value: null});
     }
   }
 }
@@ -155,6 +172,19 @@ export default {
 
       &:hover {
         background-color: #2E9E7B;
+      }
+    }
+
+    .arrow-born {
+      position: absolute;
+      z-index: 2;
+      right: -7px;
+      font-size: 15px;
+      top: calc(50% - 11px);
+
+      &:hover {
+        border-color: #666;
+        color: #666;
       }
     }
 

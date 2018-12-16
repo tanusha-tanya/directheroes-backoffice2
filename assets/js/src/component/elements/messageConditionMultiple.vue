@@ -2,13 +2,14 @@
   <div class="list-keywords" :ref="element.id">
     <div class="list-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
-      <arrow-born :element="item"></arrow-born>
+      <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
       <keywords v-model="item.keywords" :tag="item.name"></keywords>
     </div>
     <div class="add-keywords" @click="addKeywords">+</div>
   </div>
 </template>
 <script>
+import Vue from 'vue'
 import keywords from '../keywords.vue'
 import arrowBorn from '../arrowBorn.vue'
 import ObjectId from '../../utils/ObjectId'
@@ -36,6 +37,18 @@ export default {
       const { conditionList } = this.element.value;
 
       conditionList.splice(conditionList.indexOf(keywords), 1)
+    },
+
+    connectArrow(item, value) {
+      Vue.set(item, 'onMatch', {
+        type: 'goToStep',
+        id: (new ObjectId).toString(),
+        value: {
+          stepId: value.child
+        }
+      })
+      
+      this.$store.commit('set', {path: 'arrowConnectData', value: null});
     }
   },
 

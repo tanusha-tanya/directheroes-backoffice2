@@ -2,7 +2,6 @@
   <div class='arrow-born' @click="createPoint"><span>+</span></div>  
 </template>
 <script>
-import ObjectId from '../utils/ObjectId'
 import Vue from 'vue'
 
 export default {
@@ -10,7 +9,7 @@ export default {
 
   methods: {
     createPoint() {
-      const { $store } = this;
+      const { $store, element } = this;
 
       $store.commit('set', { path: 'newPoint', value: {}});
       $store.state.arrows.push({parent: this.element.id, child: 'toPoint' })
@@ -22,18 +21,8 @@ export default {
       const { element } = this;
 
       if (!value || value.parent !== element.id) return
-      
-      Vue.set(element, 'onMatch', {
-        type: 'goToStep',
-        id: (new ObjectId).toString(),
-        value: {
-          stepId: value.child
-        }
-      })
 
-      console.log(element);
-      
-      this.$store.commit('set', {path: 'arrowConnectData', value: null});
+      this.$emit('connect-arrow', value)
     }
   }
 }

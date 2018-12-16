@@ -80,7 +80,7 @@ export default {
 
       currentCampaign.steps.forEach(step => step.elements.find(element => {
         const { collapsed } = step.displaySettings
-        const { collapsed: elementCollapsed } = element.displaySettings
+        const { collapsed: elementCollapsed } = element.displaySettings || {}
         const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
       
         switch(element.type) {
@@ -97,6 +97,8 @@ export default {
           break;
         }
       }))
+      
+      $store.commit('set', { path: 'arrows', value: arrows })
 
       return arrows;
     },
@@ -172,7 +174,7 @@ export default {
       const ObjId = new ObjectId;
       this.dragged = false;
   
-  if (data.type != "regular") return;
+      if (data.type != "regular") return;
 
       data.id = ObjId.toString();
 

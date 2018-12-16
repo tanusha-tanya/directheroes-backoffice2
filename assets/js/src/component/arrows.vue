@@ -31,6 +31,8 @@ export default {
           let parent = getElement(arrow.parent);
           let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
 
+          if (!parent || !child) return;
+
           parent = parent[0] || parent;
           child = child[0] || child; 
           
@@ -107,8 +109,12 @@ export default {
         this.recalcPathes()
       } else {
         const { arrows } = this.$store.state;
+        const connectArrow = arrows.find(arrow => arrow.child === 'toPoint')
 
-        arrows.splice(arrows.length - 1, 1);
+        if (connectArrow) {
+          arrows.splice(arrows.indexOf(connectArrow), 1);
+        }
+
         this.recalcPathes()
       }
     },
