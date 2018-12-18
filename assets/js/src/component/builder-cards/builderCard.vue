@@ -4,6 +4,7 @@
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
       </span>
+      <slot name="header-controls"></slot>
       <div :class="{ 'collapse-toggler':true, collapsed: settings.collapsed }" @click="settings.collapsed  = !settings.collapsed "></div>
     </div>
     <div class="builder-card-body" v-if="!settings.collapsed">

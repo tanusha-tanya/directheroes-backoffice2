@@ -1,5 +1,15 @@
 import Vue from 'vue';
-import { Select, Option, Input, InputNumber, Slider, Switch } from 'element-ui';
+import { 
+  Select, 
+  Option, 
+  Input, 
+  InputNumber, 
+  Slider, 
+  Switch, 
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
+} from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
 import 'element-ui/lib/theme-chalk/switch.css';
@@ -16,3 +26,6 @@ Vue.use(Input);
 Vue.use(InputNumber);
 Vue.use(Slider);
 Vue.use(Switch);
+Vue.use(Dropdown);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);

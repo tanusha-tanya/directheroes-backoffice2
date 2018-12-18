@@ -1,6 +1,11 @@
 <template>
   <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
-    <template slot="header">{{ step.name || '&nbsp;'}}</template>
+    <template slot="header">
+      {{ step.name || '&nbsp;'}}
+    </template>
+     <template slot="header-controls" v-if="false">
+      <builder-card-dialogs :step="step"></builder-card-dialogs>
+    </template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
       <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
@@ -32,6 +37,7 @@ import ObjectId from '../../utils/ObjectId'
 import builderCard from "./builderCard.vue";
 import arrowBorn from '../arrowBorn.vue'
 import { Drop } from 'vue-drag-drop';
+import builderCardDialogs from '../builderCardDialogs'
 import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
@@ -62,6 +68,7 @@ export default {
 
   components: {
     builderCard,
+    builderCardDialogs,
     arrowBorn
   },
 
@@ -137,6 +144,9 @@ export default {
 
     .builder-card-header {
       font-family: 'AbeatbyKai';
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .builder-card-body {

@@ -142,7 +142,7 @@ export default new VueX.Store({
 
     deleteCampaign({ state, commit }, campaign) {
       const request = axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/archive`,
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/archive`,
         params: { id: campaign.id }
       })
 

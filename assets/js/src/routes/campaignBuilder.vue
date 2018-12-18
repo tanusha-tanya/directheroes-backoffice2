@@ -7,7 +7,7 @@
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
       ></div>
       <div class="campaign-builder-divider"></div>
-      <div class="campaign-builder-control trash">
+      <div class="campaign-builder-control trash" @click="deleteCampaign">
         <img src="../assets/svg/trash.svg"/>
       </div>
     </div>
@@ -220,7 +220,22 @@ export default {
 
     removePoint() {
       this.$store.commit('set', {path: 'newPoint', value: null});
-    }
+    },
+
+    deleteCampaign() {
+      this.$store.dispatch('deleteCampaign', this.currentCampaign)
+        .then(({ data }) => {
+          const { currentAccount } = this.$store.state;
+          const { campaignList } = currentAccount;
+
+          if (!campaignList.length) {
+            this.$router.replace({ name: 'accountCurrent', params: { accountId: currentAccount.id } })
+          } else {
+            this.$router.replace({ name: 'accountCampaign', params: { campaignId: campaignList[0].id, accountId: currentAccount.id } })
+          }
+
+        })
+    },
   },
 
   watch:{
@@ -304,6 +319,7 @@ export default {
 
       &.trash {
         padding: 8px;
+        cursor: pointer;
       }
     }
   }
@@ -311,7 +327,7 @@ export default {
   .campaign-builder-area {
     position: absolute;
     overflow: auto;
-    height: 100%;
+    height: calc(100% - 60px);
     width: 100%;
     transition: background-color .4s;
 
