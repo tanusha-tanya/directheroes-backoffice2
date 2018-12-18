@@ -1,28 +1,40 @@
 <template>
-  <drop 
-    :class="{'campaign-builder': true, dragged}" 
-    v-if="currentCampaign" 
-    tag="div"
-    @dragover="dragEnter"
-    @dragleave="dragLeave"
-    @drop="dropHandler"
-  >
-    <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`}">
-      <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
-      <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
-      <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows> 
+  <div class="campaign-builder" v-if="currentCampaign">
+    <div class="campaign-builder-controls">
+      <span>Campaign Builder</span>
+      <div class="campaign-builder-control">
+        Activate
+        <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
+      ></div>
+      <div class="campaign-builder-divider"></div>
+      <div class="campaign-builder-control trash">
+        <img src="../assets/svg/trash.svg"/>
+      </div>
     </div>
-    <builder-elements></builder-elements>
-    <div class="zoom-element">
-      <el-slider
-        v-model="scale"
-        :min=".5"
-        :max="1.5"
-        :step=".1"
+    <drop 
+      :class="{ 'campaign-builder-area': true, dragged }" 
+      tag="div"
+      @dragover="dragEnter"
+      @dragleave="dragLeave"
+      @drop="dropHandler"
       >
-      </el-slider>
-    </div>
-  </drop>    
+      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `calc(100% / ${ scale })`, minWidth: `calc(100% / ${ scale })`}">
+        <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
+        <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
+        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows> 
+      </div>
+      <builder-elements></builder-elements>
+      <div class="zoom-element">
+        <el-slider
+          v-model="scale"
+          :min=".5"
+          :max="1.5"
+          :step=".1"
+        >
+        </el-slider>
+      </div>
+    </drop>
+  </div>
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
@@ -246,36 +258,88 @@ export default {
 </script>
 <style lang="scss">
 .campaign-builder {
-  position: absolute;
-  overflow: auto;
-  height: 100%;
-  width:100%;
-  transition: background-color .4s;
-
-  &.dragged {
-    background-color:#E2E2E2
-  }
-
-  .builder-area {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    transform-origin: left top;
-  }
-
-  .zoom-element {
-    position: fixed;
+  .campaign-builder-controls {
+    display: flex;
+    padding: 13px 5px 13px 13px;
+    align-items: center;
     background-color: #fff;
-    padding: 0 10px;
-    z-index: 10;
-    top: 50px;
-    left: calc(50% - 10px);
-    width: 200px;
-    border: 2px solid #E8E8E8;
-    border-radius: 0 0 10px 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+    color: #A9A9A9;
+
+    span {
+      font-size: 24px;
+      line-height: 24px;
+      flex-grow: 1;
+    }
+
+    .campaign-builder-divider {
+      border-left: 1px solid #A9A9A9;
+      height: 34px;
+      margin: 0 10px 0 38px;
+    }
+
+    .campaign-builder-control {
+      font-size: 18px;
+
+      .el-switch {
+        margin-left: 14px; 
+
+        .el-switch__core {
+          height: 14px;
+          background-color: transparent;
+          border: 2px solid #2E69F7;
+
+          &:after {
+            border: 2px solid #2E69F7;
+            width: 4px;
+            height: 4px;
+            left: 2px;
+          }
+        }
+
+        &.is-checked .el-switch__core:after {
+          left:100%;
+          margin-left: -10px;
+        }
+      }
+
+      &.trash {
+        padding: 8px;
+      }
+    }
+  }
+
+  .campaign-builder-area {
+    position: absolute;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+    transition: background-color .4s;
+
+    &.dragged {
+      background-color:#E2E2E2
+    }
+
+    .builder-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      transform-origin: left top;
+    }
+
+    .zoom-element {
+      position: fixed;
+      background-color: #fff;
+      padding: 0 10px;
+      z-index: 10;
+      top: 110px;
+      left: calc(50% - 10px);
+      width: 200px;
+      border: 2px solid #E8E8E8;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+    }
   }
 }
 </style>

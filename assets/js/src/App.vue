@@ -200,55 +200,55 @@ export default {
     }
   }
 
-  .el-switch {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    font-size: 14px;
-    line-height: 20px;
-    height: 20px;
-    vertical-align: middle;
+  // .el-switch {
+  //   display: inline-flex;
+  //   align-items: center;
+  //   position: relative;
+  //   font-size: 14px;
+  //   line-height: 20px;
+  //   height: 20px;
+  //   vertical-align: middle;
 
-    .el-switch__input {
-      position: absolute;
-      width: 0;
-      height: 0;
-      opacity: 0;
-      margin: 0;
-    }
+  //   .el-switch__input {
+  //     position: absolute;
+  //     width: 0;
+  //     height: 0;
+  //     opacity: 0;
+  //     margin: 0;
+  //   }
 
-    &.is-checked .el-switch__core {
-      &:after {
-        left: 100%;
-        margin-left: -14px;
-      }
-    }
+  //   &.is-checked .el-switch__core {
+  //     &:after {
+  //       left: 100%;
+  //       margin-left: -14px;
+  //     }
+  //   }
 
-    .el-switch__core {
-      margin: 0;
-      display: inline-block;
-      position: relative;
-      width: 40px;
-      height: 20px;
-      border: 3px solid #85539C;
-      outline: none;
-      border-radius: 10px;
-      cursor: pointer;
-      vertical-align: middle;
+  //   .el-switch__core {
+  //     margin: 0;
+  //     display: inline-block;
+  //     position: relative;
+  //     width: 40px;
+  //     height: 20px;
+  //     border: 3px solid #85539C;
+  //     outline: none;
+  //     border-radius: 10px;
+  //     cursor: pointer;
+  //     vertical-align: middle;
 
-      &:after {
-        content: "";
-        position: absolute;
-        top: 1px;
-        left: 2px;
-        border-radius: 100%;
-        transition: all .3s;
-        width: 12px;
-        height: 12px;
-        background-color: #85539C;
-      }
-    }
-  }
+  //     &:after {
+  //       content: "";
+  //       position: absolute;
+  //       top: 1px;
+  //       left: 2px;
+  //       border-radius: 100%;
+  //       transition: all .3s;
+  //       width: 12px;
+  //       height: 12px;
+  //       background-color: #85539C;
+  //     }
+  //   }
+  // }
 
   .scroller {
     &::-webkit-scrollbar {

@@ -103,7 +103,7 @@ export default {
 <style lang="scss">
   .builder-elements {
     position: fixed;
-    top: calc(50% - 265px);
+    top: calc(50% - 165px);
     z-index: 2;
     right: 0;
     width: 79px;
