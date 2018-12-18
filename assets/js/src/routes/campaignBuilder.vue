@@ -17,8 +17,9 @@
       @dragover="dragEnter"
       @dragleave="dragLeave"
       @drop="dropHandler"
+      ref="campaignBuilder"
       >
-      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `calc(100% / ${ scale })`, minWidth: `calc(100% / ${ scale })`}">
+      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
         <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
         <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
         <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows> 
@@ -256,8 +257,10 @@ export default {
       handler: function (campaign, oldCampaign) {
         
         setTimeout(() => {
-          this.width = `${ this.$el.scrollWidth * this.scale }px`
-          this.height = `${ this.$el.scrollHeight * this.scale }px`
+          const { campaignBuilder } = this.$refs
+          
+          this.width = `${ campaignBuilder.$el.scrollWidth * this.scale }px`
+          this.height = `${ campaignBuilder.$el.scrollHeight * this.scale }px`
         }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
