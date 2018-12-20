@@ -3,12 +3,17 @@
     <template slot="header">
       {{ step.name || '&nbsp;'}}
     </template>
-     <template slot="header-controls" v-if="false">
+    <template slot="header-controls">
       <builder-card-dialogs :step="step"></builder-card-dialogs>
     </template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
-      <div class="element-container" v-for="element in step.elements" :key="element.id" v-if="element.type !== 'goToStep'">
+      <div 
+        class="element-container" 
+        v-for="element in step.elements" 
+        :key="element.id" 
+        v-if="showElement(element)"
+        >
         <div class="element-title" :ref="element.id">
           <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
             {{elementsNames[element.type]}}
@@ -125,6 +130,10 @@ export default {
       })
      
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
+    },
+
+    showElement(element) {
+      return (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false))
     }
   }
 }

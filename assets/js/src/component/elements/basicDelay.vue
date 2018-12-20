@@ -1,6 +1,6 @@
 <template>
   <div class="basic-delay">
-    <el-input-number :min="1" size="mini" controls-position="right" v-model="timeValue" @change="setSeconds"></el-input-number>
+    <el-input-number :min="timeType != 'seconds' ? 1 : 0" size="mini" controls-position="right" v-model="timeValue" @change="setSeconds"></el-input-number>
     <el-select v-model="timeType" size="mini">
       <el-option label="Weeks" value="weeks"></el-option>
       <el-option label="Days" value="days"></el-option>

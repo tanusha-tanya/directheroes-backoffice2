@@ -1,6 +1,9 @@
 <template>
     <builder-card class="campaign-card" :settings="campaignStep.displaySettings">
       <template slot="header">{{ campaign.name }}</template>
+      <template slot="header-controls">
+        <builder-card-dialogs :step="campaign" :short="true"></builder-card-dialogs>
+      </template>
       <template slot="body">
         <message-condition :element="campaignData" mode="list-conditions"></message-condition>
       </template>
@@ -9,6 +12,7 @@
 <script>
 import builderCard from "./builderCard.vue";
 import messageCondition from "../elements/messageCondition.vue";
+import builderCardDialogs from '../builderCardDialogs'
 
 export default {
   computed: {
@@ -23,7 +27,8 @@ export default {
 
   components: {
     builderCard,
-    messageCondition
+    messageCondition,
+    builderCardDialogs
   },
 
   props: ['campaign']

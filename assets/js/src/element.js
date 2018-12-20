@@ -8,7 +8,8 @@ import {
   Switch, 
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Dialog
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -29,3 +30,4 @@ Vue.use(Switch);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
+Vue.use(Dialog);
