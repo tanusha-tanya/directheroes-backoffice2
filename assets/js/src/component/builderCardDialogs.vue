@@ -88,7 +88,7 @@ export default {
               id: (new ObjectId).toString(),
               type: 'basicDelay',
               value: {
-                seconds: 1
+                seconds: 0
               },
               displaySettings: {
                 visible: false
