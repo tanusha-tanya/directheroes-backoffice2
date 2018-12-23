@@ -1,5 +1,9 @@
 <template>
   <div class="builder-card-dialogs">
+    <div class="delay-info" v-if="delayInfo">
+      <svg width="10" height="10"><use :href="timer + '#stopwatch'"/></svg>
+      {{ delayInfo }}
+    </div>
     <el-dropdown trigger="click" @command="setActionType">
       <img src="../assets/svg/edit.svg"/>
       <el-dropdown-menu class="action-list" slot="dropdown">
@@ -39,6 +43,8 @@
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
+import utils from '../utils'
+import timer from '../assets/svg/stopwatch.svg'
 import basicDelay from './elements/basicDelay.vue'
 
 export default {
@@ -46,6 +52,7 @@ export default {
     return {
       actionType: null,
       intermediateValue: null,
+      timer
     }
   },
 
@@ -72,6 +79,23 @@ export default {
       set() {
         this.actionType = null;
       }
+    },
+
+    delayInHeader() {
+      const { step } = this;
+
+      return (step.elements || []).find( element => element.type == 'basicDelay' && element.displaySettings.visible == false)
+    },
+
+    delayInfo() {
+      const { delayInHeader } = this;
+      
+      if (!delayInHeader || !delayInHeader.value.seconds) return;
+
+      const { seconds } = delayInHeader.value;
+      const timeType = utils.secondsToTimeType(seconds);
+
+      return utils.timeFromSeconds(seconds, timeType) + timeType[0]
     }
   },
 
@@ -81,7 +105,7 @@ export default {
 
       switch (type) {
         case 'delay':
-          let element = step.elements.find( element => element.type == 'basicDelay' && element.displaySettings.visible == false)
+          let element = this.delayInHeader;
 
           if (!element) {
             element = {
@@ -132,6 +156,14 @@ export default {
 </script>
 <style lang="scss">
   .builder-card-dialogs {
+    display: flex;
+    align-items: center;
+
+    .delay-info {
+      margin-right: 10px;
+      font-size: 12px;
+    }
+
     .el-dropdown {
       img {
         cursor: pointer;
@@ -175,7 +207,7 @@ export default {
     .el-dialog__body {
       padding: 0;
 
-      input {
+      input:not(.el-input__inner) {
         width: 100%;
         margin: 20px 0;
         font-size: 15px;

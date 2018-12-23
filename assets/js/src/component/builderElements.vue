@@ -14,7 +14,7 @@
       v-for="element in elements" 
       :key="element.name"
     >
-      <img :src="element.svg"/>
+      <svg><use :href="svg[element.svg]+'#'+element.svg"/></svg>
       <div class="builder-element-title">{{element.name}}</div>
     </component>
   </div>    
@@ -25,7 +25,7 @@ import image from '../assets/svg/image.svg'
 import chatbubble from '../assets/svg/chatbubble.svg'
 import flash from '../assets/svg/flash.svg'
 import stopwatch from '../assets/svg/stopwatch.svg'
-import socialYoutube from '../assets/svg/social-youtube.svg'
+import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
 import infinite from '../assets/svg/infinite.svg'
 
@@ -37,10 +37,19 @@ export default {
         name: "New Step",
         type: "regular",
       },
+      svg: {
+        image,
+        chatbubble,
+        flash,
+        stopwatch,
+        socialyoutube,
+        navicon,
+        infinite
+      },
       elements: [
         { 
           name: 'Image', 
-          svg: image,
+          svg: 'image',
           template: {
             type: 'sendImageAction',
             value: null
@@ -48,7 +57,7 @@ export default {
         },
         { 
           name: 'Text', 
-          svg: chatbubble, 
+          svg: 'chatbubble', 
           template: {
             type: 'sendTextAction',
             value: {
@@ -58,7 +67,7 @@ export default {
         },
         { 
           name: 'Triggers', 
-          svg: flash,
+          svg: 'flash',
           template: {
             type: 'messageCondition',
             value: {
@@ -70,7 +79,7 @@ export default {
         },
         { 
           name: 'Delay', 
-          svg: stopwatch,
+          svg: 'stopwatch',
           template: {
             type: 'basicDelay',
             value: {
@@ -80,7 +89,7 @@ export default {
         },
         { 
           name: 'List', 
-          svg: navicon,
+          svg: 'navicon',
           template: {
             type: 'messageTextConditionMultiple',
             value: {
@@ -126,7 +135,7 @@ export default {
         max-height: 43px;
       }
 
-      img {
+      svg {
         max-width: 23px;
         max-height: 23px;
         pointer-events: none;
