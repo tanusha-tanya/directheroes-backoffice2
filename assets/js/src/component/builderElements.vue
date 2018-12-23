@@ -14,7 +14,7 @@
       v-for="element in elements" 
       :key="element.name"
     >
-      <svg><use :href="svg[element.svg]+'#'+element.svg"/></svg>
+      <img :svg="svg[element.svg]"/>
       <div class="builder-element-title">{{element.name}}</div>
     </component>
   </div>    
