@@ -109,10 +109,12 @@ export default {
     dropHandler(data) {
       if (data.type == "regular") return;
 
-      data.id = (new ObjectId).toString();
+      const element = JSON.parse(JSON.stringify(data))
+
+      element.id = (new ObjectId).toString();
 
       this.dragged = false;
-      this.step.elements.push({ ...data, displaySettings: { collapsed: false }});
+      this.step.elements.push({ ...element, displaySettings: { collapsed: false }});
     },
 
     elementRemove(element) {
