@@ -5,6 +5,7 @@
       <el-option label="Weeks" value="weeks"></el-option>
       <el-option label="Days" value="days"></el-option>
       <el-option label="Hours" value="hours"></el-option>
+      <el-option label="Minutes" value="minutes"></el-option>
       <el-option label="Seconds" value="seconds"></el-option>
     </el-select>
   </div>
