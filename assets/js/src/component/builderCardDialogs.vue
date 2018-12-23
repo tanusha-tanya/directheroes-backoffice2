@@ -1,7 +1,7 @@
 <template>
   <div class="builder-card-dialogs">
     <div class="delay-info" v-if="delayInfo">
-      <svg width="10" height="10"><use :href="timer + '#stopwatch'"/></svg>
+      <img width="10" height="10" src="../assets/svg/stopwatch-w.svg"/>
       {{ delayInfo }}
     </div>
     <el-dropdown trigger="click" @command="setActionType">
@@ -44,7 +44,6 @@
 <script>
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
-import timer from '../assets/svg/stopwatch.svg'
 import basicDelay from './elements/basicDelay.vue'
 
 export default {
@@ -52,7 +51,6 @@ export default {
     return {
       actionType: null,
       intermediateValue: null,
-      timer
     }
   },
 
