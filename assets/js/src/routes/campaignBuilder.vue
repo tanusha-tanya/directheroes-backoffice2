@@ -11,8 +11,8 @@
         <img src="../assets/svg/trash.svg"/>
       </div>
     </div>
-    <drop 
-      :class="{ 'campaign-builder-area': true, dragged }" 
+    <drop
+      :class="{ 'campaign-builder-area': true, dragged }"
       tag="div"
       @dragover="dragEnter"
       @dragleave="dragLeave"
@@ -22,7 +22,7 @@
       <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
         <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
         <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
-        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows> 
+        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
       </div>
       <builder-elements></builder-elements>
       <div class="zoom-element">
@@ -39,6 +39,7 @@
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
+import EventBus from '../utils/event-bus'
 import debounce from 'lodash/debounce'
 import campaignCard from '../component/builder-cards/campaignCard.vue'
 import stepCard from '../component/builder-cards/stepCard.vue'
@@ -66,7 +67,8 @@ export default {
       dragged: false,
       width: '100%',
       height: '100%',
-      scale: 1
+      scale: 1,
+      originalPosition: null,
     }
   },
 
@@ -76,7 +78,17 @@ export default {
     stepCard,
     Drop,
     arrows
-  },  
+  },
+
+  mounted() {
+    EventBus.$on('builderCard:mousedown', (cardDetails) => {
+      this.originalPosition = cardDetails
+    });
+
+    EventBus.$on('builderCard:mouseup', (cardSettings) => {
+      this.checkCollision(cardSettings);
+    });
+  },
 
   computed:{
     steps() {
@@ -95,22 +107,22 @@ export default {
         const { collapsed } = step.displaySettings
         const { collapsed: elementCollapsed } = element.displaySettings || {}
         const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
-      
+
         switch(element.type) {
           case 'messageConditionMultiple':
           case 'messageTextConditionMultiple':
             element.value.conditionList.forEach(item => {
               if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
-              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId});
+              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
             })
           break;
           case 'goToStep':
-            arrows.push({ parent: step.id, child: element.value.stepId});
+            arrows.push({ parent: step.id, child: element.value.stepId });
           break;
         }
       }))
-      
+
       $store.commit('set', { path: 'arrows', value: arrows })
 
       return arrows;
@@ -133,6 +145,8 @@ export default {
       currentCampaign.steps.forEach(step => {
         if (step.displaySettings) return;
 
+        console.log('step', step)
+        // this.originalPositions
         Object.assign(step, {
           displaySettings: {
             positionX: null,
@@ -153,7 +167,7 @@ export default {
     },
 
     saveCampaign: debounce(function() {
-
+      console.log('current campaign', this.currentCampaign)
       this.$store.dispatch('saveCampaign', this.currentCampaign)
         .then(({ data }) => {
           this.$message.success({
@@ -179,37 +193,37 @@ export default {
 
     dragLeave(data) {
       if (data.type != "regular") return;
-      
+
       this.dragged = false;
     },
 
     dropHandler(data, event) {
       const ObjId = new ObjectId;
       this.dragged = false;
-  
+
       if (data.type != "regular") return;
 
       data.id = ObjId.toString();
 
       this.currentCampaign.steps.push({
-        ...data, 
-        displaySettings:{ 
-          positionX: (event.offsetX - 20) / this.scale, 
-          positionY: (event.offsetY - 20) / this.scale, 
+        ...data,
+        displaySettings:{
+          positionX: (event.offsetX - 20) / this.scale,
+          positionY: (event.offsetY - 20) / this.scale,
           collapsed: false
-        } 
+        }
       });
     },
 
     deleteStep(step) {
       const { steps } = this.currentCampaign;
-      
+
       steps.splice(steps.indexOf(step),1)
     },
 
     arrowPoint(event) {
-      this.$store.commit('set', { 
-        path: 'newPoint', 
+      this.$store.commit('set', {
+        path: 'newPoint',
         value: {
           top: event.clientY,
           left: event.clientX,
@@ -237,6 +251,37 @@ export default {
 
         })
     },
+
+  /**
+   * compare currently dragged card position with all other campaign cards
+   * if they collide, move dragged card back to its original position
+   */
+    checkCollision(data) {
+      // compare dragged data (data) with existing card positions, except for
+      // current (data.id) card
+      console.log('collision data', data)
+      console.log('original pos', this.originalPosition)
+      console.log('original campaign', this.currentCampaign.steps)
+
+      // compare current position with campaign positions
+      this.currentCampaign.steps.forEach((step) => {
+        console.log('data x', data.x)
+        console.log('collision x', step.displaySettings.positionX)
+        if (this.originalPosition.id !== step.id && data.x == step.displaySettings.positionX) {
+          console.log('collided')
+          const felix = this.currentCampaign.steps.find(x => x.id === this.originalPosition.id)
+          felix.displaySettings.positionX = this.originalPosition.x
+          felix.displaySettings.positionY = this.originalPosition.y
+          // this.currentCampaign.steps.includes()
+          // this.currentCampaign.steps[0].displaySettings.positionX = 100
+          // this.currentCampaign.steps[0].displaySettings.positionY = 100
+        } else {
+          console.log('no collision')
+        }
+      })
+      // only check if id doesnt match, and if currentcampaignn.steps.displaysettingsX + Y
+      return true
+    }
   },
 
   watch:{
@@ -248,23 +293,22 @@ export default {
 
     '$store.state.newPoint'(newValue, oldValue) {
       if (oldValue && newValue) return;
-      
+
       this.$el[newValue ? 'addEventListener' : 'removeEventListener']('mousemove', this.arrowPoint)
       this.$el[newValue ? 'addEventListener' : 'removeEventListener']('click', this.removePoint)
     },
 
     currentCampaign: {
       handler: function (campaign, oldCampaign) {
-        
         setTimeout(() => {
           const { campaignBuilder } = this.$refs
-          
+
           this.width = `${ campaignBuilder.$el.scrollWidth * this.scale }px`
           this.height = `${ campaignBuilder.$el.scrollHeight * this.scale }px`
         }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
-         
+
         if (!oldCampaign || !campaign || campaign.id !== oldCampaign.id) return;
 
         this.saveCampaign();
@@ -299,7 +343,7 @@ export default {
       font-size: 18px;
 
       .el-switch {
-        margin-left: 14px; 
+        margin-left: 14px;
 
         .el-switch__core {
           height: 14px;

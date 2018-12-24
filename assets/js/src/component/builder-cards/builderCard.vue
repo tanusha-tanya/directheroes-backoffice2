@@ -14,6 +14,7 @@
 </template>
 <script>
 import Vue from 'vue';
+import EventBus from '../../utils/event-bus.js'
 
 let startX, startY, initialMouseX, initialMouseY;
 
@@ -21,6 +22,13 @@ export default {
   methods: {
     mouseDown(event) {
       const { settings } = this;
+      const startingPos = {};
+      startingPos['x'] = settings.positionX;
+      startingPos['y'] = settings.positionY;
+      this.$emit('mousedown', startingPos)
+      console.log('mouse down event', startingPos)
+      // EventBus.$emit('builderCard:mousedown', (startingPos));
+
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX);
         const top = startY+ (event.clientY - initialMouseY);
@@ -30,6 +38,8 @@ export default {
       }
 
       const mouseUp = (event) => {
+        this.$emit('mouseup', this.settings)
+        // EventBus.$emit('builderCard:mouseup', this.settings);
         document.removeEventListener('mousemove', mouseMove);
         document.removeEventListener('mouseup', mouseUp);
       }
