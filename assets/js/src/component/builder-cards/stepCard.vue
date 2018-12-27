@@ -143,9 +143,7 @@ export default {
       cardDetails.x = position.x
       cardDetails.y = position.y
       cardDetails.id = this.step.id
-      console.log('mouse down pos', cardDetails)
       EventBus.$emit('builderCard:mousedown', cardDetails)
-      // console.log('handling card position', startingPos)
     },
 
     handleMouseUp(position) {
@@ -153,7 +151,6 @@ export default {
       cardDetails.x = position.positionX
       cardDetails.y = position.positionY
       cardDetails.id = this.step.id
-      console.log('mouse up position', cardDetails)
       EventBus.$emit('builderCard:mouseup', cardDetails)
     }
   }

@@ -26,8 +26,6 @@ export default {
       startingPos['x'] = settings.positionX;
       startingPos['y'] = settings.positionY;
       this.$emit('mousedown', startingPos)
-      console.log('mouse down event', startingPos)
-      // EventBus.$emit('builderCard:mousedown', (startingPos));
 
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX);
@@ -39,7 +37,6 @@ export default {
 
       const mouseUp = (event) => {
         this.$emit('mouseup', this.settings)
-        // EventBus.$emit('builderCard:mouseup', this.settings);
         document.removeEventListener('mousemove', mouseMove);
         document.removeEventListener('mouseup', mouseUp);
       }
