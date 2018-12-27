@@ -21,7 +21,7 @@
       >
       <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
         <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
-        <step-card :step="step" v-for="step in steps" :key="step.id" @delete-step="deleteStep"></step-card>
+        <step-card :step="step" v-for="step in steps" :key="step.id" :ref="step.id" @delete-step="deleteStep"></step-card>
         <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
       </div>
       <builder-elements></builder-elements>
@@ -145,8 +145,6 @@ export default {
       currentCampaign.steps.forEach(step => {
         if (step.displaySettings) return;
 
-        console.log('step', step)
-        // this.originalPositions
         Object.assign(step, {
           displaySettings: {
             positionX: null,
@@ -167,7 +165,6 @@ export default {
     },
 
     saveCampaign: debounce(function() {
-      console.log('current campaign', this.currentCampaign)
       this.$store.dispatch('saveCampaign', this.currentCampaign)
         .then(({ data }) => {
           this.$message.success({
@@ -259,27 +256,82 @@ export default {
     checkCollision(data) {
       // compare dragged data (data) with existing card positions, except for
       // current (data.id) card
-      console.log('collision data', data)
-      console.log('original pos', this.originalPosition)
-      console.log('original campaign', this.currentCampaign.steps)
+      // console.log('collision data', data)
+      // console.log('original pos', this.originalPosition)
+      // console.log('original campaign', this.currentCampaign.steps)
 
+      const draggedCard = this.$refs[data.id][0] || this.$refs[data.id]
+      const draggedCardHeight = draggedCard.$el.clientHeight
+      const draggedCardWidth = draggedCard.$el.clientWidth
       // compare current position with campaign positions
       this.currentCampaign.steps.forEach((step) => {
-        console.log('data x', data.x)
-        console.log('collision x', step.displaySettings.positionX)
-        if (this.originalPosition.id !== step.id && data.x == step.displaySettings.positionX) {
-          console.log('collided')
-          const felix = this.currentCampaign.steps.find(x => x.id === this.originalPosition.id)
-          felix.displaySettings.positionX = this.originalPosition.x
-          felix.displaySettings.positionY = this.originalPosition.y
-          // this.currentCampaign.steps.includes()
-          // this.currentCampaign.steps[0].displaySettings.positionX = 100
-          // this.currentCampaign.steps[0].displaySettings.positionY = 100
-        } else {
-          console.log('no collision')
+        const card = this.$refs[step.id][0] || this.$refs[step.id]
+        const cardHeight = card.$el.clientHeight
+        const cardWidth = card.$el.clientWidth
+
+        // check if data x || data y = stepx + stepwidth
+        // console.log('datax', data.x)
+        // console.log('datax + width', data.x + draggedCardWidth)
+        // console.log('datay', data.y)
+        // console.log('step display x', step.displaySettings.positionX)
+        // console.log('max x', step.displaySettings.positionX + cardWidth)
+        // console.log('step display y', step.displaySettings.positionY)
+        // console.log('max y', step.displaySettings.positionY + cardHeight)
+
+// && data.x + draggedCardWidth >= step.displaySettings.positionX
+//  data.x + draggedCardWidth <= step.displaySettings.positionX &&
+        // check if x collides
+        // console.log('id comparison', this.originalPosition.id !== step.id)
+        // console.log('x comparison', data.x + draggedCardWidth >= step.displaySettings.positionX)
+        // console.log('x width comparison', data.x + draggedCardWidth >= step.displaySettings.positionX)
+        // console.log('y comparison', data.y + draggedCardHeight >= step.displaySettings.positionY)
+        // console.log('y+height comparison', data.y + draggedCardHeight <= step.displaySettings.positionY + cardHeight)
+
+        // check top left
+        if (this.originalPosition.id !== step.id &&
+          data.x >= step.displaySettings.positionX &&
+          data.x <= step.displaySettings.positionX + cardWidth &&
+          data.y >= step.displaySettings.positionY &&
+          data.y <= step.displaySettings.positionY + cardHeight
+        ) {
+          console.log('top left collision')
+          const draggedCard2 = this.currentCampaign.steps.find(dragged => dragged.id === this.originalPosition.id)
+          draggedCard2.displaySettings.positionX = this.originalPosition.x
+          draggedCard2.displaySettings.positionY = this.originalPosition.y
+        } // check bottom right
+         else if (this.originalPosition.id !== step.id &&
+          data.x + draggedCardWidth >= step.displaySettings.positionX &&
+          data.x + draggedCardWidth <= step.displaySettings.positionX + cardWidth
+          &&
+          data.y + draggedCardHeight >= step.displaySettings.positionY &&
+          data.y + draggedCardHeight <= step.displaySettings.positionY + cardHeight
+        ) {
+          console.log('bottom right collision')
+          const draggedCard2 = this.currentCampaign.steps.find(dragged => dragged.id === this.originalPosition.id)
+          draggedCard2.displaySettings.positionX = this.originalPosition.x
+          draggedCard2.displaySettings.positionY = this.originalPosition.y
+        } else if (this.originalPosition.id !== step.id && // check top right
+          data.x + draggedCardWidth >= step.displaySettings.positionX &&
+          data.x + draggedCardWidth <= step.displaySettings.positionX + cardWidth &&
+          data.y >= step.displaySettings.positionY &&
+          data.y <= step.displaySettings.positionY + cardHeight
+          ) {
+          const draggedCard2 = this.currentCampaign.steps.find(dragged => dragged.id === this.originalPosition.id)
+          draggedCard2.displaySettings.positionX = this.originalPosition.x
+          draggedCard2.displaySettings.positionY = this.originalPosition.y
+          console.log('top right collision')
+        } else if (this.originalPosition.id !== step.id &&
+            data.x >= step.displaySettings.positionX &&
+            data.x <= step.displaySettings.positionX + cardWidth &&
+            data.y + draggedCardHeight >= step.displaySettings.positionY &&
+            data.y + draggedCardHeight <= step.displaySettings.positionY + cardHeight
+          ) {
+          const draggedCard2 = this.currentCampaign.steps.find(dragged => dragged.id === this.originalPosition.id)
+          draggedCard2.displaySettings.positionX = this.originalPosition.x
+          draggedCard2.displaySettings.positionY = this.originalPosition.y
+          console.log('bottom left collision')
         }
       })
-      // only check if id doesnt match, and if currentcampaignn.steps.displaysettingsX + Y
       return true
     }
   },
