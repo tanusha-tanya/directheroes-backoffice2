@@ -352,21 +352,6 @@
         rule.actions.splice(actionIndex, 1);
       },
 
-      addTemplate() {
-        const { templateList } = this.currentCampaign;
-        const { dynId, uuidv4 } = this.utils;
-        const template =  {
-          id: dynId(),
-          uuid: uuidv4(),
-          name: "Template #",
-          ruleList:[]
-        }
-
-        this.addRule(template);
-
-        templateList.push(template);
-      },
-
       renameCampaign() {
         this.$store.state.campaignToRename = this.currentCampaign;
       },
