@@ -25,7 +25,7 @@ import image from '../assets/svg/image.svg'
 import chatbubble from '../assets/svg/chatbubble.svg'
 import flash from '../assets/svg/flash.svg'
 import stopwatch from '../assets/svg/stopwatch.svg'
-import socialYoutube from '../assets/svg/social-youtube.svg'
+import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
 import infinite from '../assets/svg/infinite.svg'
 

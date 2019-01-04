@@ -200,14 +200,16 @@ export default {
       this.dragged = false;
 
       if (data.type != "regular") return;
+      
+      const step = JSON.parse(JSON.stringify(data))
 
-      data.id = ObjId.toString();
+      step.id = ObjId.toString();
 
       this.currentCampaign.steps.push({
-        ...data,
-        displaySettings:{
-          positionX: (event.offsetX - 20) / this.scale,
-          positionY: (event.offsetY - 20) / this.scale,
+        ...step, 
+        displaySettings:{ 
+          positionX: (event.offsetX - 20) / this.scale, 
+          positionY: (event.offsetY - 20) / this.scale, 
           collapsed: false
         }
       });

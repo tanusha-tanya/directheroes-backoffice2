@@ -7,11 +7,11 @@
       <builder-card-dialogs :step="step"></builder-card-dialogs>
     </template>
     <template slot="body">
-      <div class="arrow-connect" v-if="$store.state.newPoint" @click="setArrowConnect"></div>
-      <div
-        class="element-container"
-        v-for="element in step.elements"
-        :key="element.id"
+      <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
+      <div 
+        class="element-container" 
+        v-for="element in step.elements" 
+        :key="element.id" 
         v-if="showElement(element)"
         >
         <div class="element-title" :ref="element.id">
@@ -81,6 +81,22 @@ export default {
 
   props: ['step'],
 
+  computed: {
+    isParentOfArrow() {
+      const { arrows } = this.$store.state
+      const connectArrow = arrows.find(arrow => arrow.child == 'toPoint')
+      const findChild = childs => {
+        if (childs.$refs.hasOwnProperty(connectArrow.parent)) return true
+
+        return (childs.$children || []).find(findChild);
+      }
+
+      if (!connectArrow) return;
+
+      return this.step.id == connectArrow.parent || findChild(this)
+    }
+  },
+
   methods: {
     dragEnter(data) {
       if (data.type == "regular") return;
@@ -95,10 +111,12 @@ export default {
     dropHandler(data) {
       if (data.type == "regular") return;
 
-      data.id = (new ObjectId).toString();
+      const element = JSON.parse(JSON.stringify(data))
+
+      element.id = (new ObjectId).toString();
 
       this.dragged = false;
-      this.step.elements.push({ ...data, displaySettings: { collapsed: false }});
+      this.step.elements.push({ ...element, displaySettings: { collapsed: false }});
     },
 
     elementRemove(element) {
