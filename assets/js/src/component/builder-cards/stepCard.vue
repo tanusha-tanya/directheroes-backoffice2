@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id">
+  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
     <template slot="header">
       {{ step.name || '&nbsp;'}}
     </template>
@@ -24,9 +24,9 @@
         <div class="element-body" v-if="!element.displaySettings.collapsed">
           <component :is="elementComponents[element.type]" :element="element"></component>
         </div>
-      </div> 
-      <component 
-        :is="Drop" 
+      </div>
+      <component
+        :is="Drop"
         :class="{'add-element': true, 'in-drag':  dragged}"
         @dragenter="dragEnter"
         @dragleave="dragLeave"
@@ -37,8 +37,10 @@
     </template>
   </builder-card>
 </template>
+
 <script>
 import ObjectId from '../../utils/ObjectId'
+import EventBus from '../../utils/event-bus.js'
 import builderCard from "./builderCard.vue";
 import arrowBorn from '../arrowBorn.vue'
 import { Drop } from 'vue-drag-drop';
@@ -127,12 +129,12 @@ export default {
       const { $store, step } = this;
       const { arrows } = $store.state;
 
-      $store.commit('set', { 
-        path: 'arrowConnectData', 
+      $store.commit('set', {
+        path: 'arrowConnectData',
         value: {
           parent: arrows[arrows.length - 1].parent,
           child: step.id
-        } 
+        }
       })
     },
 
@@ -146,12 +148,28 @@ export default {
           stepId: value.child
         }
       })
-     
+
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
     },
 
     showElement(element) {
       return (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false))
+    },
+
+    handleMouseDown(position) {
+      const cardDetails = {}
+      cardDetails.x = position.x
+      cardDetails.y = position.y
+      cardDetails.id = this.step.id
+      EventBus.$emit('builderCard:mousedown', cardDetails)
+    },
+
+    handleMouseUp(position) {
+      const cardDetails = {}
+      cardDetails.x = position.positionX
+      cardDetails.y = position.positionY
+      cardDetails.id = this.step.id
+      EventBus.$emit('builderCard:mouseup', cardDetails)
     }
   }
 }

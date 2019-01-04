@@ -1,5 +1,5 @@
 <template>
-    <builder-card class="campaign-card" :settings="campaignStep.displaySettings">
+    <builder-card class="campaign-card" :settings="campaignStep.displaySettings" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="header-controls">
         <builder-card-dialogs :step="campaign" :short="true"></builder-card-dialogs>
@@ -10,6 +10,7 @@
     </builder-card>
 </template>
 <script>
+import EventBus from '../../utils/event-bus.js'
 import builderCard from "./builderCard.vue";
 import messageCondition from "../elements/messageCondition.vue";
 import builderCardDialogs from '../builderCardDialogs'
@@ -31,7 +32,26 @@ export default {
     builderCardDialogs
   },
 
-  props: ['campaign']
+  props: ['campaign'],
+
+  methods: {
+    handleMouseDown(position) {
+      const cardDetails = {}
+      cardDetails.x = position.x
+      cardDetails.y = position.y
+      cardDetails.id = this.campaignStep.id
+      EventBus.$emit('builderCard:mousedown', cardDetails)
+    },
+
+    handleMouseUp(position) {
+      const cardDetails = {}
+      cardDetails.x = position.positionX
+      cardDetails.y = position.positionY
+      cardDetails.id = this.campaignStep.id
+      EventBus.$emit('builderCard:mouseup', cardDetails)
+    }
+  }
+
 }
 </script>
 <style lang="scss">
