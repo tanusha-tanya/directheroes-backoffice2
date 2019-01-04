@@ -1,9 +1,21 @@
 FROM adorofeev/nginx-verbose
 
-ADD symfony.conf /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
+COPY env-replace.bash /usr/local/bin/env-replace
+COPY symfony.tpl.nginx /etc/nginx/sites-available/
+COPY docker_start_nginx.sh /usr/local/bin
 
-RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
+ENV PHP_FPM_HOSTNAME php-fpm.compose
+RUN echo "upstream php-upstream { server ${PHP_FPM_HOSTNAME}:9000; }" > /etc/nginx/conf.d/upstream.conf
+
+RUN install_packages \
+  vim \
+  netcat \
+  iputils-ping \
+  dnsutils
+
+
+RUN touch /etc/nginx/sites-available/symfony
+RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
 
 RUN mkdir -p /var/log/nginx && \
     chown www-data:1000 /var/log/nginx && \
@@ -12,6 +24,5 @@ RUN mkdir -p /var/log/nginx && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
 	ln -sf /dev/stderr /var/log/nginx/error.log
 
+
 EXPOSE 80
-EXPOSE 8080
-EXPOSE 443

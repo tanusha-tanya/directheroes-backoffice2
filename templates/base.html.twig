@@ -3,42 +3,25 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <link href="https://lp.directheroes.com/images/favicon.png" rel="icon" type="image/png">
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('build/app.css') }}">
         {% endblock %}
     </head>
     <body>
         {% block body %}
-            <div id="vue-app">
+            <div id="app">
             </div>
         {% endblock %}
+        <script>
+          window.data = {};
+          window.dh = {
+            apiUrl: '{{ apiUrl }}',
+            userName: '{{ userName }}',
+          }
+        </script>
         {% block javascripts %}
-            <script>
-              var data = {
-                board: {
-                  stages: ['on-hold', 'in-progress', 'needs-review', 'approved'],
-                  blocks: [
-                    {
-                      id: 1,
-                      number: 1,
-                      estimate: 0.5,
-                      status: 'on-hold',
-                      title: 'reply to Mark',
-                    },
-                    {
-                      id: 2,
-                      number: 1,
-                      estimate: 2.75,
-                      status: 'in-progress',
-                      title: 'Order pizza',
-                    },
-                  ],
-                }
-              };
-            </script>
             <script src="{{ asset('build/app.js') }}"></script>
-            <script>
-            </script>
         {% endblock %}
     </body>
 </html>
