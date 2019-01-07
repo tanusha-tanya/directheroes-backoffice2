@@ -19,7 +19,7 @@
       @drop="dropHandler"
       ref="campaignBuilder"
       >
-      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
+      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `5000px`, minWidth: `5000px`}">
         <campaign-card :campaign="currentCampaign" :ref="campaignStep.id"></campaign-card>
         <step-card :step="step" v-for="step in steps" :key="step.id" :ref="step.id" @delete-step="deleteStep"></step-card>
         <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
@@ -33,6 +33,17 @@
           :step=".1"
         >
         </el-slider>
+        <div class="go-to-position" @click="findCampaignCard">
+          <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
+            <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
+              c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
+            <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
+              C109.368,56.352,56.352,109.368,48.944,176H16c-8.832,0-16,7.168-16,16c0,8.832,7.168,16,16,16h32.944
+              C56.352,274.632,109.368,327.648,176,335.056V368c0,8.832,7.168,16,16,16c8.832,0,16-7.168,16-16v-32.944
+              c66.632-7.408,119.648-60.424,127.056-127.056H368c8.832,0,16-7.168,16-16C384,183.168,376.832,176,368,176z M192,304
+              c-61.76,0-112-50.24-112-112S130.24,80,192,80s112,50.24,112,112S253.76,304,192,304z"/>
+          </svg>
+        </div>
       </div>
     </drop>
   </div>
@@ -47,6 +58,7 @@ import stepCard from '../component/builder-cards/stepCard.vue'
 import arrows from '../component/arrows.vue'
 import { Drop } from 'vue-drag-drop';
 import builderElements from '../component/builderElements.vue'
+import Vue from 'vue';
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -131,7 +143,7 @@ export default {
 
     builder() {
       return this;
-    }
+    },
   },
 
   methods: {
@@ -279,6 +291,20 @@ export default {
         }
       })
       return true;
+    },
+
+    findCampaignCard() {
+      const campaignCard = this.$refs[this.campaignStep.id];
+      const { $el } = this.$refs.campaignBuilder;
+      console.log($el.clientWidth/ 2);
+      
+      $el.scrollTop = (campaignCard.$el.offsetTop - $el.clientHeight / 2) + campaignCard.$el.clientHeight / 2;
+      $el.scrollLeft = (campaignCard.$el.offsetLeft - $el.clientWidth / 2) + campaignCard.$el.clientWidth / 2;
+
+    },
+
+    scrollBuilder(event) {
+      console.log('scroll'); 
     }
   },
 
@@ -300,9 +326,34 @@ export default {
       handler: function (campaign, oldCampaign) {
         setTimeout(() => {
           const { campaignBuilder } = this.$refs
+          
+          this.width = `${ campaignBuilder.$el.scrollWidth }px`
+          this.height = `${ campaignBuilder.$el.scrollHeight }px`
 
-          this.width = `${ campaignBuilder.$el.scrollWidth * this.scale }px`
-          this.height = `${ campaignBuilder.$el.scrollHeight * this.scale }px`
+          if (!campaign) return;
+
+          const { displaySettings } = campaign;
+
+          campaignBuilder.$el.scrollTop = (displaySettings && displaySettings.scrollTop) || campaignBuilder.$el.scrollHeight / 2
+          campaignBuilder.$el.scrollLeft = (displaySettings && displaySettings.scrollTop) || campaignBuilder.$el.scrollWidth / 2 
+        
+          this.scale = (displaySettings && displaySettings.scale) || 1;
+        
+          if (!oldCampaign) {
+            campaignBuilder.$el.addEventListener('scroll', event => {
+              const { scrollTop, scrollLeft } = event.target;
+
+              
+              if (displaySettings && displaySettings.scrollTop == scrollTop && displaySettings.scrollLeft == scrollLeft) return;
+
+              // if (!campaign.hasOwnProperty('displaySettings')) {
+              //   Vue.set(campaign, 'displaySettings', {})
+              // }
+              
+              // Vue.set(campaign.displaySettings, 'scrollTop', scrollTop);
+              // Vue.set(campaign.displaySettings, 'scrollTop', scrollTop);
+            })
+          }
         }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
@@ -313,6 +364,18 @@ export default {
       },
       deep: true
     },
+
+    scale(value, oldValue) {
+      const { currentCampaign } = this;
+      
+      if (!value) return;
+
+      if (!currentCampaign.hasOwnProperty('displaySettings')) {
+        Vue.set(currentCampaign, 'displaySettings', {})
+      }
+
+      Vue.set(currentCampaign.displaySettings, 'scale', value);
+    }
   }
 }
 </script>
@@ -384,22 +447,35 @@ export default {
       position: absolute;
       top: 0;
       left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      transform-origin: left top;
+      min-width: 5000px;
+      min-height: 5000px;
     }
 
     .zoom-element {
+      display: flex;
+      align-items: center;
       position: fixed;
       background-color: #fff;
-      padding: 0 10px;
+      padding: 0 0 0 10px;
       z-index: 10;
       top: 110px;
       left: calc(50% - 10px);
-      width: 200px;
+      width: 230px;
       border: 2px solid #E8E8E8;
       border-radius: 0 0 10px 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+
+      .el-slider {
+        flex-grow: 1;
+      }
+
+      .go-to-position {
+        flex-shrink: 0;
+        width: 33px;
+        margin: 2px 0 0 10px;
+        padding: 0 5px;
+        border-left: 2px solid #E8E8E8;
+      }
     }
   }
 }
