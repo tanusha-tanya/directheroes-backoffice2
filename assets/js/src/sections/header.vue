@@ -1,86 +1,55 @@
 <template>
   <header>
+    <div class="navicon"><img :src="navicon" v-if="false"/></div>
     <div class="logo">
+      <img :src="logo"/>
     </div>
-    <div class="account-list">
-      <router-link
-        :to="{ name: 'accountCurrent', params: { accountId: account.id } }"
-        tag="div"
-        :class="{ 'account-item': true, active: account === currentAccount }"
-        v-for="account in accounts"
-        :key="account.id"
-        >
-        <div :class="{'account-avatar': true, 'logged-out': !account.isLoggedIn }" :style="{'background-image': `${ account.profilePicUrl ? 'url(' + account.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-        {{account.login}}
-      </router-link>
-      <div class="add-account" @click="isAddAccount = true" v-if="dhAccount && accounts.length < dhAccount.igAccountLimit">
-        <div class="account-plus-ico">+</div>
-        Add account
+    <div class="dh-account">
+      <div class="notifications" v-if="false">
+        <img :src="bell"/>
       </div>
+      <el-popover placement="bottom" trigger="hover" v-if="dhAccount">
+        <div class="dh-account-popover">
+          <a href="mailto:admin@directheroes.com">Help</a>
+          <a href="/settings">Settings</a>
+          <a href="/logout">Log out</a>
+        </div>
+        <div class="dh-account-details" slot="reference">
+          <img :src="avatar"/>
+        </div>
+      </el-popover>
     </div>
-    <el-popover placement="bottom" trigger="hover" v-if="dhAccount">
-      <div class="dh-account-popover">
-        <strong>Plan:</strong>
-        <template v-if="dhAccount.subscription">{{dhAccount.subscription.planName}}</template>
-        <template>—</template>
-        <a href="/logout">
-          Log out
-        </a>
-      </div>
-      <div class="dh-account account-item" slot="reference">
-        <div class="account-avatar" :style="{'background-image': `${ dhAvatar ? 'url(' + dhAvatar + '), ' : ''}url(${ defaultAvatar })`}"></div>
-        {{dhAccount.username}}
-      </div>
-    </el-popover>
-    <account-dialog>
-    </account-dialog>
+    
+    
+    <!-- <account-dialog>
+    </account-dialog> -->
   </header>
 </template>
+
 <script>
-  import defaultAvatar from '../assets/ig-avatar.jpg'
-  import accountDialog from '../component/accountDialog.vue'
-  import { Popover } from 'element-ui'
+import navicon from '../assets/svg/navicon-w.svg'
+import logo from '../assets/svg/logo-white.svg'
+import avatar from '../assets/svg/avatar.svg'
+import bell from '../assets/svg/bell.svg'
 
-  export default {
-    data() {
-      return {
-        defaultAvatar,
-      }
-    },
-
-    components: {
-      'account-dialog': accountDialog,
-      'el-popover': Popover
-    },
-
-    computed: {
-      accounts() {
-        return this.$store.state.accounts
-      },
-
-      dhAccount() {
-        return this.$store.state.dhAccount
-      },
-
-      dhAvatar() {
-        return (this.accounts.find(account => account.profilePicUrl) || {}).profilePicUrl;
-      },
-
-      currentAccount() {
-        return this.$store.state.currentAccount
-      },
-
-      isAddAccount: {
-        get() {
-          return this.$store.state.newAccount.isAdd
-        },
-        set(value) {
-          this.$store.commit('set', {path: 'newAccount.isAdd', value });
-        }
-      },
+export default {
+  data() {
+    return {
+      navicon,
+      logo,
+      avatar,
+      bell
     }
+  },
+
+  computed: {
+    dhAccount() {
+      return this.$store.state.dhAccount
+    },
   }
+}
 </script>
+
 <style lang="scss">
 .dh-account-popover {
   display: flex;
@@ -88,121 +57,62 @@
 
   a {
     margin-top: 5px;
-    background-color: #434890;
-    border-radius: 3px;
     font-size: 14px;
     font-weight: 600;
-    line-height: 20px;
-    padding: 8px 26px;
-    color: #fff;
-    text-align: center;
+    padding: 4px 8px;
+    opacity: .7;
+    color: #3C3C3C;
     cursor: pointer;
     text-decoration: none;
+    transition: .3s opacity;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
   header {
     display: flex;
-    min-height: 50px;
-    background-color: #434890;
+    background: linear-gradient(270.02deg, #742BF9 12.02%, #6A12CB 43.43%, #6A12CB 63.64%, #6A12CB 100%);
     color: #fff;
+    align-items: center;
+    padding: 8px 20px 9px 8px;
+    justify-content: space-between;
 
     .logo {
-      max-width: 250px;
-      width: 100%;
-      text-align: center;
-      flex-shrink: 0;
-      background: url(../assets/logo.svg) center no-repeat #31356A;
-      background-size: cover;
+      height: 33px;
     }
 
-    .account-list {
-      display: flex;
-      flex-grow: 1;
-      // overflow-x: auto;
-      // overflow-y: hidden;
-    }
+    .navicon {
+      margin-right: 5px;
 
-    .account-item {
-      display: flex;
-      border-bottom: 3px solid transparent;
-      padding: 0 16px;
-      align-items: center;
-      cursor: pointer;
-      opacity: .5;
-
-      &:hover {
-        opacity: .8;
-      }
-
-      &.active {
-        border-bottom-color: #FFC000;
-        position: relative;
-        background-color: #38397D;
-        cursor: default;
-        opacity: 1;
-
-        &:before {
-          content: '';
-          position: absolute;
-          border-width: 7px 5px 0;
-          border-color: #FFC000 transparent transparent;
-          border-style: solid;
-          top: calc(100% + 3px);
-          left: calc(50% - 3px);
-        }
-      }
-
-      .account-avatar {
-        width: 32px;
-        height: 32px;
-        background-position: center;
-        background-size: contain;
-        border-radius: 50%;
-        margin-right: 12px;
-        position: relative;
-        overflow: hidden;
-
-        &.logged-out:before {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: url(../assets/triangle.svg) rgba(#000, .5) center no-repeat;
-          background-size: 50%;
-          content: '';
-        }
+      img {
+        height: 23px;
+        opacity: .76;
       }
     }
 
     .dh-account {
-      background-color: #31356A;
-      opacity: 1;
-      font-size: 13px;
-      height: 100%;
-    }
-
-    .add-account {
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      cursor: pointer;
-      opacity: .5;
 
-      &:hover {
-        opacity: .8;
+      .notifications {
+        margin-right: 18px;
       }
 
-      .account-plus-ico {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: #353579;
-        margin-right: 12px;
-        padding: 8px;
-        text-align: center;
-        flex-shrink: 0;
+      .dh-account-details {
+        display: flex;
+        align-items: center;
+
+        &:after {
+          content: '';
+          border: 6px solid;
+          border-color: #fff transparent transparent;
+          border-bottom: 0px;
+          margin-left: 3px;
+        }
       }
     }
   }
+
 </style>

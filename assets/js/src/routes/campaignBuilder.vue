@@ -2,6 +2,21 @@
   <div class="campaign-builder" v-if="currentCampaign">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
+      <div class="campaign-list"> 
+        <el-select 
+          size="small"
+          v-if="campaigns.length"
+          :value="currentCampaign.id"
+          @change="selectCampaign"
+        >
+          <el-option 
+            v-for="campaign in campaigns" 
+            :label="campaign.name" :value="campaign.id" 
+            :key="campaign.id"
+            >
+          </el-option>
+        </el-select>
+      </div>
       <div class="campaign-builder-control">
         Activate
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
@@ -131,15 +146,25 @@ export default {
 
     builder() {
       return this;
+    },
+
+    campaigns() {
+      return this.$store.state.currentAccount.campaignList
     }
   },
 
   methods: {
     setCurrentCampaign(route) {
-      const { campaignId } = route.params;
+      let { campaignId } = route.params;
       const { campaignList } = this.$store.state.currentAccount;
 
-      if (!campaignList || !campaignId) return;
+      if (!campaignList) return;
+
+      if (!campaignId) {
+        campaignId = campaignList[0].id;
+      };
+
+      if (!campaignId) return;
 
       const currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
 
@@ -258,6 +283,12 @@ export default {
       draggedCard.displaySettings.positionY = this.originalPosition.y;
     },
 
+    selectCampaign(campaignId) {
+      const { currentAccount } = this.$store.state;
+      
+      this.$router.push({ name: 'accountCampaign', params: {campaignId,  accountId: currentAccount.id }})
+    },
+
   /**
    * compare currently dragged card position with all other campaign cards
    * if they collide, move dragged card back to its original position
@@ -318,9 +349,12 @@ export default {
 </script>
 <style lang="scss">
 .campaign-builder {
+  flex-grow: 1;
+  position: relative;
+
   .campaign-builder-controls {
     display: flex;
-    padding: 13px 5px 13px 13px;
+    padding: 8px 5px 7px 13px;
     align-items: center;
     background-color: #fff;
     color: #A9A9A9;
@@ -328,7 +362,16 @@ export default {
     span {
       font-size: 24px;
       line-height: 24px;
+    }
+
+    .campaign-list {
       flex-grow: 1;
+      text-align: center;
+
+      .el-select {
+        width: 100%;
+        max-width: 300px;
+      }
     }
 
     .campaign-builder-divider {
@@ -372,8 +415,10 @@ export default {
   .campaign-builder-area {
     position: absolute;
     overflow: auto;
-    height: calc(100% - 60px);
-    width: 100%;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     transition: background-color .4s;
 
     &.dragged {
@@ -394,7 +439,7 @@ export default {
       background-color: #fff;
       padding: 0 10px;
       z-index: 10;
-      top: 110px;
+      top: 100px;
       left: calc(50% - 10px);
       width: 200px;
       border: 2px solid #E8E8E8;
