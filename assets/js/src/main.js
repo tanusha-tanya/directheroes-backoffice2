@@ -22,6 +22,7 @@ import './assets/fonts/stylesheet.css'
 
 import './element'
 import './styles/main.scss'
+import './styles/common.scss'
 
 /**
  * Import routes components
@@ -31,15 +32,16 @@ import accountDetails from './routes/accountDetails.vue'
 // import accountCampaign from './routes/accountCampaign.vue'
 import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
+import accountDashboard from './routes/accountDashboard.vue'
 import accountThreadMessages from './routes/accountThreadMessages.vue'
 
 const router = new VueRouter({
   routes:[
     { path: '/', name: 'accounts', component: accounts },
-    { path: '/:accountId', name: 'account', component: accountDetails, 
+    { path: '/:accountId', component: accountDetails, 
       children: [
-        { name: 'accountHome', path: '', component: campaignBuilder },
-        { name: 'accountCampaign', path: 'campaign/:campaignId', component: campaignBuilder },
+        { name: 'accountHome', path: '', component: accountDashboard },
+        { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
         { name: 'accountThread', path: 'thread/:threadId', component: accountThread },
         { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
         // { name: 'accountCurrent', path: ':accountId', component: accountDetails }

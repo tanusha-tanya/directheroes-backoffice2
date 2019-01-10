@@ -1,16 +1,16 @@
 <template>
   <div class="account-content" v-if="currentAccount">
     <div class="side-bar">
-      <div class="side-bar-item avatar">
-        <div class="account-photo" :style="{'background-image': `url(${ currentAccount.profilePicUrl })`}"></div>
-      </div>
+      <router-link class="side-bar-item avatar" :to="{ name: 'accountHome' }">
+        <div class="account-avatar" :style="{'background-image': `url(${ currentAccount.profilePicUrl })`}"></div>
+      </router-link>
       <router-link class="side-bar-item" :to="{ name: 'accounts' }">
         <img :src="home"/>
       </router-link>
-       <router-link class="side-bar-item" :to="{ name: 'account' }">
+       <router-link class="side-bar-item" :to="{ name: 'accountCampaign', params: { accountId: currentAccount.id } }">
         <img :src="socialBuffer"/>
       </router-link>
-      <router-link class="side-bar-item" :to="{ name: 'account' }">
+      <router-link class="side-bar-item" :to="{ name: 'accountHome' }">
         <img :src="people"/>
       </router-link>
     </div>
@@ -90,7 +90,7 @@ export default {
     }
   }
 
-  .account-photo {
+  .account-avatar {
     width: 27px;
     height: 27px;
     border-radius: 50px;

@@ -1,13 +1,13 @@
 <template>
-  <div class="campaign-builder" v-if="currentCampaign">
+  <div class="campaign-builder">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
       <div class="campaign-list"> 
         <el-select 
           size="small"
-          v-if="campaigns.length"
-          :value="currentCampaign.id"
+          :value="currentCampaign && currentCampaign.id"
           @change="selectCampaign"
+          placeholder="Select Add new campaign"
         >
           <el-option 
             v-for="campaign in campaigns" 
@@ -15,20 +15,26 @@
             :key="campaign.id"
             >
           </el-option>
+          <el-option 
+            label="+ Add new campaign" 
+            value="new"
+            >
+          </el-option>
         </el-select>
       </div>
-      <div class="campaign-builder-control">
+      <div class="campaign-builder-control" v-if="currentCampaign">
         Activate
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
       ></div>
-      <div class="campaign-builder-divider"></div>
-      <div class="campaign-builder-control trash" @click="deleteCampaign">
+      <div class="campaign-builder-divider" v-if="currentCampaign"></div>
+      <div class="campaign-builder-control trash" v-if="currentCampaign" @click="deleteCampaign">
         <img src="../assets/svg/trash.svg"/>
       </div>
     </div>
     <drop
       :class="{ 'campaign-builder-area': true, dragged }"
       tag="div"
+      v-if="currentCampaign"
       @dragover="dragEnter"
       @dragleave="dragLeave"
       @drop="dropHandler"
@@ -50,6 +56,20 @@
         </el-slider>
       </div>
     </drop>
+    <el-dialog
+      :visible.sync="isAddCampaign"
+      title="Create New Campaign"
+      class="campaign-dialog"
+      width="321px"
+      append-to-body
+      :show-close="false"
+      >
+      <input v-model="newCampaignName" placeholder="Enter Campaign name"/>
+      <template slot="footer">
+        <button @click="createCampaign">Create</button>
+        <button class="cancel" @click="isAddCampaign = false">Close</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -85,6 +105,8 @@ export default {
       height: '100%',
       scale: 1,
       originalPosition: null,
+      isAddCampaign: false,
+      newCampaignName: ''
     }
   },
 
@@ -158,7 +180,10 @@ export default {
       let { campaignId } = route.params;
       const { campaignList } = this.$store.state.currentAccount;
 
-      if (!campaignList) return;
+      if (!campaignList || !campaignList.length) {
+        this.isAddCampaign = true;
+        return
+      };
 
       if (!campaignId) {
         campaignId = campaignList[0].id;
@@ -283,8 +308,29 @@ export default {
       draggedCard.displaySettings.positionY = this.originalPosition.y;
     },
 
+    createCampaign() {
+      const { currentAccount } = this.$store.state;
+
+      this.$store.dispatch('createCampaign', {
+        name: this.newCampaignName
+      }).then(({ data }) => {
+        const { campaign } = data;
+        
+        this.isAddCampaign = false;
+        this.newCampaignName = '';
+
+        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
+      })
+      
+    },
+
     selectCampaign(campaignId) {
       const { currentAccount } = this.$store.state;
+
+      if (campaignId == 'new') {
+        this.isAddCampaign = true;
+        return;
+      }
       
       this.$router.push({ name: 'accountCampaign', params: {campaignId,  accountId: currentAccount.id }})
     },
@@ -445,6 +491,57 @@ export default {
       border: 2px solid #E8E8E8;
       border-radius: 0 0 10px 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+    }
+  }
+}
+
+.el-dialog__wrapper.campaign-dialog {
+    
+  .el-dialog {
+    border-radius: 5px;
+    padding: 20px;
+  }
+
+  .el-dialog__header {
+    padding: 0;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .el-dialog__body {
+    padding: 0;
+
+    input:not(.el-input__inner) {
+      width: 100%;
+      margin: 20px 0;
+      font-size: 15px;
+      line-height: 18px;
+      padding: 4px 10px 6px;
+      border: 1px solid #DBDBDB;
+
+      &::placeholder {
+        color: #A9A9A9;
+        text-align: center;
+      }
+    }
+  }
+
+  .el-dialog__footer {
+    padding: 0;
+
+    button {
+      background-color: #6A12CB;
+      border-radius: 5px;
+      line-height: 16px;
+      font-weight: normal;
+      padding: 7px 20px;
+
+      &.cancel {
+        background-color: transparent;
+        color: #000;
+      }
     }
   }
 }
