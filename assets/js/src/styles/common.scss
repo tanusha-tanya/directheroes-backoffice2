@@ -39,3 +39,28 @@
   box-shadow: 0px 2px 4px rgba(215, 215, 215, 0.5);
   border-radius: 10px;
 }
+
+.w800 {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.content-title {
+  color: #A9A9A9;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+.list-item {
+  padding: 10px;
+  display: flex;
+  font-size: 13px;
+  color: #828282;
+  align-items: center;
+  border-bottom: 1px solid #DBDBDB;
+
+  &:hover {
+    background-color: rgba(#6A12CB, .04)
+  }
+}

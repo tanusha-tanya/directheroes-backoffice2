@@ -10,7 +10,7 @@
        <router-link class="side-bar-item" :to="{ name: 'accountCampaign', params: { accountId: currentAccount.id } }">
         <img :src="socialBuffer"/>
       </router-link>
-      <router-link class="side-bar-item" :to="{ name: 'accountHome' }">
+      <router-link class="side-bar-item" :to="{ name: 'audience' }">
         <img :src="people"/>
       </router-link>
     </div>

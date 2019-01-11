@@ -42,8 +42,8 @@ const router = new VueRouter({
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },
         { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
-        { name: 'accountThread', path: 'thread/:threadId', component: accountThread },
-        { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
+        { name: 'audience', path: 'audience', component: accountThread },
+        // { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
         // { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
     }
