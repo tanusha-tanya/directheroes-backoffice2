@@ -2,7 +2,7 @@
   <div class="audience-content w800">
     <div class="content-title">Audience</div>
     <div class="audience-filters">
-      <input placeholder="Search" v-model="filters.usernameQuery" @keypress.enter="getAudience"/>
+      <input placeholder="Search" v-model="filters.username_query" @keypress.enter="getAudience"/>
       <el-select v-model="filters.subscribed" @change="getAudience">
         <el-option label="All" :value="null"></el-option>
         <el-option label="Subscribed" :value="true"></el-option>
@@ -19,17 +19,26 @@
           <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
           {{thread.contactProfile.username}}
         </div>
-        <div class="subscribed-row">6 days ago</div>
+        <div class="subscribed-row">{{subscriberAt(thread.subscribedAt)}}</div>
         <div class="chat-row">
           <button>Live chat</button>
           <button class="account-button" ><img :src="avatar"/></button>
         </div>
       </div>
     </div>
+    <el-pagination
+      background
+      v-if="threads && paging && paging.totalPageCount > 1"
+      layout="prev, pager, next"
+      :current-page="paging.page"
+      :page-count="paging.totalPageCount"
+      @current-change="changePage"
+    ></el-pagination>
   </div>
 </template>
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import avatar from '../assets/svg/avatar.svg'
 
 export default {
@@ -45,7 +54,11 @@ export default {
       avatar,
       filters: {
         subscribed: null,
-        usernameQuery: ''
+        username_query: ''
+      },
+      paging: {
+        page: 1,
+        totalPageCount: 1
       }
     }
   },
@@ -57,18 +70,33 @@ export default {
   },
 
   methods: {
+    changePage(page) {
+      this.paging.page = page;
+      this.getAudience();
+    },
+
     getAudience() {
       const { account } = this;
 
       if (!account) return;
 
+      this.threads = null;
+
       axios({ 
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
-        data: this.filters
+        method: 'post',
+        data: { ...this.filters, paging: this.paging }
       })
       .then(({ data }) => {
-        this.threads = data.response.body.threadList;
+        const { threadList, paging } = data.response.body
+        
+        this.threads = threadList;
+        this.paging = paging;
       })
+    },
+
+    subscriberAt(date) {
+      return moment(new Date(date)).fromNow();
     }
   },
 
@@ -159,6 +187,17 @@ export default {
         border-color: #6A12CB;
       }
     }
+  }
+
+  .el-pagination {
+    text-align: right;
+    margin: 15px 0;
+    
+    &.is-background {
+      .btn-next, .btn-prev, .el-pager li {
+        background-color: #fff;
+      }
+    } 
   }
 }
 </style>

@@ -10,7 +10,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Dialog,
-  Popover
+  Popover,
+  Pagination
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -23,6 +24,7 @@ import 'element-ui/lib/theme-chalk/input-number.css';
 import 'element-ui/lib/theme-chalk/tag.css';
 import 'element-ui/lib/theme-chalk/dialog.css';
 import 'element-ui/lib/theme-chalk/popover.css';
+import 'element-ui/lib/theme-chalk/pagination.css';
 
 Vue.use(Select);
 Vue.use(Option);
@@ -35,3 +37,4 @@ Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
 Vue.use(Dialog);
 Vue.use(Popover)
+Vue.use(Pagination)
