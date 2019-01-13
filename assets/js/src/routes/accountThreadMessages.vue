@@ -56,11 +56,14 @@
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import axios from 'axios'
   import { Popover } from "element-ui"
+
+  
   
   export default {
     beforeRouteUpdate(to, from, next) {
       clearInterval(this.requestInterval)
-      
+      this.source.cancel('Cancel on turn on other user');
+
       this.lastMessage = {};
       this.threadMessages = null;
       this.contactProfile = null;
@@ -80,6 +83,7 @@
         requestInterval: null,
         lastMessage: {},
         media: [],
+        source: null,
         filters: {
           username_query: ''
         }
@@ -150,13 +154,17 @@
       },
 
       getUpdates(threadId) {
+        const CancelToken = axios.CancelToken;
+        
+        this.source = CancelToken.source();
         threadId = threadId || this.$route.params.threadId
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
           params: {
             max_item_id: this.lastMessage.igItemId
-          }
+          },
+          cancelToken: this.source.token
         }).then(({ data }) => {
           const { body } = data.response;
 
