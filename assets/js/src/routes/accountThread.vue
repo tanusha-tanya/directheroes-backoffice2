@@ -21,8 +21,8 @@
         </div>
         <div class="subscribed-row">{{subscriberAt(thread.subscribedAt)}}</div>
         <div class="chat-row">
-          <button>Live chat</button>
-          <button class="account-button" ><img :src="avatar"/></button>
+          <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
+          <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
         </div>
       </div>
     </div>
@@ -128,18 +128,6 @@ export default {
     width: 40%;
     padding: 0 10px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-  }
-
-  .user-avatar {
-    width: 26px;
-    height: 26px;
-    background-size: contain;
-    background-position: center;
-    border-radius: 26px;
-    flex-shrink: 0;
-    margin-right: 10px;
   }
 
   .subscribed-row {
@@ -155,9 +143,11 @@ export default {
     align-items: center;
     justify-content: flex-end;
 
-    button {
-      background: #828282;;
+    a {
+      background: #828282;
+      display: inline-block;
       border: 1px solid #828282;
+      text-decoration: none;
       font-size: 13px;
       color: #fff;
       line-height: 19px;
@@ -182,7 +172,7 @@ export default {
       padding-left: 46px;
     }
     &:hover {
-      button {
+      a {
         background-color: #6A12CB;
         border-color: #6A12CB;
       }

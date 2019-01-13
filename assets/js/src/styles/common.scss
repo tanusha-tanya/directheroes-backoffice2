@@ -64,3 +64,18 @@
     background-color: rgba(#6A12CB, .04)
   }
 }
+
+.user-row {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  background-size: contain;
+  background-position: center;
+  border-radius: 26px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
