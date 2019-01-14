@@ -22,7 +22,7 @@
         <div class="subscribed-row">{{subscriberAt(thread.subscribedAt)}}</div>
         <div class="chat-row">
           <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
-          <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
+          <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.contactProfile.id } }" class="account-button" ><img :src="avatar"/></router-link>
         </div>
       </div>
     </div>

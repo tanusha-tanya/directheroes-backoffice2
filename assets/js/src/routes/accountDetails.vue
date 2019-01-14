@@ -77,6 +77,7 @@ export default {
     width: 50px;
     height: 100%;
     background-color: #fff;
+    flex-shrink: 0;
   }
 
   .side-bar-item {

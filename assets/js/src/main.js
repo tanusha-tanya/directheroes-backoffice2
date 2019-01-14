@@ -34,6 +34,7 @@ import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
 import accountDashboard from './routes/accountDashboard.vue'
 import accountThreadMessages from './routes/accountThreadMessages.vue'
+import accountThreadInfo from './routes/accountThreadInfo.vue'
 
 const router = new VueRouter({
   routes:[
@@ -44,6 +45,7 @@ const router = new VueRouter({
         { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
         { name: 'audience', path: 'audience', component: accountThread },
         { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
+        { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
         // { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
     }

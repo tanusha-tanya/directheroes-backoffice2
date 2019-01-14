@@ -266,6 +266,7 @@
     .threads-list{ 
       height: calc(100% - 50px);
       overflow: auto;
+      border-right: 1px solid #EEEEEE;
     }
 
     .list-item {
