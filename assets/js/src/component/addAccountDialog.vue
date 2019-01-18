@@ -47,7 +47,7 @@
         <div class="status-indicator"></div> Proxy tool not connected
       </div>
     </div>
-    <div class="step">
+    <div :class="{step: true, disabled: twoFactor || !proxyStatus}">
       <div class="step-info">
         <div class="step-number">
           3
@@ -56,9 +56,26 @@
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login">
-      <input placeholder="Instagram Password" v-model="account.password">
-      <button :class="{ loading }" :disabled="loading || !account.login || !account.password">Connect Account</button>
+      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null">
+      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null">
+      <div class="error" v-if="error && !twoFactor">{{ error }}</div>
+      <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+    </div>
+    <div class="step" v-if="twoFactor">
+      <div class="step-info">
+        <div class="step-number">
+          4
+        </div>
+        <div class="step-description">
+          Two factor authorization is enabled on your account, you should receive an SMS with verification code in a minute
+        </div>
+      </div>
+      <input placeholder="Verification Code" v-model="code" @input="error = null" maxlength="6">
+      <div class="error" v-if="error">{{ error }}</div>
+      <div class="step-verify">
+        <button :class="{ loading }" @click="checkTFCode">Verify</button>
+        <button class="resend" :disabled="loading" >Re-send</button>
+      </div>
     </div>
   </el-dialog>
 </template>
@@ -70,17 +87,18 @@ export default {
   data() {
     return {
       checkingInterval: null,
-      proxyStatus: false,
+      proxyStatus: true,
       account: {
         login: '',
         password: '',
       },
       error: null,
       loading: false,
+      code: ''
     }
   },
 
-  props: ['isAddAccount'],
+  props: ['isAddAccount', 'accountAuth'],
 
   computed: {
     addAcountState: {
@@ -94,6 +112,12 @@ export default {
 
     dh() {
       return dh;
+    },
+
+    twoFactor() {
+      const { accountAuth } = this;
+
+      return accountAuth && accountAuth.twoFactor
     }
   },
 
@@ -106,28 +130,60 @@ export default {
       }) 
     },
 
-    addAccount() {
-      const { $store } = this;
+    actionAccount() {
+      const { $store, accountAuth, account } = this;
+      let request;
 
       this.loading = true;
       this.error = null;
 
-      $store.dispatch('addAccount', this.account)
+      if (accountAuth) {
+        accountAuth.password = account.password
+        request = $store.dispatch('saveAccount', accountAuth)
+      } else {
+        request = $store.dispatch('addAccount', account)
+      }
+
+      request
         .then(({ data }) => {
+          const { account } = data.response.body;
           this.loading = false;
+
+          this.$emit('set-auth-account', account)
+
+          if (account.igErrorMessage) {
+            this.error = account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '')
+          } else if (account.isLoggedIn && account.isPasswordValid) {
+            this.$emit('close-dialog', false);
+          }
+          
         }).catch(error => {
-          this.error = error.response.data.error;            
+          this.error = error.response.data.error || error.response.data.request.statusMessage;            
           this.loading = false;
         })
-    }
+    },
+
+    checkTFCode() {
+      const { accountAuth, code, actionAccount } = this;
+
+      accountAuth.twoFactor.verificationCode = code;
+
+      actionAccount();
+    },
   },
 
   watch: {
     isAddAccount(value) {
+      const { accountAuth } = this;
+      
       if (value) {
+        this.account.login = (accountAuth && accountAuth.login) || '';
+        this.account.password = '';
         this.checkConnection();
         this.checkingInterval = setInterval(this.checkConnection.bind(this), 2000)
       } else {
+        this.error = null;
+        this.code = '';
         clearInterval(this.checkingInterval)
       }
     }
@@ -141,6 +197,7 @@ export default {
     height: calc(100% - 50px);
     border-radius: 0;
     padding: 31px 39px;
+    overflow: auto;
     
     // &.dialog-fade-enter-active {
     //   animation: none;
@@ -169,6 +226,11 @@ export default {
 
       &:not(:last-child) {
         margin-bottom: 37px;
+      }
+
+      &.disabled {
+        pointer-events: none;
+        opacity: .5;
       }
     }
 
@@ -230,6 +292,15 @@ export default {
       }
     }
 
+    .step-verify {
+      display: flex;
+
+      .resend {
+        background-color: transparent;
+        color: #000;
+      }
+    }
+
     input {
       margin-top: 10px;
       border-radius: 2px;
@@ -241,37 +312,39 @@ export default {
       }
     }
 
+    .error {
+      margin-top: 10px;
+      color: #FF4D4D;
+      text-align: center;
+    }
+
     button {
       margin-top: 10px;
       width: 100%;
 
       &:disabled {
-        opacity: .6;
+        opacity: .5;
+        cursor: not-allowed;
       }
 
-      &:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
+      &.loading {
+        color: transparent;
+        position: relative;
 
-    &.loading {
-      color: transparent;
-      position: relative;
-
-      &:before {
-        content: '';
-        display: block;
-        position: absolute;
-        top: calc(50% - 10px);
-        left: calc(50% - 10px);
-        width: 15px;
-        height: 15px;
-        border-radius: 100%;
-        border: 3px solid #FFF;
-        border-bottom-color: transparent;
-        animation: rotation  .8s infinite linear;
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: calc(50% - 10px);
+          left: calc(50% - 10px);
+          width: 15px;
+          height: 15px;
+          border-radius: 100%;
+          border: 3px solid #FFF;
+          border-bottom-color: transparent;
+          animation: rotation  .8s infinite linear;
+        }
       }
-    }
     }
   }
 }
