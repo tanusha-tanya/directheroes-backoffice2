@@ -89,8 +89,8 @@ module.exports = {
     overlay: true,
     proxy: [{
       context: ['/api/1.0.0/**', '/api/2.0.0/**', '/ig/accounts/**'],
-      target: 'https://www.directheroes.com/app_dev.php',
-      // target: 'https://beta2.directheroes.com/app_dev.php',
+      // target: 'https://www.directheroes.com/app_dev.php',
+      target: 'https://beta2.directheroes.com/app_dev.php',
       changeOrigin: true,
       secure: true,
       logLevel: 'debug',

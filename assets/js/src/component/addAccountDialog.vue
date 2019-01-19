@@ -87,7 +87,7 @@ export default {
   data() {
     return {
       checkingInterval: null,
-      proxyStatus: true,
+      proxyStatus: false,
       account: {
         login: '',
         password: '',
@@ -127,7 +127,7 @@ export default {
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
         this.proxyStatus = data.response.body.isProxyRunning
-      }) 
+      })
     },
 
     actionAccount() {
@@ -156,9 +156,9 @@ export default {
           } else if (account.isLoggedIn && account.isPasswordValid) {
             this.$emit('close-dialog', false);
           }
-          
+
         }).catch(error => {
-          this.error = error.response.data.error || error.response.data.request.statusMessage;            
+          this.error = error.response.data.error || error.response.data.request.statusMessage;
           this.loading = false;
         })
     },
@@ -175,7 +175,7 @@ export default {
   watch: {
     isAddAccount(value) {
       const { accountAuth } = this;
-      
+
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
         this.account.password = '';
@@ -198,7 +198,7 @@ export default {
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;
-    
+
     // &.dialog-fade-enter-active {
     //   animation: none;
     // }

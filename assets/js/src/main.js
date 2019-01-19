@@ -35,20 +35,28 @@ import accountThread from './routes/accountThread.vue'
 import accountDashboard from './routes/accountDashboard.vue'
 import accountThreadMessages from './routes/accountThreadMessages.vue'
 import accountThreadInfo from './routes/accountThreadInfo.vue'
+import accountDH from './routes/accountDH.vue'
+import accountDHProfile from './routes/accountDHProfile.vue'
+import accountDHPayment from './routes/accountDHPayment.vue'
 
 const router = new VueRouter({
   routes:[
     { path: '/', name: 'accounts', component: accounts },
-    { path: '/:accountId', component: accountDetails, 
+    { path: '/settings', component: accountDH,
+      children: [
+        { name: 'dhProfile', path: '', component: accountDHProfile },
+        { name: 'dhPayments', path: 'payments', component: accountDHPayment },
+      ]
+    },
+    { path: '/:accountId', component: accountDetails,
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },
         { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
         { name: 'audience', path: 'audience', component: accountThread },
         { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
         { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
-        // { name: 'accountCurrent', path: ':accountId', component: accountDetails }
       ]
-    }
+    },
   ]
 })
 
