@@ -105,6 +105,9 @@ export default {
   cursor: move;
   min-height: 15px;
   padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .builder-card-body {

@@ -4,19 +4,20 @@
       {{ step.name || '&nbsp;'}}
     </template>
     <template slot="header-controls">
-      <builder-card-dialogs :step="step"></builder-card-dialogs>
+      <builder-card-dialogs :step="step" @delete-step="$emit('delete-step', step)"></builder-card-dialogs>
     </template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
-      <div 
-        class="element-container" 
-        v-for="element in step.elements" 
-        :key="element.id" 
+      <div
+        class="element-container"
+        v-for="element in step.elements"
+        :key="element.id"
         v-if="showElement(element)"
         >
         <div class="element-title" :ref="element.id">
           <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
             {{elementsNames[element.type]}}
+            <element-warning :element="element"></element-warning>
             <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
           <div class="remove-element" @click="elementRemove(element)">&times</div>
@@ -27,13 +28,13 @@
       </div>
       <component
         :is="Drop"
+        v-if="!isLastList"
         :class="{'add-element': true, 'in-drag':  dragged}"
         @dragenter="dragEnter"
         @dragleave="dragLeave"
         @drop="dropHandler"
       >+</component>
-      <div class="remove-step" @click="$emit('delete-step', step)">remove step</div>
-      <arrow-born :element="step" @connect-arrow="connectArrow"></arrow-born>
+      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!hasList"></arrow-born>
     </template>
   </builder-card>
 </template>
@@ -50,6 +51,7 @@ import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
 import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
+import elementWarning from '../elementWarning.vue'
 
 export default {
   data() {
@@ -76,7 +78,8 @@ export default {
   components: {
     builderCard,
     builderCardDialogs,
-    arrowBorn
+    arrowBorn,
+    elementWarning
   },
 
   props: ['step'],
@@ -94,22 +97,47 @@ export default {
       if (!connectArrow) return;
 
       return this.step.id == connectArrow.parent || findChild(this)
+    },
+
+    isLastList() {
+      const { elements } = this.step;
+      const elementsCount = elements.length;
+
+      return elementsCount && elements[elementsCount - 1].type === 'messageTextConditionMultiple';
+    },
+
+    hasList() {
+      const { elements } = this.step;
+
+      return elements.some(element => element.type === 'messageTextConditionMultiple')
+    },
+
+    hasGoToStep() {
+      const { elements } = this.step;
+
+      return elements.some(element => element.type === 'goToStep')
     }
   },
 
   methods: {
     dragEnter(data) {
-      if (data.type == "regular") return;
+      const { hasGoToStep } = this;
+
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
       this.dragged = true;
     },
 
     dragLeave(data) {
-      if (data.type == "regular") return;
+      const { hasGoToStep } = this;
+
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
       this.dragged = false;
     },
 
     dropHandler(data) {
-      if (data.type == "regular") return;
+      const { hasGoToStep } = this;
+
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
 
       const element = JSON.parse(JSON.stringify(data))
 

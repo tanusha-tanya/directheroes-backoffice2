@@ -2,7 +2,9 @@
   <header>
     <div class="navicon"><img :src="navicon" v-if="false"/></div>
     <div class="logo">
-      <img :src="logo"/>
+      <router-link :to="{name: 'accounts'}">
+        <img :src="logo"/>
+      </router-link>
     </div>
     <div class="dh-account">
       <div class="notifications" v-if="false">

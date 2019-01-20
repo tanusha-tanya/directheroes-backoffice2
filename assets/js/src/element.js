@@ -1,11 +1,11 @@
 import Vue from 'vue';
-import { 
-  Select, 
-  Option, 
-  Input, 
-  InputNumber, 
-  Slider, 
-  Switch, 
+import {
+  Select,
+  Option,
+  Input,
+  InputNumber,
+  Slider,
+  Switch,
   Dropdown,
   DropdownMenu,
   DropdownItem,
@@ -24,6 +24,7 @@ import 'element-ui/lib/theme-chalk/input-number.css';
 import 'element-ui/lib/theme-chalk/tag.css';
 import 'element-ui/lib/theme-chalk/dialog.css';
 import 'element-ui/lib/theme-chalk/popover.css';
+import 'element-ui/lib/theme-chalk/message.css';
 import 'element-ui/lib/theme-chalk/pagination.css';
 
 Vue.use(Select);

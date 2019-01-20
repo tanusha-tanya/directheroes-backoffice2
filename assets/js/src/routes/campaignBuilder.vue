@@ -2,21 +2,21 @@
   <div class="campaign-builder">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
-      <div class="campaign-list"> 
-        <el-select 
+      <div class="campaign-list">
+        <el-select
           size="small"
           :value="currentCampaign && currentCampaign.id"
           @change="selectCampaign"
           placeholder="Select Add new campaign"
         >
-          <el-option 
-            v-for="campaign in campaigns" 
-            :label="campaign.name" :value="campaign.id" 
+          <el-option
+            v-for="campaign in campaigns"
+            :label="campaign.name" :value="campaign.id"
             :key="campaign.id"
             >
           </el-option>
-          <el-option 
-            label="+ Add new campaign" 
+          <el-option
+            label="+ Add new campaign"
             value="new"
             >
           </el-option>
@@ -217,16 +217,16 @@ export default {
 
     saveCampaign: debounce(function() {
       this.$store.dispatch('saveCampaign', this.currentCampaign)
-        .then(({ data }) => {
-          this.$message.success({
-            message: 'Success saved',
-            duration: 3000,
-            center: true
-          });
-        })
+        // .then(({ data }) => {
+        //   this.$message.success({
+        //     message: 'Success saved',
+        //     duration: 3000,
+        //     center: true
+        //   });
+        // })
         .catch(() => {
           this.$message.error({
-            message: 'Error saved',
+            message: 'Could not save data',
             duration: 3000,
             center: true
           })
@@ -250,16 +250,16 @@ export default {
       this.dragged = false;
 
       if (data.type != "regular") return;
-      
+
       const step = JSON.parse(JSON.stringify(data))
 
       step.id = ObjId.toString();
 
       this.currentCampaign.steps.push({
-        ...step, 
-        displaySettings:{ 
-          positionX: (event.offsetX - 20) / this.scale, 
-          positionY: (event.offsetY - 20) / this.scale, 
+        ...step,
+        displaySettings:{
+          positionX: (event.offsetX - 20) / this.scale,
+          positionY: (event.offsetY - 20) / this.scale,
           collapsed: false
         }
       });
@@ -315,13 +315,13 @@ export default {
         name: this.newCampaignName
       }).then(({ data }) => {
         const { campaign } = data;
-        
+
         this.isAddCampaign = false;
         this.newCampaignName = '';
 
         this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
       })
-      
+
     },
 
     selectCampaign(campaignId) {
@@ -331,7 +331,7 @@ export default {
         this.isAddCampaign = true;
         return;
       }
-      
+
       this.$router.push({ name: 'accountCampaign', params: {campaignId,  accountId: currentAccount.id }})
     },
 
@@ -496,7 +496,7 @@ export default {
 }
 
 .el-dialog__wrapper.campaign-dialog {
-    
+
   .el-dialog {
     border-radius: 5px;
     padding: 20px;
