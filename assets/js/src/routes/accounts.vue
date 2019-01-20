@@ -14,12 +14,14 @@
         :key="account.id"
         @click="accountClick(account)"
         >
-        <el-dropdown @command="deleteAccount(account)" placement="bottom-start">
-          <img src="../assets/svg/multipoints.svg"/>
-          <el-dropdown-menu class="delete-button" slot="dropdown">
-            <el-dropdown-item command="delete">Delete Account</el-dropdown-item>
-          </el-dropdown-menu> 
-        </el-dropdown>
+        <div @click.stop="">
+          <el-dropdown @command="deleteAccount(account)" trigger="click" placement="bottom">
+            <img src="../assets/svg/multipoints.svg"/>
+            <el-dropdown-menu class="delete-button" slot="dropdown">
+              <el-dropdown-item command="delete">Delete Account</el-dropdown-item>
+            </el-dropdown-menu> 
+          </el-dropdown>
+        </div>
         <div :class="{'account-photo': true, 'not-logged': !account.isLoggedIn}" :style="{'background-image': `url(${ account.profilePicUrl  }), url(${ igAvatar })`}"></div>
         <div class="account-login"> @{{ account.login }}</div>
         <div class="account-follow-info">
