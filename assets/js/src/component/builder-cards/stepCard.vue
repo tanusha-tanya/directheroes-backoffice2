@@ -16,7 +16,7 @@
         >
         <div class="element-title" :ref="element.id">
           <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
-            {{elementsNames[element.type]}}
+            <div class="element-name">{{elementsNames[element.type]}}</div>
             <element-warning :element="element"></element-warning>
             <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
@@ -283,6 +283,10 @@ export default {
         position: relative;
         cursor: pointer;
 
+        .element-name {
+          flex-grow: 1;
+        }
+
         span {
           padding: 10px 10px 10px 21px;
           font-family: 'AbeatbyKai';
@@ -321,7 +325,8 @@ export default {
         }
 
         .collapse-toggle {
-          margin: 0 11px
+          margin: 0 11px;
+          width: 9px;
         }
       }
 
