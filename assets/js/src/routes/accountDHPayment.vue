@@ -181,5 +181,12 @@ export default {
       margin: 0 10px;
     }
   }
+
+  .StripeElement {
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 15px;
+  }
 }
 </style>

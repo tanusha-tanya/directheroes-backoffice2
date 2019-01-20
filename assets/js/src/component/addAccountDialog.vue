@@ -70,11 +70,11 @@
           Two factor authorization is enabled on your account, you should receive an SMS with verification code in a minute
         </div>
       </div>
-      <input placeholder="Verification Code" v-model="code" @input="error = null" maxlength="6">
+      <input placeholder="Verification Code" v-model="code" @input="error = null" maxlength="6" :disabled="loading">
       <div class="error" v-if="error">{{ error }}</div>
       <div class="step-verify">
-        <button :class="{ loading }" @click="checkTFCode">Verify</button>
-        <button class="resend" :disabled="loading" >Re-send</button>
+        <button :class="{ loading: loading && !isResendCode }" :disabled="code.length < 6 || loading" @click="checkTFCode">Verify</button>
+        <button :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
       </div>
     </div>
   </el-dialog>
@@ -94,7 +94,8 @@ export default {
       },
       error: null,
       loading: false,
-      code: ''
+      code: '',
+      isResendCode: false
     }
   },
 
@@ -161,6 +162,8 @@ export default {
           this.error = error.response.data.error || error.response.data.request.statusMessage;
           this.loading = false;
         })
+
+      return request;
     },
 
     checkTFCode() {
@@ -170,22 +173,38 @@ export default {
 
       actionAccount();
     },
+
+    resendTFCode() {
+      const { actionAccount } = this;
+
+      this.isResendCode = true;
+
+      actionAccount().then(() => {
+        this.isResendCode = false;
+      })
+    }
   },
 
   watch: {
     isAddAccount(value) {
-      const { accountAuth } = this;
+      const { accountAuth, proxyStatus } = this;
 
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
         this.account.password = '';
         this.checkConnection();
-        this.checkingInterval = setInterval(this.checkConnection.bind(this), 2000)
+        this.checkingInterval = setInterval(this.checkConnection.bind(this), proxyStatus ? 60000 : 2000)
       } else {
         this.error = null;
         this.code = '';
         clearInterval(this.checkingInterval)
       }
+    },
+
+    proxyStatus(value) {
+      clearInterval(this.checkingInterval)
+
+      this.checkingInterval = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
     }
   }
 }
@@ -298,6 +317,14 @@ export default {
       .resend {
         background-color: transparent;
         color: #000;
+
+        &.loading {
+          color: transparent;
+
+          &::before {
+            border-color: #000 #000 transparent;
+          }
+        }
       }
     }
 
