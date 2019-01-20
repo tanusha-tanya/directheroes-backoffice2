@@ -321,30 +321,6 @@ export default {
     button {
       margin-top: 10px;
       width: 100%;
-
-      &:disabled {
-        opacity: .5;
-        cursor: not-allowed;
-      }
-
-      &.loading {
-        color: transparent;
-        position: relative;
-
-        &:before {
-          content: '';
-          display: block;
-          position: absolute;
-          top: calc(50% - 10px);
-          left: calc(50% - 10px);
-          width: 15px;
-          height: 15px;
-          border-radius: 100%;
-          border: 3px solid #FFF;
-          border-bottom-color: transparent;
-          animation: rotation  .8s infinite linear;
-        }
-      }
     }
   }
 }

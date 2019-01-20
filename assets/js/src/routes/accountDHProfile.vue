@@ -31,24 +31,26 @@
     >
     <label>
       Current Password
-      <input v-model="currentPassword"/>
+      <input v-model="currentPassword" type="password"  @input="error = null"/>
     </label>
     <label>
       New Password
-      <input v-model="newPassword" />
+      <input v-model="newPassword" type="password" @input="error = null"/>
     </label>
     <label>
       Repeat Password
-      <input v-model="reNewPassword"/>
+      <input v-model="reNewPassword" type="password" @input="error = null"/>
     </label>
+    <div class="error">{{error}}</div>
     <template slot="footer">
-      <button >Save</button>
-      <button class="cancel" @click="isPasswordChange = null">Close</button>
+      <button :class="{ loading }" :disabled="loading || !currentPassword || !newPassword || !reNewPassword" @click="changePassword">Save</button>
+      <button class="cancel" :disabled="loading" @click="isPasswordChange = null">Close</button>
     </template>
   </el-dialog>
 </div>
 </template>
 <script>
+import axios from 'axios';
 import igAvatar from '../assets/ig-avatar.jpg'
 import moment from 'moment'
 
@@ -59,7 +61,9 @@ export default {
       isPasswordChange: false,
       currentPassword: '',
       newPassword: '',
-      reNewPassword: ''
+      reNewPassword: '',
+      error: null,
+      loading: false
     }
   },
   computed: {
@@ -71,6 +75,44 @@ export default {
       return moment(this.dhAccount.joinedAt * 1000).format('MMM Do YYYY')
     }
   },
+
+  methods: {
+    changePassword() {
+      const { currentPassword, newPassword, reNewPassword} = this;
+      
+      if (newPassword !== reNewPassword) {
+        this.error = 'New password not equal repeat password';
+        return;
+      }
+
+      this.error = null;
+      this.loading = true;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/dh-account/change-password`,
+        method: 'post',
+        data: {
+          oldPassword: currentPassword,
+          newPassword
+        }
+      }).then(({data}) => {
+        this.isPasswordChange = false;
+        this.loading = false;
+      }).catch(({response}) => {
+        this.error = response.data.request.statusMessage;
+        this.loading = false;
+      })
+    }
+  },
+
+  watch: {
+    isPasswordChange(value) {
+      if (value) return;
+      
+      this.currentPassword = this.newPassword = this.reNewPassword = '';
+      this.error = null;
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -154,13 +196,39 @@ export default {
     font-weight: bold;
   }
 
+  .el-dialog__body {
+    padding: 7px 20px;
+  }
+
   label {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 8px;
 
     input {
       width: 50%;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+  }
+
+  .error {
+    margin-top: 10px;
+    color: #FF4D4D;
+    text-align: center;
+  }
+
+  button {
+    background-color: #6A12CB;
+    border-radius: 5px;
+    line-height: 16px;
+    font-weight: normal;
+    padding: 7px 20px;
+
+    &.cancel {
+      background-color: transparent;
+      color: #000;
     }
   }
 }
