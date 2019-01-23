@@ -38,10 +38,12 @@ import accountThreadInfo from './routes/accountThreadInfo.vue'
 import accountDH from './routes/accountDH.vue'
 import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
+import videoHelp from './routes/videoHelp.vue'
 
 const router = new VueRouter({
   routes:[
     { path: '/', name: 'accounts', component: accounts },
+    { path: '/videohelp', name: 'video-help', component: videoHelp },
     { path: '/settings', component: accountDH,
       children: [
         { name: 'dhProfile', path: '', component: accountDHProfile },
