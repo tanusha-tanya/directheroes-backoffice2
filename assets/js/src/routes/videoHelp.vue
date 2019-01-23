@@ -93,10 +93,14 @@ export default {
   padding: 30px 0;
   
   .video-item {
-    border-top: 1px solid #e1e1e1;
+    border-top: 1px solid #DBDBDB;
+
+    &:hover {
+      background-color: rgba(#6A12CB, .04)
+    }
 
     &:last-child {
-      border-bottom: 1px solid #e1e1e1;
+      border-bottom: 1px solid #DBDBDB;
     }
   }
 
