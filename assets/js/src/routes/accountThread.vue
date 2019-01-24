@@ -96,7 +96,7 @@ export default {
     },
 
     subscriberAt(date) {
-      return moment(new Date(date)).fromNow();
+      return moment(new Date(date * 1000)).fromNow();
     }
   },
 
