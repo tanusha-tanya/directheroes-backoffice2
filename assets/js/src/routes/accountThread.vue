@@ -13,6 +13,8 @@
       <div class="list-item header">
         <div class="user-row">User</div>
         <div class="subscribed-row">Subscribed</div>
+        <div class="lastmessage-row">Last Message</div>
+        <div class="campaigns-row">Campaigns</div>
       </div>
       <div class="list-item" v-for="thread in threads" :key="thread.id">
         <div class="user-row">
@@ -20,6 +22,14 @@
           {{thread.contactProfile.username}}
         </div>
         <div class="subscribed-row">{{subscriberAt(thread.subscribedAt)}}</div>
+        <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
+        <div class="campaigns-row">
+          <router-link 
+            :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }" 
+            v-for="campaign in thread.campaignList"
+            :key="campaign.id"
+            >{{campaign.name}}</router-link>
+        </div>
         <div class="chat-row">
           <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
           <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
@@ -125,15 +135,34 @@ export default {
   }
 
   .user-row {
-    width: 40%;
+    width: 25%;
     padding: 0 10px;
     flex-shrink: 0;
   }
 
   .subscribed-row {
+    width: 15%;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  .lastmessage-row {
+    width: 15%;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+   
+  .campaigns-row {
     width: 20%;
     padding: 0 10px;
     flex-shrink: 0;
+     
+    a:not(:last-child) {
+      &:after {
+        content:',';
+        margin-right: 5px;
+      }
+    }
   }
 
   .chat-row {
@@ -171,7 +200,7 @@ export default {
     &.header .user-row{
       padding-left: 46px;
     }
-    &:hover {
+    &:hover .chat-row{
       a {
         background-color: #6A12CB;
         border-color: #6A12CB;
