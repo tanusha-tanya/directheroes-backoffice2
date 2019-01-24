@@ -30,7 +30,7 @@
           <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
           {{thread.contactProfile.username}}
         </div>
-        <div class="subscribed-row">{{subscriberAt(thread.subscribedAt)}}</div>
+        <div class="subscribed-row">{{ thread.subscribedAt ? subscriberAt(thread.subscribedAt) : ''}}</div>
         <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
         <div class="campaigns-row">
           <router-link 
@@ -171,6 +171,8 @@ export default {
     width: 20%;
     padding: 0 10px;
     flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
      
     a:not(:last-child) {
       &:after {
