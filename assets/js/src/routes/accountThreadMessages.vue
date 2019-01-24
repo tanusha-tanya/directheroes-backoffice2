@@ -28,6 +28,11 @@
               <div class="body">
                 <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
                 <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
+                <router-link 
+                  class="bot-campaign" 
+                  :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
+                  v-if="message.botCampaign"
+                  >{{message.botCampaign.name}}</router-link>
               </div>
             </div>
           </div>
@@ -348,6 +353,7 @@
         display: flex;
         align-self: flex-start;
         max-width: 70%;
+        position: relative;
       }
 
       .text {
@@ -357,6 +363,13 @@
         line-height: 22px;
         font-size: 16px;
         word-break: break-word;
+      }
+      
+      .bot-campaign {
+        position: absolute;
+        right: 25px;
+        top: -15px;
+        color: #2c3e50;
       }
 
       &:not(:last-child) {
