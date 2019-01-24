@@ -8,6 +8,15 @@
         <el-option label="Subscribed" :value="true"></el-option>
         <el-option label="Unsubscribed" :value="false"></el-option>
       </el-select>
+      <el-select v-model="status" @change="getAudience">
+        <el-option label="All" value="audience"></el-option>
+        <el-option label="Stuck" value="stuck"></el-option>
+        <el-option label="Ignored" value="ignored"></el-option>
+      </el-select>
+       <el-select class="campaign-list" v-model="filters.campaign_id" @change="getAudience">
+        <el-option label="All" :value="null"></el-option>
+        <el-option v-for="campaign in account.campaignList" :key="campaign.id" :label="campaign.name" :value="campaign.id"></el-option>
+      </el-select>
     </div>
     <div class="container-area">
       <div class="list-item header">
@@ -64,8 +73,10 @@ export default {
       avatar,
       filters: {
         subscribed: null,
-        username_query: ''
+        username_query: '',
+        campaign_id: null,
       },
+      status: 'audience',
       paging: {
         page: 1,
         totalPageCount: 1
@@ -86,14 +97,14 @@ export default {
     },
 
     getAudience() {
-      const { account } = this;
+      const { account, status } = this;
 
       if (!account) return;
 
       this.threads = null;
 
       axios({ 
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
         method: 'post',
         data: { ...this.filters, paging: this.paging }
       })
@@ -131,6 +142,10 @@ export default {
 
     input {
       margin-right: 15px;
+    }
+
+    .el-select:not(.campaign-list) {
+      width: 135px;
     }
   }
 
