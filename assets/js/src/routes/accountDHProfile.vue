@@ -67,10 +67,6 @@ export default {
     }
   },
   computed: {
-    dhAccount() {
-      return this.$store.state.dhAccount
-    },
-
     joinedAt() {
       return moment(this.dhAccount.joinedAt * 1000).format('MMM Do YYYY')
     }

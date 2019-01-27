@@ -39,12 +39,6 @@ export default {
       bell
     }
   },
-
-  computed: {
-    dhAccount() {
-      return this.$store.state.dhAccount
-    },
-  }
 }
 </script>
 

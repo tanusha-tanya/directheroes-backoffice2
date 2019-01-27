@@ -15,11 +15,6 @@
 </template>
 <script>
 export default {
-  computed: {
-    dhAccount() {
-      return this.$store.state.dhAccount
-    }
-  }
 }
 </script>
 <style lang="scss">

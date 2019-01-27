@@ -39,6 +39,7 @@ import accountDH from './routes/accountDH.vue'
 import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
 import videoHelp from './routes/videoHelp.vue'
+import { log } from 'util';
 
 const router = new VueRouter({
   routes:[
@@ -62,6 +63,16 @@ const router = new VueRouter({
   ]
 })
 
+router.beforeEach((to, from, next) => {
+  const { dhAccount } = store.state;
+
+  if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'dhPayments') {
+    next({name: 'dhPayments'})
+  } else {
+    next()
+  }
+})
+
 store.dispatch('getAccounts');
 
 Vue.mixin({
@@ -78,6 +89,18 @@ Vue.mixin({
             });
         },
       }
+    },
+
+    dhAccount() {
+      return this.$store.state.dhAccount
+    }
+  },
+
+  watch: {
+    '$store.state.dhAccount'(dhAccount) {
+      if (!dhAccount || dhAccount.subscription.isActive) return;
+
+      this.$router.push({ name: 'dhPayments'})
     }
   }
 })

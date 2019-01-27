@@ -19,7 +19,7 @@
           <img :src="youtube"/>
         </router-link>
       </div>
-      <div class="content-container">
+      <div class="content-container" v-if="dhAccount">
         <router-view></router-view>
       </div>
     </div>
