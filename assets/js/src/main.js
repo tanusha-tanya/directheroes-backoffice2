@@ -30,6 +30,8 @@ import './styles/common.scss'
 import accounts from './routes/accounts.vue'
 import accountDetails from './routes/accountDetails.vue'
 // import accountCampaign from './routes/accountCampaign.vue'
+import broadcastList from './routes/broadcastList.vue'
+import broadcastBuilder from './routes/broadcastBuilder.vue'
 import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
 import accountDashboard from './routes/accountDashboard.vue'
@@ -55,6 +57,8 @@ const router = new VueRouter({
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },
         { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
+        { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
+        { name: 'accountBroadcast', path: 'broadcasts/:broadcastId', component: broadcastBuilder },
         { name: 'audience', path: 'audience', component: accountThread },
         { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
         { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },

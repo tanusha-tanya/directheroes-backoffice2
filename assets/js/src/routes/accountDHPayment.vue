@@ -35,7 +35,7 @@
         <div>{{ cardInfo.expMonth }}/{{ cardInfo.expYear }}</div>
       </label>
     </div>
-    <button @click="isSetPayment = true">Update payment info</button>
+    <button @click="isSetPayment = true" v-if="false">Update payment info</button>
   </div>
   <form @submit.prevent="createCardToken" ref="paymentForm" v-show="isSetPayment">
     <div class="form-row">

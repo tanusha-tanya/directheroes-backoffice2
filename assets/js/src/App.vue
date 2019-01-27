@@ -12,6 +12,9 @@
         <router-link v-if="account" class="side-bar-item" :to="{ name: 'accountCampaign', params: { accountId: account.id } }">
           <img :src="socialBuffer"/>
         </router-link>
+        <router-link  v-if="account" class="side-bar-item" :to="{ name: 'accountBroadcastList' }">
+          <img :src="broadcast"/>
+        </router-link>
         <router-link v-if="account" class="side-bar-item" :to="{ name: 'audience' }">
           <img :src="people"/>
         </router-link>
@@ -32,6 +35,7 @@ import home from './assets/svg/home.svg'
 import people from './assets/svg/people.svg'
 import socialBuffer from './assets/svg/social-buffer.svg'
 import youtube from './assets/svg/youtube.svg'
+import broadcast from './assets/svg/broadcast.svg'
 
 export default {
   name: 'app',
@@ -41,7 +45,8 @@ export default {
       home,
       people,
       socialBuffer,
-      youtube
+      youtube,
+      broadcast
     }
   },
 

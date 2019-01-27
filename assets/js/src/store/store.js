@@ -35,11 +35,6 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
-        // accountList.forEach( account => {
-        //   // account.isPasswordValid = false;
-        //   // account.threadList = account.campaignList;
-        // })
-
         commit('set', {path: 'dhAccount', value: dhAccount});
         commit('set', {path: 'accounts', value: accountList});
       })
@@ -152,7 +147,25 @@ export default new VueX.Store({
       })
 
       return request;
-    }
+    },
+
+    createBroadcast({ state, commit }, campaign) {
+      const { currentAccount } = state;
+      const request = axios({
+        method: 'post',
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/create_broadcast`,
+        data: {
+          igAccount: { id: currentAccount.id },
+          campaign
+        }
+      })
+
+      request.then(({ data }) => {
+        currentAccount.broadcastList.push(data.campaign);
+      })
+
+      return request
+    },
   },
 
   mutations: {

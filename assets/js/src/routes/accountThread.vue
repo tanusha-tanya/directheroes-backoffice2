@@ -133,10 +133,6 @@ export default {
 .audience-content {
   padding: 15px 0;
 
-  .content-title {
-    margin-bottom: 16px; 
-  }
-
   .audience-filters {
     margin-bottom: 21px;
 

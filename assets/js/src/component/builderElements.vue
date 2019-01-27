@@ -4,6 +4,7 @@
       :is="Drag"
       :transfer-data="stepData"
       class="builder-element step-add"
+      v-if="!type"
     >
       <img src="../assets/svg/plus-outline.svg"/>
     </component>
@@ -13,6 +14,7 @@
       class="builder-element"
       v-for="element in elements"
       :key="element.name"
+      v-if="visible(element)"
     >
       <img :src="element.svg"/>
       <div class="builder-element-title">{{element.name}}</div>
@@ -96,6 +98,18 @@ export default {
         // { name: 'User Input', svg: infinite },
       ],
       Drag
+    }
+  },
+
+  props:['type'],
+
+  methods: {
+    visible(element) {
+      const { type } = this;
+
+      if (!type) return true;
+      
+      return !['List'].includes(element.name)
     }
   }
 }
