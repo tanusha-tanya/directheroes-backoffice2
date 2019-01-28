@@ -49,6 +49,7 @@ import builderElements from '../component/builderElements.vue'
 import broadcastCard from '../component/builder-cards/broadcastCard.vue'
 import debounce from 'lodash/debounce'
 import moment from 'moment'
+import Vue from 'vue'
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -94,12 +95,16 @@ export default {
       get() {
         const { startAt } = this.broadcastStep.settings;
 
+        console.log(startAt);
+        
+
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
         const { settings } = this.broadcastStep;
 
-        settings.startAt = value
+        Vue.set(settings, 'startAt', moment(value).utc().format());
+        settings.startTimeSetAt = moment().utc().format();
       }
     }
   },

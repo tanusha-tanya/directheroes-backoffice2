@@ -76,7 +76,7 @@ export default {
         this.isAddBroadcast = false;
         this.newBroadcastName = '';
 
-        this.$router.push({ name: 'accountBroadcast', params: { broadcastId: broadcast.id, accountId: currentAccount.id } })
+        this.$router.push({ name: 'accountBroadcast', params: { broadcastId: campaign.id, accountId: currentAccount.id } })
       })
     },
 

@@ -52,7 +52,7 @@ input {
   }
 }
 
-button {
+button:not([type=button]) {
   background-color: #434890;
   border: none;
   outline: none;
@@ -63,9 +63,4 @@ button {
   padding: 8px 26px;
   color: #fff;
   cursor: pointer
-}
-
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed
 }
