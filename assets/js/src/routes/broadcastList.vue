@@ -82,22 +82,22 @@ export default {
 
     broadcastSchedule(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const scheduleAt = moment(broadcastEntry.settings.scheduleAt).format('DD MMM YYYY hh:mm')
-
-      return scheduleAt == 'Invalid date' ? '-' : scheduleAt;
+      const startAt = moment(broadcastEntry.settings.startAt || null).format('DD MMM YYYY hh:mm')
+      
+      return startAt == 'Invalid date' ? '-' : startAt;
     },
 
     broadcastCompleteAt(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const completeAt = moment(broadcastEntry.status.completeAt).format('DD MMM YYYY hh:mm')
+      const completedAt = moment(broadcastEntry.status.completedAt || null).format('DD MMM YYYY hh:mm')
 
-      return completeAt == 'Invalid date' ? '-' : completeAt;
+      return completedAt == 'Invalid date' ? '-' : completedAt;
     },
 
     broadcastReach(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
      
-      return broadcastEntry.status.reach;
+      return broadcastEntry.status.reach || '-';
     },
 
     broadcastStatus(broadcast) {
@@ -129,6 +129,8 @@ export default {
   }
 
   .list-item {
+    text-decoration: none;
+    
     &.header {
       font-weight: bold;
       // justify-content: space-between;
