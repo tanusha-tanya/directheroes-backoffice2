@@ -34,7 +34,8 @@
         @dragleave="dragLeave"
         @drop="dropHandler"
       >+</component>
-      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!hasList"></arrow-born>
+      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!hasList && !goToStepElement"></arrow-born>
+      <div class="remove-go-to" v-if="!hasList && goToStepElement" @click="removeGoTo">&times</div>
     </template>
   </builder-card>
 </template>
@@ -112,32 +113,32 @@ export default {
       return elements.some(element => element.type === 'messageTextConditionMultiple')
     },
 
-    hasGoToStep() {
+    goToStepElement() {
       const { elements } = this.step;
 
-      return elements.some(element => element.type === 'goToStep')
+      return elements.find(element => element.type === 'goToStep')
     }
   },
 
   methods: {
     dragEnter(data) {
-      const { hasGoToStep } = this;
+      const { goToStepElement } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
       this.dragged = true;
     },
 
     dragLeave(data) {
-      const { hasGoToStep } = this;
+      const { goToStepElement } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
       this.dragged = false;
     },
 
     dropHandler(data) {
-      const { hasGoToStep } = this;
+      const { goToStepElement } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && hasGoToStep) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
 
       const element = JSON.parse(JSON.stringify(data))
 
@@ -198,6 +199,13 @@ export default {
       cardDetails.y = position.positionY
       cardDetails.id = this.step.id
       EventBus.$emit('builderCard:mouseup', cardDetails)
+    },
+
+    removeGoTo() {
+      const { elements } = this.step;
+      const { goToStepElement } = this;
+      
+      elements.splice(elements.indexOf(goToStepElement), 1);
     }
   }
 }
@@ -258,7 +266,7 @@ export default {
       }
     }
 
-    .arrow-born {
+    .arrow-born, .remove-go-to {
       position: absolute;
       z-index: 2;
       right: -7px;
@@ -269,6 +277,21 @@ export default {
         border-color: #666;
         color: #666;
       }
+    }
+
+    .remove-go-to {
+      color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 15px;
+      width: 15px;
+      font-size: 16px;
+      border-radius: 7px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      line-height: 10px;
+      cursor: pointer;
     }
 
     .element-container {
