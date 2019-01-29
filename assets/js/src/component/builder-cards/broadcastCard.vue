@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="broadcast-card" :settings="broadcastStep.displaySettings">
+  <builder-card :class="{'broadcast-card': true, disabled: isStarted || notStarted }" :settings="broadcastStep.displaySettings">
     <template slot="header">
       {{ broadcast.name || '&nbsp;'}}
     </template>
@@ -72,6 +72,17 @@ export default {
   computed: {
     broadcastStep() {
       return this.broadcast.steps.find(step => step.type = 'broadcastEntry')
+    },
+
+    isStarted() {
+      const { broadcastStep } = this
+      return broadcastStep.status.statusText == 'running'
+    },
+
+    notStarted() {
+      const { isStarted, startAt, broadcastStep } = this;
+
+      return !isStarted && startAt && moment().diff(new Date(startAt), 'minutes') > 1
     }
   },
 
@@ -109,6 +120,11 @@ export default {
     box-shadow: 0 0 10px #F5F5F5;
     top: 130px;
     left: 450px;
+    
+    &.disabled {
+      pointer-events: none;
+      opacity: .6;
+    }
 
     .builder-card-header {
       font-family: 'AbeatbyKai';

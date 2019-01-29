@@ -82,14 +82,16 @@ export default {
 
     broadcastSchedule(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const startAt = moment(broadcastEntry.settings.startAt || null).format('DD MMM YYYY hh:mm')
+      const { settings } = broadcastEntry;
+      const startAt = moment((settings.startAt && settings.startAt * 1000) || null).format('DD MMM YYYY hh:mm')
       
       return startAt == 'Invalid date' ? '-' : startAt;
     },
 
     broadcastCompleteAt(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const completedAt = moment(broadcastEntry.status.completedAt || null).format('DD MMM YYYY hh:mm')
+      const { status } = broadcastEntry;
+      const completedAt = moment((status.completedAt && status.completedAt * 1000) || null).format('DD MMM YYYY hh:mm')
 
       return completedAt == 'Invalid date' ? '-' : completedAt;
     },

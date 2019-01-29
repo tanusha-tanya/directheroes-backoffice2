@@ -2,6 +2,13 @@
 <div class="broadcast-builder">
   <div class="broadcast-builder-controls">
     <span>Broadcast Builder</span>
+     <div class="info" v-if="currentBroadcast">
+        <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
+        <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
+        <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
+        <div class="start-message" v-if="isStarted">Broadcast was started</div>
+        <div v-if="!startAt">Time to start not setted</div>
+      </div>
     <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
     <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
       <img src="../assets/svg/gear.svg"/>
@@ -21,11 +28,12 @@
             time-arrow-control
             :clearable="false"
             size="mini"
+            :disabled="isStarted || notStarted"
             :picker-options="pickerOptions"
             placeholder="Select date and time">
           </el-date-picker>
         or:
-          <button @click="setNowDate">Broadcast now</button>
+          <button @click="setNowDate" :disabled="isStarted || notStarted">Broadcast now</button>
       </div>
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
@@ -33,6 +41,7 @@
             v-for="subscriber in account.subscriberCategoryList"
             :key="subscriber.id"
             :checked="isCheckedSubscriber(subscriber.id)"
+            :disabled="isStarted || notStarted"
             @change="checkSubscriber(subscriber, $event)"
             >
             {{ subscriber.name }}
@@ -68,6 +77,8 @@ export default {
     return {
       currentBroadcast: null,
       isSettings: false,
+      timeToStart: null,
+      broadcastTimeout: null,
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < Date.now();
@@ -94,9 +105,6 @@ export default {
       get() {
         const { startAt } = this.broadcastStep.settings;
 
-        console.log(startAt);
-
-
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
@@ -104,7 +112,20 @@ export default {
 
         Vue.set(settings, 'startAt', moment(value).utc().format());
         settings.startTimeSetAt = moment().utc().format();
+
+        this.updateBroadcastStatus();
       }
+    },
+
+    isStarted() {
+      const { broadcastStep } = this
+      return broadcastStep.status.statusText == 'running'
+    },
+
+    notStarted() {
+      const { isStarted, startAt, broadcastStep } = this;
+
+      return !isStarted && startAt && moment().diff(new Date(startAt), 'minutes') > 1
     }
   },
 
@@ -115,6 +136,8 @@ export default {
       const currentBroadcast = broadcastList.find(broadcast => broadcast.id == broadcastId);
 
       this.currentBroadcast = currentBroadcast;
+
+      this.updateBroadcastStatus()
     },
 
     saveBroadcast: debounce(function() {
@@ -143,8 +166,31 @@ export default {
     },
 
     setNowDate() {
+      const { broadcastStep } = this;
+
+      broadcastStep.status.statusText = 'running'
       this.startAt = moment().utc().format()
-    }
+    },
+
+    updateBroadcastStatus() {
+      const { isStarted, startAt, broadcastStep, notStarted } = this;
+      const diff = moment(new Date(startAt)).diff();
+      let timeout = 60 * 1000;
+
+      clearTimeout(this.broadcastTimeout)
+
+      this.timeToStart = (!startAt || moment().diff(new Date(startAt)) > 0) ? null : `${moment().from(new Date(startAt), true)} to start`
+
+      if ((diff > 60 * 60 * 1000) || isStarted || notStarted) return;
+
+      if (diff < 60 * 1000 && diff > 0) {
+        timeout = 1000;
+      } else if (!this.timeToStart) {
+        return;
+      }
+
+      this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
+    },
   },
 
   watch:{
@@ -267,6 +313,25 @@ export default {
       font-size: 24px;
       line-height: 24px;
       flex-grow: 1;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      margin-right: 10px;
+
+      & > div::first-letter {
+        text-transform: uppercase;
+      }
+
+      .start-message {
+        color: #67c23a;
+      }
+
+      .fail-message {
+        color: #ff0048;
+      }
     }
 
     .broadcast-builder-divider {
