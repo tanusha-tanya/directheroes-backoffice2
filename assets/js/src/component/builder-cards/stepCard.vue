@@ -160,8 +160,7 @@ export default {
         step.elements.splice(step.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
       } else {
         step.elements.push({ ...element, displaySettings: { collapsed: false }});
-      }
-      
+      } 
     },
 
     elementRemove(element) {
