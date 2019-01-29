@@ -1,7 +1,7 @@
 <template>
   <div class="accounts-content">
     <div class="account-list">
-      <div class="account-card add-account" @click="addAccount">
+      <div class="account-card add-account" @click="addAccount" v-if="accounts.length <= dhAccount.igAccountLimit">
         <div class="account-photo"></div>
         <div class="account-login">Add new account</div>
         <div class="account-follow-info">
