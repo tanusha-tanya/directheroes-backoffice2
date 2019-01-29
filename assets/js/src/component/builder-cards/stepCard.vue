@@ -10,9 +10,8 @@
       <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
       <div
         class="element-container"
-        v-for="element in step.elements"
+        v-for="element in elementList"
         :key="element.id"
-        v-if="showElement(element)"
         >
         <div class="element-title" :ref="element.id">
           <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
@@ -28,14 +27,26 @@
       </div>
       <component
         :is="Drop"
-        v-if="!isLastList"
         :class="{'add-element': true, 'in-drag':  dragged}"
         @dragenter="dragEnter"
         @dragleave="dragLeave"
         @drop="dropHandler"
       >+</component>
-      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!hasList && !goToStepElement"></arrow-born>
-      <div class="remove-go-to" v-if="!hasList && goToStepElement" @click="removeGoTo">&times</div>
+      <div class="element-container" v-if="listElement">
+        <div class="element-title" :ref="listElement.id">
+          <span @click="listElement.displaySettings.collapsed = !listElement.displaySettings.collapsed">
+            <div class="element-name">{{elementsNames[listElement.type]}}</div>
+            <element-warning :element="listElement"></element-warning>
+            <div class="collapse-toggle" >{{ listElement.displaySettings.collapsed ? '+' : '-'}}</div>
+          </span>
+          <div class="remove-element" @click="elementRemove(listElement)">&times</div>
+        </div>
+        <div class="element-body" v-if="!listElement.displaySettings.collapsed">
+          <component :is="elementComponents[listElement.type]" :element="listElement"></component>
+        </div>
+      </div>
+      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
+      <div class="remove-go-to" v-if="!listElement && goToStepElement" @click="removeGoTo">&times</div>
     </template>
   </builder-card>
 </template>
@@ -100,23 +111,22 @@ export default {
       return this.step.id == connectArrow.parent || findChild(this)
     },
 
-    isLastList() {
-      const { elements } = this.step;
-      const elementsCount = elements.length;
-
-      return elementsCount && elements[elementsCount - 1].type === 'messageTextConditionMultiple';
-    },
-
-    hasList() {
+    listElement() {
       const { elements } = this.step;
 
-      return elements.some(element => element.type === 'messageTextConditionMultiple')
+      return elements.find(element => element.type === 'messageTextConditionMultiple')
     },
 
     goToStepElement() {
       const { elements } = this.step;
 
       return elements.find(element => element.type === 'goToStep')
+    },
+
+    elementList() {
+      const { elements } = this.step;
+
+      return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageTextConditionMultiple')
     }
   },
 
@@ -136,7 +146,7 @@ export default {
     },
 
     dropHandler(data) {
-      const { goToStepElement } = this;
+      const { goToStepElement, listElement, step } = this;
 
       if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
 
@@ -145,7 +155,13 @@ export default {
       element.id = (new ObjectId).toString();
 
       this.dragged = false;
-      this.step.elements.push({ ...element, displaySettings: { collapsed: false }});
+      
+      if (listElement) {
+        step.elements.splice(step.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
+      } else {
+        step.elements.push({ ...element, displaySettings: { collapsed: false }});
+      }
+      
     },
 
     elementRemove(element) {
@@ -179,10 +195,6 @@ export default {
       })
 
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
-    },
-
-    showElement(element) {
-      return (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false))
     },
 
     handleMouseDown(position) {
@@ -243,6 +255,7 @@ export default {
       text-align: center;
       line-height: normal;
       font-size: 24px;
+      margin-bottom: 6px;
 
       &.in-drag {
         border-color: #96B5FF;
