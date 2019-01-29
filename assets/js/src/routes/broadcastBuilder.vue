@@ -28,8 +28,7 @@
           <button @click="setNowDate">Broadcast now</button>
       </div>
       <div class="broadcast-settings-info">
-        All subscribers
-        <div class="broadcast-settings-campaign-list" v-if="false">
+        <div class="broadcast-settings-campaign-list">
           <el-checkbox
             v-for="subscriber in account.subscriberCategoryList"
             :key="subscriber.id"
@@ -38,11 +37,11 @@
             >
             {{ subscriber.name }}
           </el-checkbox>
-        </div>    
+        </div>
       </div>
     </div>
   </div>
-</div>    
+</div>
 </template>
 <script>
 import builderElements from '../component/builderElements.vue'
@@ -96,7 +95,7 @@ export default {
         const { startAt } = this.broadcastStep.settings;
 
         console.log(startAt);
-        
+
 
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
@@ -114,7 +113,7 @@ export default {
       const { broadcastId } = route.params;
       const { broadcastList } = this.$store.state.currentAccount;
       const currentBroadcast = broadcastList.find(broadcast => broadcast.id == broadcastId);
-   
+
       this.currentBroadcast = currentBroadcast;
     },
 
@@ -228,7 +227,7 @@ export default {
         color: #622DCE;
       }
     }
-    
+
 
     .el-checkbox {
       display: block;
