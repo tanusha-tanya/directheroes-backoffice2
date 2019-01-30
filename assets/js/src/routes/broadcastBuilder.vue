@@ -14,10 +14,7 @@
       <img src="../assets/svg/gear.svg"/>
     </div>
   </div>
-  <div class="broadcast-builder-area" v-if="currentBroadcast">
-    <broadcast-card :broadcast="currentBroadcast"></broadcast-card>
-  </div>
-  <builder-elements type="broadcast"></builder-elements>
+  <flow-builder entry-type="broadcastEntry" :current-entry-item="currentBroadcast" v-if="currentBroadcast" :disabled="isStarted || notStarted"></flow-builder>
   <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
     <div class="broadcast-settings-area" @click.stop="">
       <div class="broadcast-settings-controls">
@@ -53,9 +50,7 @@
 </div>
 </template>
 <script>
-import builderElements from '../component/builderElements.vue'
-import broadcastCard from '../component/builder-cards/broadcastCard.vue'
-import debounce from 'lodash/debounce'
+import flowBuilder from '../component/flowBuilder.vue'
 import moment from 'moment'
 import Vue from 'vue'
 
@@ -88,8 +83,7 @@ export default {
   },
 
   components: {
-    builderElements,
-    broadcastCard
+    flowBuilder
   },
 
   computed: {
@@ -140,17 +134,6 @@ export default {
       this.updateBroadcastStatus()
     },
 
-    saveBroadcast: debounce(function() {
-      this.$store.dispatch('saveCampaign', this.currentBroadcast)
-        .catch(() => {
-          this.$message.error({
-            message: 'Could not save data',
-            duration: 3000,
-            center: true
-          })
-        });
-    }, 3000),
-
     checkSubscriber(subscriber, checked) {
       const { categoryList } = this.broadcastStep.settings;
 
@@ -199,20 +182,12 @@ export default {
 
       this.setCurrentBroadcast(this.$route);
     },
-    currentBroadcast: {
-      handler: function (broadcast, oldBroadcast) {
-        if (!oldBroadcast || !broadcast || broadcast.id !== oldBroadcast.id) return;
-
-        this.saveBroadcast();
-      },
-      deep: true
-    },
   }
 }
 </script>
 <style lang="scss">
 .broadcast-builder {
-  width: 100%;
+  flex-grow: 1;
   position: relative;
 
   .broadcast-settings {
@@ -354,5 +329,8 @@ export default {
     }
   }
 
+  .flow-builder {
+    height: calc(100% - 50px);
+  }
 }
 </style>
