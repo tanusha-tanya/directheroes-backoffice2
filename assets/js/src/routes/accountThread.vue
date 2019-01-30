@@ -13,7 +13,7 @@
         <el-option label="Stuck" value="stuck"></el-option>
         <el-option label="Ignored" value="ignored"></el-option>
       </el-select>
-       <el-select class="campaign-list" v-model="filters.campaign_id" @change="getAudience">
+       <el-select class="campaign-list" v-model="filters.campaignId" @change="getAudience">
         <el-option label="All" :value="null"></el-option>
         <el-option v-for="campaign in account.campaignList" :key="campaign.id" :label="campaign.name" :value="campaign.id"></el-option>
       </el-select>
@@ -73,8 +73,8 @@ export default {
       avatar,
       filters: {
         subscribed: true,
-        username_query: '',
-        campaign_id: null,
+        usernameQuery: '',
+        campaignId: null,
       },
       status: 'audience',
       paging: {
