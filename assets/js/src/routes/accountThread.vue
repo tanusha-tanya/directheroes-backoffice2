@@ -72,7 +72,7 @@ export default {
       threads: null,
       avatar,
       filters: {
-        subscribed: null,
+        subscribed: true,
         username_query: '',
         campaign_id: null,
       },
