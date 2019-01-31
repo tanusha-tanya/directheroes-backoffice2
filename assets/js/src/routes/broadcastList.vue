@@ -130,6 +130,10 @@ export default {
     }
   }
 
+  .container-area {
+    min-height: 75vh;
+  }
+
   .list-item {
     text-decoration: none;
     

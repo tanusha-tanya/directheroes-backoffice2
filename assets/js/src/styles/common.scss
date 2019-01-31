@@ -79,7 +79,7 @@
   align-items: center;
   border-bottom: 1px solid #DBDBDB;
 
-  &:hover {
+  &:not(.header):hover {
     background-color: rgba(#6A12CB, .04)
   }
 }

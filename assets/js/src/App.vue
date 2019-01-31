@@ -25,6 +25,9 @@
       <div class="content-container" v-if="dhAccount">
         <router-view></router-view>
       </div>
+      <div class="loading-content" v-else>
+        <div class="pre-loader"></div>
+      </div>
     </div>
   </div>
 </template>

@@ -25,24 +25,34 @@
         <div class="lastmessage-row">Last Message</div>
         <div class="campaigns-row">Campaigns</div>
       </div>
-      <div class="list-item" v-for="thread in threads" :key="thread.id">
-        <div class="user-row">
-          <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
-          {{thread.contactProfile.username}}
+      <template v-if="threads">
+        <template v-if="threads.length">
+          <div class="list-item" v-for="thread in threads" :key="thread.id">
+            <div class="user-row">
+              <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
+              {{thread.contactProfile.username}}
+            </div>
+            <div class="subscribed-row">{{ thread.subscribedAt ? subscriberAt(thread.subscribedAt) : ''}}</div>
+            <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
+            <div class="campaigns-row">
+              <router-link 
+                :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }" 
+                v-for="campaign in thread.campaignList"
+                :key="campaign.id"
+                >{{campaign.name}}</router-link>
+            </div>
+            <div class="chat-row">
+              <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
+              <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
+            </div>
+          </div>
+        </template>
+        <div class="no-result" v-else>
+          No result found
         </div>
-        <div class="subscribed-row">{{ thread.subscribedAt ? subscriberAt(thread.subscribedAt) : ''}}</div>
-        <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
-        <div class="campaigns-row">
-          <router-link 
-            :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }" 
-            v-for="campaign in thread.campaignList"
-            :key="campaign.id"
-            >{{campaign.name}}</router-link>
-        </div>
-        <div class="chat-row">
-          <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
-          <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
-        </div>
+      </template>
+      <div class="loading-content" v-else>
+        <div class="pre-loader"></div>
       </div>
     </div>
     <el-pagination
@@ -143,6 +153,14 @@ export default {
     .el-select:not(.campaign-list) {
       width: 135px;
     }
+  }
+
+  .container-area {
+    min-height: 75vh;
+  }
+
+  .loading-content {
+    padding: 31vh 0;
   }
 
   .user-row {

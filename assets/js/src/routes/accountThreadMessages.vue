@@ -54,6 +54,15 @@
           </button>
         </div>
       </div>
+      <div class="instagram-chat" v-else>
+        <div class="content-panel">
+          <div class="avatar" :style="{'background-image': `url(${ defaultAvatar })`}"></div>
+          <strong>Loading user messages</strong>
+        </div>
+        <div class="loading-content">
+          <div class="pre-loader"></div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -254,6 +263,8 @@
     }  
   }
 
+
+
   .thread-content-messages {
     padding: 15px;
 
@@ -293,9 +304,13 @@
       flex-grow: 1;
     }
 
+    .loading-content {
+      height: calc(100% - 50px);
+    }
+
     .content-panel {
       display: flex;
-      padding: 12px 10px;
+      padding: 12px 10px 13px;
       justify-content: center;
       align-items: center;
       border-bottom: 1px solid #EEEEEE;

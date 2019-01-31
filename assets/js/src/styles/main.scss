@@ -6,10 +6,12 @@
 @keyframes preloader-wave {
   0% {
       opacity: 1;
+      background-color: #742BF9;
       transform: scale(0, 0);
   }
   100% {
       opacity: 0;
+      background-color: #6A12CB;
       transform: scale(1, 1);
   }
 }
@@ -63,4 +65,38 @@ button:not([type=button]) {
   padding: 8px 26px;
   color: #fff;
   cursor: pointer
+}
+
+.pre-loader {
+  height: 50px;
+  width: 50px;
+  position: relative;
+
+  &:before, &:after {
+    animation: 1.6s linear 0s normal none infinite running preloader-wave;
+    background: none repeat scroll 0 0;
+    border-radius: 100%;
+    content: "";
+    height: 50px;
+    position: absolute;
+    width: 50px;
+  }
+
+  &:after {
+    animation-delay: -0.8s;
+  }
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.no-result {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 30px;
 }
