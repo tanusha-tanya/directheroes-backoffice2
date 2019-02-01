@@ -122,6 +122,20 @@ export default {
       const { accountAuth } = this;
 
       return accountAuth && accountAuth.twoFactor
+    },
+
+    accountError() {
+      const { accountAuth } = this;
+
+      if (!accountAuth) return;
+
+      if (!accountAuth.isPasswordValid) {
+        return 'Your password seems to be invalid'
+      } else if (accountAuth.igChallenge) {
+        return 'Please open Instagram application and click "It was me" if prompted, then try connecting account again'
+      } else if (accountAuth.isLoggedIn) {
+        return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
+      }
     }
   },
 
@@ -156,7 +170,10 @@ export default {
           this.$emit('set-auth-account', account)
 
           if (account.igErrorMessage) {
-            this.error = account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '')
+            this.error = account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '');
+          }
+          else if (accountError) {
+            this.error = accountError;
           } else if (account.isLoggedIn && account.isPasswordValid) {
             this.$emit('close-dialog', false);
           }
@@ -190,11 +207,12 @@ export default {
 
   watch: {
     isAddAccount(value) {
-      const { accountAuth, proxyStatus } = this;
+      const { accountAuth, proxyStatus, accountError } = this;
 
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
         this.account.password = '';
+        this.error = accountError;
         this.checkConnection();
         this.checkingInterval = setInterval(this.checkConnection.bind(this), proxyStatus ? 60000 : 2000)
       } else {
