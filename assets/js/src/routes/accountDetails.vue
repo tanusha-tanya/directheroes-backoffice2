@@ -30,8 +30,15 @@ export default {
       const { accountId } = route.params
 
       if (!accountId) return;
+
+      const account = accounts.find(account => account.id == accountId);
+
+      if (account) {
+        $store.commit('selectAccount', account)
+      } else {
+        this.$router.push({name: 'accounts'})
+      }
       
-      $store.commit('selectAccount', accounts.find(account => account.id == accountId))
     }
   },
 
