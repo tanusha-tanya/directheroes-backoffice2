@@ -25,8 +25,12 @@
       <div class="content-container" v-if="dhAccount">
         <router-view></router-view>
       </div>
-      <div class="loading-content" v-else>
+      <div class="loading-content" v-else-if="$store.state.firstLoad">
         <div class="pre-loader"></div>
+      </div>
+      <div class="error-loading" v-else>
+        This page failed to load. <br />
+        Please reload it, or contact support if problem persists
       </div>
     </div>
   </div>
@@ -111,6 +115,17 @@ export default {
     flex-grow: 1;
     max-height: 100%;
     overflow: auto;
+  }
+
+  .error-loading {
+    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 24px;
+    line-height: normal;
   }
 }
 </style>

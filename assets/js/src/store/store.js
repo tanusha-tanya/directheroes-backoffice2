@@ -20,7 +20,7 @@ export default new VueX.Store({
     arrowConnectData: null,
     arrows: [],
     currentAccount: null,
-    campaignToRename: null,
+    firstLoad: false,
     newAccount: {
       accountState: 'add',
       password: '',
@@ -29,14 +29,19 @@ export default new VueX.Store({
   },
 
   actions: {
-    getAccounts({ state, commit }, params) {
+    getAccounts({ state, commit }) {
+      commit('set', { path: 'firstLoad', value: true });
+
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
-        commit('set', {path: 'dhAccount', value: dhAccount});
-        commit('set', {path: 'accounts', value: accountList});
+        commit('set', { path: 'dhAccount', value: dhAccount });
+        commit('set', { path: 'accounts', value: accountList });
+        commit('set', { path: 'firstLoad', value: false });
+      }).catch(() => {
+        commit('set', { path: 'firstLoad', value: false });
       })
     },
 
