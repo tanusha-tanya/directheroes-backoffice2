@@ -43,6 +43,9 @@
       <div class="status-block" v-if="proxyStatus">
         <div class="status-indicator success"></div> Proxy tool is running
       </div>
+      <div class="status-block" v-else-if="proxyStatus == null">
+        <div class="status-indicator draft"></div> Proxy tool checking connection
+      </div>
       <div class="status-block" v-else>
         <div class="status-indicator"></div> Proxy tool not connected
       </div>
@@ -87,7 +90,7 @@ export default {
   data() {
     return {
       checkingInterval: null,
-      proxyStatus: false,
+      proxyStatus: null,
       account: {
         login: '',
         password: '',
@@ -326,6 +329,10 @@ export default {
 
       &.success {
         background-color: #44B0A9;
+      }
+
+      &.draft {
+        background-color: #A5A5A5;
       }
     }
 
