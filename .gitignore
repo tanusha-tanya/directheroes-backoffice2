@@ -14,4 +14,6 @@
 /public/build/
 npm-debug.log
 yarn-error.log
+public/build.old
+public/build.tmp
 ###< symfony/webpack-encore-pack ###

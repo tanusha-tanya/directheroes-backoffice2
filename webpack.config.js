@@ -5,7 +5,7 @@ dotenv.config();
 
 Encore
     // directory where compiled assets will be stored
-    .setOutputPath('public/build/')
+    .setOutputPath('public/build.tmp/')
     // public path used by the web server to access the output path
     .setPublicPath(process.env.PUBLIC_SCHEME + '://' + process.env.VIRTUAL_HOST + '/build/')
     // only needed for CDN's or sub-directory deploy
