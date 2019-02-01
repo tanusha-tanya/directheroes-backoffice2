@@ -25,7 +25,7 @@
           <img src="../assets/svg/apple.svg"/>
           Download for Mac
         </a>
-        <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=mac`">
+        <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=linux`">
           <img src="../assets/svg/ubuntu.svg"/>
           Download for Linux
         </a>
