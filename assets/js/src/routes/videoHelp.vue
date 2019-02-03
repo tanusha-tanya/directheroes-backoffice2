@@ -60,7 +60,7 @@ export default {
         },
         {
           title: 'Setting Up Instagram Ads',
-          link: 'https://player.vimeo.com/video/310986082'
+          link: 'https://player.vimeo.com/video/310986168'
         },
         {
           title: 'Auto Selling with Pinned Stories',
