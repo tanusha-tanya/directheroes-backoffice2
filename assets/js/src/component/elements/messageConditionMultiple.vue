@@ -1,11 +1,11 @@
 <template>
   <div class="list-keywords" :ref="element.id">
-    <div class="list-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
+    <div class="list-element-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
       <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
       <keywords v-model="item.keywords" :tag="item.name"></keywords>
     </div>
-    <div class="add-keywords" @click="addKeywords">+</div>
+    <div class="add-keywords" @click="addKeywords" v-if="!hasEmptyItem">+</div>
   </div>
 </template>
 <script>
@@ -22,11 +22,19 @@ export default {
     arrowBorn
   },
 
+  computed: {
+    hasEmptyItem() {
+      const { conditionList } = this.element.value;
+
+      return conditionList.some(condition => !condition.keywords.length)
+    },
+  },
+
   methods: {
     addKeywords() {
       const { element } = this;
       const ObjId = new ObjectId;
-      
+
       element.value.conditionList.push({
         id: ObjId.toString(),
         keywords: []
@@ -47,7 +55,7 @@ export default {
           stepId: value.child
         }
       })
-      
+
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
     }
   },
@@ -58,7 +66,7 @@ export default {
 .list-keywords {
   padding: 9px 20px 13px;
 
-  .list-item {
+  .list-element-item {
     position: relative;
 
     .keywords {
@@ -108,7 +116,7 @@ export default {
         color: #666;
       }
     }
-  
+
     &:hover .remove-item{
       opacity: 1;
     }

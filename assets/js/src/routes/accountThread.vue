@@ -1,294 +1,253 @@
 <template>
-  <div class="thread-content" v-if="currentThread">
-    <div class="content-panel">
-      <div class="title">
-        Thread — {{currentCampaign.name}}
-        <div>
-          {{currentCampaign.typeName}}
-          <img src="../assets/info.svg"/>
-        </div>
+  <div class="audience-content w800">
+    <div class="content-title">Audience</div>
+    <div class="audience-filters">
+      <input placeholder="Search" v-model="filters.username_query" @keypress.enter="getAudience"/>
+      <el-select v-model="filters.subscribed" @change="getAudience">
+        <el-option label="All" :value="null"></el-option>
+        <el-option label="Subscribed" :value="true"></el-option>
+        <el-option label="Unsubscribed" :value="false"></el-option>
+      </el-select>
+      <el-select v-model="status" @change="getAudience">
+        <el-option label="All" value="audience"></el-option>
+        <el-option label="Stuck" value="stuck"></el-option>
+        <el-option label="Ignored" value="ignored"></el-option>
+      </el-select>
+       <el-select class="campaign-list" v-model="filters.campaignId" @change="getAudience">
+        <el-option label="All" :value="null"></el-option>
+        <el-option v-for="campaign in account.campaignList" :key="campaign.id" :label="campaign.name" :value="campaign.id"></el-option>
+      </el-select>
+    </div>
+    <div class="container-area">
+      <div class="list-item header">
+        <div class="user-row">User</div>
+        <div class="subscribed-row">Subscribed</div>
+        <div class="lastmessage-row">Last Message</div>
+        <div class="campaigns-row">Campaigns</div>
       </div>
-      <div class="content-controls">
+      <template v-if="threads">
+        <template v-if="threads.length">
+          <div class="list-item" v-for="thread in threads" :key="thread.id">
+            <div class="user-row">
+              <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
+              {{thread.contactProfile.username}}
+            </div>
+            <div class="subscribed-row">{{ thread.subscribedAt ? subscriberAt(thread.subscribedAt) : ''}}</div>
+            <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
+            <div class="campaigns-row">
+              <router-link 
+                :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }" 
+                v-for="campaign in thread.campaignList"
+                :key="campaign.id"
+                >{{campaign.name}}</router-link>
+            </div>
+            <div class="chat-row">
+              <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
+              <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
+            </div>
+          </div>
+        </template>
+        <div class="no-result" v-else>
+          No result found
+        </div>
+      </template>
+      <div class="loading-content" v-else>
+        <div class="pre-loader"></div>
       </div>
     </div>
-    <template v-if="isAllCampaigns">
-      <div class="thread-list">
-        <div class="thread-list-item thread-list-header">
-          <div class="username">
-            @username
-          </div>
-          <div class="bot">
-            Bot
-          </div>
-          <div class="actions">
-            Actions
-          </div>
-        </div>
-        <div class="thread-list-item" v-for="thread in currentThread" :key="thread.id">
-          <div class="username">
-            {{thread.username}}
-          </div>
-          <div class="bot">
-            <router-link 
-              class="campaign-item" 
-              tag="div" 
-              :key="campaign.id"
-              v-for="campaign in thread.campaignList"
-              :to="{ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } }"
-            >
-              {{campaign.name}}<br>
-              <span>{{campaign.typeName}}</span>
-            </router-link>
-            {{thread.status}}
-          </div>
-          <div class="actions">
-            <router-link 
-              class="content-button" tag="div"
-              :to="{ name: 'accountThreadMessages', params: { threadId: thread.id, accountId: currentAccount.id } }"
-              >
-              <img src="../assets/eye.svg"/>
-              View Messages
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-else>
-      <div class="thread-list">
-        <div class="thread-list-item thread-list-header">
-          <div class="username">
-            @username
-          </div>
-          <div class="status">
-            Status
-          </div>
-          <div class="template">
-            Template
-          </div>
-          <div class="actions">
-            Actions
-          </div>
-        </div>
-        <div class="thread-list-item" v-for="thread in currentThread">
-          <div class="username">
-            {{thread.username}}
-          </div>
-          <div class="status">
-            <font-awesome-icon :icon="getStatusIcon(thread.status)" />
-            <span>{{getStatusText(thread.status)}}</span>
-          </div>
-          <div class="template">
-            {{thread.depth}}
-          </div>
-          <div class="actions">
-            <router-link 
-              class="content-button" tag="div"
-              :to="{ name: 'accountThreadMessages', params: { threadId: thread.id, accountId: currentAccount.id } }"
-              >
-              <img src="../assets/eye.svg"/>
-              View Messages
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </template>
-  </div>
-  <div class="loading-content" v-else>
-    <div class="pre-loader"></div>
+    <el-pagination
+      background
+      v-if="threads && paging && paging.totalPageCount > 1"
+      layout="prev, pager, next"
+      :current-page="paging.page"
+      :page-count="paging.totalPageCount"
+      @current-change="changePage"
+    ></el-pagination>
   </div>
 </template>
 <script>
 import axios from 'axios';
+import moment from 'moment';
+import avatar from '../assets/svg/avatar.svg'
 
 export default {
   beforeRouteEnter(to, from, next) {
     next(accountThread => {
-      accountThread.setCurrentThread(to);
+      accountThread.getAudience(to);
     })
-  },
-
-  beforeRouteUpdate(to, from, next) {
-    this.currentThread = null;
-
-    this.setCurrentThread(to);
-    next();
   },
 
   data() {
     return {
-      currentThread: null,
+      threads: null,
+      avatar,
+      filters: {
+        subscribed: true,
+        usernameQuery: '',
+        campaignId: null,
+      },
+      status: 'audience',
+      paging: {
+        page: 1,
+        totalPageCount: 1
+      }
     }
   },
 
   computed: {
-    currentAccount() {
+    account() {
       return this.$store.state.currentAccount
-    },
-
-    currentCampaign() {
-      const { currentAccount } = this;
-      const { threadId } = this.$route.params;
-
-      if (!threadId || !currentAccount) return {};
-
-      return currentAccount.campaignList.find( campaign => campaign.id == threadId) || {};
-    },
-
-    isAllCampaigns() {
-      return ['all', 'ignore', 'stuck'].includes(this.$route.params.threadId)
     }
   },
 
   methods: {
-    setCurrentThread(route) {
-      const { threadId } = route.params;
-      const { currentAccount } = this;
-      if (!threadId || !currentAccount) return;
-
-      const url = ['all', 'ignore', 'stuck'].includes(threadId) ? 
-        `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/${ threadId }` :
-        `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/campaign/${ threadId }`
-
-      axios({ url })
-        .then(({ data }) => {
-          this.currentThread = data.response.body.threadList;
-        })
+    changePage(page) {
+      this.paging.page = page;
+      this.getAudience();
     },
 
-    getStatusIcon(status) {
-      const statusIcon = {
-        queued: ['far', 'clock'],
-        custom_message: 'user',
-        sent: ['far', 'envelope'],
-        seen: ['far', 'envelope-open'],
-        replied: 'check'
-      }
+    getAudience() {
+      const { account, status } = this;
 
-      return statusIcon[status];
+      if (!account) return;
+
+      this.threads = null;
+
+      axios({ 
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+        method: 'post',
+        data: { ...this.filters, paging: this.paging }
+      })
+      .then(({ data }) => {
+        const { threadList, paging } = data.response.body
+        
+        this.threads = threadList;
+        this.paging = paging;
+      })
     },
 
-    getStatusText(status) {
-      const statusText = {
-        custom_message: 'Manual',
-      }
-
-      return statusText[status] || status;
+    subscriberAt(date) {
+      return moment(new Date(date * 1000)).fromNow();
     }
   },
 
   watch: {
     '$store.state.accounts'() {
-      if (this.currentThread) return;
-
-      this.setCurrentThread(this.$route);
+      this.getAudience();
     }
   }
 }
 
 </script>
 <style lang="scss">
-  .thread-content {
-    .thread-list-item {
-      display: flex;
-      padding: 16px 18px 16px 12px;
+.audience-content {
+  padding: 15px 0;
 
-      & > div {
-        // flex-grow: 1;
-        flex-shrink: 0;
-        padding-right: 6px;
-      }
+  .audience-filters {
+    margin-bottom: 21px;
 
-      .username {
-        width: 30%;
-        min-width: 150px;
-      }
-
-      .bot {
-        width: 50%;
-        min-width: 300px;
-        display: flex;
-        flex-wrap: wrap;
-      }
-
-      .status {
-        width: 20%;
-        min-width: 100px;
-        display: flex;
-        align-items: center;
-        
-        .svg-inline--fa {
-          opacity: .5;
-          margin-right: 5px;
-        }
-
-        span {
-          text-transform: capitalize;
-        }
-      }
-
-      .template {
-        width: 20%;
-        min-width: 100px;
-        text-align: center;
-      }
-
-      .sub-category {
-        width: 15%;
-        min-width: 100px;
-      }
-
-      .actions {
-        .content-button {
-          margin: 0;
-
-          img {
-            opacity: .3;
-          }
-
-          &:hover {
-            text-decoration: underline;
-            img {
-              opacity: .5;
-            }
-          }
-        }
-      }
-
-      &.thread-list-header {
-        background-color: #EEEEEE;
-        padding: 7px 16px 7px 10px;
-        border-top: 1px solid #e6e6e6;
-        border-bottom: 1px solid #D0CED5;
-        color: #9995A8;
-        font-size: 10px;
-      }
-
-      &:nth-child(odd) {
-        background-color: #EEEEEE;
-      }
+    input {
+      margin-right: 15px;
     }
-  
-    .campaign-item {
-      color: #85539C;
-      cursor: pointer;
 
-      &:hover {
-        text-decoration: underline;
-      }
+    .el-select:not(.campaign-list) {
+      width: 135px;
+    }
+  }
 
-      span {
-        font-size: 10px;
-        opacity: .5;
-      }
+  .container-area {
+    min-height: 75vh;
+  }
 
-      &:not(:last-child) {
+  .loading-content {
+    padding: 31vh 0;
+  }
+
+  .user-row {
+    width: 25%;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  .subscribed-row {
+    width: 15%;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  .lastmessage-row {
+    width: 15%;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+   
+  .campaigns-row {
+    width: 20%;
+    padding: 0 10px;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+     
+    a:not(:last-child) {
+      &:after {
+        content:',';
         margin-right: 5px;
-
-        &:after {
-          content: ','
-        }
       }
     }
   }
 
+  .chat-row {
+    text-align: right;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    a {
+      background: #828282;
+      display: inline-block;
+      border: 1px solid #828282;
+      text-decoration: none;
+      font-size: 13px;
+      color: #fff;
+      line-height: 19px;
+      padding: 2px 26px;
+      font-weight: normal;
+      border-radius: 20px;
+
+      &.account-button {
+        padding: 2px 10px;
+        margin-left: 10px;
+      }
+      
+      img {
+        width: 11px;
+        height: 11px;
+      }
+    }
+  }
+
+  .list-item {
+    &.header .user-row{
+      padding-left: 46px;
+    }
+    &:hover .chat-row{
+      a {
+        background-color: #6A12CB;
+        border-color: #6A12CB;
+      }
+    }
+  }
+
+  .el-pagination {
+    text-align: right;
+    margin: 15px 0;
+    
+    &.is-background {
+      .btn-next, .btn-prev, .el-pager li {
+        background-color: #fff;
+      }
+    } 
+  }
+}
 </style>

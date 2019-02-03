@@ -20,37 +20,61 @@ import store from './store/store'
 
 import './assets/fonts/stylesheet.css'
 
-// import 'element-ui/lib/theme-chalk/index.css';
-import 'element-ui/lib/theme-chalk/popper.css';
-import 'element-ui/lib/theme-chalk/popover.css';
-import 'element-ui/lib/theme-chalk/dropdown.css';
-import 'element-ui/lib/theme-chalk/date-picker.css';
-
 import './element'
 import './styles/main.scss'
+import './styles/common.scss'
 
 /**
  * Import routes components
  */
-import account from './routes/account.vue'
+import accounts from './routes/accounts.vue'
 import accountDetails from './routes/accountDetails.vue'
 // import accountCampaign from './routes/accountCampaign.vue'
+import broadcastList from './routes/broadcastList.vue'
+import broadcastBuilder from './routes/broadcastBuilder.vue'
 import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
+import accountDashboard from './routes/accountDashboard.vue'
 import accountThreadMessages from './routes/accountThreadMessages.vue'
+import accountThreadInfo from './routes/accountThreadInfo.vue'
+import accountDH from './routes/accountDH.vue'
+import accountDHProfile from './routes/accountDHProfile.vue'
+import accountDHPayment from './routes/accountDHPayment.vue'
+import videoHelp from './routes/videoHelp.vue'
+import { log } from 'util';
 
 const router = new VueRouter({
   routes:[
-    { path: '/', component: account,
+    { path: '/', name: 'accounts', component: accounts },
+    { path: '/videohelp', name: 'video-help', component: videoHelp },
+    { path: '/settings', component: accountDH,
       children: [
-        { name: 'home', path: '', component: accountDetails },
-        { name: 'accountCampaign', path: ':accountId/campaign/:campaignId', component: campaignBuilder },
-        { name: 'accountThread', path: ':accountId/thread/:threadId', component: accountThread },
-        { name: 'accountThreadMessages', path: ':accountId/messages/:threadId', component: accountThreadMessages },
-        { name: 'accountCurrent', path: ':accountId', component: accountDetails }
+        { name: 'dhProfile', path: '', component: accountDHProfile },
+        { name: 'dhPayments', path: 'payments', component: accountDHPayment },
       ]
-    }
+    },
+    { path: '/:accountId', component: accountDetails,
+      children: [
+        { name: 'accountHome', path: '', component: accountDashboard },
+        { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
+        { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
+        { name: 'accountBroadcast', path: 'broadcasts/:broadcastId', component: broadcastBuilder },
+        { name: 'audience', path: 'audience', component: accountThread },
+        { name: 'accountThreadMessages', path: 'messages/:threadId', component: accountThreadMessages },
+        { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
+      ]
+    },
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const { dhAccount } = store.state;
+
+  if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'dhPayments') {
+    next({name: 'dhPayments'})
+  } else {
+    next()
+  }
 })
 
 store.dispatch('getAccounts');
@@ -69,6 +93,18 @@ Vue.mixin({
             });
         },
       }
+    },
+
+    dhAccount() {
+      return this.$store.state.dhAccount
+    }
+  },
+
+  watch: {
+    '$store.state.dhAccount'(dhAccount) {
+      if (!dhAccount || dhAccount.subscription.isActive) return;
+
+      this.$router.push({ name: 'dhPayments'})
     }
   }
 })

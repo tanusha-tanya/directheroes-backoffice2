@@ -1,23 +1,25 @@
 <template>
   <div class="builder-elements">
-    <component 
-      :is="Drag" 
+    <component
+      :is="Drag"
       :transfer-data="stepData"
       class="builder-element step-add"
+      v-if="!type"
     >
       <img src="../assets/svg/plus-outline.svg"/>
     </component>
-    <component 
-      :is="Drag" 
+    <component
+      :is="Drag"
       :transfer-data="element.template"
-      class="builder-element" 
-      v-for="element in elements" 
+      class="builder-element"
+      v-for="element in elements"
       :key="element.name"
+      v-if="visible(element)"
     >
       <img :src="element.svg"/>
       <div class="builder-element-title">{{element.name}}</div>
     </component>
-  </div>    
+  </div>
 </template>
 <script>
 import { Drag } from 'vue-drag-drop';
@@ -38,17 +40,17 @@ export default {
         type: "regular",
       },
       elements: [
-        { 
-          name: 'Image', 
+        {
+          name: 'Image',
           svg: image,
           template: {
             type: 'sendImageAction',
             value: null
           }
         },
-        { 
-          name: 'Text', 
-          svg: chatbubble, 
+        {
+          name: 'Text',
+          svg: chatbubble,
           template: {
             type: 'sendTextAction',
             value: {
@@ -56,46 +58,58 @@ export default {
             }
           }
         },
-        { 
-          name: 'Triggers', 
-          svg: flash,
-          template: {
-            type: 'messageCondition',
-            value: {
-              keywords: [],
-              messageType: 'storyShare',
-              link: ''
-            }
-          }
-        },
-        { 
-          name: 'Delay', 
+        // {
+        //   name: 'Triggers',
+        //   svg: flash,
+        //   template: {
+        //     type: 'messageCondition',
+        //     value: {
+        //       keywords: [],
+        //       messageType: 'storyShare',
+        //       link: ''
+        //     }
+        //   }
+        // },
+        {
+          name: 'Delay',
           svg: stopwatch,
           template: {
             type: 'basicDelay',
             value: {
               seconds: 1
             }
-          }  
+          }
         },
-        { 
-          name: 'List', 
+        {
+          name: 'List',
           svg: navicon,
           template: {
             type: 'messageTextConditionMultiple',
             value: {
               conditionList:[]
             }
-          }  
+          }
         },
-        // { 
-        //   name: 'Video', 
+        // {
+        //   name: 'Video',
         //   svg: socialYoutube,
         // },
         // { name: 'List', svg: navicon },
         // { name: 'User Input', svg: infinite },
       ],
       Drag
+    }
+  },
+
+  props:['type'],
+
+  methods: {
+    visible(element) {
+      const { type } = this;
+
+      if (!type) return true;
+      
+      return !['List'].includes(element.name)
     }
   }
 }

@@ -20,7 +20,7 @@ export default new VueX.Store({
     arrowConnectData: null,
     arrows: [],
     currentAccount: null,
-    campaignToRename: null,
+    firstLoad: false,
     newAccount: {
       accountState: 'add',
       password: '',
@@ -29,19 +29,19 @@ export default new VueX.Store({
   },
 
   actions: {
-    getAccounts({ state, commit }, params) {
+    getAccounts({ state, commit }) {
+      commit('set', { path: 'firstLoad', value: true });
+
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
-        // accountList.forEach( account => {
-        //   // account.isPasswordValid = false;
-        //   // account.threadList = account.campaignList;
-        // })
-
-        commit('set', {path: 'dhAccount', value: dhAccount});
-        commit('set', {path: 'accounts', value: accountList});
+        commit('set', { path: 'dhAccount', value: dhAccount });
+        commit('set', { path: 'accounts', value: accountList });
+        commit('set', { path: 'firstLoad', value: false });
+      }).catch(() => {
+        commit('set', { path: 'firstLoad', value: false });
       })
     },
 
@@ -75,11 +75,10 @@ export default new VueX.Store({
       request
         .then(({ data }) => {
           const { account } = data.response.body;
-          const { accounts, currentAccount } = state;
+          const { accounts } = state;
+          const currentAccount = accounts.find(accountItem => accountItem.id == account.id)
 
           accounts.splice(accounts.indexOf(currentAccount), 1, account);
-
-          commit('set', {path: 'currentAccount', value: account});
         });
 
       return request;
@@ -153,7 +152,25 @@ export default new VueX.Store({
       })
 
       return request;
-    }
+    },
+
+    createBroadcast({ state, commit }, campaign) {
+      const { currentAccount } = state;
+      const request = axios({
+        method: 'post',
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/create_broadcast`,
+        data: {
+          igAccount: { id: currentAccount.id },
+          campaign
+        }
+      })
+
+      request.then(({ data }) => {
+        currentAccount.broadcastList.push(data.campaign);
+      })
+
+      return request
+    },
   },
 
   mutations: {

@@ -1,13 +1,12 @@
 <template>
-  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+  <builder-card class="broadcast-card" :settings="broadcastStep.displaySettings">
     <template slot="header">
-      {{ step.name || '&nbsp;'}}
+      {{ broadcast.name || '&nbsp;'}}
     </template>
     <template slot="header-controls">
-      <builder-card-dialogs :step="step" @delete-step="$emit('delete-step', step)"></builder-card-dialogs>
+      <builder-card-dialogs :step="broadcast" :short="true"></builder-card-dialogs>
     </template>
     <template slot="body">
-      <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
       <div
         class="element-container"
         v-for="element in elementList"
@@ -45,8 +44,6 @@
           <component :is="elementComponents[listElement.type]" :element="listElement"></component>
         </div>
       </div>
-      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
-      <div class="remove-go-to" v-if="!listElement && goToStepElement" @click="removeGoTo">&times</div>
     </template>
   </builder-card>
 </template>
@@ -90,65 +87,52 @@ export default {
   components: {
     builderCard,
     builderCardDialogs,
-    arrowBorn,
     elementWarning
   },
 
-  props: ['step'],
-
   computed: {
-    isParentOfArrow() {
-      const { arrows } = this.$store.state
-      const connectArrow = arrows.find(arrow => arrow.child == 'toPoint')
-      const findChild = childs => {
-        if (childs.$refs.hasOwnProperty(connectArrow.parent)) return true
+    broadcastStep() {
+      return this.broadcast.steps.find(step => step.type = 'broadcastEntry')
+    },
 
-        return (childs.$children || []).find(findChild);
-      }
-
-      if (!connectArrow) return;
-
-      return this.step.id == connectArrow.parent || findChild(this)
+    hasTextOrImage() {
+      return this.broadcastStep.elements.some(element => ['sendImageAction', 'sendTextAction'].includes(element.type))
     },
 
     listElement() {
-      const { elements } = this.step;
+      const { elements } = this.broadcastStep;
 
       return elements.find(element => element.type === 'messageTextConditionMultiple')
     },
 
-    goToStepElement() {
-      const { elements } = this.step;
-
-      return elements.find(element => element.type === 'goToStep')
-    },
-
     elementList() {
-      const { elements } = this.step;
+      const { elements } = this.broadcastStep;
 
       return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageTextConditionMultiple')
     }
   },
 
+  props: ['broadcast'],
+
   methods: {
     dragEnter(data) {
-      const { goToStepElement } = this;
+      const { hasTextOrImage } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && !hasTextOrImage) ) return;
       this.dragged = true;
     },
 
     dragLeave(data) {
-      const { goToStepElement } = this;
+      const { hasTextOrImage } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && !hasTextOrImage) ) return;
       this.dragged = false;
     },
 
     dropHandler(data) {
-      const { goToStepElement, listElement, step } = this;
+      const { hasTextOrImage, listElement, broadcastStep } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && !hasTextOrImage) ) return;
 
       const element = JSON.parse(JSON.stringify(data))
 
@@ -157,50 +141,17 @@ export default {
       this.dragged = false;
       
       if (listElement) {
-        step.elements.splice(step.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
+        broadcastStep.elements.splice(broadcastStep.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
       } else {
-        step.elements.push({ ...element, displaySettings: { collapsed: false }});
+        broadcastStep.elements.push({ ...element, displaySettings: { collapsed: false }});
       } 
-    },
-
-    elementRemove(element) {
-      const { elements } = this.step;
-
-      elements.splice(elements.indexOf(element), 1);
-    },
-
-    setArrowConnect() {
-      const { $store, step } = this;
-      const { arrows } = $store.state;
-
-      $store.commit('set', {
-        path: 'arrowConnectData',
-        value: {
-          parent: arrows[arrows.length - 1].parent,
-          child: step.id
-        }
-      })
-    },
-
-    connectArrow(value) {
-      const { elements } = this.step;
-
-      elements.push({
-        type: 'goToStep',
-        id: (new ObjectId).toString(),
-        value: {
-          stepId: value.child
-        }
-      })
-
-      this.$store.commit('set', {path: 'arrowConnectData', value: null});
     },
 
     handleMouseDown(position) {
       const cardDetails = {}
       cardDetails.x = position.x
       cardDetails.y = position.y
-      cardDetails.id = this.step.id
+      cardDetails.id = this.broadcastStep.id
       EventBus.$emit('builderCard:mousedown', cardDetails)
     },
 
@@ -208,28 +159,21 @@ export default {
       const cardDetails = {}
       cardDetails.x = position.positionX
       cardDetails.y = position.positionY
-      cardDetails.id = this.step.id
+      cardDetails.id = this.broadcastStep.id
       EventBus.$emit('builderCard:mouseup', cardDetails)
     },
 
-    removeGoTo() {
-      const { elements } = this.step;
-      const { goToStepElement } = this;
-      
-      elements.splice(elements.indexOf(goToStepElement), 1);
-    }
+    elementRemove(element) {
+      const { elements } = this.broadcastStep;
+
+      elements.splice(elements.indexOf(element), 1);
+    },
   }
 }
 </script>
 <style lang="scss">
-  @keyframes scale-element {
-    from {transform: scale(1)}
-    50% {transform: scale(1.5)}
-    to {transform: scale(1)}
-  }
-  div.step-card {
-    border-color: #2E9E7B;
-    background-color: #2E9E7B;
+  div.broadcast-card {
+    background-color: #2A4294;
     box-shadow: 0 0 10px #F5F5F5;
     top: 130px;
     left: 450px;
@@ -243,7 +187,7 @@ export default {
 
     .builder-card-body {
       min-height: 76px;
-      border-color: #E8E8E8;
+      border-color: #2A4294;
     }
 
     .add-element {
@@ -260,50 +204,6 @@ export default {
         border-color: #96B5FF;
         color: #96B5FF;
       }
-    }
-
-    .arrow-connect {
-      height: 20px;
-      width: 20px;
-      border: 2px solid #2E9E7B;
-      border-radius: 10px;
-      position: absolute;
-      top: calc(50% - 10px);
-      left: -10px;
-      background-color: #fff;
-      animation: scale-element 1s infinite;
-
-      &:hover {
-        background-color: #2E9E7B;
-      }
-    }
-
-    .arrow-born, .remove-go-to {
-      position: absolute;
-      z-index: 2;
-      right: -7px;
-      font-size: 15px;
-      top: calc(50% - 11px);
-
-      &:hover {
-        border-color: #666;
-        color: #666;
-      }
-    }
-
-    .remove-go-to {
-      color: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 15px;
-      width: 15px;
-      font-size: 16px;
-      border-radius: 7px;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      line-height: 10px;
-      cursor: pointer;
     }
 
     .element-container {
@@ -371,23 +271,6 @@ export default {
 
        &:hover .remove-element{
         opacity: 1;
-      }
-    }
-
-    .message-condition {
-      padding: 10px;
-    }
-
-    .remove-step {
-      padding: 10px;
-      text-transform: uppercase;
-      text-align: center;
-      cursor: pointer;
-      color:#dcdfe6;
-      transition: color .3s;
-
-      &:hover {
-        color: #000;
       }
     }
   }

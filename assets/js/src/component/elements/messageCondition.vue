@@ -5,6 +5,7 @@
     v-model="element.value.messageType"
     popper-class="campaign-type-dropdown"
   >
+    <el-option class="ad-reply" label="Ad Reply" value="adReply">Ad Reply</el-option>
     <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
     <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
     <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
@@ -13,7 +14,7 @@
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
     <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
-  <template v-if="element.value.messageType == 'postShare'">
+  <template v-if="['postShare', 'adReply'].includes(element.value.messageType)">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
@@ -60,6 +61,13 @@ export default {
         background-image: url(../../assets/svg/link-w.svg);
         height: 7px;
         top: 12px;
+      }
+
+      &.adReply .el-input--suffix:before {
+        background-image: url(../../assets/svg/ad-w.svg);
+        height: 10px;
+        width: 14px;
+        top: 10px;
       }
 
       .el-input--suffix {
@@ -154,6 +162,13 @@ export default {
         background-image: url(../../assets/svg/link.svg);
         height: 7px;
         top: 14px;
+      }
+
+      &.ad-reply:before {
+        background-image: url(../../assets/svg/ad.svg);
+        height: 10px;
+        top: 12px;
+        width: 14px;
       }
 
       &:first-child {

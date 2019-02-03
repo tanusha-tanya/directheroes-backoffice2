@@ -9,7 +9,8 @@
       <el-dropdown-menu class="action-list" slot="dropdown">
         <el-dropdown-item command="rename">Rename</el-dropdown-item>
         <el-dropdown-item command="delay" v-if="!short" divided>Add delay</el-dropdown-item>
-      </el-dropdown-menu> 
+        <el-dropdown-item command="remove" v-if="!short" divided>Remove step</el-dropdown-item>
+      </el-dropdown-menu>
     </el-dropdown>
     <el-dialog
       :visible.sync="isActionRename"
@@ -87,7 +88,7 @@ export default {
 
     delayInfo() {
       const { delayInHeader } = this;
-      
+
       if (!delayInHeader || !delayInHeader.value.seconds) return;
 
       const { seconds } = delayInHeader.value;
@@ -117,15 +118,17 @@ export default {
               }
             }
 
-            step.elements.push(element)
+            step.elements.unsift(element)
           }
 
           this.intermediateValue = JSON.parse(JSON.stringify(element));
           break;
-      
+
         case 'rename':
           this.intermediateValue = step.name;
           break;
+        case 'remove':
+          this.$emit('delete-step')
       }
 
       this.actionType = type;
@@ -188,7 +191,7 @@ export default {
   }
 
   .el-dialog__wrapper.action-dialog {
-    
+
     .el-dialog {
       border-radius: 5px;
       padding: 20px;
