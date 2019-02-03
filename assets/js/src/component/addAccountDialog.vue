@@ -49,6 +49,9 @@
       <div class="status-block" v-else>
         <div class="status-indicator"></div> Proxy tool not connected
       </div>
+      <div class="app-warning" v-if="oldVersion">
+        <img :src="triangle"/> Your app version is outdated.<br />Please, download latest version, if you have connectivity issues.
+      </div>
     </div>
     <div :class="{step: true, disabled: twoFactor || !proxyStatus}">
       <div class="step-info">
@@ -84,12 +87,14 @@
 </template>
 
 <script>
+import triangle from '../assets/triangle.svg'
 import axios from 'axios';
 
 export default {
   data() {
     return {
-      checkingInterval: null,
+      oldVersion: false,
+      checkingTimeout: null,
       proxyStatus: null,
       account: {
         login: '',
@@ -98,7 +103,8 @@ export default {
       error: null,
       loading: false,
       code: '',
-      isResendCode: false
+      isResendCode: false,
+      triangle
     }
   },
 
@@ -145,6 +151,11 @@ export default {
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
         this.proxyStatus = data.response.body.isProxyRunning
+        this.oldVersion = data.response.body.isAppOutdated
+
+        this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
+      }).catch(() => {
+        this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
       })
     },
 
@@ -214,19 +225,18 @@ export default {
         this.account.password = '';
         this.error = accountError;
         this.checkConnection();
-        this.checkingInterval = setInterval(this.checkConnection.bind(this), proxyStatus ? 60000 : 2000)
       } else {
         this.error = null;
         this.code = '';
-        clearInterval(this.checkingInterval)
+        clearTimeout(this.checkingTimeout)
       }
     },
 
-    proxyStatus(value) {
-      clearInterval(this.checkingInterval)
+    // proxyStatus(value) {
+    //   clearInterval(this.checkingTimeout)
 
-      this.checkingInterval = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
-    }
+    //   this.checkingTimeout = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
+    // }
   }
 }
 </script>
@@ -333,6 +343,14 @@ export default {
 
       &.draft {
         background-color: #A5A5A5;
+      }
+    }
+
+    .app-warning {
+      margin: 10px 0 15px;
+
+      img {
+        width: 15px;
       }
     }
 
