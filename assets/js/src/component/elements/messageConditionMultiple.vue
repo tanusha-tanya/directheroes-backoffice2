@@ -1,9 +1,14 @@
 <template>
   <div class="list-keywords" :ref="element.id">
-    <div class="list-element-item" v-for="item in element.value.conditionList" :key="item.id" :ref="item.id">
+    <div class="list-element-item" v-for="(item, index) in element.value.conditionList" :key="item.id" :ref="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
       <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
-      <keywords v-model="item.keywords" :tag="item.name"></keywords>
+      <keywords 
+        v-model="item.keywords" 
+        :tag-prefix="tagPrefix(item, index + 1)" 
+        :tag-name="item.name" 
+        @set-tag-name="setTagName(item, $event)"
+      ></keywords>
     </div>
     <div class="add-keywords" @click="addKeywords" v-if="!hasEmptyItem">+</div>
   </div>
@@ -15,7 +20,7 @@ import arrowBorn from '../arrowBorn.vue'
 import ObjectId from '../../utils/ObjectId'
 
 export default {
-  props:['element'],
+  props:['element', 'tag'],
 
   components: {
     keywords,
@@ -39,6 +44,23 @@ export default {
         id: ObjId.toString(),
         keywords: []
       })
+    },
+
+    setTagName(item, value) {
+      console.log(item, value);
+      
+      Vue.set(item, 'name', value)
+    }, 
+
+    tagPrefix(item, index){
+      const { tag } = this;
+      const tagPrefix = `${ tag }_${ index }`
+
+      if (tag && (item.namePrefix != tagPrefix)) {
+        Vue.set(item, 'namePrefix', tagPrefix);
+      }
+
+      return tag ? item.namePrefix : '';
     },
 
     deleteKeywords(keywords) {

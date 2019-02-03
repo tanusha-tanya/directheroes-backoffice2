@@ -1,25 +1,58 @@
 <template>
-  <el-select
-    class="keywords" 
-    :value="value"
-    placeholder="Enter messages"
-    popper-class="keywords-dropdown"
-    multiple
-    filterable
-    allow-create
-    default-first-option
-    @change="keywordsChange"
-    :data-tag="tag"
-  >
-  </el-select>
+  <div class="keywords">
+    <el-select 
+      :value="value"
+      placeholder="Enter messages"
+      popper-class="keywords-dropdown"
+      multiple
+      filterable
+      allow-create
+      default-first-option
+      @change="keywordsChange"
+    >
+    </el-select>
+    <div v-if="tagPrefix" class="tag-item" @click="tagNameSet">#{{tagPrefix}}<span v-if="tagName">_</span>{{tagName}}</div>
+    <el-dialog
+      :visible.sync="isActionRename"
+      title="Rename tag"
+      width="321px"
+      append-to-body
+      class="action-dialog"
+      :show-close="false"
+    >
+      <input v-model="intermediateValue" placeholder="Enter Tag name" maxlength="20"/>
+      <template slot="footer">
+        <button @click="saveChanges">Save</button>
+        <button class="cancel" @click="isActionRename = false">Close</button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 <script>
 export default {
-  props: ['value', 'tag'],
+  data() {
+    return {
+      intermediateValue: '',
+      isActionRename: false,
+    }
+  },
+
+  props: ['value', 'tag-prefix', 'tag-name'],
 
   methods: {
     keywordsChange(value) {
       this.$emit('input', value.filter(keyword => keyword.trim()))
+    },
+
+    tagNameSet() {
+      this.intermediateValue = this.tagName;
+      this.isActionRename = true;
+    },
+
+    saveChanges() {
+      this.isActionRename = false;
+
+      this.$emit('set-tag-name', this.intermediateValue); 
     }
   }
 }
@@ -30,12 +63,15 @@ export default {
     border-radius: 8px;
     background-color: #fff;
 
-    &:after {
-      content: attr(data-tag);
+    .tag-item {
       font: 9px 'AbeatbyKai';
       color: #A9A9A9;
       padding: 0 7px;
       line-height: 9px;
+      cursor: pointer;
+      &:hover {
+        color:#2A3E98;
+      }
     }
 
     .el-input__inner {

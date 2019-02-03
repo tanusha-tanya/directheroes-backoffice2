@@ -42,7 +42,7 @@
           <div class="remove-element" @click="elementRemove(listElement)">&times</div>
         </div>
         <div class="element-body" v-if="!listElement.displaySettings.collapsed">
-          <component :is="elementComponents[listElement.type]" :element="listElement"></component>
+          <component :is="elementComponents[listElement.type]" :element="listElement" :tag="tag"></component>
         </div>
       </div>
       <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
@@ -94,7 +94,7 @@ export default {
     elementWarning
   },
 
-  props: ['step'],
+  props: ['step', 'tag'],
 
   computed: {
     isParentOfArrow() {
