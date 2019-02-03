@@ -18,8 +18,9 @@ class MainController extends Controller
      */
     public function index($username, Request $request)
     {
+        $apiUrl = $request->query->get('api_url') ?: $request->headers->get('x-dh-api-domain');
         return $this->render('base.html.twig', [
-            'apiUrl' => $request->headers->get('x-dh-api-domain'),
+            'apiUrl' => $apiUrl,
             'userName' => $username,
         ]);
     }
