@@ -175,6 +175,7 @@ export default {
 
       request
         .then(({ data }) => {
+          const { accountError } = this;
           const { account } = data.response.body;
           this.loading = false;
 
@@ -189,9 +190,22 @@ export default {
             this.$emit('close-dialog', false);
           }
 
-        }).catch(error => {
-          this.error = error.response.data.error || error.response.data.request.statusMessage;
+        }).catch( ({ response }) => {
           this.loading = false;
+         
+          if (response) {
+            const { data } = response;
+
+            if (data.request) {
+              this.error = data.request.statusMessage
+            } else if (data.error) {
+              this.error = data.error
+            } else {
+              his.error = "Server connection problem, try again"
+            }
+          } else {
+            this.error = "Server connection problem, try again"
+          }
         })
 
       return request;
