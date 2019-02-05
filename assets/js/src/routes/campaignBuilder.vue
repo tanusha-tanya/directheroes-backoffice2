@@ -218,19 +218,26 @@ export default {
         .el-switch__core {
           height: 14px;
           background-color: transparent;
-          border: 2px solid #2E69F7;
+          border: 2px solid currentColor;
 
           &:after {
-            border: 2px solid #2E69F7;
+            border: 2px solid currentColor;
             width: 4px;
             height: 4px;
             left: 2px;
           }
         }
 
-        &.is-checked .el-switch__core:after {
-          left:100%;
-          margin-left: -10px;
+        &.is-checked {
+          .el-switch__core {
+            border-color: #2E69F7;
+
+            &:after {
+              border-color: #2E69F7;
+              left:100%;
+              margin-left: -10px;
+            }
+          }
         }
       }
 
