@@ -40,37 +40,38 @@ export default {
           const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
           const isOnTop = startRect.top + startRect.height < endRect.top;
           const isOnBottom = startRect.top > endRect.top + endRect.height;
-          const isOnRight = startRect.left + startRect.width < endRect.left;
-          const isOnLeft = startRect.left > endRect.left + endRect.width
+          const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
+          const isOnLeft = startRect.left > endRect.left;
+          const isOnLeftFull = startRect.left > endRect.left + endRect.width;
+          const isOnRightFull = startRect.left + startRect.width < endRect.left;
 
-          if(!isOnTop && !isOnBottom && !isOnRight && !isOnLeft) return;
+          if(!isOnTop && !isOnBottom && !isOnRightFull && !isOnLeftFull) return;
 
-          const startX = ((((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
-            (isOnRight && startRect.left + startRect.width + 7) ||
-            (isOnLeft && startRect.left)) - areaRect.left) / scale
+          const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
 
-          const startY = (((isOnTop && startRect.top + startRect.height) ||
-            (isOnBottom && startRect.top) ||
-            ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height - 3)) - areaRect.top) / scale
+          const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
+          
+          const endX = (((((isOnLeft && !isOnLeftFull) || isOnRightFull) && endRect.left) || (endRect.left + endRect.width)) - areaRect.left) / scale
 
-          const endX = ((((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
-            (isOnRight && endRect.left) ||
-            (isOnLeft && endRect.left + endRect.width)) - areaRect.left) / scale
-
-          const endY = (((isOnTop && endRect.top) ||
-            (isOnBottom && endRect.top + endRect.height) ||
-            ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
+          const endY = (((endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
 
           const deltaX = (endX - startX) * .5
           const deltaY = (endY - startY) * .5
 
-          let path = ((isOnTop || isOnBottom) && `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`) ||
-            ((isOnLeft || isOnRight) && `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`)
+          let path = `M${ startX } ${ startY } `
+     
+          if (!isOnLeftFull && !isOnRightFull) {
+            path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
+          } else {
+            path += `Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY }`
+          }
+      
+          path += `T${ endX } ${ endY }`
 
-          let angle = (isOnTop && 90) || (isOnBottom && 270) || (isOnLeft && 180) || 0;
-
+          let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
+          
           return {
-            line: path,
+            line: path || '',
             arrow: {
               x: endX,
               y: endY,
