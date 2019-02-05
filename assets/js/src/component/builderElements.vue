@@ -58,18 +58,18 @@ export default {
             }
           }
         },
-        // {
-        //   name: 'Triggers',
-        //   svg: flash,
-        //   template: {
-        //     type: 'messageCondition',
-        //     value: {
-        //       keywords: [],
-        //       messageType: 'storyShare',
-        //       link: ''
-        //     }
-        //   }
-        // },
+        {
+          name: 'Triggers',
+          svg: flash,
+          template: {
+            type: 'messageCondition',
+            value: {
+              keywords: [],
+              messageType: 'storyShare',
+              link: ''
+            }
+          }
+        },
         {
           name: 'Delay',
           svg: stopwatch,
@@ -105,11 +105,9 @@ export default {
 
   methods: {
     visible(element) {
-      const { type } = this;
-
-      if (!type) return true;
+      if (this.dhAccount.labs) return true;
       
-      return !['List'].includes(element.name)
+      return !['Triggers'].includes(element.name)
     }
   }
 }
