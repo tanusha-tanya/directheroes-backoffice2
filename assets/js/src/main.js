@@ -32,6 +32,7 @@ import accountDetails from './routes/accountDetails.vue'
 // import accountCampaign from './routes/accountCampaign.vue'
 import broadcastList from './routes/broadcastList.vue'
 import broadcastBuilder from './routes/broadcastBuilder.vue'
+import campaignList from './routes/campaignList.vue'
 import campaignBuilder from './routes/campaignBuilder.vue'
 import accountThread from './routes/accountThread.vue'
 import accountDashboard from './routes/accountDashboard.vue'
@@ -56,7 +57,8 @@ const router = new VueRouter({
     { path: '/:accountId', component: accountDetails,
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },
-        { name: 'accountCampaign', path: 'campaign/:campaignId?', component: campaignBuilder },
+        { name: 'accountCampaignList', path: 'campaigns', component: campaignList },
+        { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
         { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
         { name: 'accountBroadcast', path: 'broadcasts/:broadcastId', component: broadcastBuilder },
         { name: 'audience', path: 'audience', component: accountThread },
