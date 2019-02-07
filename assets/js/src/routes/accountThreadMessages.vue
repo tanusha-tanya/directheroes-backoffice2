@@ -71,8 +71,6 @@
   import axios from 'axios'
   import { Popover } from "element-ui"
 
-  
-  
   export default {
     beforeRouteUpdate(to, from, next) {
       clearInterval(this.requestInterval)
@@ -194,7 +192,15 @@
             this.threadMessages = [];
           }
 
-          this.threadMessages.push(...body.messageList);
+          const onlyNewMessages = body.messageList.filter(newMessage => {
+            return !this.threadMessages.find(message => (newMessage.id && (newMessage.id === message.id))
+              || (newMessage.botMessageId && (newMessage.botMessageId === message.botMessageId))
+              || newMessage.text === message.text)
+          })
+
+          if (!onlyNewMessages.length) return
+          
+          this.threadMessages.push(...onlyNewMessages);
         })
       },
 
@@ -383,7 +389,7 @@
       .bot-campaign {
         position: absolute;
         right: 25px;
-        top: -15px;
+        top: 3px;
         color: #2c3e50;
       }
 
