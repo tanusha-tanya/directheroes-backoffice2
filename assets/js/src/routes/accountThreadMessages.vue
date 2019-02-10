@@ -28,7 +28,12 @@
               <div class="body">
                 <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
                 <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"
-                  :title="(new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})"></div>
+                  :title="message.sentAt && (new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})"></div>
+                <div :class="{indicator: true, sent: message.isSeen}" v-if="isMe(message.senderUsername)" :title="!message.sentAt && message.toBeSentAt && `Sending at ${(new Date(message.toBeSentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}`"
+                  >
+                  <font-awesome-icon :icon="['fas', 'check-circle']" v-if="message.sentAt"/>
+                  <font-awesome-icon :icon="['far', 'clock']" v-else-if="message.toBeSentAt"/>
+                </div>
                 <router-link
                   class="bot-campaign"
                   :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
@@ -92,6 +97,7 @@
         allThreads: [],
         threadMessages: null,
         contactProfile: null,
+        ownProfile: null,
         messageText: '',
         defaultAvatar,
         requestInterval: null,
@@ -135,7 +141,7 @@
 
     methods: {
       isMe(userName) {
-        return this.account.login === userName;
+        return this.account.login.replace(/^@/, '') === userName.replace(/^@/, '');
       },
 
       isShowDate(message, index) {
@@ -211,6 +217,7 @@
           if (!this.contactProfile) {
             this.contactProfile = body.thread.contactProfile;
           }
+
 
           if (!body.messageList.length) return;
 
@@ -296,8 +303,6 @@
       }
     }
   }
-
-
 
   .thread-content-messages {
     padding: 15px;
@@ -405,6 +410,18 @@
         position: relative;
       }
 
+      .indicator {
+        position: absolute;
+        bottom: 3px;
+        z-index: 1;
+        right: 20px;
+        color: #a8a8a8;
+
+        &.sent {
+          color: #742BF9;
+        }
+      }
+
       .text {
         padding: 15px;
         border: 1px solid #DEDEDE;
@@ -412,6 +429,7 @@
         line-height: 22px;
         font-size: 16px;
         word-break: break-word;
+        margin-bottom: 10px;
       }
 
       .bot-campaign {
@@ -419,12 +437,6 @@
         right: 25px;
         top: 3px;
         color: #2c3e50;
-      }
-
-      &:not(:last-child) {
-        .text {
-          margin-bottom: 5px;
-        }
       }
 
       &.account-message {
