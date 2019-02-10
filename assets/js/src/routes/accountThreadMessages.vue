@@ -22,12 +22,13 @@
         <div class="thread-list-wrapper scroller" ref="threadMessages">
           <div class="thread-list">
             <div :class="{'thread-list-item': true,  'account-message': isMe(message.senderUsername)}" v-for="(message, index) in threadMessages" :key="message.id">
-              <div class="date" v-if="(!index || true ||isEqualPrevDate(message.sendAt, index)) && message.sentAt">
+              <div class="date" v-if="isShowDate(message, index)">
                 {{(new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}}
               </div>
               <div class="body">
                 <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-                <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
+                <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"
+                  :title="(new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})"></div>
                 <router-link
                   class="bot-campaign"
                   :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
@@ -70,6 +71,7 @@
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import axios from 'axios'
   import { Popover } from "element-ui"
+  import moment from 'moment'
 
   export default {
     beforeRouteUpdate(to, from, next) {
@@ -134,6 +136,17 @@
     methods: {
       isMe(userName) {
         return this.account.login === userName;
+      },
+
+      isShowDate(message, index) {
+        const { isMe } = this;
+        const prevItem = this.threadMessages[index - 1];
+
+        if (!message.sentAt) return;
+
+        if (!prevItem || !prevItem.sentAt) return true;
+
+        return isMe(prevItem.senderUsername) != isMe(message.senderUsername) || moment(message.sentAt).diff(prevItem.sentAt, 'minutes') > 15;
       },
 
       uploadFile(event) {
