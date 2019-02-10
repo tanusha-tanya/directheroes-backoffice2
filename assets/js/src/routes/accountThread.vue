@@ -35,14 +35,14 @@
             <div class="subscribed-row">{{ thread.subscribedAt ? subscriberAt(thread.subscribedAt) : ''}}</div>
             <div class="lastmessage-row">{{subscriberAt(thread.lastMessageAt)}}</div>
             <div class="campaigns-row">
-              <router-link 
-                :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }" 
+              <router-link
+                :to="{ name: 'accountCampaign', params: { campaignId: campaign.id } }"
                 v-for="campaign in thread.campaignList"
                 :key="campaign.id"
                 >{{campaign.name}}</router-link>
             </div>
             <div class="chat-row">
-              <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }">Live chat</router-link>
+              <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id, subscribed: subscribedText } }">Live chat</router-link>
               <router-link :to="{ name: 'accountThreadInfo', params: { subscriberId: thread.id } }" class="account-button" ><img :src="avatar"/></router-link>
             </div>
           </div>
@@ -97,6 +97,19 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount
+    },
+
+    subscribedText() {
+      const { subscribed } = this.filters;
+
+      switch(subscribed) {
+        case false:
+          return 'unsubscribed'
+          break;
+        case null:
+          return 'all'
+          break;
+      }
     }
   },
 
@@ -113,14 +126,14 @@ export default {
 
       this.threads = null;
 
-      axios({ 
+      axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
         method: 'post',
         data: { ...this.filters, paging: this.paging }
       })
       .then(({ data }) => {
         const { threadList, paging } = data.response.body
-        
+
         this.threads = threadList;
         this.paging = paging;
       })
@@ -180,14 +193,14 @@ export default {
     padding: 0 10px;
     flex-shrink: 0;
   }
-   
+
   .campaigns-row {
     width: 20%;
     padding: 0 10px;
     flex-shrink: 0;
     display: flex;
     flex-wrap: wrap;
-     
+
     a:not(:last-child) {
       &:after {
         content:',';
@@ -219,7 +232,7 @@ export default {
         padding: 2px 10px;
         margin-left: 10px;
       }
-      
+
       img {
         width: 11px;
         height: 11px;
@@ -242,12 +255,12 @@ export default {
   .el-pagination {
     text-align: right;
     margin: 15px 0;
-    
+
     &.is-background {
       .btn-next, .btn-prev, .el-pager li {
         background-color: #fff;
       }
-    } 
+    }
   }
 }
 </style>

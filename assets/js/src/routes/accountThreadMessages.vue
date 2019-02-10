@@ -28,8 +28,8 @@
               <div class="body">
                 <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
                 <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
-                <router-link 
-                  class="bot-campaign" 
+                <router-link
+                  class="bot-campaign"
                   :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
                   v-if="message.botCampaign"
                   >{{message.botCampaign.name}}</router-link>
@@ -71,8 +71,6 @@
   import axios from 'axios'
   import { Popover } from "element-ui"
 
-  
-  
   export default {
     beforeRouteUpdate(to, from, next) {
       clearInterval(this.requestInterval)
@@ -116,6 +114,21 @@
       account() {
         return this.$store.state.currentAccount;
       },
+
+      subscribed() {
+        const { subscribed } = this.$route.params;
+
+        switch(subscribed) {
+          case 'all':
+            return null
+            break
+          case 'unsubscribed':
+            return false
+            break
+          default:
+            return true
+        }
+      }
     },
 
     methods: {
@@ -151,7 +164,7 @@
         const { threadId } = this.$route.params;
         const { threadMessages } = this.$refs;
         const { uuidv4 } = this.utils;
-        
+
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/live/${ threadId }/send`,
           method: 'post',
@@ -160,7 +173,7 @@
             clientContext: uuidv4(),
             medias: this.media
           }
-        }).then(({ data }) => { 
+        }).then(({ data }) => {
           this.media.splice(0, this.media.length)
         })
 
@@ -169,7 +182,7 @@
 
       getUpdates(threadId) {
         const CancelToken = axios.CancelToken;
-        
+
         this.source = CancelToken.source();
         threadId = threadId || this.$route.params.threadId
 
@@ -194,7 +207,15 @@
             this.threadMessages = [];
           }
 
-          this.threadMessages.push(...body.messageList);
+          const onlyNewMessages = body.messageList.filter(newMessage => {
+            return !this.threadMessages.find(message => (newMessage.id && (newMessage.id === message.id))
+              || (newMessage.botMessageId && (newMessage.botMessageId === message.botMessageId))
+              || newMessage.text === message.text)
+          })
+
+          if (!onlyNewMessages.length) return
+
+          this.threadMessages.push(...onlyNewMessages);
         })
       },
 
@@ -203,20 +224,20 @@
       },
 
       getAudience() {
-        const { account } = this;
+        const { account, subscribed, filters } = this;
 
         if (!account) return;
 
         this.allThreads = null;
 
-        axios({ 
+        axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
           method: 'post',
-          data: this.filters,
+          data: { ...filters, subscribed },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
-          
+
           this.allThreads = threadList;
         })
       },
@@ -260,7 +281,7 @@
         width: 10px;
         height: 10px;
       }
-    }  
+    }
   }
 
 
@@ -279,7 +300,7 @@
       // border-right: 1px solid #EEEEEE;
     }
 
-    .threads-list{ 
+    .threads-list{
       height: calc(100% - 50px);
       overflow: auto;
       border-right: 1px solid #EEEEEE;
@@ -379,11 +400,11 @@
         font-size: 16px;
         word-break: break-word;
       }
-      
+
       .bot-campaign {
         position: absolute;
         right: 25px;
-        top: -15px;
+        top: 3px;
         color: #2c3e50;
       }
 
