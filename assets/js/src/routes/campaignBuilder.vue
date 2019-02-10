@@ -2,26 +2,6 @@
   <div class="campaign-builder">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
-      <div class="campaign-list">
-        <el-select
-          size="small"
-          :value="currentCampaign && currentCampaign.id"
-          @change="selectCampaign"
-          placeholder="Select Add new campaign"
-        >
-          <el-option
-            v-for="campaign in campaigns"
-            :label="campaign.name" :value="campaign.id"
-            :key="campaign.id"
-            >
-          </el-option>
-          <el-option
-            label="+ Add new campaign"
-            value="new"
-            >
-          </el-option>
-        </el-select>
-      </div>
       <div class="campaign-builder-control" v-if="currentCampaign">
         Activate
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
@@ -32,20 +12,6 @@
       </div>
     </div>
     <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign"></flow-builder>
-    <el-dialog
-      :visible.sync="isAddCampaign"
-      title="Create New Campaign"
-      class="campaign-dialog"
-      width="321px"
-      append-to-body
-      :show-close="false"
-      >
-      <input v-model="newCampaignName" placeholder="Enter Campaign name"/>
-      <template slot="footer">
-        <button @click="createCampaign">Create</button>
-        <button class="cancel" @click="isAddCampaign = false">Close</button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -69,8 +35,6 @@ export default {
   data() {
     return {
       currentCampaign: null,
-      isAddCampaign: false,
-      newCampaignName: ''
     }
   },
 
@@ -88,15 +52,6 @@ export default {
     setCurrentCampaign(route) {
       let { campaignId } = route.params;
       const { campaignList } = this.$store.state.currentAccount;
-
-      if (!campaignList || !campaignList.length) {
-        this.isAddCampaign = true;
-        return
-      };
-
-      if (!campaignId) {
-        campaignId = campaignList[0].id;
-      };
 
       if (!campaignId) return;
 
@@ -130,40 +85,8 @@ export default {
           const { currentAccount } = this.$store.state;
           const { campaignList } = currentAccount;
 
-          if (!campaignList.length) {
-            this.$router.replace({ name: 'accountCurrent', params: { accountId: currentAccount.id } })
-          } else {
-            this.$router.replace({ name: 'accountCampaign', params: { campaignId: campaignList[0].id, accountId: currentAccount.id } })
-          }
-
+          this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
         })
-    },
-
-    createCampaign() {
-      const { currentAccount } = this.$store.state;
-
-      this.$store.dispatch('createCampaign', {
-        name: this.newCampaignName
-      }).then(({ data }) => {
-        const { campaign } = data;
-
-        this.isAddCampaign = false;
-        this.newCampaignName = '';
-
-        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
-      })
-
-    },
-
-    selectCampaign(campaignId) {
-      const { currentAccount } = this.$store.state;
-
-      if (campaignId == 'new') {
-        this.isAddCampaign = true;
-        return;
-      }
-
-      this.$router.push({ name: 'accountCampaign', params: {campaignId,  accountId: currentAccount.id }})
     },
   },
 
@@ -191,6 +114,7 @@ export default {
     span {
       font-size: 24px;
       line-height: 24px;
+      flex-grow: 1;
     }
 
     .campaign-list {

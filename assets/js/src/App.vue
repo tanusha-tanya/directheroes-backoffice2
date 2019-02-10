@@ -9,10 +9,10 @@
         <router-link class="side-bar-item" :to="{ name: 'accounts' }">
           <img :src="home"/>
         </router-link>
-        <router-link v-if="account" class="side-bar-item" :to="{ name: 'accountCampaign', params: { accountId: account.id } }">
+        <router-link v-if="account" class="side-bar-item" :to="{ name: 'accountCampaignList', params: { accountId: account.id } }">
           <img :src="socialBuffer"/>
         </router-link>
-        <router-link  v-if="account" class="side-bar-item" :to="{ name: 'accountBroadcastList' }">
+        <router-link  v-if="account" class="side-bar-item" :to="{ name: 'accountBroadcastList', params: { accountId: account.id } }">
           <img :src="broadcast"/>
         </router-link>
         <router-link v-if="account" class="side-bar-item" :to="{ name: 'audience' }">
