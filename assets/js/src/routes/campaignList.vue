@@ -18,27 +18,41 @@
         {{campaign.isEnabled ? 'Active' : 'Not Active'}}
       </div>
       <div class="delete-row">
-        <div class="trash-button" @click.stop.prevent="deleteCampaign(campaign)">
+        <div class="trash-button" @click.stop.prevent="campaignToDelete = campaign">
           <img src="../assets/svg/trash.svg"/>
         </div>
       </div>
     </router-link>
   </div>
-    <el-dialog
-      :visible.sync="isAddCampaign"
-      title="Create New Campaign"
-      class="campaign-dialog"
-      width="321px"
-      append-to-body
-      :show-close="false"
-      >
-      <input v-model="newCampaignName" placeholder="Enter Campaign name"/>
-      <template slot="footer">
-        <button @click="createCampaign">Create</button>
-        <button class="cancel" @click="isAddCampaign = false">Close</button>
-      </template>
-    </el-dialog>
-</div>    
+  <el-dialog
+    :visible.sync="isAddCampaign"
+    title="Create New Campaign"
+    class="campaign-dialog"
+    width="321px"
+    append-to-body
+    :show-close="false"
+    >
+    <input v-model="newCampaignName" placeholder="Enter Campaign name"/>
+    <template slot="footer">
+      <button @click="createCampaign">Create</button>
+      <button class="cancel" @click="isAddCampaign = false">Close</button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    :visible.sync="campaignToDelete"
+    title="Delete dialog"
+    width="321px"
+    append-to-body
+    class="action-dialog"
+    :show-close="false"
+  >
+    <div class="dialog-text">Are you sure you want to delete campaign?</div>
+    <template slot="footer">
+      <button @click="deleteCampaign">Delete</button>
+      <button class="cancel" @click="campaignToDelete = null">Cancel</button>
+    </template>
+  </el-dialog>
+</div>
 </template>
 <script>
 import moment from 'moment'
@@ -47,6 +61,7 @@ export default {
   data() {
     return {
       isAddCampaign: false,
+      campaignToDelete: null,
       newCampaignName: ''
     }
   },
@@ -54,12 +69,21 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount
+    },
+    toDelete: {
+      get() {
+        return Boolean(campaignToDelete)
+      },
+      set(value) {
+        this.campaignToDelete = value;
+      }
     }
   },
 
   methods: {
-    deleteCampaign(campaign) {
-      this.$store.dispatch('deleteCampaign', campaign)
+    deleteCampaign() {
+      this.$store.dispatch('deleteCampaign', this.campaignToDelete)
+      this.campaignToDelete = null
     },
 
     createCampaign() {
@@ -106,14 +130,14 @@ export default {
 
   .list-item {
     text-decoration: none;
-    
+
     &.header {
       font-weight: bold;
       // justify-content: space-between;
 
       &:hover {
         background-color: transparent
-      } 
+      }
     }
 
     .campaign-row {

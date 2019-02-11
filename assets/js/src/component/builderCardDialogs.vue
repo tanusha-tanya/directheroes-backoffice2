@@ -40,6 +40,20 @@
         <button class="cancel" @click="actionType = null">Close</button>
       </template>
     </el-dialog>
+    <el-dialog
+        :visible.sync="isActionDelete"
+        title="Delete dialog"
+        width="321px"
+        append-to-body
+        class="action-dialog"
+        :show-close="false"
+        >
+        <div class="dialog-text">Are you sure you want to delete step?</div>
+        <template slot="footer">
+          <button @click="$emit('delete-step')">Delete</button>
+          <button class="cancel" @click="isActionDelete = null">Cancel</button>
+        </template>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -50,6 +64,7 @@ import basicDelay from './elements/basicDelay.vue'
 export default {
   data() {
     return {
+      isActionDelete: false,
       actionType: null,
       intermediateValue: null,
     }
@@ -118,7 +133,7 @@ export default {
               }
             }
 
-            step.elements.unsift(element)
+            Array.prototype.unshift(step.elements, element)
           }
 
           this.intermediateValue = JSON.parse(JSON.stringify(element));
@@ -128,7 +143,7 @@ export default {
           this.intermediateValue = step.name;
           break;
         case 'remove':
-          this.$emit('delete-step')
+          this.isActionDelete = true;
       }
 
       this.actionType = type;
@@ -191,23 +206,7 @@ export default {
   }
 
   .el-dialog__wrapper.action-dialog {
-
-    .el-dialog {
-      border-radius: 5px;
-      padding: 20px;
-    }
-
-    .el-dialog__header {
-      padding: 0;
-      font-size: 18px;
-      line-height: 22px;
-      font-weight: bold;
-      text-align: center;
-    }
-
     .el-dialog__body {
-      padding: 0;
-
       input:not(.el-input__inner) {
         width: 100%;
         margin: 20px 0;
@@ -225,23 +224,6 @@ export default {
 
     .basic-delay {
       padding: 20px 0;
-    }
-
-    .el-dialog__footer {
-      padding: 0;
-
-      button {
-        background-color: #6A12CB;
-        border-radius: 5px;
-        line-height: 16px;
-        font-weight: normal;
-        padding: 7px 20px;
-
-        &.cancel {
-          background-color: transparent;
-          color: #000;
-        }
-      }
     }
   }
 </style>

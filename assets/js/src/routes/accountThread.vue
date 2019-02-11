@@ -55,14 +55,17 @@
         <div class="pre-loader"></div>
       </div>
     </div>
-    <el-pagination
-      background
-      v-if="threads && paging && paging.totalPageCount > 1"
-      layout="prev, pager, next"
-      :current-page="paging.page"
-      :page-count="paging.totalPageCount"
-      @current-change="changePage"
-    ></el-pagination>
+    <div class="thread-footer">
+      <span v-if="threads && paging">Total threads - {{ paging.totalResultCount }}</span>
+      <el-pagination
+        background
+        v-if="threads && paging && paging.totalPageCount > 1"
+        layout="prev, pager, next"
+        :current-page="paging.page"
+        :page-count="paging.totalPageCount"
+        @current-change="changePage"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 <script>
@@ -251,14 +254,24 @@ export default {
       }
     }
   }
+  .thread-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-  .el-pagination {
-    text-align: right;
-    margin: 15px 0;
+    & > span {
+      font-size: 16px;
+      margin: 15px;
+    }
 
-    &.is-background {
-      .btn-next, .btn-prev, .el-pager li {
-        background-color: #fff;
+    .el-pagination {
+      text-align: right;
+      margin: 15px 0;
+
+      &.is-background {
+        .btn-next, .btn-prev, .el-pager li:not(.active) {
+          background-color: #fff;
+        }
       }
     }
   }

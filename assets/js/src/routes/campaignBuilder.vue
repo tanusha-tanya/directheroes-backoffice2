@@ -7,11 +7,25 @@
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
       ></div>
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
-      <div class="campaign-builder-control trash" v-if="currentCampaign" @click="deleteCampaign">
+      <div class="campaign-builder-control trash" v-if="currentCampaign" @click="isDeleteDialog = true">
         <img src="../assets/svg/trash.svg"/>
       </div>
     </div>
     <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign"></flow-builder>
+    <el-dialog
+      :visible.sync="isDeleteDialog"
+      title="Delete dialog"
+      width="321px"
+      append-to-body
+      class="action-dialog"
+      :show-close="false"
+    >
+      <div class="dialog-text">Are you sure you want to delete campaign?</div>
+      <template slot="footer">
+        <button @click="deleteCampaign">Delete</button>
+        <button class="cancel" @click="isDeleteDialog = false">Cancel</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -35,6 +49,7 @@ export default {
   data() {
     return {
       currentCampaign: null,
+      isDeleteDialog: false
     }
   },
 

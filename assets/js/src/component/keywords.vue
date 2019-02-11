@@ -1,6 +1,6 @@
 <template>
   <div class="keywords">
-    <el-select 
+    <el-select
       :value="value"
       placeholder="Enter messages"
       popper-class="keywords-dropdown"
@@ -9,6 +9,7 @@
       allow-create
       default-first-option
       @change="keywordsChange"
+      @keydown.native="keywordsKeydown"
     >
     </el-select>
     <div v-if="tagPrefix" class="tag-item" @click="tagNameSet">#{{tagPrefix}}<span v-if="tagName">_</span>{{tagName}}</div>
@@ -44,6 +45,31 @@ export default {
       this.$emit('input', value.filter(keyword => keyword.trim()))
     },
 
+    keywordsKeydown(event) {
+      const { target } = event;
+      const { value } = this;
+
+      if ([188, 9].includes(event.keyCode)) {
+
+        if (!target.value) {
+          target.value = '';
+          return;
+        }
+
+        event.preventDefault();
+
+        if (value.includes(target.value)) {
+          value.splice(value.indexOf(target.value), 1)
+        } else {
+          value.push(target.value.replace(',', ''));
+        }
+
+        target.value = '';
+
+        return false;
+      }
+    },
+
     tagNameSet() {
       this.intermediateValue = this.tagName;
       this.isActionRename = true;
@@ -52,7 +78,7 @@ export default {
     saveChanges() {
       this.isActionRename = false;
 
-      this.$emit('set-tag-name', this.intermediateValue); 
+      this.$emit('set-tag-name', this.intermediateValue);
     }
   }
 }
@@ -85,7 +111,7 @@ export default {
 
     .el-select__tags {
       top: 4px;
-      transform: translateY(0); 
+      transform: translateY(0);
     }
 
     .el-tag {

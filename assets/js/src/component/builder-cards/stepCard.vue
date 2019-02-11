@@ -19,7 +19,7 @@
             <element-warning :element="element"></element-warning>
             <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
-          <div class="remove-element" @click="elementRemove(element)">&times</div>
+          <div class="remove-element" @click="elementToDelete = element">&times</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
           <component :is="elementComponents[element.type]" :element="element"></component>
@@ -47,6 +47,20 @@
       </div>
       <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
       <div class="remove-go-to" v-if="!listElement && goToStepElement" @click="removeGoTo">&times</div>
+      <el-dialog
+        :visible.sync="toDeleteElement"
+        title="Delete dialog"
+        width="321px"
+        append-to-body
+        class="action-dialog"
+        :show-close="false"
+        >
+        <div class="dialog-text">Are you sure you want to delete element?</div>
+        <template slot="footer">
+          <button @click="elementRemove">Delete</button>
+          <button class="cancel" @click="elementToDelete = null">Cancel</button>
+        </template>
+      </el-dialog>
     </template>
   </builder-card>
 </template>
@@ -83,6 +97,7 @@ export default {
         basicDelay
       },
       dragged: false,
+      elementToDelete: null,
       Drop
     }
   },
@@ -127,6 +142,16 @@ export default {
       const { elements } = this.step;
 
       return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageTextConditionMultiple')
+    },
+
+    toDeleteElement: {
+      get() {
+        return Boolean(this.elementToDelete)
+      },
+
+      set(value) {
+        this.elementToDelete = value;
+      }
     }
   },
 
@@ -155,18 +180,19 @@ export default {
       element.id = (new ObjectId).toString();
 
       this.dragged = false;
-      
+
       if (listElement) {
         step.elements.splice(step.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
       } else {
         step.elements.push({ ...element, displaySettings: { collapsed: false }});
-      } 
+      }
     },
 
-    elementRemove(element) {
+    elementRemove() {
       const { elements } = this.step;
 
-      elements.splice(elements.indexOf(element), 1);
+      elements.splice(elements.indexOf(this.elementToDelete), 1);
+      this.toDeleteElement = null;
     },
 
     setArrowConnect() {
@@ -215,7 +241,7 @@ export default {
     removeGoTo() {
       const { elements } = this.step;
       const { goToStepElement } = this;
-      
+
       elements.splice(elements.indexOf(goToStepElement), 1);
     }
   }
