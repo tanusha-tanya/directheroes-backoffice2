@@ -34,7 +34,7 @@
                   <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"
                   :title="message.sentAt && (new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})"></div>
                   <a class="post" v-if="message.postUrl" :href="message.postUrl" target="_blank">
-                    <div class="picture" :style="{'background-image': `url(${ image })`}"></div>
+                    <div class="picture" :style="{'background-image': `url(${ message.previewUrl }), url(${ image })`}"></div>
                   </a>
                 </div>
 
@@ -434,7 +434,7 @@
         width: 100%;
         padding-bottom: 80%;
         background-color: #fff;
-        background-size: 30%;
+        background-size: contain, 30%;
         background-position: center;
         background-repeat: no-repeat;
         border-radius: 10px;
