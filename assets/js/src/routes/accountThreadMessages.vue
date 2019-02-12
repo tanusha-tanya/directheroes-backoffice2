@@ -19,37 +19,16 @@
           <div class="avatar" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
           <strong>{{ contactProfile.username }}</strong>
         </div>
-        <div class="thread-list-wrapper scroller" ref="threadMessages">
+        <div class="thread-list-wrapper scroller" ref="threadMessages" >
           <div class="thread-list">
-            <div :class="{'thread-list-item': true,  'account-message': isMe(message.senderUsername)}" v-for="(message, index) in threadMessages" :key="message.id">
-              <div class="date" v-if="isShowDate(message, index)">
-                {{(new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}}
-              </div>
-              <div class="body">
-                <div class="avatar" v-if="!isMe(message.senderUsername)" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-                <div class="wrapper">
-                  <div class="type" :title="message.typeExtended" v-if="message.type">
-                    {{ message.type }}
-                  </div>
-                  <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"
-                  :title="message.sentAt && (new Date(message.sentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})"></div>
-                  <a class="post" v-if="message.postUrl" :href="message.postUrl" target="_blank">
-                    <div class="picture" :style="{'background-image': `url(${ message.previewUrl }), url(${ image })`}"></div>
-                  </a>
-                </div>
-
-                <div :class="{indicator: true, sent: message.isSeen}" v-if="isMe(message.senderUsername)" :title="!message.sentAt && message.toBeSentAt && `Sending at ${(new Date(message.toBeSentAt * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})}`"
-                  >
-                  <font-awesome-icon :icon="['fas', 'check-circle']" v-if="message.sentAt"/>
-                  <font-awesome-icon :icon="['far', 'clock']" v-else-if="message.toBeSentAt"/>
-                </div>
-                <router-link
-                  class="bot-campaign"
-                  :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
-                  v-if="message.botCampaign"
-                  >{{message.botCampaign.name}}</router-link>
-              </div>
-            </div>
+            <thread-message
+              v-for="(message, index) in threadMessages"
+              :key="message.id"
+              :message="message"
+              :owner="account.login"
+              :prev-message="threadMessages[index - 1]"
+              :contact-profile="contactProfile"
+              ></thread-message>
           </div>
         </div>
         <div class="thread-message-send">
@@ -82,9 +61,10 @@
   </div>
 </template>
 <script>
-  import defaultAvatar from '../assets/ig-avatar.jpg'
   import axios from 'axios'
   import { Popover } from "element-ui"
+  import defaultAvatar from '../assets/ig-avatar.jpg'
+  import threadMessage from '../component/threadMessage.vue'
   import moment from 'moment'
   import image from '../assets/svg/image-placeholder.svg'
 
@@ -123,6 +103,7 @@
 
     components: {
       'el-popover': Popover,
+      threadMessage
     },
 
     computed: {
@@ -393,110 +374,6 @@
       flex-direction: column;
       justify-content: flex-end;
       min-height: 100%;
-    }
-
-    .thread-list-item {
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-
-      .date {
-        align-self: center;
-        color: #A7A7A7;
-        margin: 10px 0 15px;
-      }
-
-      .type {
-        font-size: 10px;
-        color: #a8a8a8;
-        margin-top: -10px;
-        &::first-letter {
-          text-transform: uppercase;
-        }
-      }
-
-      .avatar {
-        width: 32px;
-        height: 32px;
-        margin: 0 10px 5px 0;
-        align-self: flex-end;
-        flex-shrink: 0;
-      }
-
-      .body {
-        display: flex;
-        align-self: flex-start;
-        max-width: 70%;
-        position: relative;
-      }
-
-      .picture {
-        width: 100%;
-        padding-bottom: 80%;
-        background-color: #fff;
-        background-size: contain, 30%;
-        background-position: center;
-        background-repeat: no-repeat;
-        border-radius: 10px;
-        border: 1px solid #DEDEDE;
-
-        &:hover {
-          background-color:#cfcfcf;
-        }
-      }
-
-      .indicator {
-        position: absolute;
-        bottom: 3px;
-        z-index: 1;
-        right: 20px;
-        color: #a8a8a8;
-
-        &.sent {
-          color: #742BF9;
-        }
-      }
-
-      .post {
-        width: 100%;
-        min-width: 170px;
-        display: block;
-      }
-
-      .text {
-        line-height: 22px;
-        font-size: 16px;
-        word-break: break-word;
-      }
-
-      .wrapper {
-        padding: 15px;
-        border: 1px solid #DEDEDE;
-        border-radius: 25px;
-        margin-bottom: 10px;
-      }
-
-      .bot-campaign {
-        position: absolute;
-        right: 25px;
-        top: 3px;
-        color: #2c3e50;
-      }
-
-      &.account-message {
-        .body {
-          align-self: flex-end;
-        }
-
-        .wrapper {
-          background-color: #EFEFEF;
-          border-color: #EFEFEF;
-        }
-
-        .type {
-          left: 20px;
-        }
-      }
     }
 
     .thread-message-send {
