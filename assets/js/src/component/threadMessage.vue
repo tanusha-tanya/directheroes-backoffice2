@@ -5,12 +5,11 @@
     </div>
     <div class="body">
       <div class="avatar" v-if="!isMe" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-      <div class="wrapper">
+      <div class="wrapper" :title="message.sentAt && date(message.sentAt)">
         <div class="type" :title="message.typeExtended" v-if="message.type">
           {{ message.type }}
         </div>
-        <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"
-        :title="message.sentAt && date(message.sentAt)"></div>
+        <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
         <a class="post" v-if="message.postUrl" :href="message.postUrl" target="_blank">
           <div class="picture" :style="{'background-image': `url(${ message.previewUrl }), url(${ image })`}"></div>
         </a>
