@@ -40,26 +40,20 @@
         <button class="cancel" @click="actionType = null">Close</button>
       </template>
     </el-dialog>
-    <el-dialog
-        :visible.sync="isActionDelete"
-        title="Delete dialog"
-        width="321px"
-        append-to-body
-        class="action-dialog"
-        :show-close="false"
-        >
-        <div class="dialog-text">Are you sure you want to delete step?</div>
-        <template slot="footer">
-          <button @click="$emit('delete-step')">Delete</button>
-          <button class="cancel" @click="isActionDelete = null">Cancel</button>
-        </template>
-      </el-dialog>
+    <confirm-dialog
+      v-model="isActionDelete"
+      title="Delete step"
+      message="Are you sure you want to delete step?"
+      @success="$emit('delete-step')"
+      >
+    </confirm-dialog>
   </div>
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import basicDelay from './elements/basicDelay.vue'
+import confirmDialog from './confirmDialog.vue'
 
 export default {
   data() {
@@ -73,7 +67,8 @@ export default {
   props:['step', 'short'],
 
   components: {
-    basicDelay
+    basicDelay,
+    confirmDialog
   },
 
   computed: {

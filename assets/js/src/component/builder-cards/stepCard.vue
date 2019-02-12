@@ -47,20 +47,13 @@
       </div>
       <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
       <div class="remove-go-to" v-if="!listElement && goToStepElement" @click="removeGoTo">&times</div>
-      <el-dialog
-        :visible.sync="toDeleteElement"
-        title="Delete dialog"
-        width="321px"
-        append-to-body
-        class="action-dialog"
-        :show-close="false"
+      <confirm-dialog
+        v-model="toDeleteElement"
+        title="Delete element"
+        message="Are you sure you want to delete element?"
+        @success="elementRemove"
         >
-        <div class="dialog-text">Are you sure you want to delete element?</div>
-        <template slot="footer">
-          <button @click="elementRemove">Delete</button>
-          <button class="cancel" @click="elementToDelete = null">Cancel</button>
-        </template>
-      </el-dialog>
+      </confirm-dialog>
     </template>
   </builder-card>
 </template>
@@ -70,6 +63,7 @@ import ObjectId from '../../utils/ObjectId'
 import EventBus from '../../utils/event-bus.js'
 import builderCard from "./builderCard.vue";
 import arrowBorn from '../arrowBorn.vue'
+import confirmDialog from '../confirmDialog.vue'
 import { Drop } from 'vue-drag-drop';
 import builderCardDialogs from '../builderCardDialogs'
 import sendImageAction from '../elements/sendImageAction.vue'
@@ -106,7 +100,8 @@ export default {
     builderCard,
     builderCardDialogs,
     arrowBorn,
-    elementWarning
+    elementWarning,
+    confirmDialog
   },
 
   props: ['step', 'tag'],

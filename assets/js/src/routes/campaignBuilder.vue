@@ -12,25 +12,19 @@
       </div>
     </div>
     <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign"></flow-builder>
-    <el-dialog
-      :visible.sync="isDeleteDialog"
-      title="Delete dialog"
-      width="321px"
-      append-to-body
-      class="action-dialog"
-      :show-close="false"
-    >
-      <div class="dialog-text">Are you sure you want to delete campaign?</div>
-      <template slot="footer">
-        <button @click="deleteCampaign">Delete</button>
-        <button class="cancel" @click="isDeleteDialog = false">Cancel</button>
-      </template>
-    </el-dialog>
+    <confirm-dialog
+      v-model="isDeleteDialog"
+      title="Delete campaign"
+      message="Are you sure you want to delete campaign?"
+      @success="deleteCampaign"
+      >
+    </confirm-dialog>
   </div>
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
 import flowBuilder from '../component/flowBuilder.vue'
+import confirmDialog from '../component/confirmDialog.vue'
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -54,7 +48,8 @@ export default {
   },
 
   components: {
-    flowBuilder
+    flowBuilder,
+    confirmDialog
   },
 
   computed:{

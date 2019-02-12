@@ -38,24 +38,18 @@
       <button class="cancel" @click="isAddCampaign = false">Close</button>
     </template>
   </el-dialog>
-  <el-dialog
-    :visible.sync="campaignToDelete"
-    title="Delete dialog"
-    width="321px"
-    append-to-body
-    class="action-dialog"
-    :show-close="false"
-  >
-    <div class="dialog-text">Are you sure you want to delete campaign?</div>
-    <template slot="footer">
-      <button @click="deleteCampaign">Delete</button>
-      <button class="cancel" @click="campaignToDelete = null">Cancel</button>
-    </template>
-  </el-dialog>
+  <confirm-dialog
+    v-model="toDelete"
+    title="Delete campaign"
+    message="Are you sure you want to delete campaign?"
+    @success="deleteCampaign"
+    >
+  </confirm-dialog>
 </div>
 </template>
 <script>
 import moment from 'moment'
+import confirmDialog from '../component/confirmDialog.vue'
 
 export default {
   data() {
@@ -66,13 +60,18 @@ export default {
     }
   },
 
+  components: {
+    confirmDialog
+  },
+
   computed: {
     account() {
       return this.$store.state.currentAccount
     },
+
     toDelete: {
       get() {
-        return Boolean(campaignToDelete)
+        return Boolean(this.campaignToDelete)
       },
       set(value) {
         this.campaignToDelete = value;
