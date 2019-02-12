@@ -132,21 +132,6 @@
     },
 
     methods: {
-      isMe(userName) {
-        return this.account.login.replace(/^@/, '') === userName.replace(/^@/, '');
-      },
-
-      isShowDate(message, index) {
-        const { isMe } = this;
-        const prevItem = this.threadMessages[index - 1];
-
-        if (!message.sentAt) return;
-
-        if (!prevItem || !prevItem.sentAt) return true;
-
-        return isMe(prevItem.senderUsername) != isMe(message.senderUsername) || moment(message.sentAt).diff(prevItem.sentAt, 'minutes') > 15;
-      },
-
       uploadFile(event) {
         const files = event.target.files;
         const formData = new FormData();
