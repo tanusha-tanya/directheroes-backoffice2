@@ -37,6 +37,8 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
+        dhAccount.igAccountLimit = 2;
+
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
         commit('set', { path: 'firstLoad', value: false });
@@ -71,7 +73,7 @@ export default new VueX.Store({
 
     saveAccount({ state, commit }, params) {
       const request = accountRequestHandler('post', params)
-      
+
       request
         .then(({ data }) => {
           const { account } = data.response.body;
@@ -92,7 +94,7 @@ export default new VueX.Store({
       })
 
       request.then(({ data }) => {
-        if (params.noUpdates) return 
+        if (params.noUpdates) return
 
         campaignList.splice(campaignList.indexOf(params.campaign), 1, data.campaign);
       })
@@ -113,7 +115,7 @@ export default new VueX.Store({
 
       request.then(({ data }) => {
         console.log(data);
-        
+
       }).catch( error => {
         console.log(error);
       })

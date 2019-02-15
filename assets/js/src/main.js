@@ -42,7 +42,7 @@ import accountDH from './routes/accountDH.vue'
 import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
 import videoHelp from './routes/videoHelp.vue'
-import { log } from 'util';
+import extraAccountBuy from './routes/extraAccountBuy.vue'
 
 const router = new VueRouter({
   routes:[
@@ -54,6 +54,7 @@ const router = new VueRouter({
         { name: 'dhPayments', path: 'payments', component: accountDHPayment },
       ]
     },
+    { name: 'accountBuy', path: '/account-buy', component: extraAccountBuy },
     { path: '/:accountId', component: accountDetails,
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },

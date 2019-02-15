@@ -142,7 +142,8 @@ export default {
       } else if (accountAuth.isLoggedIn) {
         return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
       }
-    }
+    },
+
   },
 
   methods: {
@@ -192,7 +193,7 @@ export default {
 
         }).catch( ({ response }) => {
           this.loading = false;
-         
+
           if (response) {
             const { data } = response;
 
@@ -201,7 +202,7 @@ export default {
             } else if (data.error) {
               this.error = data.error
             } else {
-              his.error = "Server connection problem, try again"
+              this.error = "Server connection problem, try again"
             }
           } else {
             this.error = "Server connection problem, try again"
@@ -228,6 +229,14 @@ export default {
         this.isResendCode = false;
       })
     }
+  },
+
+  created() {
+    document.body.classList.add('no-overlay')
+  },
+
+  destroyed() {
+    document.body.classList.remove('no-overlay')
   },
 
   watch: {
@@ -407,5 +416,9 @@ export default {
       width: 100%;
     }
   }
+}
+
+.no-overlay .v-modal {
+  opacity: 0;
 }
 </style>
