@@ -1,16 +1,17 @@
 <template>
 <div class="message-condition">
-  <el-select 
-    :class="[{'campaign-type': true}, element.value.messageType]" 
+  <el-select
+    :class="[{'campaign-type': true}, element.value.messageType]"
     v-model="element.value.messageType"
     popper-class="campaign-type-dropdown"
   >
     <el-option class="ad-reply" label="Ad Reply" value="adReply">Ad Reply</el-option>
     <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
+    <el-option class="story" label="Story Mention" value="storyMention">Story Mention</el-option>
     <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
     <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
   </el-select>
-  <template v-if="['storyShare', 'any'].includes(element.value.messageType)">
+  <template v-if="['storyMention', 'storyShare', 'any'].includes(element.value.messageType)">
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
     <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
@@ -20,7 +21,7 @@
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
     <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
-</div>  
+</div>
 </template>
 <script>
 import messageConditionMultiple from "./messageConditionMultiple.vue";
@@ -32,7 +33,7 @@ export default {
   components: {
     conditionList: messageConditionMultiple,
     keywords
-  } 
+  }
 }
 </script>
 <style lang="scss">
@@ -46,6 +47,12 @@ export default {
       }
 
       &.storyShare .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
+      &.storyMention .el-input--suffix:before {
         background-image: url(../../assets/svg/bubble-w.svg);
         height: 11px;
         top: 10px;
@@ -73,7 +80,7 @@ export default {
       .el-input--suffix {
         &:before {
           content: '';
-          width: 13px; 
+          width: 13px;
           position: absolute;
           left: 12px;
         }
@@ -138,10 +145,10 @@ export default {
     .el-select-dropdown__item {
       color: #A9A9A9;
       padding: 0 20px 0 35px;
-      
+
       &:before {
         content: '';
-        width: 13px; 
+        width: 13px;
         position: absolute;
         left: 12px;
       }
