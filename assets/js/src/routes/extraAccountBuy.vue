@@ -28,7 +28,7 @@
           No one card attached to service
         </div>
         <div class="payment-buttons">
-          <button class="primary">Set payment method</button>
+          <router-link class="primary" tag="button" :to="{ name: 'accountPayment' }">Set payment method</router-link>
         </div>
       </div>
     </div>
