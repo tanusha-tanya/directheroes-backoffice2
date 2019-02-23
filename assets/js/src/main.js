@@ -41,6 +41,7 @@ import accountThreadInfo from './routes/accountThreadInfo.vue'
 import accountDH from './routes/accountDH.vue'
 import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
+import accountDHSubscription from './routes/accountDHSubscription.vue'
 import videoHelp from './routes/videoHelp.vue'
 import extraAccountBuy from './routes/extraAccountBuy.vue'
 import extraAccountPayment from './routes/extraAccountPayment.vue'
@@ -53,6 +54,7 @@ const router = new VueRouter({
       children: [
         { name: 'dhProfile', path: '', component: accountDHProfile },
         { name: 'dhPayments', path: 'payments', component: accountDHPayment },
+        { name: 'dhSubscriptions', path: 'subscriptions', component: accountDHSubscription },
       ]
     },
     { name: 'accountBuy', path: '/account-buy', component: extraAccountBuy },

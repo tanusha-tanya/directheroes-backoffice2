@@ -73,7 +73,7 @@ export default {
   },
 
   methods: {
-    extraAccountPay(submitPayment) {
+    setPayInfo(submitPayment) {
       this.paymentRequest = true
 
       submitPayment(97000, (error) => {
@@ -95,6 +95,8 @@ export default {
       const source = sources[sources.length - 1];
 
       this.loading = false;
+      console.log(source);
+
 
       if (!source) return;
 
