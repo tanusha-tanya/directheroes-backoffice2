@@ -5,10 +5,10 @@
         Set Your Credit/Debit Card Information
       </div>
       <div class="extra-account-stripe">
-        <stripe-payment>
-          <template slot="footer" slot-scope="{submitPayment, canSendInfo}">
+        <stripe-payment goal="createPlanSubscription" :return-url="$router.resolve({name: 'accountBuy'}).href">
+          <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
             <div class="extra-account-buttons">
-              <button :class="{ loading: sendRequest }" :disabled="!canSendInfo" @click="extraAccountPay(submitPayment)">Pay 97$ for extra account</button>
+              <button :class="{ loading: sendRequest }" :disabled="!canSendInfo" @click="extraAccountPay(submitPayment, authorizeAmount)">Set payment info</button>
               <router-link :to="{ name: 'accountBuy' }">Cancel</router-link>
             </div>
           </template>
@@ -32,10 +32,10 @@ export default {
   },
 
   methods: {
-    extraAccountPay(submitPayment) {
+    extraAccountPay(submitPayment, authorizeAmount) {
       this.sendRequest = true
 
-      submitPayment(97000, (error) => {
+      submitPayment(authorizeAmount * 100, (error) => {
         this.sendRequest = false;
 
         if (error) return;

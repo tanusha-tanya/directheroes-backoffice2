@@ -20,7 +20,7 @@
         <div class="purchase-info" v-if="cardInfo">
           <div class="card-info">
             {{ cardInfo.brand }} *{{ cardInfo.last4 }}<br/>
-            Expires on {{ cardInfo.expMonth }}/{{ cardInfo.expYear }}
+            Expires on {{ cardInfo.exp_month }}/{{ cardInfo.exp_year }}
           </div>
           <button>Purchase</button>
         </div>
@@ -50,14 +50,13 @@ export default {
     axios({
       url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
     }).then(({ data }) => {
-      const { sources } = data.response.body;
-      const source = sources[sources.length - 1];
+      const { activeSource } = data.response.body;
 
       this.loading = false;
 
-      if (!source) return;
+      if (!activeSource) return;
 
-      this.cardInfo = source.card;
+      this.cardInfo = activeSource.card || activeSource.three_d_secure;
     });
   },
 }

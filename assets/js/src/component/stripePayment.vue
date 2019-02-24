@@ -52,7 +52,11 @@
     <div class="loading-content" v-show="!stripe">
       <div class="pre-loader"></div>
     </div>
-    <slot v-if="stripe" name="footer" :submitPayment="createCardToken" :canSendInfo="allOwnerInfo() && !hasError"></slot>
+    <slot v-if="stripe" name="footer"
+      :submitPayment="createCardToken"
+      :canSendInfo="allOwnerInfo() && !hasError"
+      :authorizeAmount="authorizeAmount"
+      ></slot>
   </div>
 </template>
 
@@ -63,6 +67,9 @@ import Vue from 'vue'
 export default {
   data() {
     return {
+      chargeAmount: null,
+      authorizeAmount: null,
+      sessionId: null,
       publicKey: null,
       owner: {
         name: "",
@@ -75,11 +82,12 @@ export default {
         }
       },
       stripe: null,
-      cardNumber: null,
       errors: {},
       globalError: null,
     }
   },
+
+  props:['goal', 'returnUrl'],
 
   computed: {
     hasError() {
@@ -93,9 +101,7 @@ export default {
     allOwnerInfo() {
       const { owner } = this;
 
-      return owner.name && Object.keys(owner.address).every(
-        ownerItem => owner.address[ownerItem]
-      );
+      return owner.name && Object.keys(owner.address).every(ownerItem => ownerItem === 'line2' || owner.address[ownerItem]);
     },
 
     errorHandler(event) {
@@ -127,6 +133,7 @@ export default {
 
     createCardToken(price, callback) {
       const {
+        sessionId,
         stripe,
         cardNumber,
         owner,
@@ -184,11 +191,14 @@ export default {
     },
 
     setPaymentSource(sourceId, callback) {
+      const { sessionId } = this;
+
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/use-source`,
         method: "post",
         data: {
-          sourceId
+          sourceId,
+          sessionId
         }
       }).then(({ data }) => {
         callback()
@@ -196,29 +206,36 @@ export default {
     },
 
     attachSourceTo(sourceId) {
+      const { sessionId } = this;
+
       return axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/save-source`,
         method: "post",
         data: {
-          sourceId
+          sourceId,
+          sessionId
         }
       });
     },
   },
 
   created() {
+    const { goal, returnUrl } = this;
+
     axios({
-      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
+      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/init-add-card`,
+      params: { goal, return_url: encodeURIComponent(returnUrl) }
     }).then(({ data }) => {
-      const { pk, sources } = data.response.body;
-      const source = sources[sources.length - 1];
+      const { stripePk, previousSourceOwner, sessionId, authorizeAmount, chargeAmount } = data.response.body;
 
-      this.publicKey = pk;
+      this.publicKey = stripePk;
+      this.sessionId = sessionId;
+      this.authorizeAmount = authorizeAmount;
+      this.chargeAmount = chargeAmount;
 
-      if (!source) return;
+      if (!previousSourceOwner) return;
 
-      Object.assign(this.owner, source);
-      this.cardInfo = source.card;
+      Object.assign(this.owner, previousSourceOwner);
     });
   },
 
@@ -240,30 +257,6 @@ export default {
 <style  lang="scss">
 .error {
   color: #ff4d4d;
-}
-
-.form-row {
-  display: flex;
-  margin: 0 -10px 10px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0 10px;
-
-    & > div:not(.error) {
-      border: 1px solid #dddddd;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 15px;
-      min-height: 37px;
-    }
-
-    input {
-      padding: 9px;
-    }
-  }
 }
 
 .StripeElement {

@@ -30,15 +30,15 @@
           <div>**** **** **** {{cardInfo.last4}}</div>
         </label>
         <label>Expires, month/year
-          <div>{{ cardInfo.expMonth }}/{{ cardInfo.expYear }}</div>
+          <div>{{ cardInfo.exp_month }}/{{ cardInfo.exp_year }}</div>
         </label>
       </div>
-      <button @click="isSetPayment = true">Update payment info</button>
+      <button @click="isSetPayment = true">Set payment info</button>
     </div>
-    <stripe-payment v-show="isSetPayment">
-      <template slot="footer" slot-scope="{submitPayment, canSendInfo}">
+    <stripe-payment v-if="isSetPayment" goal="createPlanSubscription" :return-url="$router.resolve({name: 'dhPayments'}).href">
+      <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
         <div class="form-buttons">
-          <button :class="{ loading: paymentRequest }" :disabled="!canSendInfo" @click="setPayInfo(submitPayment)">Save payment info</button>
+          <button :class="{ loading: paymentRequest }" :disabled="!canSendInfo" @click="setPayInfo(submitPayment, authorizeAmount)">Save payment info</button>
           <button class="cancel" @click="isSetPayment = false" >Cancel</button>
         </div>
       </template>
@@ -73,10 +73,11 @@ export default {
   },
 
   methods: {
-    setPayInfo(submitPayment) {
+    setPayInfo(submitPayment, authorizeAmount) {
+      const { $router } = this
       this.paymentRequest = true
 
-      submitPayment(97000, (error) => {
+      submitPayment(authorizeAmount * 100, (error) => {
         this.paymentRequest = false;
 
         if (error) return;
@@ -88,20 +89,18 @@ export default {
 
   created() {
     const { dhAccount } = this;
+
     axios({
       url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
     }).then(({ data }) => {
-      const { sources } = data.response.body;
-      const source = sources[sources.length - 1];
+      const { activeSource } = data.response.body;
 
       this.loading = false;
-      console.log(source);
 
+      if (!activeSource) return;
 
-      if (!source) return;
-
-      Object.assign(this.owner, source);
-      this.cardInfo = source.card;
+      Object.assign(this.owner, activeSource.owner);
+      this.cardInfo = activeSource.card || activeSource.three_d_secure;
     });
   }
 };

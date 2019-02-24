@@ -63,7 +63,7 @@
             Joined: <strong>Aug 1st, 2018</strong>
           </div>
           <button>Cancel account</button>
-          <button>Delete account</button>
+          <!-- <button>Delete account</button> -->
         </div>
     </el-dialog>
   </div>
