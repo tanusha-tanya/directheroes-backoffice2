@@ -17,12 +17,18 @@
         <div class="pre-loader"></div>
       </div>
       <div class="container-body" v-else>
-        <div class="purchase-info" v-if="cardInfo">
+        <div class="purchased-state" v-if="purchased">
+          You have purchased an extra quota. <router-link :to="{ name: 'accounts'}">Go to accounts</router-link> to add Instagram account.
+        </div>
+        <div class="error-state" v-else-if="error">
+          {{ error }}
+        </div>
+        <div class="purchase-info" v-else-if="cardInfo">
           <div class="card-info">
             {{ cardInfo.brand }} *{{ cardInfo.last4 }}<br/>
             Expires on {{ cardInfo.exp_month }}/{{ cardInfo.exp_year }}
           </div>
-          <button>Purchase</button>
+          <button @click="buyExtraAccount" :class="{loading: purchasing}">Purchase</button>
         </div>
         <div class="purchase-info" v-else>
           No one card attached to service
@@ -32,6 +38,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -41,11 +48,40 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      isSetPayment: false,
       loading: true,
       cardInfo: null,
+      purchasing: false,
+      error: null,
+      purchased: false,
     }
   },
+
+  methods: {
+    buyExtraAccount() {
+      this.error = false;
+      this.purchased = false;
+      this.purchasing = true;
+
+      axios({
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/add-subscription`,
+        method: 'post',
+        data: {
+          type: 'extraAccount',
+          quantity: 1
+        }
+      }).then(({ data }) => {
+        const { success } = data.request;
+        this.purchasing = false;
+
+        if (success) {
+          this.purchased = true;
+        } else {
+          this.error = "Error  ddddd";
+        }
+      })
+    }
+  },
+
   created() {
     axios({
       url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
@@ -108,6 +144,17 @@ export default {
         font-size: 16px;
         padding: 14px 50px;
       }
+    }
+
+    .purchased-state, .error-state {
+      padding-bottom: 22px;
+      border-bottom: 1px solid #C6C6C6;
+      margin-bottom: 19px;
+      line-height: 20px;
+    }
+
+    .error-state {
+      color: #ff0048;
     }
 
     .card-info {
