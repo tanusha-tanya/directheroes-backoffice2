@@ -9,9 +9,10 @@
     <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
     <el-option class="story" label="Story Mention" value="storyMention">Story Mention</el-option>
     <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
+    <el-option class="story" label="Media Share" value="mediaShare">Media Share</el-option>
     <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
   </el-select>
-  <template v-if="['storyMention', 'storyShare', 'any'].includes(element.value.messageType)">
+  <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
     <keywords v-model="element.value.keywords" v-else></keywords>
   </template>
@@ -53,6 +54,12 @@ export default {
       }
 
       &.storyMention .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
+      &.mediaShare .el-input--suffix:before {
         background-image: url(../../assets/svg/bubble-w.svg);
         height: 11px;
         top: 10px;
