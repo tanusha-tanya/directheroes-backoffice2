@@ -25,14 +25,14 @@
 </div>
 </template>
 <script>
-import messageConditionMultiple from "./messageConditionMultiple.vue";
+import messageTextConditionMultiple from "./messageTextConditionMultiple.vue";
 import keywords from "../keywords.vue";
 
 export default {
   props:['element', 'mode'],
 
   components: {
-    conditionList: messageConditionMultiple,
+    conditionList: messageTextConditionMultiple,
     keywords
   }
 }

@@ -59,7 +59,7 @@ import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
+import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
 import elementWarning from '../elementWarning.vue'
 
 export default {
@@ -139,12 +139,12 @@ export default {
       element.id = (new ObjectId).toString();
 
       this.dragged = false;
-      
+
       if (listElement) {
         broadcastStep.elements.splice(broadcastStep.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
       } else {
         broadcastStep.elements.push({ ...element, displaySettings: { collapsed: false }});
-      } 
+      }
     },
 
     handleMouseDown(position) {

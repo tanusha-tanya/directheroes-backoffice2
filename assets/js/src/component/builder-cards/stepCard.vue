@@ -70,7 +70,8 @@ import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
+import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
+import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
 import elementWarning from '../elementWarning.vue'
 
 export default {
@@ -81,12 +82,14 @@ export default {
         sendImageAction: 'Image',
         basicDelay: 'Delay',
         messageTextConditionMultiple: 'List',
+        messageConditionMultiple: 'Trigger List',
         messageCondition: 'Trigger'
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
         messageCondition,
+        messageConditionMultiple,
         messageTextConditionMultiple,
         basicDelay
       },

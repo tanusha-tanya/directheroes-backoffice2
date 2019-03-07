@@ -59,7 +59,7 @@ export default {
           }
         },
         {
-          name: 'Triggers',
+          name: 'Trigger',
           svg: flash,
           template: {
             type: 'messageCondition',
@@ -67,6 +67,16 @@ export default {
               keywords: [],
               messageType: 'storyShare',
               link: ''
+            }
+          }
+        },
+        {
+          name: 'Trigger List',
+          svg: flash,
+          template: {
+            type: 'messageConditionMultiple',
+            value: {
+              conditionList:[]
             }
           }
         },
@@ -105,9 +115,9 @@ export default {
 
   methods: {
     visible(element) {
-      if (this.dhAccount.labs) return true;
-      
-      return !['Triggers'].includes(element.name)
+      if (this.dhAccount.labs || true) return true;
+
+      return !['Trigger', 'Trigger List'].includes(element.name)
     }
   }
 }
