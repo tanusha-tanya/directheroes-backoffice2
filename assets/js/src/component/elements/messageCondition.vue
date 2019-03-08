@@ -4,7 +4,7 @@
     :class="[{'campaign-type': true}, element.value.messageType]"
     v-model="element.value.messageType"
     popper-class="campaign-type-dropdown"
-  >
+    >
     <el-option class="ad-reply" label="Ad Reply" value="adReply">Ad Reply</el-option>
     <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
     <el-option class="story" label="Story Mention" value="storyMention">Story Mention</el-option>
@@ -14,13 +14,17 @@
   </el-select>
   <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+    <keywords v-model="element.value.keywords" v-else>
+      <slot></slot>
+    </keywords>
   </template>
   <template v-if="['postShare', 'adReply'].includes(element.value.messageType)">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
     <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+    <keywords v-model="element.value.keywords" v-else>
+      <slot></slot>
+    </keywords>
   </template>
 </div>
 </template>

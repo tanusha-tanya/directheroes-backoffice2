@@ -12,6 +12,7 @@
       @keydown.native="keywordsKeydown"
     >
     </el-select>
+    <slot></slot>
     <div v-if="tagPrefix" class="tag-item" @click="tagNameSet">#{{tagPrefix}}<span v-if="tagName">_</span>{{tagName}}</div>
     <el-dialog
       :visible.sync="isActionRename"

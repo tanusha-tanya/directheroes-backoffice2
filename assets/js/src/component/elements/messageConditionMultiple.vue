@@ -2,7 +2,11 @@
   <div class="list-conditions" :ref="element.id">
     <div class="condition-item" v-for="item in element.value.conditionList" :key="item.id">
       <div class="remove-item" @click="deleteKeywords(item)">&times</div>
-      <message-condition :element="{value: item}"></message-condition>
+      <message-condition :element="{value: item}">
+        <div class="list-condition-container" :ref="item.id">
+          <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
+        </div>
+      </message-condition>
     </div>
     <div class="add-condition" @click="addMessageCondition">+</div>
   </div>
@@ -10,13 +14,15 @@
 <script>
 import Vue from 'vue'
 import messageCondition from './messageCondition.vue'
+import arrowBorn from '../arrowBorn.vue'
 import ObjectId from '../../utils/ObjectId'
 
 export default {
   props:['element', 'tag'],
 
   components: {
-    messageCondition
+    messageCondition,
+    arrowBorn,
   },
 
   methods: {
@@ -36,6 +42,18 @@ export default {
       const { conditionList } = this.element.value;
 
       conditionList.splice(conditionList.indexOf(keywords), 1)
+    },
+
+    connectArrow(item, value) {
+      Vue.set(item, 'onMatch', {
+        type: 'goToStep',
+        id: (new ObjectId).toString(),
+        value: {
+          stepId: value.child
+        }
+      })
+
+      this.$store.commit('set', {path: 'arrowConnectData', value: null});
     }
   },
 
@@ -47,6 +65,23 @@ export default {
 
   .condition-item {
     position: relative;
+    margin-bottom: 10px;
+
+    .keywords {
+      position: relative;
+
+      .list-condition-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    }
+
+    .message-condition {
+      padding: 0;
+    }
 
     .remove-item {
       opacity: 0;
@@ -64,8 +99,8 @@ export default {
       background-color: #fff;
       border: 1px solid #ddd;
       line-height: 10px;
-      right: -3px;
-      top: -3px;
+      left: calc(50% - 8px);
+      top: -8px;
       cursor: pointer;
 
       &:hover {
