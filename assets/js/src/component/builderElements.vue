@@ -115,7 +115,7 @@ export default {
 
   methods: {
     visible(element) {
-      if (this.dhAccount.labs || true) return true;
+      if (this.dhAccount.labs) return true;
 
       return !['Trigger', 'Trigger List'].includes(element.name)
     }
