@@ -59,7 +59,7 @@ export default {
       isSetPayment: false,
       loading: true,
       paymentRequest: false,
-      cardInfo: null,
+      cardInfo: {},
       owner: {
         address: {
 
@@ -89,6 +89,10 @@ export default {
 
   created() {
     const { dhAccount } = this;
+
+    if (dhAccount && !dhAccount.subscription.isActive) {
+      this.isSetPayment = true;
+    }
 
     axios({
       url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`

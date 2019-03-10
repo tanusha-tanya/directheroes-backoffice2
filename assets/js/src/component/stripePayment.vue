@@ -81,6 +81,7 @@ export default {
           state: ""
         }
       },
+      clientSecret: null,
       stripe: null,
       errors: {},
       globalError: null,
@@ -113,7 +114,9 @@ export default {
 
     stripeElementsInit() {
       const { errorHandler } = this;
-      const stripe = Stripe(this.publicKey);
+      const stripe = Stripe(this.publicKey, {
+        betas: ['payment_intent_beta_3']
+      });
       const elements = stripe.elements();
       const cardNumber = elements.create("cardNumber");
       const cardExpiry = elements.create("cardExpiry");
@@ -137,67 +140,82 @@ export default {
         stripe,
         cardNumber,
         owner,
-        attachSourceTo,
+        clientSecret,
+        // attachSourceTo,
         setPaymentSource,
-        threeDSecure
+        // threeDSecure
       } = this;
 
-      stripe
-        .createSource(cardNumber, {
+      stripe.handleCardPayment(clientSecret, cardNumber,{
+        source_data: {
           owner
-        })
-        .then(result => {
-          const { source, error } = result;
+        }
+      }).then(function(result) {
+        if (result.error) {
+          // Display error.message in your UI.
+        } else {
+          setPaymentSource(result.paymentIntent, callback);
+          // The payment has succeeded. Display a success message.
+        }
+      });
 
-          if (error) {
-            return callback(error)
-          }
+      // stripe
+      //   .createSource(cardNumber, {
+      //     owner
+      //   })
+      //   .then(result => {
+      //     const { source, error } = result;
 
-          if (
-            ["required", "recommented"].includes(source.card.three_d_secure)
-          ) {
-            attachSourceTo(source.id).then(({ data }) => {
-              const { customer, three_d_s_return_url } = data.response.body;
+      //     if (error) {
+      //       return callback(error)
+      //     }
 
-              threeDSecure(source.id, customer.id, three_d_s_return_url, price);
-            });
-          } else {
-            setPaymentSource(source.id, callback);
-          }
-        });
+      //     if (
+      //       ["required", "recommented"].includes(source.card.three_d_secure)
+      //     ) {
+      //       attachSourceTo(source.id).then(({ data }) => {
+      //         const { customer, three_d_s_return_url } = data.response.body;
+
+      //         threeDSecure(source.id, customer.id, three_d_s_return_url, price);
+      //       });
+      //     } else {
+      //       setPaymentSource(source.id, callback);
+      //     }
+      //   });
     },
 
-    threeDSecure(sourceId, customer, return_url, price) {
-      const { stripe } = this;
+    // threeDSecure(sourceId, customer, return_url, price) {
+    //   const { stripe } = this;
 
-      stripe
-        .createSource({
-          type: "three_d_secure",
-          amount: price,
-          three_d_secure: {
-            card: sourceId,
-            customer
-          },
-          currency: "usd",
-          redirect: {
-            return_url
-          }
-        })
-        .then(result => {
-          const { source } = result;
+    //   stripe
+    //     .createSource({
+    //       type: "three_d_secure",
+    //       amount: price,
+    //       three_d_secure: {
+    //         card: sourceId,
+    //         customer
+    //       },
+    //       currency: "usd",
+    //       redirect: {
+    //         return_url
+    //       }
+    //     })
+    //     .then(result => {
+    //       const { source } = result;
 
-          window.location.href = source.redirect.url;
-        });
-    },
+    //       window.location.href = source.redirect.url;
+    //     });
+    // },
 
-    setPaymentSource(sourceId, callback) {
+    setPaymentSource({ source, id }, callback) {
       const { sessionId } = this;
 
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/use-source`,
         method: "post",
         data: {
-          sourceId,
+          sourceId: source,
+          paymentIntentId: id,
           sessionId
         }
       }).then(({ data }) => {
@@ -226,12 +244,13 @@ export default {
       url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/init-add-card`,
       params: { goal, return_url: encodeURIComponent(returnUrl) }
     }).then(({ data }) => {
-      const { stripePk, previousSourceOwner, sessionId, authorizeAmount, chargeAmount } = data.response.body;
+      const { stripePk, previousSourceOwner, paymentIntent, sessionId, authorizeAmount, chargeAmount } = data.response.body;
 
       this.publicKey = stripePk;
       this.sessionId = sessionId;
       this.authorizeAmount = authorizeAmount;
       this.chargeAmount = chargeAmount;
+      this.clientSecret = paymentIntent.clientSecret;
 
       if (!previousSourceOwner) return;
 
