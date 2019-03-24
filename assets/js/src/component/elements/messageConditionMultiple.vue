@@ -74,7 +74,7 @@ export default {
       const { conditionList } =  this.element.value;
       const nextCondition = conditionList[index + 1];
 
-      return nextCondition && nextCondition.messageType !== 'any' && item.messageType === 'any';
+      return item.messageType === 'any' && (!nextCondition || nextCondition.messageType !== 'any');
     },
 
     canHasAny(item, index) {
