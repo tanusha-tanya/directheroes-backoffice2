@@ -196,6 +196,7 @@ export default {
     setArrowConnect() {
       const { $store, step } = this;
       const { arrows } = $store.state;
+      const parentId = arrows[arrows.length - 1].parent;
 
       $store.commit('set', {
         path: 'arrowConnectData',
@@ -204,6 +205,8 @@ export default {
           child: step.id
         }
       })
+
+      $store.state.arrows.push({parent: parentId, child: step.id });
     },
 
     connectArrow(value) {

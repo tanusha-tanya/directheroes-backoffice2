@@ -1,14 +1,15 @@
 <template>
   <div class="list-conditions" :ref="element.id">
-    <div class="condition-item" v-for="item in element.value.conditionList" :key="item.id">
-      <div class="remove-item" @click="deleteKeywords(item)">&times</div>
-      <message-condition :element="{value: item}">
+    <div class="condition-item" v-for="(item, index) in element.value.conditionList" :key="item.id">
+      <div class="remove-item" @click="deleteMessageCondition(item)">&times</div>
+      <message-condition :element="{value: item}" :hide-select="notAnyFirst(item, index)" :can-has-any="canHasAny(item, index)">
         <div class="list-condition-container" :ref="item.id">
           <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
         </div>
       </message-condition>
+      <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index)">+</div>
     </div>
-    <div class="add-condition" @click="addMessageCondition">+</div>
+    <div class="add-condition" @click="addMessageCondition(null)">+</div>
   </div>
 </template>
 <script>
@@ -20,20 +21,38 @@ import ObjectId from '../../utils/ObjectId'
 export default {
   props:['element', 'tag'],
 
+  computed: {
+    hasAny() {
+      return this.element.value.conditionList.some(item => item.messageType === 'any')
+    }
+  },
+
   components: {
     messageCondition,
     arrowBorn,
   },
 
   methods: {
+    addListCondition(index) {
+      const { element, hasAny } = this;
+      const ObjId = new ObjectId;
+
+      element.value.conditionList.splice(index + 1, 0, {
+        id: ObjId.toString(),
+        keywords: [],
+        messageType: 'any',
+        link: ''
+      })
+    },
+
     addMessageCondition() {
-      const { element } = this;
+      const { element, hasAny } = this;
       const ObjId = new ObjectId;
 
       element.value.conditionList.push({
         id: ObjId.toString(),
         keywords: [],
-        messageType: 'storyShare',
+        messageType: hasAny ? 'storyShare' : 'any',
         link: ''
       })
     },
@@ -42,6 +61,29 @@ export default {
       const { conditionList } = this.element.value;
 
       conditionList.splice(conditionList.indexOf(keywords), 1)
+    },
+
+    notAnyFirst(item, index) {
+      const { conditionList } =  this.element.value;
+      const prevCondition = conditionList[index - 1];
+
+      return prevCondition && prevCondition.messageType === 'any' && item.messageType === 'any';
+    },
+
+    isLastAny(item, index) {
+      const { conditionList } =  this.element.value;
+      const nextCondition = conditionList[index + 1];
+
+      return nextCondition && nextCondition.messageType !== 'any' && item.messageType === 'any';
+    },
+
+    canHasAny(item, index) {
+      const { hasAny } = this;
+      const { conditionList } =  this.element.value;
+      const nextCondition = conditionList[index + 1];
+      const prevCondition = conditionList[index - 1];
+
+      return !hasAny || item.messageType === 'any' || (prevCondition && prevCondition.messageType === 'any') || (nextCondition && nextCondition.messageType === 'any')
     },
 
     connectArrow(item, value) {
@@ -69,6 +111,10 @@ export default {
 
     .keywords {
       position: relative;
+
+      .el-select {
+        z-index: 5;
+      }
 
       .list-condition-container {
         position: absolute;
@@ -115,7 +161,11 @@ export default {
     }
   }
 
-  .add-condition {
+  .add-list {
+    margin-top: 5px;
+  }
+
+  .add-condition, .add-list {
     width: 100%;
     color: #DDDDDD;
     border: 1px solid #DDDDDD;
