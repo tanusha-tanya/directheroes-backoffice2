@@ -96,6 +96,9 @@ export default {
       padding: 0 7px;
       line-height: 9px;
       cursor: pointer;
+      position: relative;
+      z-index: 10;
+
       &:hover {
         color:#2A3E98;
       }

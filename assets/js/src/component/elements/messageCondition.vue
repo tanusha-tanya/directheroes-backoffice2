@@ -14,7 +14,12 @@
     <el-option class="story-mention" label="List" value="any" v-if="canHasAny">List</el-option>
   </el-select>
   <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
-    <keywords v-model="element.value.keywords">
+    <keywords
+      v-model="element.value.keywords"
+      :tag-prefix="tagPrefix"
+      :tag-name="tagName"
+      @set-tag-name="$emit('set-tag-name', $event)"
+      >
       <slot></slot>
     </keywords>
   </template>
@@ -31,7 +36,7 @@
 import keywords from "../keywords.vue";
 
 export default {
-  props:['element', 'mode', 'hideSelect', 'canHasAny'],
+  props:['element', 'mode', 'hideSelect', 'canHasAny', 'tagName', 'tagPrefix'],
 
   components: {
     keywords

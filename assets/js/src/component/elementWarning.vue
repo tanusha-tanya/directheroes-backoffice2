@@ -5,13 +5,13 @@
 </template>
 <script>
 export default {
-  
+
   computed: {
     warning() {
       const { element } = this;
       let warning = null;
 
-      switch(element.type) {
+      switch(element.type || element.messageType) {
         case "sendImageAction":
           if (!element.value) {
             warning = 'Image not uploaded'
@@ -22,13 +22,10 @@ export default {
             warning = 'Enter text'
           }
         break;
-        case "messageTextConditionMultiple":
-          const { conditionList } = element.value;
-    
-          
-          if (conditionList.filter(condition => !condition.keywords.length).length > 1) {
-            warning = 'There can only be one empty element in a list'
-          } else if (conditionList.some(condition => !condition.onMatch)) {
+        case "any":
+          const { onMatch } = element;
+
+          if (!onMatch) {
             warning = 'List element has no target step'
           }
         break;

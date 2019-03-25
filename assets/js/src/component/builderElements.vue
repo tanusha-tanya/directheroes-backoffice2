@@ -78,16 +78,6 @@ export default {
             }
           }
         },
-        {
-          name: 'List',
-          svg: navicon,
-          template: {
-            type: 'messageTextConditionMultiple',
-            value: {
-              conditionList:[]
-            }
-          }
-        },
         // {
         //   name: 'Video',
         //   svg: socialYoutube,

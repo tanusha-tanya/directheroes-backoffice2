@@ -1,35 +1,78 @@
 <template>
   <div class="list-conditions" :ref="element.id">
     <div class="condition-item" v-for="(item, index) in element.value.conditionList" :key="item.id">
-      <div class="remove-item" @click="deleteMessageCondition(item)">&times</div>
-      <message-condition :element="{value: item}" :hide-select="notAnyFirst(item, index)" :can-has-any="canHasAny(item, index)">
+      <div class="remove-item" @click="triggerToDelete = item" >&times</div>
+      <message-condition
+        :element="{value: item}"
+        :hide-select="notAnyFirst(item, index)"
+        :can-has-any="canHasAny(item, index)"
+        :tag-prefix="tagPrefix(item)"
+        :tag-name="item.name"
+        @set-tag-name="setTagName(item, $event)"
+        >
+        <element-warning :element="item"></element-warning>
         <div class="list-condition-container" :ref="item.id">
           <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
         </div>
       </message-condition>
-      <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index)">+</div>
+      <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index) && ! hasEmptyList">+ Click to add list item</div>
     </div>
-    <div class="add-condition" @click="addMessageCondition(null)">+</div>
+    <div class="add-condition" @click="addMessageCondition(null)">+ Click to add condition</div>
+    <confirm-dialog
+        v-model="toDeleteTrigger"
+        title="Delete trigger"
+        message="Are you sure you want to delete trugger?"
+        @success="deleteMessageCondition"
+        >
+      </confirm-dialog>
   </div>
 </template>
 <script>
 import Vue from 'vue'
 import messageCondition from './messageCondition.vue'
 import arrowBorn from '../arrowBorn.vue'
+import elementWarning from '../elementWarning.vue'
 import ObjectId from '../../utils/ObjectId'
+import confirmDialog from '../confirmDialog.vue'
 
 export default {
+  data() {
+    return {
+      triggerToDelete: null,
+    }
+  },
+
   props:['element', 'tag'],
 
   computed: {
+    anyItems() {
+      return this.element.value.conditionList.filter(item => item.messageType === 'any')
+    },
+
     hasAny() {
-      return this.element.value.conditionList.some(item => item.messageType === 'any')
+      return Boolean(this.anyItems.length)
+    },
+
+    hasEmptyList() {
+      return this.anyItems.some(item => !item.keywords.length)
+    },
+
+    toDeleteTrigger: {
+      get() {
+        return Boolean(this.triggerToDelete)
+      },
+
+      set(value) {
+        this.triggerToDelete = value;
+      }
     }
   },
 
   components: {
     messageCondition,
     arrowBorn,
+    elementWarning,
+    confirmDialog,
   },
 
   methods: {
@@ -57,10 +100,11 @@ export default {
       })
     },
 
-    deleteMessageCondition(keywords) {
+    deleteMessageCondition() {
       const { conditionList } = this.element.value;
 
-      conditionList.splice(conditionList.indexOf(keywords), 1)
+      conditionList.splice(conditionList.indexOf(this.triggerToDelete), 1);
+      this.toDeleteTrigger = null;
     },
 
     notAnyFirst(item, index) {
@@ -96,7 +140,27 @@ export default {
       })
 
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
-    }
+    },
+
+    setTagName(item, value) {
+      console.log(item, value);
+
+      Vue.set(item, 'name', value)
+    },
+
+    tagPrefix(item){
+      const index = this.anyItems.indexOf(item)
+      const { tag } = this;
+      const tagPrefix = `${ tag }_${ index + 1 }`
+
+      if (item.messageType !== 'any') return;
+
+      if (tag && (item.namePrefix != tagPrefix)) {
+        Vue.set(item, 'namePrefix', tagPrefix);
+      }
+
+      return tag ? item.namePrefix : '';
+    },
   },
 
 }
@@ -114,6 +178,7 @@ export default {
 
       .el-select {
         z-index: 5;
+        width: 100%;
       }
 
       .list-condition-container {
@@ -122,6 +187,13 @@ export default {
         left: 0;
         right: 0;
         bottom: 0;
+      }
+
+      .element-warning {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 10;
       }
     }
 
@@ -140,7 +212,7 @@ export default {
       width: 15px;
       font-size: 16px;
       position: absolute;
-      z-index: 2;
+      z-index: 10;
       border-radius: 7px;
       background-color: #fff;
       border: 1px solid #ddd;
@@ -172,7 +244,8 @@ export default {
     border-radius: 4px;
     text-align: center;
     line-height: normal;
-    font-size: 24px;
+    font-size: 16px;
+    padding: 6px;
   }
 }
 </style>
