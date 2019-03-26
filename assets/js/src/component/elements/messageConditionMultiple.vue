@@ -143,8 +143,6 @@ export default {
     },
 
     setTagName(item, value) {
-      console.log(item, value);
-
       Vue.set(item, 'name', value)
     },
 

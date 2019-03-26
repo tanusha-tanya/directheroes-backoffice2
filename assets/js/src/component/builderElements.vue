@@ -14,7 +14,6 @@
       class="builder-element"
       v-for="element in elements"
       :key="element.name"
-      v-if="visible(element)"
     >
       <img :src="element.svg"/>
       <div class="builder-element-title">{{element.name}}</div>
@@ -91,13 +90,13 @@ export default {
 
   props:['type'],
 
-  methods: {
-    visible(element) {
-      if (this.dhAccount.labs) return true;
+  // methods: {
+  //   visible(element) {
+  //     if (this.dhAccount.labs) return true;
 
-      return !['Triggers'].includes(element.name)
-    }
-  }
+  //     return !['Triggers'].includes(element.name)
+  //   }
+  // }
 }
 </script>
 <style lang="scss">
