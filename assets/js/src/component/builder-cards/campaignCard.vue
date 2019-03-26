@@ -5,7 +5,7 @@
         <builder-card-dialogs :step="campaign" :short="true"></builder-card-dialogs>
       </template>
       <template slot="body">
-        <message-condition-multiple :element="campaignData" mode="list-conditions"></message-condition-multiple>
+        <message-condition-multiple :element="campaignData" :triggers="triggersList"></message-condition-multiple>
       </template>
     </builder-card>
 </template>
@@ -24,6 +24,12 @@ export default {
     campaignData() {
       return this.campaignStep.elements.find(element => element.type === 'messageConditionMultiple')
     },
+
+    triggersList() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
+
+      return messageTypes;
+    }
   },
 
   components: {

@@ -42,7 +42,7 @@
           <div class="remove-element" @click="elementRemove(triggerElement)">&times</div>
         </div>
         <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
-          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag"></component>
+          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag" :triggers="triggersList"></component>
         </div>
       </div>
       <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!triggerElement && !goToStepElement"></arrow-born>
@@ -130,6 +130,12 @@ export default {
       const { elements } = this.step;
 
       return elements.find(element => element.type === 'goToStep')
+    },
+
+    triggersList() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+
+      return messageTypes;
     },
 
     elementList() {

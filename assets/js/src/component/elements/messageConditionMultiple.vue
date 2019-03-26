@@ -8,6 +8,7 @@
         :can-has-any="canHasAny(item, index)"
         :tag-prefix="tagPrefix(item)"
         :tag-name="item.name"
+        :triggers="triggers"
         @set-tag-name="setTagName(item, $event)"
         >
         <element-warning :element="item"></element-warning>
@@ -42,7 +43,7 @@ export default {
     }
   },
 
-  props:['element', 'tag'],
+  props:['element', 'tag', 'triggers'],
 
   computed: {
     anyItems() {
@@ -89,13 +90,13 @@ export default {
     },
 
     addMessageCondition() {
-      const { element, hasAny } = this;
+      const { element, hasAny, triggers } = this;
       const ObjId = new ObjectId;
 
       element.value.conditionList.push({
         id: ObjId.toString(),
         keywords: [],
-        messageType: hasAny ? 'storyShare' : 'any',
+        messageType: hasAny ? triggers.find(trigger => trigger !== 'any') : 'any',
         link: ''
       })
     },

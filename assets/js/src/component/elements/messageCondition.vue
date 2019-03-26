@@ -6,12 +6,12 @@
     popper-class="campaign-type-dropdown"
     v-if="!hideSelect"
     >
-    <el-option class="ad-reply" label="Ad Reply" value="adReply">Ad Reply</el-option>
-    <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
-    <el-option class="story" label="Story Mention" value="storyMention">Story Mention</el-option>
-    <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
-    <el-option class="story" label="Media Share" value="mediaShare">Media Share</el-option>
-    <el-option class="story-mention" label="List" value="any" v-if="canHasAny">List</el-option>
+    <el-option class="ad-reply" label="Ad Reply" value="adReply" v-if="availableTriggers.includes('adReply')">Ad Reply</el-option>
+    <el-option class="story" label="Story Share" value="storyShare" v-if="availableTriggers.includes('storyShare')">Story Share</el-option>
+    <el-option class="story" label="Story Mention" value="storyMention" v-if="availableTriggers.includes('storyMention')">Story Mention</el-option>
+    <el-option class="post-share" label="Post Share" value="postShare" v-if="availableTriggers.includes('postShare')">Post Share</el-option>
+    <el-option class="story" label="Media Share" value="mediaShare" v-if="availableTriggers.includes('mediaShare')">Media Share</el-option>
+    <el-option class="story-mention" label="List" value="any" v-if="canHasAny && availableTriggers.includes('any')">List</el-option>
   </el-select>
   <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
     <keywords
@@ -36,10 +36,18 @@
 import keywords from "../keywords.vue";
 
 export default {
-  props:['element', 'mode', 'hideSelect', 'canHasAny', 'tagName', 'tagPrefix'],
+  props:['element', 'mode', 'hideSelect', 'canHasAny', 'tagName', 'tagPrefix', 'triggers'],
 
   components: {
     keywords
+  },
+
+  computed: {
+    availableTriggers() {
+      const allTriggers = ['adReply', 'storyShare', 'storyMention', 'postShare', 'mediaShare', 'any']
+
+      return this.triggers || allTriggers;
+    }
   }
 }
 </script>
