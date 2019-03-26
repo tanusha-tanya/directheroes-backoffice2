@@ -2,7 +2,7 @@
   <div class="keywords">
     <el-select
       :value="value"
-      placeholder="Enter messages"
+      placeholder="Matches any text, click to edit"
       popper-class="keywords-dropdown"
       multiple
       filterable
