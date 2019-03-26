@@ -141,6 +141,10 @@ export default {
 
     .el-input.is-focus .el-input__inner {
       border-color: #c0c4cc;
+
+      &::placeholder {
+        opacity: 0;
+      }
     }
 
     .el-input__suffix {
