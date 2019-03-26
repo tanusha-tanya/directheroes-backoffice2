@@ -23,9 +23,11 @@ export default {
           }
         break;
         case "any":
-          const { onMatch } = element;
+          const { onMatch, emptyMoreOne } = element;
 
-          if (!onMatch) {
+          if (emptyMoreOne) {
+            warning = 'There can only be one empty element in a list'
+          } else if (!onMatch) {
             warning = 'List element has no target step'
           }
         break;

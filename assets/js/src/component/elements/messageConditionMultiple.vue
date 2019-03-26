@@ -11,7 +11,7 @@
         :triggers="triggers"
         @set-tag-name="setTagName(item, $event)"
         >
-        <element-warning :element="item"></element-warning>
+        <element-warning :element="Object.assign({}, item, { emptyMoreOne })"></element-warning>
         <div class="list-condition-container" :ref="item.id">
           <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
         </div>
@@ -56,6 +56,10 @@ export default {
 
     hasEmptyList() {
       return this.anyItems.some(item => !item.keywords.length)
+    },
+
+    emptyMoreOne() {
+      return this.anyItems.filter(item => !item.keywords.length).length > 1;
     },
 
     toDeleteTrigger: {
