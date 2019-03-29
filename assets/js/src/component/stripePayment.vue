@@ -88,7 +88,7 @@ export default {
     }
   },
 
-  props:['goal', 'returnUrl'],
+  props:['goal'],
 
   computed: {
     hasError() {
@@ -141,9 +141,7 @@ export default {
         cardNumber,
         owner,
         clientSecret,
-        // attachSourceTo,
         setPaymentSource,
-        // threeDSecure
       } = this;
 
       stripe.handleCardPayment(clientSecret, cardNumber,{
@@ -158,54 +156,8 @@ export default {
           // The payment has succeeded. Display a success message.
         }
       });
-
-      // stripe
-      //   .createSource(cardNumber, {
-      //     owner
-      //   })
-      //   .then(result => {
-      //     const { source, error } = result;
-
-      //     if (error) {
-      //       return callback(error)
-      //     }
-
-      //     if (
-      //       ["required", "recommented"].includes(source.card.three_d_secure)
-      //     ) {
-      //       attachSourceTo(source.id).then(({ data }) => {
-      //         const { customer, three_d_s_return_url } = data.response.body;
-
-      //         threeDSecure(source.id, customer.id, three_d_s_return_url, price);
-      //       });
-      //     } else {
-      //       setPaymentSource(source.id, callback);
-      //     }
-      //   });
     },
 
-    // threeDSecure(sourceId, customer, return_url, price) {
-    //   const { stripe } = this;
-
-    //   stripe
-    //     .createSource({
-    //       type: "three_d_secure",
-    //       amount: price,
-    //       three_d_secure: {
-    //         card: sourceId,
-    //         customer
-    //       },
-    //       currency: "usd",
-    //       redirect: {
-    //         return_url
-    //       }
-    //     })
-    //     .then(result => {
-    //       const { source } = result;
-
-    //       window.location.href = source.redirect.url;
-    //     });
-    // },
 
     setPaymentSource({ source, id }, callback) {
       const { sessionId } = this;
