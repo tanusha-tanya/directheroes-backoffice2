@@ -39,7 +39,7 @@
             <element-warning :element="triggerElement"></element-warning>
             <div class="collapse-toggle" >{{ triggerElement.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
-          <div class="remove-element" @click="elementRemove(triggerElement)">&times</div>
+          <div class="remove-element" @click="elementToDelete = triggerElement">&times</div>
         </div>
         <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
           <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag" :triggers="triggersList"></component>
@@ -71,7 +71,6 @@ import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
 import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
-import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
 import elementWarning from '../elementWarning.vue'
 
 export default {

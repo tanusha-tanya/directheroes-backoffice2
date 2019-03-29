@@ -18,7 +18,7 @@
             <element-warning :element="element"></element-warning>
             <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
-          <div class="remove-element" @click="elementRemove(element)">&times</div>
+          <div class="remove-element" @click="elementToDelete = element">&times</div>
         </div>
         <div class="element-body" v-if="!element.displaySettings.collapsed">
           <component :is="elementComponents[element.type]" :element="element"></component>
@@ -30,20 +30,27 @@
         @dragenter="dragEnter"
         @dragleave="dragLeave"
         @drop="dropHandler"
-      >+</component>
-      <div class="element-container" v-if="listElement">
-        <div class="element-title" :ref="listElement.id">
-          <span @click="listElement.displaySettings.collapsed = !listElement.displaySettings.collapsed">
-            <div class="element-name">{{elementsNames[listElement.type]}}</div>
-            <element-warning :element="listElement"></element-warning>
-            <div class="collapse-toggle" >{{ listElement.displaySettings.collapsed ? '+' : '-'}}</div>
+      >Drop elements here</component>
+      <div class="element-container" v-if="triggerElement">
+        <div class="element-title" :ref="triggerElement.id">
+          <span @click="triggerElement.displaySettings.collapsed = !triggerElement.displaySettings.collapsed">
+            <div class="element-name">{{elementsNames[triggerElement.type]}}</div>
+            <element-warning :element="triggerElement"></element-warning>
+            <div class="collapse-toggle" >{{ triggerElement.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
-          <div class="remove-element" @click="elementRemove(listElement)">&times</div>
+          <div class="remove-element" @click="elementToDelete = triggerElement">&times</div>
         </div>
-        <div class="element-body" v-if="!listElement.displaySettings.collapsed">
-          <component :is="elementComponents[listElement.type]" :element="listElement"></component>
+        <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
+          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :triggers="triggersList"></component>
         </div>
       </div>
+      <confirm-dialog
+        v-model="toDeleteElement"
+        title="Delete element"
+        message="Are you sure you want to delete element?"
+        @success="elementRemove"
+        >
+      </confirm-dialog>
     </template>
   </builder-card>
 </template>
@@ -52,14 +59,14 @@
 import ObjectId from '../../utils/ObjectId'
 import EventBus from '../../utils/event-bus.js'
 import builderCard from "./builderCard.vue";
-import arrowBorn from '../arrowBorn.vue'
 import { Drop } from 'vue-drag-drop';
+import confirmDialog from '../confirmDialog.vue'
 import builderCardDialogs from '../builderCardDialogs'
 import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageTextConditionMultiple from '../elements/messageTextConditionMultiple.vue'
+import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
 import elementWarning from '../elementWarning.vue'
 
 export default {
@@ -69,17 +76,17 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay',
-        messageTextConditionMultiple: 'List',
-        messageCondition: 'Trigger'
+        messageConditionMultiple: 'Triggers'
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
         messageCondition,
-        messageTextConditionMultiple,
+        messageConditionMultiple,
         basicDelay
       },
       dragged: false,
+      elementToDelete: null,
       Drop
     }
   },
@@ -87,7 +94,8 @@ export default {
   components: {
     builderCard,
     builderCardDialogs,
-    elementWarning
+    elementWarning,
+    confirmDialog,
   },
 
   computed: {
@@ -99,16 +107,32 @@ export default {
       return this.broadcastStep.elements.some(element => ['sendImageAction', 'sendTextAction'].includes(element.type))
     },
 
-    listElement() {
+    triggerElement() {
       const { elements } = this.broadcastStep;
 
-      return elements.find(element => element.type === 'messageTextConditionMultiple')
+      return elements.find(element => element.type === 'messageConditionMultiple')
     },
 
     elementList() {
       const { elements } = this.broadcastStep;
 
-      return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageTextConditionMultiple')
+      return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageConditionMultiple')
+    },
+
+    triggersList() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+
+      return messageTypes;
+    },
+
+    toDeleteElement: {
+      get() {
+        return Boolean(this.elementToDelete)
+      },
+
+      set(value) {
+        this.elementToDelete = value;
+      }
     }
   },
 
@@ -166,7 +190,8 @@ export default {
     elementRemove(element) {
       const { elements } = this.broadcastStep;
 
-      elements.splice(elements.indexOf(element), 1);
+      elements.splice(elements.indexOf(this.elementToDelete), 1);
+      this.toDeleteElement = null;
     },
   }
 }
@@ -197,7 +222,8 @@ export default {
       border-radius: 4px;
       text-align: center;
       line-height: normal;
-      font-size: 24px;
+      font-size: 16px;
+      padding: 6px;
       margin-bottom: 6px;
 
       &.in-drag {
@@ -271,6 +297,19 @@ export default {
 
        &:hover .remove-element{
         opacity: 1;
+      }
+    }
+
+    .arrow-born {
+      position: absolute;
+      z-index: 2;
+      right: -7px;
+      font-size: 15px;
+      top: calc(50% - 11px);
+
+      &:hover {
+        border-color: #666;
+        color: #666;
       }
     }
   }
