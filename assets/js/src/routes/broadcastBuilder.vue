@@ -14,7 +14,7 @@
       <img src="../assets/svg/gear.svg"/>
     </div>
   </div>
-  <flow-builder entry-type="broadcastEntry" :current-entry-item="currentBroadcast" v-if="currentBroadcast" :disabled="isStarted || notStarted"></flow-builder>
+  <flow-builder entry-type="broadcastEntry" :current-entry-item="currentBroadcast" :disabled="currentBroadcast && (isStarted || notStarted)"></flow-builder>
   <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
     <div class="broadcast-settings-area" @click.stop="">
       <div class="broadcast-settings-controls">
@@ -92,6 +92,8 @@ export default {
     },
 
     broadcastStep() {
+      if (!this.currentBroadcast) return;
+
       return this.currentBroadcast.steps.find(step => step.type = 'broadcastEntry')
     },
 
