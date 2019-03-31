@@ -9,26 +9,31 @@
           <label>
             First name
             <input v-model="registerInfo.firstName">
+            <div class="error"></div>
           </label>
           <label>
             Last name
             <input v-model="registerInfo.lastName">
+            <div class="error"></div>
           </label>
         </div>
         <div class="form-row">
           <label>
             E-mail
             <input v-model="registerInfo.email">
+            <div class="error"></div>
           </label>
         </div>
         <div class="form-row">
           <label>
             Password
             <input v-model="registerInfo.password" type="password">
+            <div class="error"></div>
           </label>
           <label>
             Repeat password
             <input v-model="repassword" type="password">
+            <div class="error"></div>
           </label>
         </div>
       </div>
@@ -80,7 +85,9 @@ export default {
         dh.userName = dhAccount.username;
 
         stripePayment.initAddCard().then(() => {
-
+          submitPayment(authorizeAmount * 100, (error) => {
+            log(2423424);
+          });
         });
       })
     }
