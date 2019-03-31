@@ -4,16 +4,77 @@
       <div class="header">
         <div class="logo"></div>
       </div>
+      <div class="account-info">
+        <div class="form-row">
+          <label>
+            First name
+            <input v-model="registerInfo.firstName">
+          </label>
+          <label>
+            Last name
+            <input v-model="registerInfo.lastName">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            E-mail
+            <input v-model="registerInfo.email">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>
+            Password
+            <input v-model="registerInfo.password" type="password">
+          </label>
+          <label>
+            Repeat password
+            <input v-model="repassword" type="password">
+          </label>
+        </div>
+      </div>
       <stripe-payment goal="createPlanSubscription"></stripe-payment>
+      <div class="confirm-button">
+        <button @click="createAccount">
+          Join right now
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import stripePayment from '../component/stripePayment.vue'
 export default {
+  data() {
+    return {
+      registerInfo: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: ''
+      },
+      repassword: ''
+    }
+  },
+
   components: {
     stripePayment
+  },
+
+  methods: {
+    createAccount() {
+      const { registerInfo } = this;
+
+      axios({
+        url: `${dh.apiUrl}/api/1.0.0/signup/create-account`,
+        method: 'post',
+        data: registerInfo
+      }).then(({ data }) => {
+        console.log(data);
+
+      })
+    }
   }
 }
 </script>
@@ -38,6 +99,7 @@ export default {
 
 body {
   margin: 0;
+  font-family: sans-serif;
 }
 
 #app {
@@ -71,6 +133,61 @@ body {
   }
 }
 
+.account-info {
+  padding: 20px;
+  border-bottom: 1px solid #D0D0D0;
+}
+
+input {
+  padding: 5px 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 50px;
+  width: 100%;
+  outline: none;
+  font-size: 20px;
+
+  &::placeholder {
+    color: #d0d0d0;
+    transition: .3s opacity;
+  }
+}
+
+button {
+  background: #6A12CB;
+  border-radius: 100px;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  padding: 10px 20px;
+  // width: 100%;
+  // margin-top: 30px;
+  outline: none;
+
+  &:disabled {
+    opacity: .5;
+    cursor: default;
+  }
+
+  &.loading {
+    color: transparent;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: calc(50% - 10px);
+      left: calc(50% - 10px);
+      width: 15px;
+      height: 15px;
+      border-radius: 100%;
+      border: 3px solid #FFF;
+      border-bottom-color: transparent;
+      animation: rotation  .8s infinite linear;
+    }
+  }
+}
+
 .loading-content {
   padding: 40px;
   text-align: center;
@@ -89,6 +206,39 @@ body {
       background-image: url(~/src/assets/logo.png);
       height: 77px;
       width: 266px;
+    }
+  }
+}
+
+.stripe-payment {
+  border-bottom: 1px solid #D0D0D0;
+}
+
+.confirm-button {
+  padding: 20px;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  margin: 0 -10px 10px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 10px;
+
+    & > div:not(.error) {
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 15px;
+      min-height: 37px;
+    }
+
+    input {
+      padding: 9px;
     }
   }
 }
