@@ -34,13 +34,13 @@
       </div>
       <stripe-payment goal="createPlanSubscription">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
+          <div class="confirm-button">
+            <button @click="createAccount(submitPayment, authorizeAmount)" :disabled="canSendInfo">
+              Join right now
+            </button>
+          </div>
         </template>
       </stripe-payment>
-      <div class="confirm-button">
-        <button @click="createAccount">
-          Join right now
-        </button>
-      </div>
     </div>
   </div>
 </template>
@@ -66,7 +66,7 @@ export default {
   },
 
   methods: {
-    createAccount() {
+    createAccount(submitPayment, authorizeAmount) {
       const { registerInfo } = this;
 
       axios({

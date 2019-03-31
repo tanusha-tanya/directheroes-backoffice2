@@ -200,7 +200,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     const { stripePk, initAddCard } = dh;
 
     if (stripePk) {
