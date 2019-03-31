@@ -50,7 +50,7 @@ export default {
           const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
 
           const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
-          
+
           const endX = (((((isOnLeft && !isOnLeftFull) || isOnRightFull) && endRect.left) || (endRect.left + endRect.width)) - areaRect.left) / scale
 
           const endY = (((endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
@@ -59,17 +59,17 @@ export default {
           const deltaY = (endY - startY) * .5
 
           let path = `M${ startX } ${ startY } `
-     
+
           if (!isOnLeftFull && !isOnRightFull) {
             path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
           } else {
             path += `Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY }`
           }
-      
+
           path += `T${ endX } ${ endY }`
 
           let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
-          
+
           return {
             line: path || '',
             arrow: {
@@ -106,6 +106,7 @@ export default {
 
   watch: {
     '$store.state.newPoint'(newValue) {
+
       if (newValue) {
         this.recalcPathes()
       } else {

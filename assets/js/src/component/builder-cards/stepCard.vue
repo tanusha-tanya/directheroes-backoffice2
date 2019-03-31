@@ -31,22 +31,22 @@
         @dragenter="dragEnter"
         @dragleave="dragLeave"
         @drop="dropHandler"
-      >+</component>
-      <div class="element-container" v-if="listElement">
-        <div class="element-title" :ref="listElement.id">
-          <span @click="listElement.displaySettings.collapsed = !listElement.displaySettings.collapsed">
-            <div class="element-name">{{elementsNames[listElement.type]}}</div>
-            <element-warning :element="listElement"></element-warning>
-            <div class="collapse-toggle" >{{ listElement.displaySettings.collapsed ? '+' : '-'}}</div>
+      >Drop elements here</component>
+      <div class="element-container" v-if="triggerElement">
+        <div class="element-title" :ref="triggerElement.id">
+          <span @click="triggerElement.displaySettings.collapsed = !triggerElement.displaySettings.collapsed">
+            <div class="element-name">{{elementsNames[triggerElement.type]}}</div>
+            <element-warning :element="triggerElement"></element-warning>
+            <div class="collapse-toggle" >{{ triggerElement.displaySettings.collapsed ? '+' : '-'}}</div>
           </span>
-          <div class="remove-element" @click="elementRemove(listElement)">&times</div>
+          <div class="remove-element" @click="elementToDelete = triggerElement">&times</div>
         </div>
-        <div class="element-body" v-if="!listElement.displaySettings.collapsed">
-          <component :is="elementComponents[listElement.type]" :element="listElement" :tag="tag"></component>
+        <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
+          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag" :triggers="triggersList"></component>
         </div>
       </div>
-      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!listElement && !goToStepElement"></arrow-born>
-      <div class="remove-go-to" v-if="!listElement && goToStepElement" @click="removeGoTo">&times</div>
+      <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!triggerElement && !goToStepElement"></arrow-born>
+      <div class="remove-go-to" v-if="!triggerElement && goToStepElement" @click="removeGoTo">&times</div>
       <confirm-dialog
         v-model="toDeleteElement"
         title="Delete element"
@@ -70,7 +70,7 @@ import sendImageAction from '../elements/sendImageAction.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
-import messageTextConditionMultiple from '../elements/messageConditionMultiple.vue'
+import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
 import elementWarning from '../elementWarning.vue'
 
 export default {
@@ -80,14 +80,12 @@ export default {
         sendTextAction: 'Text',
         sendImageAction: 'Image',
         basicDelay: 'Delay',
-        messageTextConditionMultiple: 'List',
-        messageCondition: 'Trigger'
+        messageConditionMultiple: 'Triggers',
       },
       elementComponents: {
         sendImageAction,
         sendTextAction,
-        messageCondition,
-        messageTextConditionMultiple,
+        messageConditionMultiple,
         basicDelay
       },
       dragged: false,
@@ -121,10 +119,10 @@ export default {
       return this.step.id == connectArrow.parent || findChild(this)
     },
 
-    listElement() {
+    triggerElement() {
       const { elements } = this.step;
 
-      return elements.find(element => element.type === 'messageTextConditionMultiple')
+      return elements.find(element => element.type === 'messageConditionMultiple')
     },
 
     goToStepElement() {
@@ -133,10 +131,16 @@ export default {
       return elements.find(element => element.type === 'goToStep')
     },
 
+    triggersList() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+
+      return messageTypes;
+    },
+
     elementList() {
       const { elements } = this.step;
 
-      return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageTextConditionMultiple')
+      return elements.filter(element => (element.type !== 'goToStep') && (element.type != 'basicDelay' || (!element.displaySettings || element.displaySettings.visible != false)) && element.type != 'messageConditionMultiple')
     },
 
     toDeleteElement: {
@@ -154,21 +158,21 @@ export default {
     dragEnter(data) {
       const { goToStepElement } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageConditionMultiple' && goToStepElement) ) return;
       this.dragged = true;
     },
 
     dragLeave(data) {
       const { goToStepElement } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageConditionMultiple' && goToStepElement) ) return;
       this.dragged = false;
     },
 
     dropHandler(data) {
-      const { goToStepElement, listElement, step } = this;
+      const { goToStepElement, triggerElement, step } = this;
 
-      if (data.type == "regular" || (data.type == 'messageTextConditionMultiple' && goToStepElement) ) return;
+      if (data.type == "regular" || (data.type == 'messageConditionMultiple' && goToStepElement) ) return;
 
       const element = JSON.parse(JSON.stringify(data))
 
@@ -176,8 +180,8 @@ export default {
 
       this.dragged = false;
 
-      if (listElement) {
-        step.elements.splice(step.elements.indexOf(listElement), 0, { ...element, displaySettings: { collapsed: false }})
+      if (triggerElement) {
+        step.elements.splice(step.elements.indexOf(triggerElement), 0, { ...element, displaySettings: { collapsed: false }})
       } else {
         step.elements.push({ ...element, displaySettings: { collapsed: false }});
       }
@@ -193,6 +197,7 @@ export default {
     setArrowConnect() {
       const { $store, step } = this;
       const { arrows } = $store.state;
+      const parentId = arrows[arrows.length - 1].parent;
 
       $store.commit('set', {
         path: 'arrowConnectData',
@@ -201,6 +206,8 @@ export default {
           child: step.id
         }
       })
+
+      $store.state.arrows.push({parent: parentId, child: step.id });
     },
 
     connectArrow(value) {
@@ -274,7 +281,8 @@ export default {
       border-radius: 4px;
       text-align: center;
       line-height: normal;
-      font-size: 24px;
+      font-size: 16px;
+      padding: 6px;
       margin-bottom: 6px;
 
       &.in-drag {

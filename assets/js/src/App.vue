@@ -12,13 +12,13 @@
         <router-link v-if="account" class="side-bar-item" :to="{ name: 'accountCampaignList', params: { accountId: account.id } }">
           <img :src="socialBuffer"/>
         </router-link>
-        <router-link  v-if="account" class="side-bar-item" :to="{ name: 'accountBroadcastList', params: { accountId: account.id } }">
+        <router-link  v-if="account && dhAccount && dhAccount.features.broadcast" class="side-bar-item" :to="{ name: 'accountBroadcastList', params: { accountId: account.id } }">
           <img :src="broadcast"/>
         </router-link>
         <router-link v-if="account" class="side-bar-item" :to="{ name: 'audience' }">
           <img :src="people"/>
         </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'video-help' }">
+        <router-link class="side-bar-item" :to="{ name: 'video-help' }" v-if="dhAccount && dhAccount.features.igCourse">
           <img :src="youtube"/>
         </router-link>
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class='arrow-born' @click="createPoint"><span>+</span></div>  
+  <div class='arrow-born' @click="createPoint"><span>+</span></div>
 </template>
 <script>
 import Vue from 'vue'

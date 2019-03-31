@@ -2,7 +2,7 @@
   <div class="keywords">
     <el-select
       :value="value"
-      placeholder="Enter messages"
+      placeholder="Matches any text, click to edit"
       popper-class="keywords-dropdown"
       multiple
       filterable
@@ -12,6 +12,7 @@
       @keydown.native="keywordsKeydown"
     >
     </el-select>
+    <slot></slot>
     <div v-if="tagPrefix" class="tag-item" @click="tagNameSet">#{{tagPrefix}}<span v-if="tagName">_</span>{{tagName}}</div>
     <el-dialog
       :visible.sync="isActionRename"
@@ -95,6 +96,9 @@ export default {
       padding: 0 7px;
       line-height: 9px;
       cursor: pointer;
+      position: relative;
+      z-index: 10;
+
       &:hover {
         color:#2A3E98;
       }
@@ -137,6 +141,10 @@ export default {
 
     .el-input.is-focus .el-input__inner {
       border-color: #c0c4cc;
+
+      &::placeholder {
+        opacity: 0;
+      }
     }
 
     .el-input__suffix {

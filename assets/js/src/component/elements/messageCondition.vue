@@ -1,38 +1,54 @@
 <template>
 <div class="message-condition">
-  <el-select 
-    :class="[{'campaign-type': true}, element.value.messageType]" 
+  <el-select
+    :class="[{'campaign-type': true}, element.value.messageType]"
     v-model="element.value.messageType"
     popper-class="campaign-type-dropdown"
-  >
-    <el-option class="ad-reply" label="Ad Reply" value="adReply">Ad Reply</el-option>
-    <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
-    <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
-    <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
+    v-if="!hideSelect"
+    >
+    <el-option class="ad-reply" label="Ad Reply" value="adReply" v-if="availableTriggers.includes('adReply')">Ad Reply</el-option>
+    <el-option class="story" label="Story Share" value="storyShare" v-if="availableTriggers.includes('storyShare')">Story Share</el-option>
+    <el-option class="story" label="Story Mention" value="storyMention" v-if="availableTriggers.includes('storyMention')">Story Mention</el-option>
+    <el-option class="post-share" label="Post Share" value="postShare" v-if="availableTriggers.includes('postShare')">Post Share</el-option>
+    <el-option class="story" label="Media Share" value="mediaShare" v-if="availableTriggers.includes('mediaShare')">Media Share</el-option>
+    <el-option class="story-mention" label="List" value="any" v-if="canHasAny && availableTriggers.includes('any')">List</el-option>
   </el-select>
-  <template v-if="['storyShare', 'any'].includes(element.value.messageType)">
-    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+  <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
+    <keywords
+      v-model="element.value.keywords"
+      :tag-prefix="tagPrefix"
+      :tag-name="tagName"
+      @set-tag-name="$emit('set-tag-name', $event)"
+      >
+      <slot></slot>
+    </keywords>
   </template>
   <template v-if="['postShare', 'adReply'].includes(element.value.messageType)">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
-    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+    <keywords v-model="element.value.keywords">
+      <slot></slot>
+    </keywords>
   </template>
-</div>  
+</div>
 </template>
 <script>
-import messageConditionMultiple from "./messageConditionMultiple.vue";
 import keywords from "../keywords.vue";
 
 export default {
-  props:['element', 'mode'],
+  props:['element', 'mode', 'hideSelect', 'canHasAny', 'tagName', 'tagPrefix', 'triggers'],
 
   components: {
-    conditionList: messageConditionMultiple,
     keywords
-  } 
+  },
+
+  computed: {
+    availableTriggers() {
+      const allTriggers = ['adReply', 'storyShare', 'storyMention', 'postShare', 'mediaShare', 'any']
+
+      return this.triggers || allTriggers;
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -46,6 +62,18 @@ export default {
       }
 
       &.storyShare .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
+      &.storyMention .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
+      &.mediaShare .el-input--suffix:before {
         background-image: url(../../assets/svg/bubble-w.svg);
         height: 11px;
         top: 10px;
@@ -73,7 +101,7 @@ export default {
       .el-input--suffix {
         &:before {
           content: '';
-          width: 13px; 
+          width: 13px;
           position: absolute;
           left: 12px;
         }
@@ -138,10 +166,10 @@ export default {
     .el-select-dropdown__item {
       color: #A9A9A9;
       padding: 0 20px 0 35px;
-      
+
       &:before {
         content: '';
-        width: 13px; 
+        width: 13px;
         position: absolute;
         left: 12px;
       }

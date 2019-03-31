@@ -14,7 +14,6 @@
       class="builder-element"
       v-for="element in elements"
       :key="element.name"
-      v-if="visible(element)"
     >
       <img :src="element.svg"/>
       <div class="builder-element-title">{{element.name}}</div>
@@ -62,11 +61,9 @@ export default {
           name: 'Triggers',
           svg: flash,
           template: {
-            type: 'messageCondition',
+            type: 'messageConditionMultiple',
             value: {
-              keywords: [],
-              messageType: 'storyShare',
-              link: ''
+              conditionList:[]
             }
           }
         },
@@ -77,16 +74,6 @@ export default {
             type: 'basicDelay',
             value: {
               seconds: 1
-            }
-          }
-        },
-        {
-          name: 'List',
-          svg: navicon,
-          template: {
-            type: 'messageTextConditionMultiple',
-            value: {
-              conditionList:[]
             }
           }
         },
@@ -103,13 +90,13 @@ export default {
 
   props:['type'],
 
-  methods: {
-    visible(element) {
-      if (this.dhAccount.labs) return true;
-      
-      return !['Triggers'].includes(element.name)
-    }
-  }
+  // methods: {
+  //   visible(element) {
+  //     if (this.dhAccount.labs) return true;
+
+  //     return !['Triggers'].includes(element.name)
+  //   }
+  // }
 }
 </script>
 <style lang="scss">

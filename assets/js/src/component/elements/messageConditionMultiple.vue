@@ -1,72 +1,138 @@
 <template>
-  <div class="list-keywords" :ref="element.id">
-    <div class="list-element-item" v-for="(item, index) in element.value.conditionList" :key="item.id" :ref="item.id">
-      <div class="remove-item" @click="deleteKeywords(item)">&times</div>
-      <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
-      <keywords 
-        v-model="item.keywords" 
-        :tag-prefix="tagPrefix(item, index + 1)" 
-        :tag-name="item.name" 
+  <div class="list-conditions" :ref="element.id">
+    <div class="condition-item" v-for="(item, index) in element.value.conditionList" :key="item.id">
+      <div class="remove-item" @click="triggerToDelete = item" >&times</div>
+      <message-condition
+        :element="{value: item}"
+        :hide-select="notAnyFirst(item, index)"
+        :can-has-any="canHasAny(item, index)"
+        :tag-prefix="tagPrefix(item)"
+        :tag-name="item.name"
+        :triggers="triggers"
         @set-tag-name="setTagName(item, $event)"
-      ></keywords>
+        >
+        <element-warning :element="Object.assign({}, item, { emptyMoreOne })"></element-warning>
+        <div class="list-condition-container" :ref="item.id">
+          <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
+        </div>
+      </message-condition>
+      <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index) && ! hasEmptyList">+ Click to add list item</div>
     </div>
-    <div class="add-keywords" @click="addKeywords" v-if="!hasEmptyItem">+</div>
+    <div class="add-condition" @click="addMessageCondition(null)">+ Click to add condition</div>
+    <confirm-dialog
+        v-model="toDeleteTrigger"
+        title="Delete trigger"
+        message="Are you sure you want to delete trugger?"
+        @success="deleteMessageCondition"
+        >
+      </confirm-dialog>
   </div>
 </template>
 <script>
 import Vue from 'vue'
-import keywords from '../keywords.vue'
+import messageCondition from './messageCondition.vue'
 import arrowBorn from '../arrowBorn.vue'
+import elementWarning from '../elementWarning.vue'
 import ObjectId from '../../utils/ObjectId'
+import confirmDialog from '../confirmDialog.vue'
 
 export default {
-  props:['element', 'tag'],
-
-  components: {
-    keywords,
-    arrowBorn
+  data() {
+    return {
+      triggerToDelete: null,
+    }
   },
 
-  computed: {
-    hasEmptyItem() {
-      const { conditionList } = this.element.value;
+  props:['element', 'tag', 'triggers'],
 
-      return conditionList.some(condition => !condition.keywords.length)
+  computed: {
+    anyItems() {
+      return this.element.value.conditionList.filter(item => item.messageType === 'any')
     },
+
+    hasAny() {
+      return Boolean(this.anyItems.length)
+    },
+
+    hasEmptyList() {
+      return this.anyItems.some(item => !item.keywords.length)
+    },
+
+    emptyMoreOne() {
+      return this.anyItems.filter(item => !item.keywords.length).length > 1;
+    },
+
+    toDeleteTrigger: {
+      get() {
+        return Boolean(this.triggerToDelete)
+      },
+
+      set(value) {
+        this.triggerToDelete = value;
+      }
+    }
+  },
+
+  components: {
+    messageCondition,
+    arrowBorn,
+    elementWarning,
+    confirmDialog,
   },
 
   methods: {
-    addKeywords() {
-      const { element } = this;
+    addListCondition(index) {
+      const { element, hasAny } = this;
+      const ObjId = new ObjectId;
+
+      element.value.conditionList.splice(index + 1, 0, {
+        id: ObjId.toString(),
+        keywords: [],
+        messageType: 'any',
+        link: ''
+      })
+    },
+
+    addMessageCondition() {
+      const { element, hasAny, triggers } = this;
       const ObjId = new ObjectId;
 
       element.value.conditionList.push({
         id: ObjId.toString(),
-        keywords: []
+        keywords: [],
+        messageType: hasAny ? triggers.find(trigger => trigger !== 'any') : 'any',
+        link: ''
       })
     },
 
-    setTagName(item, value) {
-      console.log(item, value);
-      
-      Vue.set(item, 'name', value)
-    }, 
-
-    tagPrefix(item, index){
-      const { tag } = this;
-      const tagPrefix = `${ tag }_${ index }`
-
-      if (tag && (item.namePrefix != tagPrefix)) {
-        Vue.set(item, 'namePrefix', tagPrefix);
-      }
-
-      return tag ? item.namePrefix : '';
-    },
-
-    deleteKeywords(keywords) {
+    deleteMessageCondition() {
       const { conditionList } = this.element.value;
 
-      conditionList.splice(conditionList.indexOf(keywords), 1)
+      conditionList.splice(conditionList.indexOf(this.triggerToDelete), 1);
+      this.toDeleteTrigger = null;
+    },
+
+    notAnyFirst(item, index) {
+      const { conditionList } =  this.element.value;
+      const prevCondition = conditionList[index - 1];
+
+      return prevCondition && prevCondition.messageType === 'any' && item.messageType === 'any';
+    },
+
+    isLastAny(item, index) {
+      const { conditionList } =  this.element.value;
+      const nextCondition = conditionList[index + 1];
+
+      return item.messageType === 'any' && (!nextCondition || nextCondition.messageType !== 'any');
+    },
+
+    canHasAny(item, index) {
+      const { hasAny } = this;
+      const { conditionList } =  this.element.value;
+      const nextCondition = conditionList[index + 1];
+      const prevCondition = conditionList[index - 1];
+
+      return !hasAny || item.messageType === 'any' || (prevCondition && prevCondition.messageType === 'any') || (nextCondition && nextCondition.messageType === 'any')
     },
 
     connectArrow(item, value) {
@@ -79,25 +145,63 @@ export default {
       })
 
       this.$store.commit('set', {path: 'arrowConnectData', value: null});
-    }
+    },
+
+    setTagName(item, value) {
+      Vue.set(item, 'name', value)
+    },
+
+    tagPrefix(item){
+      const index = this.anyItems.indexOf(item)
+      const { tag } = this;
+      const tagPrefix = `${ tag }_${ index + 1 }`
+
+      if (item.messageType !== 'any') return;
+
+      if (tag && (item.namePrefix != tagPrefix)) {
+        Vue.set(item, 'namePrefix', tagPrefix);
+      }
+
+      return tag ? item.namePrefix : '';
+    },
   },
 
 }
 </script>
 <style lang="scss">
-.list-keywords {
+.list-conditions {
   padding: 9px 20px 13px;
 
-  .list-element-item {
+  .condition-item {
     position: relative;
+    margin-bottom: 10px;
 
     .keywords {
-      width: 100%;
-      margin-bottom: 6px;
+      position: relative;
 
-      .el-input__inner {
-        min-height: 47px !important;
+      .el-select {
+        z-index: 5;
+        width: 100%;
       }
+
+      .list-condition-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .element-warning {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 10;
+      }
+    }
+
+    .message-condition {
+      padding: 0;
     }
 
     .remove-item {
@@ -111,13 +215,13 @@ export default {
       width: 15px;
       font-size: 16px;
       position: absolute;
-      z-index: 2;
+      z-index: 10;
       border-radius: 7px;
       background-color: #fff;
       border: 1px solid #ddd;
       line-height: 10px;
-      right: -3px;
-      top: -3px;
+      left: calc(50% - 8px);
+      top: -8px;
       cursor: pointer;
 
       &:hover {
@@ -126,32 +230,25 @@ export default {
       }
     }
 
-    .arrow-born {
-      position: absolute;
-      z-index: 2;
-      right: -7px;
-      font-size: 15px;
-      top: calc(50% - 11px);
-
-      &:hover {
-        border-color: #666;
-        color: #666;
-      }
-    }
 
     &:hover .remove-item{
       opacity: 1;
     }
   }
 
-  .add-keywords {
+  .add-list {
+    margin-top: 5px;
+  }
+
+  .add-condition, .add-list {
     width: 100%;
     color: #DDDDDD;
     border: 1px solid #DDDDDD;
     border-radius: 4px;
     text-align: center;
     line-height: normal;
-    font-size: 24px;
+    font-size: 16px;
+    padding: 6px;
   }
 }
 </style>

@@ -8,6 +8,13 @@
       <div class="wrapper" :title="message.sentAt && date(message.sentAt)">
         <div class="type" :title="message.typeExtended" v-if="message.type">
           {{ message.type }}
+          <router-link
+            class="bot-campaign"
+            :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
+            v-if="message.botCampaign"
+            >
+            {{message.botCampaign.name}}
+          </router-link>
         </div>
         <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
         <a class="post" v-if="message.postUrl" :href="message.postUrl" target="_blank">
@@ -20,11 +27,6 @@
         <font-awesome-icon :icon="['fas', 'check-circle']" v-if="message.sentAt"/>
         <font-awesome-icon :icon="['far', 'clock']" v-else-if="message.toBeSentAt"/>
       </div>
-      <router-link
-        class="bot-campaign"
-        :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
-        v-if="message.botCampaign"
-        >{{message.botCampaign.name}}</router-link>
     </div>
   </div>
 </template>
@@ -40,16 +42,15 @@ export default {
     }
   },
 
-  props:['message', 'owner', 'prevMessage', 'contactProfile'],
+  props:['message', 'prevMessage', 'contactProfile'],
 
   computed: {
     isMe() {
-      const { owner, message } = this;
+      const { message, contactProfile } = this;
 
-      console.log(owner, message);
+      console.log(contactProfile, message);
 
-
-      return owner.replace(/^@/, '') === message.senderUsername
+      return contactProfile.username !== message.senderUsername
     },
 
     isShowDate() {
@@ -88,6 +89,9 @@ export default {
     font-size: 10px;
     color: #a8a8a8;
     margin-top: -10px;
+    display: flex;
+    justify-content: space-between;
+
     &::first-letter {
       text-transform: uppercase;
     }
@@ -155,10 +159,8 @@ export default {
   }
 
   .bot-campaign {
-    position: absolute;
-    right: 25px;
-    top: 3px;
     color: #2c3e50;
+    margin-left: 10px;
   }
 
   &.account-message {
@@ -169,10 +171,6 @@ export default {
     .wrapper {
       background-color: #EFEFEF;
       border-color: #EFEFEF;
-    }
-
-    .type {
-      left: 20px;
     }
   }
 }

@@ -82,30 +82,7 @@ export default {
     },
 
     arrows() {
-      const { currentEntryItem, $store } = this
-      const arrows = [];
-
-      currentEntryItem.steps.forEach(step => step.elements.find(element => {
-        const { collapsed } = step.displaySettings
-        const { collapsed: elementCollapsed } = element.displaySettings || {}
-        const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
-
-        switch(element.type) {
-          case 'messageConditionMultiple':
-          case 'messageTextConditionMultiple':
-            element.value.conditionList.forEach(item => {
-              if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
-
-              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
-            })
-          break;
-          case 'goToStep':
-            arrows.push({ parent: step.id, child: element.value.stepId });
-          break;
-        }
-      }))
-
-      $store.commit('set', { path: 'arrows', value: arrows })
+      const { arrows } = this.$store.state;
 
       return arrows;
     },
@@ -184,6 +161,32 @@ export default {
       })
     },
 
+    getArrows() {
+      const { currentEntryItem, $store } = this
+      const arrows = [];
+
+      currentEntryItem.steps.forEach(step => step.elements.find(element => {
+        const { collapsed } = step.displaySettings
+        const { collapsed: elementCollapsed } = element.displaySettings || {}
+        const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
+
+        switch(element.type) {
+          case 'messageConditionMultiple':
+            element.value.conditionList.forEach(item => {
+              if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
+
+              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
+            })
+          break;
+          case 'goToStep':
+            arrows.push({ parent: step.id, child: element.value.stepId });
+          break;
+        }
+      }))
+
+      $store.commit('set', { path: 'arrows', value: arrows })
+    },
+
     removePoint() {
       this.$store.commit('set', {path: 'newPoint', value: null});
     },
@@ -219,6 +222,7 @@ export default {
     }
   },
 
+
   watch:{
     '$store.state.newPoint'(newValue, oldValue) {
       if (oldValue && newValue) return;
@@ -238,7 +242,13 @@ export default {
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
 
-        if (!oldEntry || !entry || entry.id !== oldEntry.id) return;
+        if (entry) {
+          this.getArrows();
+        }
+
+        if (!oldEntry || !entry || entry.id !== oldEntry.id) {
+          return;
+        }
 
         this.saveCampaign();
       },
