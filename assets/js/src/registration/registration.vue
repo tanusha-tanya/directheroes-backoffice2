@@ -32,10 +32,10 @@
           </label>
         </div>
       </div>
-      <stripe-payment goal="createPlanSubscription">
+      <stripe-payment goal="createPlanSubscription" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            <button @click="createAccount(submitPayment, authorizeAmount)" :disabled="canSendInfo">
+            <button @click="createAccount(submitPayment, authorizeAmount)" >
               Join right now
             </button>
           </div>
@@ -67,6 +67,7 @@ export default {
 
   methods: {
     createAccount(submitPayment, authorizeAmount) {
+      const { stripePayment } = this.$refs;
       const { registerInfo } = this;
 
       axios({
@@ -74,8 +75,13 @@ export default {
         method: 'post',
         data: registerInfo
       }).then(({ data }) => {
-        console.log(data);
+        const { dhAccount } = data.response.body
 
+        dh.userName = dhAccount.username;
+
+        stripePayment.initAddCard().then(() => {
+
+        });
       })
     }
   }
@@ -214,7 +220,6 @@ button {
 }
 
 .stripe-payment {
-  border-bottom: 1px solid #D0D0D0;
   padding: 20px;
 }
 
@@ -224,8 +229,10 @@ button {
 }
 
 .confirm-button {
-  padding: 20px;
+  padding-top: 20px;
+  margin: 0 -20px;
   text-align: center;
+  border-top: 1px solid #D0D0D0;
 }
 
 .form-row {
