@@ -21,6 +21,7 @@ Encore
      * and one CSS file (e.g. app.css) if you JavaScript imports CSS.
      */
     .addEntry('app', './assets/js/src/main.js')
+    .addEntry('register', './assets/js/src/registration/registration.js')
 
     /*
      * FEATURE CONFIG
