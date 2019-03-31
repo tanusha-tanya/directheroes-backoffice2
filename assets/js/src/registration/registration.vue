@@ -32,7 +32,10 @@
           </label>
         </div>
       </div>
-      <stripe-payment goal="createPlanSubscription"></stripe-payment>
+      <stripe-payment goal="createPlanSubscription">
+        <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
+        </template>
+      </stripe-payment>
       <div class="confirm-button">
         <button @click="createAccount">
           Join right now
@@ -138,7 +141,7 @@ body {
   border-bottom: 1px solid #D0D0D0;
 }
 
-input {
+input, div.form-row label > div.StripeElement {
   padding: 5px 15px;
   border: 1px solid #d0d0d0;
   border-radius: 50px;
@@ -212,6 +215,12 @@ button {
 
 .stripe-payment {
   border-bottom: 1px solid #D0D0D0;
+  padding: 20px;
+}
+
+.StripeElement {
+  padding-top: 13px !important;
+  min-height: 43px !important;
 }
 
 .confirm-button {

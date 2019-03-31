@@ -175,39 +175,39 @@ export default {
       });
     },
 
-    attachSourceTo(sourceId) {
-      const { sessionId } = this;
+    initAddCard() {
+      const { goal, returnUrl } = this;
+      const request = axios({
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/init-add-card`,
+        params: { goal, return_url: encodeURIComponent(returnUrl) }
+      })
 
-      return axios({
-        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/save-source`,
-        method: "post",
-        data: {
-          sourceId,
-          sessionId
-        }
+      request.then(({ data }) => {
+        const { stripePk, previousSourceOwner, paymentIntent, sessionId, authorizeAmount, chargeAmount } = data.response.body;
+
+        this.publicKey = stripePk;
+        this.sessionId = sessionId;
+        this.authorizeAmount = authorizeAmount;
+        this.chargeAmount = chargeAmount;
+        this.clientSecret = paymentIntent.clientSecret;
+
+        if (!previousSourceOwner) return;
+
+        Object.assign(this.owner, previousSourceOwner);
       });
+
+      return request;
     },
   },
 
   created() {
-    const { goal, returnUrl } = this;
+    const { stripePk, initAddCard } = dh;
 
-    axios({
-      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/init-add-card`,
-      params: { goal, return_url: encodeURIComponent(returnUrl) }
-    }).then(({ data }) => {
-      const { stripePk, previousSourceOwner, paymentIntent, sessionId, authorizeAmount, chargeAmount } = data.response.body;
-
+    if (stripePk) {
       this.publicKey = stripePk;
-      this.sessionId = sessionId;
-      this.authorizeAmount = authorizeAmount;
-      this.chargeAmount = chargeAmount;
-      this.clientSecret = paymentIntent.clientSecret;
-
-      if (!previousSourceOwner) return;
-
-      Object.assign(this.owner, previousSourceOwner);
-    });
+    } else {
+      initAddCard();
+    }
   },
 
   watch: {
