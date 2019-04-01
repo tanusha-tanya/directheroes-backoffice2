@@ -1,6 +1,6 @@
 <template>
   <div class="stripe-payment">
-    <form @submit.prevent="createCardToken" ref="paymentForm" v-show="stripe">
+    <form @submit.prevent="" ref="paymentForm" v-show="stripe">
       <div class="form-row">
         <label>
           Full Name
@@ -82,6 +82,7 @@ export default {
         }
       },
       clientSecret: null,
+      cardInfoCompleate: false,
       stripe: null,
       errors: {},
       globalError: null,
@@ -100,14 +101,18 @@ export default {
 
   methods: {
     allOwnerInfo() {
-      const { owner } = this;
+      const { owner, cardInfoCompleate } = this;
+
+      console.log(cardInfoCompleate);
 
       return owner.name && Object.keys(owner.address).every(ownerItem => ownerItem === 'line2' || owner.address[ownerItem]);
     },
 
     errorHandler(event) {
-      const { errors } = this;
+      const { errors, cardNumber, cardExpiry, cardCvc } = this;
       const { error, elementType } = event;
+
+      this.cardInfoCompleate = cardNumber._complete && cardExpiry._complete && cardCvc._complete
 
       Vue.set(errors, elementType, error && error.message);
     },
@@ -130,8 +135,14 @@ export default {
       cardExpiry.on("change", errorHandler);
       cardCvc.on("change", errorHandler);
 
+      cardNumber.on("change", errorHandler);
+      cardExpiry.on("change", errorHandler);
+      cardCvc.on("change", errorHandler);
+
       this.stripe = stripe;
       this.cardNumber = cardNumber;
+      this.cardExpiry = cardExpiry;
+      this.cardCvc = cardCvc;
     },
 
     createCardToken(price, callback) {
@@ -144,10 +155,11 @@ export default {
         setPaymentSource,
       } = this;
 
-      stripe.handleCardPayment(clientSecret, cardNumber,{
+      stripe.handleCardPayment(clientSecret, cardNumber, {
         source_data: {
           owner
-        }
+        },
+        save_payment_method: true,
       }).then(function(result) {
         if (result.error) {
           // Display error.message in your UI.

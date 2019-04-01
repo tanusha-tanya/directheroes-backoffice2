@@ -9,38 +9,36 @@
           <label>
             First name
             <input v-model="registerInfo.firstName">
-            <div class="error"></div>
           </label>
           <label>
             Last name
             <input v-model="registerInfo.lastName">
-            <div class="error"></div>
           </label>
         </div>
         <div class="form-row">
           <label>
             E-mail
-            <input v-model="registerInfo.email">
-            <div class="error"></div>
+            <input v-model="registerInfo.email" @input="clearError('email')">
+            <div class="error">{{errors.email}}</div>
           </label>
         </div>
         <div class="form-row">
           <label>
             Password
-            <input v-model="registerInfo.password" type="password">
-            <div class="error"></div>
+            <input v-model="registerInfo.password" type="password" @input="clearError('password')">
+            <div class="error">{{errors.password}}</div>
           </label>
           <label>
             Repeat password
-            <input v-model="repassword" type="password">
-            <div class="error"></div>
+            <input v-model="repassword" type="password" @input="clearError('password')">
           </label>
         </div>
       </div>
       <stripe-payment goal="createPlanSubscription" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            <button @click="createAccount(submitPayment, authorizeAmount)" >
+            {{canSendInfo}}
+            <button @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError">
               Join right now
             </button>
           </div>
@@ -62,7 +60,26 @@ export default {
         email: '',
         password: ''
       },
-      repassword: ''
+      repassword: '',
+      errors: {
+        email: '',
+        password: '',
+        global: ''
+      },
+    }
+  },
+
+  computed: {
+    allRegisterInfo() {
+      const { registerInfo, repassword } = this;
+
+      return repassword && Object.keys(registerInfo).every(registerItem => registerInfo[registerItem]);
+    },
+
+    hasError() {
+      const { errors } = this;
+
+      return Object.keys(errors).some(error => errors[error]);
     }
   },
 
@@ -71,9 +88,32 @@ export default {
   },
 
   methods: {
+    clearError(property) {
+      const { errors } = this;
+
+      switch (property) {
+        case 'email':
+          this.emailExist = false;
+        break;
+      }
+
+      errors[property] = '';
+    },
+
     createAccount(submitPayment, authorizeAmount) {
       const { stripePayment } = this.$refs;
-      const { registerInfo } = this;
+      const { registerInfo, repassword, errors } = this;
+      const emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+      if (registerInfo.password !== repassword) {
+        errors.password = 'Passwords don\'t match'
+        return;
+      }
+
+      if (!emailReg.test(registerInfo.email)) {
+        errors.email = 'Entered incorrect email'
+        return
+      }
 
       axios({
         url: `${dh.apiUrl}/api/1.0.0/signup/create-account`,
@@ -237,7 +277,7 @@ button {
 
 .confirm-button {
   padding-top: 20px;
-  margin: 0 -20px;
+  margin: 15px -20px 0;
   text-align: center;
   border-top: 1px solid #D0D0D0;
 }
@@ -261,7 +301,7 @@ button {
     }
 
     input {
-      padding: 9px;
+      padding: 9px 15px;
     }
   }
 }
