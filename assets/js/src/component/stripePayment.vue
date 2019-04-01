@@ -54,7 +54,7 @@
     </div>
     <slot v-if="stripe" name="footer"
       :submitPayment="createCardToken"
-      :canSendInfo="allOwnerInfo() && !hasError"
+      :canSendInfo="cardInfoComplete && allOwnerInfo() && !hasError"
       :authorizeAmount="authorizeAmount"
       ></slot>
   </div>
@@ -82,10 +82,13 @@ export default {
         }
       },
       clientSecret: null,
-      cardInfoCompleate: false,
+      cardInfoComplete: false,
       stripe: null,
       errors: {},
       globalError: null,
+      cardNumber: null,
+      cardCvc: null,
+      cardExpiry: null,
     }
   },
 
@@ -101,9 +104,7 @@ export default {
 
   methods: {
     allOwnerInfo() {
-      const { owner, cardInfoCompleate } = this;
-
-      console.log(cardInfoCompleate);
+      const { owner, cardInfoComplete } = this;
 
       return owner.name && Object.keys(owner.address).every(ownerItem => ownerItem === 'line2' || owner.address[ownerItem]);
     },
@@ -111,8 +112,6 @@ export default {
     errorHandler(event) {
       const { errors, cardNumber, cardExpiry, cardCvc } = this;
       const { error, elementType } = event;
-
-      this.cardInfoCompleate = cardNumber._complete && cardExpiry._complete && cardCvc._complete
 
       Vue.set(errors, elementType, error && error.message);
     },
@@ -233,6 +232,24 @@ export default {
       stripe.src = "//js.stripe.com/v3/";
       document.head.appendChild(stripe);
     },
+
+    'cardCvc._complete'() {
+      const { cardNumber, cardExpiry, cardCvc } = this;
+
+      this.cardInfoComplete = cardNumber._complete && cardExpiry._complete && cardCvc._complete;
+    },
+
+    'cardExpiry._complete'() {
+      const { cardNumber, cardExpiry, cardCvc } = this;
+
+      this.cardInfoComplete = cardNumber._complete && cardExpiry._complete && cardCvc._complete;
+    },
+
+    'cardNumber._complete'() {
+      const { cardNumber, cardExpiry, cardCvc } = this;
+
+      this.cardInfoComplete = cardNumber._complete && cardExpiry._complete && cardCvc._complete;
+    }
   }
 }
 </script>
