@@ -37,7 +37,6 @@
       <stripe-payment goal="createPlanSubscription" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            {{canSendInfo}}
             <button @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError">
               Join right now
             </button>
