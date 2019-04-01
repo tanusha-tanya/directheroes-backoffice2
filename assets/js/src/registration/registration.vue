@@ -5,6 +5,9 @@
         <div class="logo"></div>
       </div>
       <div class="account-info">
+        <div class="title">
+          Direct Heroes Account Information
+        </div>
         <div class="form-row">
           <label>
             First name
@@ -34,10 +37,13 @@
           </label>
         </div>
       </div>
+      <div class="title">
+        Payment Information
+      </div>
       <stripe-payment goal="createPlanSubscription" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            <button @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError">
+            <button :class="{loading: creating}" @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError || creating">
               Join right now
             </button>
           </div>
@@ -65,6 +71,7 @@ export default {
         password: '',
         global: ''
       },
+      creating: false,
     }
   },
 
@@ -114,6 +121,8 @@ export default {
         return
       }
 
+      this.creating = true;
+
       axios({
         url: `${dh.apiUrl}/api/1.0.0/signup/create-account`,
         method: 'post',
@@ -125,10 +134,18 @@ export default {
 
         stripePayment.initAddCard().then(() => {
           submitPayment(authorizeAmount * 100, (error) => {
-            log(2423424);
+            this.creating = false;
+
+            if (error) return;
+
+            window.location.href = 'https://www.launch.directheroes.com/thank-you';
           });
+        }).catch((error) => {
+          this.creating = false;
         });
-      })
+      }).catch((error) => {
+        this.creating = false;
+      });
     }
   }
 }
@@ -137,6 +154,11 @@ export default {
 <style lang="scss">
 * {
   box-sizing: border-box;
+}
+
+@keyframes rotation {
+  0% { transform:rotate(0deg); }
+  100% { transform:rotate(360deg); }
 }
 
 @keyframes preloader-wave {
@@ -188,9 +210,19 @@ body {
   }
 }
 
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 20px 20px 0;
+}
+
 .account-info {
   padding: 20px;
   border-bottom: 1px solid #D0D0D0;
+
+  .title {
+    padding: 0 0 20px;
+  }
 }
 
 input, div.form-row label > div.StripeElement {
