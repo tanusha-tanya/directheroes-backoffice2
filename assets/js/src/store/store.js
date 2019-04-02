@@ -37,8 +37,6 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
-        dhAccount.igAccountLimit = 2;
-
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
         commit('set', { path: 'firstLoad', value: false });
