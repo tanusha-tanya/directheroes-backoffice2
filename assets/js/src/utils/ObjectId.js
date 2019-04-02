@@ -119,4 +119,4 @@ ObjectId.prototype.toString = function () {
            '000000'.substr(0, 6 - increment.length) + increment;
 };
 
-module.exports = ObjectId;
+export default ObjectId;
