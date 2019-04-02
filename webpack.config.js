@@ -48,6 +48,7 @@ Encore
         useBuiltIns: 'usage', // or try "usage"
         corejs: 2
     })
+    .disableSingleRuntimeChunk()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
