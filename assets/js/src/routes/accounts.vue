@@ -1,7 +1,7 @@
 <template>
   <div class="accounts-content">
     <div class="account-list">
-      <div class="account-card add-account" @click="addAccount" v-if="accounts.length < dhAccount.igAccountLimit">
+      <div class="account-card add-account" @click="addAccount">
         <div class="account-photo"></div>
         <div class="account-login">Add new account</div>
         <div class="account-follow-info">
@@ -9,8 +9,8 @@
           <div>0<br/>followers </div>
         </div>
       </div>
-      <div class="account-card" 
-        v-for="account in accounts" 
+      <div class="account-card"
+        v-for="account in accounts"
         :key="account.id"
         @click="accountClick(account)"
         >
@@ -19,7 +19,7 @@
             <img src="../assets/svg/multipoints.svg"/>
             <el-dropdown-menu class="delete-button" slot="dropdown">
               <el-dropdown-item command="delete">Delete Account</el-dropdown-item>
-            </el-dropdown-menu> 
+            </el-dropdown-menu>
           </el-dropdown>
         </div>
         <div :class="{'account-photo': true, 'not-logged': !account.isLoggedIn}" :style="{'background-image': `url(${ account.profilePicUrl  }), url(${ igAvatar })`}"></div>
@@ -31,6 +31,19 @@
       </div >
     </div>
     <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog>
+    <el-dialog
+      :visible.sync="isExtraAccount"
+      custom-class="extra-account"
+      @open="overleyClassToggle('extra-style')"
+      title="Need more accounts?"
+      :center="true"
+      >
+      <div class="info-text">Not Problem!  To add more accounts,  just purchase a new Instagram account subscription for only $97 per month.</div>
+      <div class="action-block">
+        <img src="../assets/svg/extra-account.svg" alt="">
+        <router-link :to="{ name: 'accountBuy'}" tag="button">Buy now!</router-link>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -38,22 +51,23 @@ import addAccountDialog from '../component/addAccountDialog.vue'
 import igAvatar from '../assets/ig-avatar.jpg'
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    const { body } = document;
+  // beforeRouteEnter(to, from, next) {
+  //   const { body } = document;
 
-    body.classList.add('no-overlay')
-    next();
-  },
+  //   body.classList.add('no-overlay')
+  //   next();
+  // },
 
-  beforeRouteLeave(to, from, next) {
-    const { body } = document;
+  // beforeRouteLeave(to, from, next) {
+  //   const { body } = document;
 
-    body.classList.remove('no-overlay')
-    next();
-  },
+  //   body.classList.remove('no-overlay')
+  //   next();
+  // },
 
   data() {
     return {
+      isExtraAccount: false,
       isAddAccount: false,
       accountToAuth: null,
       igAvatar
@@ -76,6 +90,16 @@ export default {
     },
 
     addAccount() {
+      const { dhAccount, accounts } = this;
+
+      console.log(dhAccount.igAccountLimit, accounts.length);
+
+
+      if (dhAccount.igAccountLimit >= accounts.length) {
+        this.isExtraAccount = true;
+        return;
+      }
+
       this.accountToAuth = null;
       this.isAddAccount = true;
     },
@@ -91,6 +115,12 @@ export default {
 
     setAuthAccount(account) {
       this.accountToAuth = account;
+    },
+
+    overleyClassToggle(className) {
+      this.$nextTick(() => {
+        document.querySelector('.v-modal').classList.add(className);
+      })
     }
   }
 }
@@ -112,7 +142,7 @@ export default {
       align-items: center;
       justify-content: center;
       position: relative;
-      
+
       &:after, &:before {
         content: '';
         border: 2px solid #DBDBDB;
@@ -164,7 +194,7 @@ export default {
         right: 0;
       }
     }
-    
+
     &:hover {
       border: 2px solid rgba(106, 18, 203, 0.7);
     }
@@ -195,7 +225,47 @@ export default {
   }
 }
 
-.no-overlay .v-modal {
-  opacity: 0;
+.el-dialog.extra-account {
+  width: 331px;
+
+  .el-dialog__header {
+    padding: 14px 24px 0;
+  }
+
+  .el-dialog__title {
+    font-size: 24px;
+    display: block;
+    border-bottom: 1px solid #C1C1C1;
+    padding-bottom: 14px;
+    text-align: left;
+  }
+
+  .el-dialog__body {
+    padding: 14px 24px 26px;
+  }
+
+  .info-text {
+    margin-bottom: 20px;
+  }
+
+  .action-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    button {
+      text-transform: uppercase;
+      background: #6A12CB;
+      border-radius: 100px;
+      line-height: 16px;
+      font-size: 16px;
+      padding: 14px 25px;
+    }
+  }
+}
+
+.v-modal.extra-style {
+  opacity: 1 !important;
+  background: linear-gradient(237.78deg, rgba(34, 106, 247, 0.85) 8.65%, rgba(98, 45, 206, 0.85) 63.91%);
 }
 </style>

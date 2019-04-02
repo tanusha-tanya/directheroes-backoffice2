@@ -75,7 +75,7 @@ export default {
   methods: {
     changePassword() {
       const { currentPassword, newPassword, reNewPassword} = this;
-      
+
       if (newPassword !== reNewPassword) {
         this.error = 'New password not equal repeat password';
         return;
@@ -104,7 +104,7 @@ export default {
   watch: {
     isPasswordChange(value) {
       if (value) return;
-      
+
       this.currentPassword = this.newPassword = this.reNewPassword = '';
       this.error = null;
     }
@@ -115,44 +115,6 @@ export default {
 .account-dh-profile {
   display: flex;
   height: calc(100% - 40px);
-
-  .account-dh-info {
-    width: 230px;
-    border-right: 1px solid #EEEEEE;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-
-    button {
-      border-radius: 30px;
-      background-color: transparent;
-      font-weight: normal;
-      color: #828282;
-      border: 1px solid #DBDBDB;
-    }
-  }
-
-  .account-dh-photo {
-    width: 98px;
-    height: 98px;
-    border-radius: 50px;
-    background-position: center;
-    background-size: contain;
-    margin-bottom: 10px;
-  }
-
-  .account-dh-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  .account-dh-joined {
-    font-size: 10px;
-    flex-grow: 1;
-  }
 
   .account-dh-details {
     padding: 20px;

@@ -15,7 +15,7 @@ if (!document) var document = { cookie: '' }; // fix crashes on node
  * Javascript class that mimics how WCF serializes a object of type MongoDB.Bson.ObjectId
  * and converts between that format and the standard 24 character representation.
 */
-ObjectId = (function () {
+let ObjectId = (function () {
     var increment = Math.floor(Math.random() * (16777216));
     var pid = Math.floor(Math.random() * (65536));
     var machine = Math.floor(Math.random() * (16777216));
@@ -119,4 +119,4 @@ ObjectId.prototype.toString = function () {
            '000000'.substr(0, 6 - increment.length) + increment;
 };
 
-module.exports = ObjectId;
+export default ObjectId;
