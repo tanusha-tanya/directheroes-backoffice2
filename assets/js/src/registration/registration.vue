@@ -11,29 +11,29 @@
         <div class="form-row">
           <label>
             First name
-            <input v-model="registerInfo.firstName" autocomplete="off" autofocus>
+            <input v-model="registerInfo.firstName" autocomplete="new-password" autofocus>
           </label>
           <label>
             Last name
-            <input v-model="registerInfo.lastName" autocomplete="off">
+            <input v-model="registerInfo.lastName" autocomplete="new-password">
           </label>
         </div>
         <div class="form-row">
           <label>
             E-mail
-            <input v-model="registerInfo.email" @input="clearError('email')" autocomplete="off">
+            <input v-model="registerInfo.email" @input="clearError('email')" autocomplete="new-password">
             <div class="error">{{errors.email}}</div>
           </label>
         </div>
         <div class="form-row">
           <label>
             Password
-            <input v-model="registerInfo.password" type="password" @input="clearError('password')" autocomplete="off">
+            <input v-model="registerInfo.password" type="password" @input="clearError('password')" autocomplete="new-password">
             <div class="error">{{errors.password}}</div>
           </label>
           <label>
             Repeat password
-            <input v-model="repassword" type="password" @input="clearError('password')" autocomplete="off">
+            <input v-model="repassword" type="password" @input="clearError('password')" autocomplete="new-password">
           </label>
         </div>
       </div>
