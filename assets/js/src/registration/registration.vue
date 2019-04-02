@@ -290,7 +290,7 @@ button {
     border-bottom: 1px solid #D0D0D0;
 
     .logo {
-      background-image: url(~/src/assets/logo.png);
+      background-image: url(../assets/logo.png);
       height: 77px;
       width: 266px;
     }

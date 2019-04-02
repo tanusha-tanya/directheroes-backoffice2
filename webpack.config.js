@@ -23,6 +23,7 @@ Encore
     .addEntry('app', './assets/js/src/main.js')
     .addEntry('register', './assets/js/src/registration/registration.js')
 
+
     /*
      * FEATURE CONFIG
      *
@@ -42,6 +43,11 @@ Encore
 
     // enables Sass/SCSS support
     .enableSassLoader()
+    .disableCssExtraction()
+    .configureBabel(() => {}, {
+        useBuiltIns: 'usage', // or try "usage"
+        corejs: 2
+    })
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
