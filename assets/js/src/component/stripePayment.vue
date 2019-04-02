@@ -231,7 +231,8 @@ export default {
   },
 
   created() {
-    const { stripePk, initAddCard } = dh;
+    const { initAddCard } = this;
+    const { stripePk } = dh;
 
     if (stripePk) {
       this.publicKey = stripePk;
