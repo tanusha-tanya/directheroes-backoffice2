@@ -43,6 +43,7 @@
       <stripe-payment goal="createPlanSubscription" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
+            <div class="error">{{globalError}}</div>
             <button :class="{loading: creating}" @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError || creating">
               Join right now
             </button>
@@ -52,7 +53,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import stripePayment from '../component/stripePayment.vue'
@@ -68,10 +68,10 @@ export default {
       repassword: '',
       errors: {
         email: '',
-        password: '',
-        global: ''
+        password: ''
       },
       creating: false,
+      globalError: '',
     }
   },
 
@@ -111,6 +111,8 @@ export default {
       const { registerInfo, repassword, errors } = this;
       const emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+      this.globalError = null;
+
       if (registerInfo.password !== repassword) {
         errors.password = 'Passwords don\'t match'
         return;
@@ -141,9 +143,11 @@ export default {
             window.location.href = 'https://www.launch.directheroes.com/thank-you';
           });
         }).catch((error) => {
+          this.globalError = 'It didn\'t work, please try again';
           this.creating = false;
         });
       }).catch((error) => {
+        this.globalError = 'It didn\'t work, please try again';
         this.creating = false;
       });
     }
