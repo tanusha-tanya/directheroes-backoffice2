@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="container">
+    <div class="form-container">
       <div class="header">
         <div class="logo"></div>
       </div>
@@ -11,29 +11,29 @@
         <div class="form-row">
           <label>
             First name
-            <input v-model="registerInfo.firstName">
+            <input v-model="registerInfo.firstName" autocomplete="off">
           </label>
           <label>
             Last name
-            <input v-model="registerInfo.lastName">
+            <input v-model="registerInfo.lastName" autocomplete="off">
           </label>
         </div>
         <div class="form-row">
           <label>
             E-mail
-            <input v-model="registerInfo.email" @input="clearError('email')">
+            <input v-model="registerInfo.email" @input="clearError('email')" autocomplete="off">
             <div class="error">{{errors.email}}</div>
           </label>
         </div>
         <div class="form-row">
           <label>
             Password
-            <input v-model="registerInfo.password" type="password" @input="clearError('password')">
+            <input v-model="registerInfo.password" type="password" @input="clearError('password')" autocomplete="off">
             <div class="error">{{errors.password}}</div>
           </label>
           <label>
             Repeat password
-            <input v-model="repassword" type="password" @input="clearError('password')">
+            <input v-model="repassword" type="password" @input="clearError('password')" autocomplete="off">
           </label>
         </div>
       </div>
@@ -280,7 +280,7 @@ button {
   text-align: center;
 }
 
-.container {
+.form-container {
   background-color: #fff;
   width: 800px;
   box-shadow: 1px 2px 12px rgba(15, 31, 112, 0.7);
