@@ -110,7 +110,7 @@ export default {
     },
 
     errorHandler(event) {
-      const { errors, cardNumber, cardExpiry, cardCvc } = this;
+      const { errors } = this;
       const { error, elementType } = event;
 
       Vue.set(errors, elementType, error && error.message);
@@ -148,6 +148,7 @@ export default {
       const {
         sessionId,
         stripe,
+        errors,
         cardNumber,
         owner,
         clientSecret,
@@ -160,8 +161,26 @@ export default {
         },
         save_payment_method: true,
       }).then(function(result) {
-        if (result.error) {
-          // Display error.message in your UI.
+        const { error } = result;
+
+        if (error) {
+          if (error.param) {
+            let elementType = 'cardNumber';
+
+            switch(error.param) {
+              case 'exp_month':
+                elementType = 'cardExpiry'
+                break;
+              case 'cvc':
+                elementType = 'cardCvc'
+                break;
+            }
+            Vue.set(errors, elementType, error.message);
+          } else {
+            Vue.set(errors, 'cardNumber', error.message);
+          }
+
+          callback(result.error)
         } else {
           setPaymentSource(result.paymentIntent, callback);
           // The payment has succeeded. Display a success message.

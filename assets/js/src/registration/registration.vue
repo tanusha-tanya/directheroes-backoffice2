@@ -11,7 +11,7 @@
         <div class="form-row">
           <label>
             First name
-            <input v-model="registerInfo.firstName" autocomplete="off">
+            <input v-model="registerInfo.firstName" autocomplete="off" autofocus>
           </label>
           <label>
             Last name
@@ -138,7 +138,7 @@ export default {
 
             if (error) return;
 
-            window.location.href = 'https://www.launch.directheroes.com/thank-you';
+            // window.location.href = 'https://www.launch.directheroes.com/thank-you';
           });
         }).catch((error) => {
           this.creating = false;
