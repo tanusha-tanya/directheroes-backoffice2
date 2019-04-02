@@ -138,7 +138,7 @@ export default {
 
             if (error) return;
 
-            // window.location.href = 'https://www.launch.directheroes.com/thank-you';
+            window.location.href = 'https://www.launch.directheroes.com/thank-you';
           });
         }).catch((error) => {
           this.creating = false;
