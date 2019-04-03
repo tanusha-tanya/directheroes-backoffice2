@@ -92,10 +92,7 @@ export default {
     addAccount() {
       const { dhAccount, accounts } = this;
 
-      console.log(dhAccount.igAccountLimit, accounts.length);
-
-
-      if (dhAccount.igAccountLimit >= accounts.length) {
+      if (accounts.lengthd >= dhAccount.igAccountLimit) {
         this.isExtraAccount = true;
         return;
       }
