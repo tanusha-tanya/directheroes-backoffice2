@@ -5,7 +5,7 @@
         Set Your Credit/Debit Card Information
       </div>
       <div class="extra-account-stripe">
-        <stripe-payment goal="createPlanSubscription" :return-url="$router.resolve({name: 'accountBuy'}).href">
+        <stripe-payment goal="updateExistingSubscriptions" :return-url="$router.resolve({name: 'accountBuy'}).href">
           <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
             <div class="extra-account-buttons">
               <button :class="{ loading: sendRequest }" :disabled="!canSendInfo" @click="extraAccountPay(submitPayment, authorizeAmount)">Set payment info</button>

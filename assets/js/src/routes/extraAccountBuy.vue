@@ -17,10 +17,10 @@
         <div class="pre-loader"></div>
       </div>
       <div class="container-body" v-else>
-        <div class="purchased-state" v-if="purchased">
+        <!-- <div class="purchased-state" v-if="purchased">
           You have purchased an extra quota. <router-link :to="{ name: 'accounts'}">Go to accounts</router-link> to add Instagram account.
-        </div>
-        <div class="error-state" v-else-if="error">
+        </div> -->
+        <div class="error-state" v-if="error">
           {{ error }}
         </div>
         <div class="purchase-info" v-else-if="cardInfo">
@@ -70,14 +70,16 @@ export default {
           quantity: 1
         }
       }).then(({ data }) => {
-        const { success } = data.request;
+        const { success, error } = data.request;
         this.purchasing = false;
 
         if (success) {
-          this.purchased = true;
+          this.$router.push({ name: 'accounts', params:{ isBuy: 'add'}})
         } else {
-          this.error = "Error  ddddd";
+          this.error = error.message;
         }
+      }).catch(error => {
+        this.error = 'Server connection problem, try again'
       })
     }
   },

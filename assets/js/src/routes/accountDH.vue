@@ -8,7 +8,7 @@
        <router-link :to="{ name: 'dhPayments'}" class="menu-item">
          Payments
        </router-link>
-       <router-link :to="{ name: 'dhSubscriptions'}" class="menu-item">
+       <router-link :to="{ name: 'dhSubscriptions'}" class="menu-item" v-if="false">
          Subscriptions
        </router-link>
      </div>

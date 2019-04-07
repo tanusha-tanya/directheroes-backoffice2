@@ -51,6 +51,16 @@ import addAccountDialog from '../component/addAccountDialog.vue'
 import igAvatar from '../assets/ig-avatar.jpg'
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next(accounts => {
+      accounts.isAddAccount = Boolean(to.params.isBuy)
+    })
+  },
+
+  beforeRouteUpdate(to, from, next) {
+    this.isAddAccount = Boolean(to.params.isBuy)
+    next();
+  },
   // beforeRouteEnter(to, from, next) {
   //   const { body } = document;
 
@@ -92,6 +102,7 @@ export default {
     addAccount() {
       const { dhAccount, accounts } = this;
 
+      dhAccount.igAccountLimit=2;
       if (accounts.length >= dhAccount.igAccountLimit) {
         this.isExtraAccount = true;
         return;

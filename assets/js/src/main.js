@@ -48,7 +48,6 @@ import extraAccountPayment from './routes/extraAccountPayment.vue'
 
 const router = new VueRouter({
   routes:[
-    { path: '/', name: 'accounts', component: accounts },
     { path: '/videohelp', name: 'video-help', component: videoHelp },
     { path: '/settings', component: accountDH,
       children: [
@@ -71,6 +70,7 @@ const router = new VueRouter({
         { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },
+    { path: '/:isBuy?', name: 'accounts', component: accounts },
   ]
 })
 
