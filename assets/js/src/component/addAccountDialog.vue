@@ -148,6 +148,8 @@ export default {
 
   methods: {
     checkConnection() {
+      if (!this.isAddAccount) return;
+
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
