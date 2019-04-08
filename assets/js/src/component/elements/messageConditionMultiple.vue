@@ -13,7 +13,7 @@
         >
         <element-warning :element="Object.assign({}, item, { emptyMoreOne })"></element-warning>
         <div class="list-condition-container" :ref="item.id">
-          <arrow-born :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
+          <arrow-born :class="{'no-connection': !item.onMatch }" :element="item" @connect-arrow="connectArrow(item, $event)"></arrow-born>
         </div>
       </message-condition>
       <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index) && ! hasEmptyList">+ Click to add list item</div>
@@ -169,6 +169,12 @@ export default {
 }
 </script>
 <style lang="scss">
+@keyframes scale-element-1-2 {
+  from {transform: scale(1)}
+  50% {transform: scale(1.2)}
+  to {transform: scale(1)}
+}
+
 .list-conditions {
   padding: 9px 20px 13px;
 
@@ -190,6 +196,12 @@ export default {
         left: 0;
         right: 0;
         bottom: 0;
+      }
+
+      .arrow-born.no-connection {
+        background-color: #ff4d4d;
+        border-color: #ff4d4d;
+        animation: scale-element-1-2 1s infinite;
       }
 
       .element-warning {

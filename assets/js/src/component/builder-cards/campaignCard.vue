@@ -80,11 +80,11 @@ export default {
         right: -7px;
         font-size: 15px;
         top: calc(50% - 11px);
+        transition: transform .3s;
+      }
 
-        &:hover {
-          border-color: #666;
-          color: #666;
-        }
+      .arrow-born:hover {
+        transform: scale(1.2);
       }
 
       .remove-go-to {
@@ -100,6 +100,11 @@ export default {
         border: 1px solid #ddd;
         line-height: 10px;
         cursor: pointer;
+
+        &:hover {
+          border-color: #666;
+          color: #666;
+        }
       }
     }
   }

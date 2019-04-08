@@ -62,15 +62,15 @@ export default {
 
   props:['entryType', 'currentEntryItem', 'disabled'],
 
-  mounted() {
-    EventBus.$on('builderCard:mousedown', (cardDetails) => {
-      this.originalPosition = cardDetails
-    });
+  // mounted() {
+  //   EventBus.$on('builderCard:mousedown', (cardDetails) => {
+  //     this.originalPosition = cardDetails
+  //   });
 
-    EventBus.$on('builderCard:mouseup', (cardSettings) => {
-      this.handleCollision(cardSettings);
-    });
-  },
+  //   EventBus.$on('builderCard:mouseup', (cardSettings) => {
+  //     this.handleCollision(cardSettings);
+  //   });
+  // },
 
   computed:{
     steps() {
@@ -191,35 +191,35 @@ export default {
       this.$store.commit('set', {path: 'newPoint', value: null});
     },
 
-    resetDraggedCardToOriginalPos() {
-      const draggedCard = this.currentEntryItem.steps.find(dragged => dragged.id === this.originalPosition.id);
-      draggedCard.displaySettings.positionX = this.originalPosition.x;
-      draggedCard.displaySettings.positionY = this.originalPosition.y;
-    },
+    // resetDraggedCardToOriginalPos() {
+    //   const draggedCard = this.currentEntryItem.steps.find(dragged => dragged.id === this.originalPosition.id);
+    //   draggedCard.displaySettings.positionX = this.originalPosition.x;
+    //   draggedCard.displaySettings.positionY = this.originalPosition.y;
+    // },
 
 
   /**
    * compare currently dragged card position with all other campaign cards
    * if they collide, move dragged card back to its original position
    */
-    handleCollision(cardSettings) {
-      const draggedCard = this.$refs[cardSettings.id][0] || this.$refs[cardSettings.id]
-      const draggedCardHeight = draggedCard.$el.clientHeight
-      const draggedCardWidth = draggedCard.$el.clientWidth
+    // handleCollision(cardSettings) {
+    //   const draggedCard = this.$refs[cardSettings.id][0] || this.$refs[cardSettings.id]
+    //   const draggedCardHeight = draggedCard.$el.clientHeight
+    //   const draggedCardWidth = draggedCard.$el.clientWidth
 
-      // compare current position with campaign positions
-      this.currentEntryItem.steps.forEach((step) => {
-        const card = this.$refs[step.id][0] || this.$refs[step.id];
-        const cardHeight = card.$el.clientHeight;
-        const cardWidth = card.$el.clientWidth;
-        const collision = new Collision(cardSettings, step, cardWidth, cardHeight, draggedCardHeight, draggedCardWidth);
+    //   // compare current position with campaign positions
+    //   this.currentEntryItem.steps.forEach((step) => {
+    //     const card = this.$refs[step.id][0] || this.$refs[step.id];
+    //     const cardHeight = card.$el.clientHeight;
+    //     const cardWidth = card.$el.clientWidth;
+    //     const collision = new Collision(cardSettings, step, cardWidth, cardHeight, draggedCardHeight, draggedCardWidth);
 
-        if (this.originalPosition.id !== step.id && collision.check()) {
-          this.resetDraggedCardToOriginalPos();
-        }
-      })
-      return true;
-    }
+    //     if (this.originalPosition.id !== step.id && collision.check()) {
+    //       this.resetDraggedCardToOriginalPos();
+    //     }
+    //   })
+    //   return true;
+    // }
   },
 
 
