@@ -53,12 +53,16 @@ import igAvatar from '../assets/ig-avatar.jpg'
 export default {
   beforeRouteEnter(to, from, next) {
     next(accounts => {
-      accounts.isAddAccount = Boolean(to.params.isBuy)
+      const { isLimitReached} = accounts;
+
+      accounts.isAddAccount = Boolean(to.params.isBuy) && !isLimitReached;
     })
   },
 
   beforeRouteUpdate(to, from, next) {
-    this.isAddAccount = Boolean(to.params.isBuy)
+    const { isLimitReached} = this;
+
+    this.isAddAccount = Boolean(to.params.isBuy) && !isLimitReached;
     next();
   },
   // beforeRouteEnter(to, from, next) {
@@ -92,6 +96,12 @@ export default {
     accounts() {
       return this.$store.state.accounts
     },
+
+    isLimitReached() {
+      const { dhAccount, accounts} = this;
+
+      return accounts.length >= dhAccount.igAccountLimit
+    }
   },
 
   methods: {
@@ -100,10 +110,9 @@ export default {
     },
 
     addAccount() {
-      const { dhAccount, accounts } = this;
+      const { isLimitReached} = this;
 
-      // dhAccount.igAccountLimit=2;
-      if (accounts.length >= dhAccount.igAccountLimit) {
+      if (isLimitReached) {
         this.isExtraAccount = true;
         return;
       }
