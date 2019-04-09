@@ -2,13 +2,14 @@
 <div class="broadcast-builder">
   <div class="broadcast-builder-controls">
     <span>Broadcast Builder</span>
-     <div class="info" v-if="currentBroadcast">
-        <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
-        <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
-        <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
-        <div class="start-message" v-if="isStarted">Broadcast was started</div>
-        <div v-if="!startAt">Time to start not setted</div>
-      </div>
+    <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
+    <div class="info" v-if="currentBroadcast">
+      <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
+      <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
+      <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
+      <div class="start-message" v-if="isStarted">Broadcast was started</div>
+      <div v-if="!startAt">Time to start not setted</div>
+    </div>
     <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
     <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
       <img src="../assets/svg/gear.svg"/>
@@ -53,6 +54,7 @@
 import flowBuilder from '../component/flowBuilder.vue'
 import moment from 'moment'
 import Vue from 'vue'
+import utils from '../utils'
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -122,6 +124,14 @@ export default {
       const { isStarted, startAt, broadcastStep } = this;
 
       return !isStarted && startAt && moment().diff(new Date(startAt), 'minutes') > 1
+    },
+
+    hasWarning() {
+      const { currentBroadcast } = this;
+
+      if (!currentBroadcast) return;
+
+      return utils.hasCampaignWarning(currentBroadcast);
     }
   },
 
@@ -290,6 +300,18 @@ export default {
       font-size: 24px;
       line-height: 24px;
       flex-grow: 1;
+    }
+
+    .broadcast-warning {
+      font-size: 18px;
+      margin-right: 10%;
+      display: flex;
+      align-items: center;
+
+      img {
+        margin-right: 5px;
+        width: 25px;
+      }
     }
 
     .info {

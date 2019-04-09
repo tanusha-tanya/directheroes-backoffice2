@@ -41,5 +41,52 @@ export default {
         return seconds
         break;
     }
+  },
+
+  campaignElementValidate(element) {
+    let warning = null;
+
+    switch(element.type || element.messageType) {
+      case "sendImageAction":
+        if (!element.value) {
+          warning = 'Image not uploaded'
+        }
+      break;
+      case "sendTextAction":
+        if (!element.value.text) {
+          warning = 'Enter text'
+        }
+      break;
+      case "any":
+        const { onMatch, emptyMoreOne } = element;
+
+        if (emptyMoreOne) {
+          warning = 'There can only be one empty element in a list'
+        } else if (!onMatch) {
+          warning = 'List element has no target step'
+        }
+      break;
+    }
+
+    return warning
+  },
+
+  hasCampaignWarning(campaign) {
+    const { campaignElementValidate } = this;
+
+    return campaign.steps.some(step => {
+      return step.elements.some(element => {
+        if (element.type === 'messageConditionMultiple') {
+          const { conditionList } = element.value;
+          const emptyAnyItem = conditionList.filter(item => item.messageType === 'any' && !item.keywords.length);
+
+          return element.value.conditionList.some(conditionItem => {
+            return Boolean(campaignElementValidate({ ...conditionItem, emptyMoreOne: emptyAnyItem > 1 }))
+          })
+        } else {
+          return campaignElementValidate(element);
+        }
+      });
+    });
   }
 }

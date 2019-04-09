@@ -12,6 +12,12 @@
     </div>
     <router-link class="list-item" :to="{name: 'accountCampaign', params:{ campaignId:campaign.id }}" v-for="campaign in account.campaignList" :key="campaign.id">
       <div class="campaign-row">
+        <el-tooltip
+          class="campaign-warning" effect="light"
+          content="The flow is incomplete, please fix all warnings before activating it"
+          v-if="hasWarning(campaign)">
+          <img src="../assets/triangle.svg">
+        </el-tooltip>
         {{ campaign.name }}
       </div>
       <div class="active-row">
@@ -49,6 +55,7 @@
 </template>
 <script>
 import moment from 'moment'
+import utils from '../utils'
 import confirmDialog from '../component/confirmDialog.vue'
 
 export default {
@@ -100,6 +107,12 @@ export default {
       })
 
     },
+
+    hasWarning(campaign) {
+      if (!campaign) return;
+
+      return utils.hasCampaignWarning(campaign);
+    },
   },
 }
 </script>
@@ -109,6 +122,11 @@ export default {
 
   .content-title {
     margin-bottom: 16px;
+  }
+
+  .campaign-warning {
+    width: 20px;
+    margin-right: 10px;
   }
 
   .campaign-controls {
@@ -143,6 +161,8 @@ export default {
       width: 60%;
       padding: 0 10px;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
     }
 
     .active-row {

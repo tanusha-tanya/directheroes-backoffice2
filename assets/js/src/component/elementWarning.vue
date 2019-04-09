@@ -4,36 +4,15 @@
   </el-tooltip>
 </template>
 <script>
+import utils from '../utils'
+
 export default {
 
   computed: {
     warning() {
       const { element } = this;
-      let warning = null;
 
-      switch(element.type || element.messageType) {
-        case "sendImageAction":
-          if (!element.value) {
-            warning = 'Image not uploaded'
-          }
-        break;
-        case "sendTextAction":
-          if (!element.value.text) {
-            warning = 'Enter text'
-          }
-        break;
-        case "any":
-          const { onMatch, emptyMoreOne } = element;
-
-          if (emptyMoreOne) {
-            warning = 'There can only be one empty element in a list'
-          } else if (!onMatch) {
-            warning = 'List element has no target step'
-          }
-        break;
-      }
-
-      return warning
+      return utils.campaignElementValidate(element);
     }
   },
 

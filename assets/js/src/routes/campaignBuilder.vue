@@ -2,6 +2,7 @@
   <div class="campaign-builder">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
+      <div class="campaign-warning" v-if="currentCampaign && hasWarning"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign">
         Activate
         <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
@@ -23,6 +24,7 @@
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
+import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
 import confirmDialog from '../component/confirmDialog.vue'
 
@@ -55,6 +57,14 @@ export default {
   computed:{
     campaigns() {
       return this.$store.state.currentAccount.campaignList
+    },
+
+    hasWarning() {
+      const { currentCampaign } = this;
+
+      if (!currentCampaign) return;
+
+      return utils.hasCampaignWarning(currentCampaign);
     }
   },
 
@@ -125,6 +135,18 @@ export default {
       font-size: 24px;
       line-height: 24px;
       flex-grow: 1;
+    }
+
+    .campaign-warning {
+      font-size: 18px;
+      margin-right: 10%;
+      display: flex;
+      align-items: center;
+
+      img {
+        margin-right: 5px;
+        width: 25px;
+      }
     }
 
     .campaign-list {

@@ -15,6 +15,12 @@
     </div>
     <router-link class="list-item" :to="{name: 'accountBroadcast', params:{ broadcastId:broadcast.id }}" v-for="broadcast in account.broadcastList" :key="broadcast.id">
       <div class="broadcast-row">
+        <el-tooltip
+          class="broadcast-warning" effect="light"
+          content="The broadcast is incomplete, please fix all warnings before activating it"
+          v-if="hasWarning(broadcast)">
+          <img src="../assets/triangle.svg">
+        </el-tooltip>
         {{ broadcast.name }}
       </div>
       <div class="schedule-row">
@@ -45,10 +51,11 @@
       <button class="cancel" @click="isAddBroadcast = false">Close</button>
     </template>
   </el-dialog>
-</div>    
+</div>
 </template>
 <script>
 import moment from 'moment'
+import utils from '../utils'
 
 export default {
   data() {
@@ -84,7 +91,7 @@ export default {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
       const { settings } = broadcastEntry;
       const startAt = moment((settings.startAt && settings.startAt * 1000) || null).format('DD MMM YYYY hh:mm')
-      
+
       return startAt == 'Invalid date' ? '-' : startAt;
     },
 
@@ -98,15 +105,21 @@ export default {
 
     broadcastReach(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-     
+
       return broadcastEntry.status.reach || '-';
     },
 
     broadcastStatus(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-     
+
       return broadcastEntry.status.statusText;
-    }
+    },
+
+    hasWarning(broadcast) {
+      if (!broadcast) return;
+
+      return utils.hasCampaignWarning(broadcast);
+    },
   },
 }
 </script>
@@ -116,6 +129,11 @@ export default {
 
   .content-title {
     margin-bottom: 16px;
+  }
+
+  .broadcast-warning {
+    width: 20px;
+    margin-right: 10px;
   }
 
   .broadcast-controls {
@@ -136,20 +154,22 @@ export default {
 
   .list-item {
     text-decoration: none;
-    
+
     &.header {
       font-weight: bold;
       // justify-content: space-between;
 
       &:hover {
         background-color: transparent
-      } 
+      }
     }
 
     .broadcast-row {
       width: 32%;
       padding: 0 10px;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
     }
 
     .schedule-row {
