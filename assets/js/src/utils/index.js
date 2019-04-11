@@ -44,26 +44,36 @@ export default {
   },
 
   campaignElementValidate(element) {
+    const { onMatch, emptyMoreOne, keywords } = element;
     let warning = null;
 
     switch(element.type || element.messageType) {
-      case "sendImageAction":
+      case 'sendImageAction':
         if (!element.value) {
           warning = 'Image not uploaded'
         }
       break;
-      case "sendTextAction":
+      case 'sendTextAction':
         if (!element.value.text) {
           warning = 'Enter text'
         }
       break;
       case "any":
-        const { onMatch, emptyMoreOne } = element;
-
         if (emptyMoreOne) {
           warning = 'There can only be one empty element in a list'
         } else if (!onMatch) {
           warning = 'List element has no target step'
+        }
+      break;
+      case 'adReply':
+      case 'storyShare':
+      case 'storyMention':
+      case 'postShare':
+      case 'mediaShare':
+        if (!keywords.length) {
+          warning = 'No trigers'
+        } else if (!onMatch) {
+          warning = 'Element has no target step'
         }
       break;
     }
