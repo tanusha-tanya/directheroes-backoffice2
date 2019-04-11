@@ -70,9 +70,7 @@ export default {
       case 'storyMention':
       case 'postShare':
       case 'mediaShare':
-        if (!keywords.length) {
-          warning = 'No trigers'
-        } else if (!onMatch) {
+        if (!onMatch) {
           warning = 'Element has no target step'
         }
       break;
