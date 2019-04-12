@@ -103,8 +103,19 @@ export default {
 
       if (!activeSource) return;
 
-      Object.assign(this.owner, activeSource.owner);
-      this.cardInfo = activeSource.card || activeSource.three_d_secure;
+      Object.assign(this.owner, activeSource.owner ||
+        {
+          name: activeSource.name,
+          address: {
+            city: activeSource.address_city,
+            country: activeSource.address_country,
+            line1: activeSource.address_line1,
+            line2: activeSource.address_line2,
+            state: activeSource.address_state,
+            postal_code: activeSource.address_zip,
+          }
+        });
+      this.cardInfo = activeSource.card || activeSource.three_d_secure || activeSource;
     });
   }
 };
