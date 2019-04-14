@@ -31,7 +31,7 @@
           <button @click="buyExtraAccount" :class="{loading: purchasing}">Purchase</button>
         </div>
         <div class="purchase-info" v-else>
-          No one card attached to service
+          No card attached to service
         </div>
         <div class="payment-buttons">
           <router-link class="primary" tag="button" :to="{ name: 'accountPayment' }">Edit payment method</router-link>

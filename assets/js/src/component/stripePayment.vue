@@ -224,6 +224,8 @@ export default {
         if (!previousSourceOwner) return;
 
         Object.assign(this.owner, previousSourceOwner);
+
+        this.owner.address = this.owner.address || {};
       });
 
       return request;
