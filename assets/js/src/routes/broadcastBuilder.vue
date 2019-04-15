@@ -248,6 +248,7 @@ export default {
   .broadcast-settings-campaign-list {
     height: 100%;
     width: 200px;
+    overflow: auto;
     border-right: 1px solid #DBDBDB;
 
     .el-checkbox__input.is-checked {
