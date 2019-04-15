@@ -99,8 +99,6 @@ export default {
     }).then(({ data }) => {
       const { activeSource } = data.response.body;
 
-      this.loading = false;
-
       if (!activeSource) return;
 
       Object.assign(this.owner, activeSource.owner ||
@@ -115,7 +113,11 @@ export default {
             postal_code: activeSource.address_zip,
           }
         });
-      this.cardInfo = activeSource.card || activeSource.three_d_secure || activeSource;
+
+      this.owner.address = this.owner.address || {};
+      this.cardInfo = activeSource.card || activeSource.three_d_secure || activeSource || {};
+
+      this.loading = false;
     });
   }
 };

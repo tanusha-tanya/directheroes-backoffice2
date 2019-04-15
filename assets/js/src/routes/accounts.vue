@@ -65,19 +65,6 @@ export default {
     this.isAddAccount = Boolean(to.params.isBuy) && !isLimitReached;
     next();
   },
-  // beforeRouteEnter(to, from, next) {
-  //   const { body } = document;
-
-  //   body.classList.add('no-overlay')
-  //   next();
-  // },
-
-  // beforeRouteLeave(to, from, next) {
-  //   const { body } = document;
-
-  //   body.classList.remove('no-overlay')
-  //   next();
-  // },
 
   data() {
     return {

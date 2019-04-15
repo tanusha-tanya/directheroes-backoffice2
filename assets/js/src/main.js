@@ -43,6 +43,8 @@ import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
 import accountDHSubscription from './routes/accountDHSubscription.vue'
 import videoHelp from './routes/videoHelp.vue'
+import addonBuy from './routes/addonBuy.vue'
+import addonPayment from './routes/addonPayment.vue'
 import extraAccountBuy from './routes/extraAccountBuy.vue'
 import extraAccountPayment from './routes/extraAccountPayment.vue'
 
@@ -56,6 +58,8 @@ const router = new VueRouter({
         { name: 'dhSubscriptions', path: 'subscriptions', component: accountDHSubscription },
       ]
     },
+    { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
+    { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },
     { name: 'accountBuy', path: '/account-buy', component: extraAccountBuy },
     { name: 'accountPayment', path: '/account-buy/payment', component: extraAccountPayment },
     { path: '/:accountId', component: accountDetails,
