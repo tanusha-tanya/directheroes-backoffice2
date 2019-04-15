@@ -7,11 +7,11 @@
     v-if="!hideSelect"
     >
     <el-option class="ad-reply" label="Ad Reply" value="adReply" v-if="availableTriggers.includes('adReply')">Ad Reply</el-option>
-    <el-option class="story" label="Story Share" value="storyShare" v-if="availableTriggers.includes('storyShare')">Story Share</el-option>
+    <el-option class="story" label="Story Reply" value="storyShare" v-if="availableTriggers.includes('storyShare')">Story Reply</el-option>
     <el-option class="story" label="Story Mention" value="storyMention" v-if="availableTriggers.includes('storyMention')">Story Mention</el-option>
-    <el-option class="post-share" label="Post Share" value="postShare" v-if="availableTriggers.includes('postShare')">Post Share</el-option>
+    <el-option class="post-share" label="Post Reply" value="postShare" v-if="availableTriggers.includes('postShare')">Post Reply</el-option>
     <el-option class="story" label="Media Share" value="mediaShare" v-if="availableTriggers.includes('mediaShare')">Media Share</el-option>
-    <el-option class="story-mention" label="List" value="any" v-if="canHasAny && availableTriggers.includes('any')">List</el-option>
+    <el-option class="story-mention" label="Keyword" value="any" v-if="canHasAny && availableTriggers.includes('any')">Keyword</el-option>
   </el-select>
   <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
     <keywords
