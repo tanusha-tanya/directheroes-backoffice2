@@ -4,6 +4,7 @@
       {{ step.name || '&nbsp;'}}
     </template>
     <template slot="header-controls">
+      <element-warning :element="step"></element-warning>
       <builder-card-dialogs :step="step" @delete-step="$emit('delete-step', step)"></builder-card-dialogs>
     </template>
     <template slot="body">
@@ -267,6 +268,10 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      .element-warning {
+        margin-right: 10px;
+      }
     }
 
     .builder-card-body {

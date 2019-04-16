@@ -44,7 +44,7 @@ export default {
   },
 
   campaignElementValidate(element) {
-    const { onMatch, emptyMoreOne, keywords } = element;
+    const { onMatch, emptyMoreOne } = element;
     let warning = null;
 
     switch(element.type || element.messageType) {
@@ -56,6 +56,11 @@ export default {
       case 'sendTextAction':
         if (!element.value.text) {
           warning = 'Enter text'
+        }
+      break;
+      case 'regular':
+        if (!element.elements.length) {
+          warning = 'Please add at least one element'
         }
       break;
       case "any":
@@ -83,6 +88,10 @@ export default {
     const { campaignElementValidate } = this;
 
     return campaign.steps.some(step => {
+      if (campaignElementValidate(step)) {
+        return true;
+      }
+
       return step.elements.some(element => {
         if (element.type === 'messageConditionMultiple') {
           const { conditionList } = element.value;
