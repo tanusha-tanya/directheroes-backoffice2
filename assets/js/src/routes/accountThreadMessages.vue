@@ -66,7 +66,6 @@
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import threadMessage from '../component/threadMessage.vue'
   import moment from 'moment'
-  import image from '../assets/svg/image-placeholder.svg'
 
   export default {
     beforeRouteUpdate(to, from, next) {
@@ -97,7 +96,6 @@
         filters: {
           username_query: ''
         },
-        image
       }
     },
 

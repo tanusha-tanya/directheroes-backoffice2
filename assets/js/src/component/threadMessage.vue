@@ -5,7 +5,12 @@
     </div>
     <div class="body">
       <div class="avatar" v-if="!isMe" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-      <div class="wrapper" :title="message.sentAt && date(message.sentAt)">
+      <div :class="{
+        wrapper: true,
+        'bot-message': message.botCampaign,
+        'live-message': isMe && !message.botCampaign,
+        'queue-message': isMe && !message.sentAt && message.toBeSentAt
+        }" :title="message.sentAt && date(message.sentAt)">
         <div class="type" :title="message.typeExtended" v-if="message.type">
           {{ message.type }}
           <router-link
@@ -34,11 +39,13 @@
 <script>
 import defaultAvatar from '../assets/ig-avatar.jpg'
 import moment from 'moment'
+import image from '../assets/svg/image-placeholder.svg'
 
 export default {
   data() {
     return {
-      defaultAvatar
+      defaultAvatar,
+      image,
     }
   },
 
@@ -47,8 +54,6 @@ export default {
   computed: {
     isMe() {
       const { message, contactProfile } = this;
-
-      console.log(contactProfile, message);
 
       return contactProfile.username !== message.senderUsername
     },
@@ -133,6 +138,8 @@ export default {
     z-index: 1;
     right: 20px;
     color: #a8a8a8;
+    background-color: #fff;
+    border-radius: 50px;
 
     &.sent {
       color: #742BF9;
@@ -156,6 +163,26 @@ export default {
     border: 1px solid #DEDEDE;
     border-radius: 25px;
     margin-bottom: 10px;
+
+    &.bot-message {
+      border-color: #742BF9 !important;
+    }
+
+    &.live-message {
+      border-color: #2674f5 !important;
+
+      & + .sent {
+        color: #2674f5 !important;
+      }
+    }
+
+    &.queue-message {
+      border-color: #e84f45 !important;
+
+      & + .indicator {
+        color: #e84f45 !important;
+      }
+    }
   }
 
   .bot-campaign {
