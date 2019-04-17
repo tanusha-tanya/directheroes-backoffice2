@@ -8,7 +8,7 @@
       <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
       <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
       <div class="start-message" v-if="isStarted">Broadcast was started</div>
-      <div v-if="!startAt">Time to start not setted</div>
+      <div v-if="!startAt">Click to set broadcast</div>
     </div>
     <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
     <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
