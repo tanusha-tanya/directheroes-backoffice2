@@ -43,7 +43,7 @@
           <div class="remove-element" @click="elementToDelete = triggerElement">&times</div>
         </div>
         <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
-          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag" :triggers="triggersList"></component>
+          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :tag="tag" :triggers="triggersList" list-name="List"></component>
         </div>
       </div>
       <arrow-born :element="step" @connect-arrow="connectArrow" v-if="!triggerElement && !goToStepElement"></arrow-born>

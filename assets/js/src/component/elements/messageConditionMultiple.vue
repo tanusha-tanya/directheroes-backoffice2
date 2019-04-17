@@ -9,6 +9,7 @@
         :tag-prefix="tagPrefix(item)"
         :tag-name="item.name"
         :triggers="triggers"
+        :list-name="listName"
         @set-tag-name="setTagName(item, $event)"
         >
         <element-warning :element="Object.assign({}, item, { emptyMoreOne })"></element-warning>
@@ -43,7 +44,7 @@ export default {
     }
   },
 
-  props:['element', 'tag', 'triggers'],
+  props:['element', 'tag', 'triggers', 'listName'],
 
   computed: {
     anyItems() {
