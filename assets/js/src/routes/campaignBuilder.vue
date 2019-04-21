@@ -5,8 +5,18 @@
       <div class="campaign-warning" v-if="currentCampaign && hasWarning"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign" >
         Activate
-        <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch
-      ></div>
+        <template v-if="hasWarning">
+          <el-tooltip
+            effect="light"
+            content="Please clear all warnings first"
+            >
+            <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="true"></el-switch>
+          </el-tooltip>
+        </template>
+        <template v-else>
+          <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch>
+        </template>
+      </div>
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <div class="campaign-builder-control trash" v-if="currentCampaign" @click="isDeleteDialog = true">
         <img src="../assets/svg/trash.svg"/>
