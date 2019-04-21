@@ -60,7 +60,7 @@ export default {
     arrows
   },
 
-  props:['entryType', 'currentEntryItem', 'disabled'],
+  props:['entryType', 'currentEntryItem', 'disabled', 'hasWarning'],
 
   // mounted() {
   //   EventBus.$on('builderCard:mousedown', (cardDetails) => {
@@ -249,6 +249,9 @@ export default {
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
           return;
         }
+
+        entry.isActive = entry.isEnabled && !this.hasWarning;
+        entry.isIncomplete = this.hasWarning;
 
         this.saveCampaign();
       },

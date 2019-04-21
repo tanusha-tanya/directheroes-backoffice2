@@ -3,16 +3,16 @@
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
       <div class="campaign-warning" v-if="currentCampaign && hasWarning"><img src="../assets/triangle.svg">This flow is incomplete</div>
-      <div class="campaign-builder-control" v-if="currentCampaign">
+      <div class="campaign-builder-control" v-if="currentCampaign" >
         Activate
-        <el-switch v-model="currentCampaign.isEnabled" :width="22"></el-switch
+        <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch
       ></div>
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <div class="campaign-builder-control trash" v-if="currentCampaign" @click="isDeleteDialog = true">
         <img src="../assets/svg/trash.svg"/>
       </div>
     </div>
-    <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign"></flow-builder>
+    <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign" :has-warning="hasWarning"></flow-builder>
     <confirm-dialog
       v-model="isDeleteDialog"
       title="Delete campaign"
