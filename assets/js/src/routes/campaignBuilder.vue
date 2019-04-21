@@ -18,9 +18,19 @@
         </template>
       </div>
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
-      <div class="campaign-builder-control trash" v-if="currentCampaign" @click="isDeleteDialog = true">
-        <img src="../assets/svg/trash.svg"/>
-      </div>
+      <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
+        <div class="campaign-builder-settings">
+          <div class="campaign-builder-option">
+            <el-switch v-model="currentCampaign.settings.allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
+          </div>
+          <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
+            <img src="../assets/svg/trash.svg"/> Delete campaign
+          </div>
+        </div>
+        <div class="gear" slot="reference">
+          <img src="../assets/svg/gear.svg"/>
+        </div>
+      </el-popover>
     </div>
     <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign" :has-warning="hasWarning"></flow-builder>
     <confirm-dialog
@@ -130,6 +140,56 @@ export default {
 }
 </script>
 <style lang="scss">
+.campaign-builder-settings {
+  color: #A9A9A9;
+
+  .el-switch {
+    margin-right: 10px;
+    .el-switch__core {
+      height: 14px;
+      background-color: transparent;
+      border: 2px solid currentColor;
+
+      &:after {
+        border: 2px solid currentColor;
+        width: 4px;
+        height: 4px;
+        left: 2px;
+      }
+    }
+
+    &.is-checked {
+      .el-switch__core {
+        border-color: #2E69F7;
+
+        &:after {
+          border-color: #2E69F7;
+          left:100%;
+          margin-left: -10px;
+        }
+      }
+    }
+  }
+
+  .campaign-builder-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(#A9A9A9, .2);
+    }
+
+    &.trash {
+      cursor: pointer;
+
+      img {
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
 .campaign-builder {
   flex-grow: 1;
   position: relative;
@@ -175,6 +235,10 @@ export default {
       margin: 0 10px 0 38px;
     }
 
+    span.campaign-builder-control {
+      flex-grow: 0;
+    }
+
     .campaign-builder-control {
       font-size: 18px;
 
@@ -210,6 +274,17 @@ export default {
       &.trash {
         padding: 8px;
         cursor: pointer;
+      }
+
+      .gear {
+        padding: 0 8px;
+        display: flex;
+        cursor: pointer;
+        align-items: center;
+
+        img {
+          width: 16px;
+        }
       }
     }
   }
