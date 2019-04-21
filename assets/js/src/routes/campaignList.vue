@@ -21,7 +21,7 @@
         {{ campaign.name }}
       </div>
       <div class="active-row">
-        {{campaign.isEnabled ? 'Active' : 'Not Active'}}
+        {{campaign.isActive ? 'Active' : 'Incomplete'}}
       </div>
       <div class="delete-row">
         <div class="trash-button" @click.stop.prevent="campaignToDelete = campaign">

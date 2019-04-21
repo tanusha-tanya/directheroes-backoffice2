@@ -112,7 +112,7 @@ export default {
     broadcastStatus(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
 
-      return broadcastEntry.status.statusText;
+      return !broadcastEntry.isActive ? 'Incomplete' : broadcastEntry.status.statusText;
     },
 
     hasWarning(broadcast) {
