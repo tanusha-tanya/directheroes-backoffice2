@@ -21,6 +21,9 @@
         <router-link class="side-bar-item" :to="{ name: 'video-help' }" v-if="dhAccount && dhAccount.features.igCourse">
           <img :src="youtube"/>
         </router-link>
+        <router-link class="side-bar-item" :to="{ name: 'book-help' }">
+          <img :src="pdf"/>
+        </router-link>
       </div>
       <div class="content-container" v-if="dhAccount">
         <router-view></router-view>
@@ -42,6 +45,7 @@ import home from './assets/svg/home.svg'
 import people from './assets/svg/people.svg'
 import socialBuffer from './assets/svg/social-buffer.svg'
 import youtube from './assets/svg/youtube.svg'
+import pdf from './assets/svg/pdf.svg'
 import broadcast from './assets/svg/broadcast.svg'
 
 export default {
@@ -53,7 +57,8 @@ export default {
       people,
       socialBuffer,
       youtube,
-      broadcast
+      broadcast,
+      pdf,
     }
   },
 

@@ -43,6 +43,7 @@ import accountDHProfile from './routes/accountDHProfile.vue'
 import accountDHPayment from './routes/accountDHPayment.vue'
 import accountDHSubscription from './routes/accountDHSubscription.vue'
 import videoHelp from './routes/videoHelp.vue'
+import bookHelp from './routes/bookHelp.vue'
 import addonBuy from './routes/addonBuy.vue'
 import addonPayment from './routes/addonPayment.vue'
 import extraAccountBuy from './routes/extraAccountBuy.vue'
@@ -50,6 +51,7 @@ import extraAccountPayment from './routes/extraAccountPayment.vue'
 
 const router = new VueRouter({
   routes:[
+    { path: '/bookhelp', name: 'book-help', component: bookHelp },
     { path: '/videohelp', name: 'video-help', component: videoHelp },
     { path: '/settings', component: accountDH,
       children: [
