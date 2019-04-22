@@ -175,6 +175,11 @@ export default {
             element.value.conditionList.forEach(item => {
               if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
 
+              if (!currentEntryItem.steps.find(step => step.id === item.onMatch.value.stepId)) {
+                delete item.onMatch;
+                return
+              }
+
               arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
             })
           break;
