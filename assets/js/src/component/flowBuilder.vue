@@ -112,13 +112,13 @@ export default {
     }, 3000),
 
     dragEnter(data) {
-     if (data.type != "regular") return;
+     if (!data || data.type != "regular") return;
 
       this.dragged = true;
     },
 
     dragLeave(data) {
-      if (data.type != "regular") return;
+      if (!data || data.type != "regular") return;
 
       this.dragged = false;
     },
@@ -127,7 +127,7 @@ export default {
       const ObjId = new ObjectId;
       this.dragged = false;
 
-      if (data.type != "regular") return;
+      if (!data || data.type != "regular") return;
 
       const step = JSON.parse(JSON.stringify(data))
 

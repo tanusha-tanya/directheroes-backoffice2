@@ -9,23 +9,35 @@
     </template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
-      <div
-        class="element-container"
-        v-for="element in elementList"
-        :key="element.id"
-        >
-        <div class="element-title" :ref="element.id">
-          <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
-            <div class="element-name">{{elementsNames[element.type]}}</div>
-            <element-warning :element="element"></element-warning>
-            <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
-          </span>
-          <div class="remove-element" @click="elementToDelete = element">&times</div>
+      <draggable :list="elementList" handle=".drag-handler" @change="replaceElements">
+        <div
+          class="element-container"
+          v-for="element in elementList"
+          :key="element.id"
+          >
+          <div class="element-title" :ref="element.id">
+            <span @click="element.displaySettings.collapsed = !element.displaySettings.collapsed">
+              <div class="drag-handler" @click.prevent>
+                <svg viewBox="0 0 380 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <path d="M160,153.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V153.3z" fill="currentColor"/>
+                  <path d="M288,153.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V153.3z" fill="currentColor"/>
+                  <path d="M160,281.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V281.3z" fill="currentColor"/>
+                  <path d="M288,281.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V281.3z" fill="currentColor"/>
+                  <path d="M160,409.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V409.3z" fill="currentColor"/>
+                  <path d="M288,409.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V409.3z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="element-name">{{elementsNames[element.type]}}</div>
+              <element-warning :element="element"></element-warning>
+              <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
+            </span>
+            <div class="remove-element" @click="elementToDelete = element">&times</div>
+          </div>
+          <div class="element-body" v-if="!element.displaySettings.collapsed">
+            <component :is="elementComponents[element.type]" :element="element"></component>
+          </div>
         </div>
-        <div class="element-body" v-if="!element.displaySettings.collapsed">
-          <component :is="elementComponents[element.type]" :element="element"></component>
-        </div>
-      </div>
+      </draggable>
       <component
         :is="Drop"
         :class="{'add-element': true, 'in-drag':  dragged}"
@@ -60,6 +72,7 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import ObjectId from '../../utils/ObjectId'
 import EventBus from '../../utils/event-bus.js'
 import builderCard from "./builderCard.vue";
@@ -100,7 +113,8 @@ export default {
     builderCardDialogs,
     arrowBorn,
     elementWarning,
-    confirmDialog
+    confirmDialog,
+    draggable,
   },
 
   props: ['step', 'tag'],
@@ -246,6 +260,20 @@ export default {
       const { goToStepElement } = this;
 
       elements.splice(elements.indexOf(goToStepElement), 1);
+    },
+
+    replaceElements(event) {
+      const { elementList, step } = this;
+      const { elements } = step;
+      const { moved } = event;
+
+      if (!moved) return;
+
+      const newIndex = elements.indexOf(elementList[moved.newIndex]);
+      const oldIndex = elements.indexOf(elementList[moved.oldIndex])
+
+      elements.splice(oldIndex, 1)
+      elements.splice(newIndex, 0, elementList[moved.oldIndex])
     }
   }
 }
@@ -356,6 +384,24 @@ export default {
         border-radius: 4px 4px 0 0;
         position: relative;
         cursor: pointer;
+
+        .drag-handler {
+          position: absolute;
+          left: 4px;
+          top: 6px;
+
+          &:hover {
+            color:#000;
+          }
+
+          svg {
+            width: 15px;
+          }
+        }
+
+        .element-warning {
+          width: 14px;
+        }
 
         .element-name {
           flex-grow: 1;
