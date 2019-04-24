@@ -23,6 +23,10 @@ export default {
           title: 'Building Your First Direct Heroes Flow',
           link: 'https://www.directheroes.com/doc-dist/Building_Your_First_Direct_Heroes_Flow1.pdf'
         },
+        {
+          title: '30 Day Customer Walk Through',
+          link: 'https://www.directheroes.com/doc-dist/30_Day_Customer_Walk_Through.pdf'
+        },
        ]
      }
    }
