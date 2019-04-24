@@ -116,6 +116,10 @@ export default {
       box-shadow: 0px 2px 13px rgba(207, 207, 207, 0.5);
     }
 
+    &:hover .side-bar-title{
+      color: #434890;
+    }
+
     .side-bar-title {
       font-size: 18px;
       line-height: 22px;
@@ -123,10 +127,6 @@ export default {
       margin-left: 10px;
       opacity: 0;
       transition: .6s opacity .1s;
-
-      &:hover {
-        color: #434890;
-      }
     }
 
     img {
