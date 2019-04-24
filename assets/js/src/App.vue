@@ -138,11 +138,12 @@ export default {
   }
 
   .account-avatar {
-    width: 27px;
-    height: 27px;
+    width: 30px;
+    height: 30px;
     border-radius: 50px;
     background-size: contain;
     background-position: center;
+    flex-shrink: 0;
   }
 
   .content-container {
