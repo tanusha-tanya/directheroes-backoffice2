@@ -2,7 +2,7 @@
   <div id="app">
     <dh-header></dh-header>
     <div class="content">
-      <div class="side-bar">
+      <div :class="{'side-bar': true, 'full-view': isfullSideBar}">
         <router-link v-if="account" class="side-bar-item avatar" :to="{ name: 'accountHome' }">
           <div class="account-avatar" :style="{'background-image': `url(${ account.profilePicUrl })`}"></div><span class="side-bar-title">Account</span>
         </router-link>
@@ -73,6 +73,10 @@ export default {
 
     accounts() {
       return this.$store.state.accounts.length;
+    },
+
+    isfullSideBar() {
+      return this.$store.state.isfullSideBar;
     }
   },
 
@@ -90,15 +94,15 @@ export default {
     background-color: #fff;
     flex-shrink: 0;
     width: 50px;
-    transition: .6s width .8s;
+    // transition: .6s width .8s;
 
-    &:hover {
+    &.full-view {
       width: 150px;
-      transition: .6s width .3s;
+      // transition: .6s width .3s;
 
       .side-bar-title {
         opacity: 1;
-        transition: .6s opacity .8s;
+        // transition: .6s opacity .8s;
       }
     }
   }

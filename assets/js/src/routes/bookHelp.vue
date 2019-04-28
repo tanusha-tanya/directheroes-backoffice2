@@ -27,6 +27,10 @@ export default {
           title: '30 Day Customer Walk Through',
           link: 'https://www.directheroes.com/doc-dist/30_Day_Customer_Walk_Through.pdf'
         },
+        {
+          title: '2 Min Template',
+          link: 'https://www.directheroes.com/doc-dist/2_Min_Template.pdf'
+        },
        ]
      }
    }
