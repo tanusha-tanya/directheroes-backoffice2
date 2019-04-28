@@ -21,6 +21,10 @@ export default new VueX.Store({
     arrows: [],
     currentAccount: null,
     firstLoad: false,
+    isfullSideBar: true,
+    serverKey: null,
+    clientKey: null,
+    nonce: null,
     newAccount: {
       accountState: 'add',
       password: '',

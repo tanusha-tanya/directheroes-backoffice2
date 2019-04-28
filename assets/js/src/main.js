@@ -6,6 +6,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faCheckCircle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen, faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+// import sodium from 'libsodium-wrappers'
 
 library.add(faUser, faEnvelopeOpen, faEnvelope, faCheckCircle, faClock, faEye, faEyeSlash);
 
@@ -23,6 +24,8 @@ import './assets/fonts/stylesheet.css'
 import './element'
 import './styles/main.scss'
 import './styles/common.scss'
+
+
 
 /**
  * Import routes components
@@ -83,6 +86,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const { dhAccount } = store.state;
 
+  store.state.isfullSideBar = !['accountCampaign','accountBroadcast'].includes(to.name)
+
   if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'dhPayments') {
     next({name: 'dhPayments'})
   } else {
@@ -120,11 +125,33 @@ Vue.mixin({
       this.$router.push({ name: 'dhPayments'})
     }
   }
-})
+});
+
+// (async () => {
+//   await sodium.ready;
+
+//   const clientKey = store.state.clientKey = sodium.crypto_box_keypair();
+//   const serverKey =store.state.serverKey = sodium.crypto_box_keypair();
+//   const nonce = store.state.nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+
+
+//   // console.log(store.state.clientKey);
+
+//   const password = sodium.crypto_box_easy('supepuperpassword', nonce, serverKey.publicKey, clientKey.privateKey);
+
+//   const message = sodium.crypto_box_open_easy(password, nonce, clientKey.publicKey, serverKey.privateKey);
+
+//   console.log(new TextDecoder("utf-8").decode(message));
+
+
+// })();
+
 
 new Vue({
   el: '#app',
   store,
   router,
   render: h => h(App)
-})
+});
+
+
