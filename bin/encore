@@ -18,6 +18,7 @@ cd "${PROJECT_DIR}"
 
 case "${ACTION}" in
   "production")
+    mkdir -p "${PROJECT_DIR}/public/build"
     rm -rf "${PROJECT_DIR}/public/build.old"
     docker-compose exec php yarn run encore production --verbose
     mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
