@@ -26,7 +26,7 @@
       </div>
     </div>
   </div>
-</div>  
+</div>
 </template>
 
 <script>
@@ -41,14 +41,16 @@ export default {
 
   created() {
     const { subscriberId } = this.$route.params;
-    axios({ 
+
+    axios({
+      url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/subscriber/fetch-info?id=${ subscriberId }`,
+    })
+    axios({
       url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/subscriber/get?id=${ subscriberId }`,
-      method: 'post',
-      data: this.filters,
     })
     .then(({ data }) => {
       const { subscriber } = data.response.body
-      
+
       this.subscriber = subscriber;
     })
   }

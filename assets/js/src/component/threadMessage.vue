@@ -22,7 +22,7 @@
           </router-link>
         </div>
         <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
-        <a class="post" v-if="message.postUrl" :href="message.postUrl" target="_blank">
+        <a class="post" v-if="message.previewUrl" :href="message.previewUrl" target="_blank">
           <div class="picture" :style="{'background-image': `url(${ message.previewUrl }), url(${ image })`}"></div>
         </a>
       </div>

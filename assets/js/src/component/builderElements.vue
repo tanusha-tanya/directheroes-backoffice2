@@ -123,11 +123,13 @@ export default {
       &.step-add img{
         max-width: 43px;
         max-height: 43px;
+        margin-left: -43px;
       }
 
       img {
         max-width: 23px;
         max-height: 23px;
+        margin-left: -23px;
         pointer-events: none;
       }
 
