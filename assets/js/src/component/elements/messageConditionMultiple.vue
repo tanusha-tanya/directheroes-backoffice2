@@ -19,7 +19,7 @@
       </message-condition>
       <div class="add-list" @click="addListCondition(index)" v-if="isLastAny(item, index) && ! hasEmptyList">+ {{ listName ? 'Click to add list item' : 'Click to add Keywords group' }}</div>
     </div>
-    <div class="add-condition" @click="addMessageCondition(null)">+ {{ !listName ? 'Click to add Growth Tool' : 'Click to add condition'}}</div>
+    <div class="add-condition" @click="addMessageCondition(null)">+ {{ !listName ? 'Click to add Growth Tool' : 'Click to add trigger'}}</div>
     <confirm-dialog
         v-model="toDeleteTrigger"
         title="Delete trigger"

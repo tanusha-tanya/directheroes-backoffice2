@@ -1,5 +1,5 @@
 <template>
-  <div class="keywords">
+  <div :class="['keywords', messageType]">
     <el-select
       :value="value"
       placeholder="Matches any text, click to edit"
@@ -39,7 +39,7 @@ export default {
     }
   },
 
-  props: ['value', 'tag-prefix', 'tag-name'],
+  props: ['value', 'tag-prefix', 'tag-name', 'message-type'],
 
   methods: {
     keywordsChange(value) {
@@ -89,6 +89,53 @@ export default {
     border: 1px solid #DDDDDD;
     border-radius: 8px;
     background-color: #fff;
+
+    &.adReply, &.postShare {
+      position: absolute !important;
+      top: 37px;
+      width: 37px;
+      right: 0px;
+      height: 40px;
+      border-color: transparent;
+      background-color: transparent;
+
+      .el-select {
+        display: none;
+      }
+
+      img.element-warning {
+        right: 12px !important;
+        top: 8px !important;
+      }
+
+      .list-condition-container {
+        z-index: 5;
+      }
+    }
+
+    &.storyMention, &.storyShare, &.mediaShare {
+      position: absolute !important;
+      top: 17px;
+      width: 37px;
+      right: -11px;
+      height: 0;
+      border-color: transparent;
+      background-color: transparent;
+
+      .el-select {
+        display: none;
+      }
+
+      img.element-warning {
+        right: 38px !important;
+        top: -13px !important;
+      }
+
+      .list-condition-container {
+        z-index: 5;
+      }
+
+    }
 
     .tag-item {
       font: 9px 'AbeatbyKai';

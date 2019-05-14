@@ -18,6 +18,7 @@
       v-model="element.value.keywords"
       :tag-prefix="tagPrefix"
       :tag-name="tagName"
+      :message-type="element.value.messageType"
       @set-tag-name="$emit('set-tag-name', $event)"
       >
       <slot></slot>
@@ -26,7 +27,7 @@
   <template v-if="['postShare', 'adReply'].includes(element.value.messageType)">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
-    <keywords v-model="element.value.keywords">
+    <keywords v-model="element.value.keywords" :message-type="element.value.messageType">
       <slot></slot>
     </keywords>
   </template>
