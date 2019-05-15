@@ -1,0 +1,193 @@
+<template>
+<div class="account-dh-profile">
+  <div class="account-dh-info">
+    <div class="account-dh-photo" :style="{'background-image': `url(${ igAvatar })`}"></div>
+    <div class="account-dh-name">
+      {{dhAccount.firstName}} {{dhAccount.lastName}}
+    </div>
+    <div class="account-dh-joined">
+      Joined: <strong>{{joinedAt}}</strong>
+    </div>
+    <button @click="isPasswordChange = true">Change password</button>
+  </div>
+  <div class="account-dh-details">
+    <div class="container-title">Basic information</div>
+    <div class="account-dh-fields">
+        <div class="account-dh-field">
+          First Name <span>{{ dhAccount.firstName }}</span>
+        </div>
+         <div class="account-dh-field">
+          Last Name <span>{{ dhAccount.lastName }}</span>
+        </div>
+    </div>
+  </div>
+  <el-dialog
+    :visible.sync="isPasswordChange"
+    title="Change password"
+    width="321px"
+    append-to-body
+    class="password-dialog"
+    :show-close="false"
+    >
+    <label>
+      Current Password
+      <input v-model="currentPassword" type="password"  @input="error = null"/>
+    </label>
+    <label>
+      New Password
+      <input v-model="newPassword" type="password" @input="error = null"/>
+    </label>
+    <label>
+      Repeat Password
+      <input v-model="reNewPassword" type="password" @input="error = null"/>
+    </label>
+    <div class="error">{{error}}</div>
+    <template slot="footer">
+      <button :class="{ loading }" :disabled="loading || !currentPassword || !newPassword || !reNewPassword" @click="changePassword">Save</button>
+      <button class="cancel" :disabled="loading" @click="isPasswordChange = null">Close</button>
+    </template>
+  </el-dialog>
+</div>
+</template>
+<script>
+import axios from 'axios';
+import igAvatar from '../assets/ig-avatar.jpg'
+import moment from 'moment'
+
+export default {
+  data() {
+    return {
+      igAvatar,
+      isPasswordChange: false,
+      currentPassword: '',
+      newPassword: '',
+      reNewPassword: '',
+      error: null,
+      loading: false
+    }
+  },
+  computed: {
+    joinedAt() {
+      return moment(this.dhAccount.joinedAt * 1000).format('MMM Do YYYY')
+    }
+  },
+
+  methods: {
+    changePassword() {
+      const { currentPassword, newPassword, reNewPassword} = this;
+
+      if (newPassword !== reNewPassword) {
+        this.error = 'New password not equal repeat password';
+        return;
+      }
+
+      this.error = null;
+      this.loading = true;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/dh-account/change-password`,
+        method: 'post',
+        data: {
+          oldPassword: currentPassword,
+          newPassword
+        }
+      }).then(({data}) => {
+        this.isPasswordChange = false;
+        this.loading = false;
+      }).catch(({response}) => {
+        this.error = response.data.request.statusMessage;
+        this.loading = false;
+      })
+    }
+  },
+
+  watch: {
+    isPasswordChange(value) {
+      if (value) return;
+
+      this.currentPassword = this.newPassword = this.reNewPassword = '';
+      this.error = null;
+    }
+  }
+}
+</script>
+<style lang="scss">
+.account-dh-profile {
+  display: flex;
+  height: calc(100% - 40px);
+
+  .account-dh-details {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .container-title {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  .account-dh-fields {
+    font-size: 13px;
+    color: #828282;
+
+  }
+
+  .account-dh-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
+
+    span {
+      border-radius: 30px;
+      border: 1px solid #DBDBDB;
+      flex-grow: 1;
+      max-width: 75%;
+      padding: 5px 15px;
+    }
+  }
+}
+
+.password-dialog {
+  .el-dialog__header {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .el-dialog__body {
+    padding: 7px 20px;
+  }
+
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    input {
+      width: 50%;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+  }
+
+  .error {
+    margin-top: 10px;
+    color: #FF4D4D;
+    text-align: center;
+  }
+
+  button {
+    background-color: #6A12CB;
+    border-radius: 5px;
+    line-height: 16px;
+    font-weight: normal;
+    padding: 7px 20px;
+
+    &.cancel {
+      background-color: transparent;
+      color: #000;
+    }
+  }
+}
+</style>

@@ -2,11 +2,15 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: './src/main.js',
+  entry: {
+    build: './src/main.js',
+    register: './src/registration/registration.js'
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: '[name].js'
+    // filename: 'build.js'
   },
   module: {
     rules: [
@@ -83,13 +87,21 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
-    historyApiFallback: true,
     host: 'directheroes.local',
     // noInfo: true,
     overlay: true,
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/$/, to: './index.html' },
+        { from: /^\/register/, to: './register.html' },
+      ],
+    },
     proxy: [{
       context: ['/api/1.0.0/**', '/api/2.0.0/**', '/ig/accounts/**'],
+      // target: 'https://www.directheroes.com/app_dev.php',
+      // target: 'https://staging.directheroes.com/app_dev.php',
       target: 'https://beta2.directheroes.com/app_dev.php',
+      // target: 'https://beta.directheroes.com/app_dev.php',
       changeOrigin: true,
       secure: true,
       logLevel: 'debug',

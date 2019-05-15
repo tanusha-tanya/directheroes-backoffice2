@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" :style="{ top: `${ settings.positionY }px`, left: `${ settings.positionX }px`}">
+  <div class="builder-card" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -105,6 +105,9 @@ export default {
   cursor: move;
   min-height: 15px;
   padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .builder-card-body {

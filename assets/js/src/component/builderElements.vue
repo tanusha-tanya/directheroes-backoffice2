@@ -1,23 +1,24 @@
 <template>
   <div class="builder-elements">
-    <component 
-      :is="Drag" 
+    <component
+      :is="Drag"
       :transfer-data="stepData"
       class="builder-element step-add"
+      v-if="!type"
     >
-      <img src="../assets/svg/plus-outline.svg"/>
+      <div class="icon" :style="{'background-image': `url(${plus})`}"/>
     </component>
-    <component 
-      :is="Drag" 
+    <component
+      :is="Drag"
       :transfer-data="element.template"
-      class="builder-element" 
-      v-for="element in elements" 
+      class="builder-element"
+      v-for="element in elements"
       :key="element.name"
     >
-      <img :src="element.svg"/>
+      <div class="icon" :style="{'background-image': `url(${element.svg})`}"/>
       <div class="builder-element-title">{{element.name}}</div>
     </component>
-  </div>    
+  </div>
 </template>
 <script>
 import { Drag } from 'vue-drag-drop';
@@ -28,27 +29,29 @@ import stopwatch from '../assets/svg/stopwatch.svg'
 import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
 import infinite from '../assets/svg/infinite.svg'
+import plus from '../assets/svg/plus-outline.svg'
 
 export default {
   data() {
     return {
+      plus,
       stepData: {
         elements: [],
         name: "New Step",
         type: "regular",
       },
       elements: [
-        { 
-          name: 'Image', 
+        {
+          name: 'Image',
           svg: image,
           template: {
             type: 'sendImageAction',
             value: null
           }
         },
-        { 
-          name: 'Text', 
-          svg: chatbubble, 
+        {
+          name: 'Text',
+          svg: chatbubble,
           template: {
             type: 'sendTextAction',
             value: {
@@ -56,40 +59,28 @@ export default {
             }
           }
         },
-        { 
-          name: 'Triggers', 
+        {
+          name: 'Triggers',
           svg: flash,
           template: {
-            type: 'messageCondition',
+            type: 'messageConditionMultiple',
             value: {
-              keywords: [],
-              messageType: 'storyShare',
-              link: ''
+              conditionList:[]
             }
           }
         },
-        { 
-          name: 'Delay', 
+        {
+          name: 'Delay',
           svg: stopwatch,
           template: {
             type: 'basicDelay',
             value: {
               seconds: 1
             }
-          }  
+          }
         },
-        { 
-          name: 'List', 
-          svg: navicon,
-          template: {
-            type: 'messageTextConditionMultiple',
-            value: {
-              conditionList:[]
-            }
-          }  
-        },
-        // { 
-        //   name: 'Video', 
+        // {
+        //   name: 'Video',
         //   svg: socialYoutube,
         // },
         // { name: 'List', svg: navicon },
@@ -97,7 +88,17 @@ export default {
       ],
       Drag
     }
-  }
+  },
+
+  props:['type'],
+
+  // methods: {
+  //   visible(element) {
+  //     if (this.dhAccount.labs) return true;
+
+  //     return !['Triggers'].includes(element.name)
+  //   }
+  // }
 }
 </script>
 <style lang="scss">
@@ -121,15 +122,18 @@ export default {
       height: 75px;
       width: 100%;
 
-      &.step-add img{
-        max-width: 43px;
-        max-height: 43px;
+      &.step-add .icon{
+        width: 43px;
+        height: 43px;
       }
 
-      img {
-        max-width: 23px;
-        max-height: 23px;
+      .icon {
+        width: 23px;
+        height: 23px;
         pointer-events: none;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
       }
 
       &:not(:last-child) {

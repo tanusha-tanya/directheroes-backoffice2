@@ -9,7 +9,8 @@
       <el-dropdown-menu class="action-list" slot="dropdown">
         <el-dropdown-item command="rename">Rename</el-dropdown-item>
         <el-dropdown-item command="delay" v-if="!short" divided>Add delay</el-dropdown-item>
-      </el-dropdown-menu> 
+        <el-dropdown-item command="remove" v-if="!short" divided>Remove step</el-dropdown-item>
+      </el-dropdown-menu>
     </el-dropdown>
     <el-dialog
       :visible.sync="isActionRename"
@@ -39,16 +40,25 @@
         <button class="cancel" @click="actionType = null">Close</button>
       </template>
     </el-dialog>
+    <confirm-dialog
+      v-model="isActionDelete"
+      title="Delete step"
+      message="Are you sure you want to delete step?"
+      @success="$emit('delete-step')"
+      >
+    </confirm-dialog>
   </div>
 </template>
 <script>
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import basicDelay from './elements/basicDelay.vue'
+import confirmDialog from './confirmDialog.vue'
 
 export default {
   data() {
     return {
+      isActionDelete: false,
       actionType: null,
       intermediateValue: null,
     }
@@ -57,7 +67,8 @@ export default {
   props:['step', 'short'],
 
   components: {
-    basicDelay
+    basicDelay,
+    confirmDialog
   },
 
   computed: {
@@ -87,7 +98,7 @@ export default {
 
     delayInfo() {
       const { delayInHeader } = this;
-      
+
       if (!delayInHeader || !delayInHeader.value.seconds) return;
 
       const { seconds } = delayInHeader.value;
@@ -117,15 +128,17 @@ export default {
               }
             }
 
-            step.elements.push(element)
+            Array.prototype.unshift(step.elements, element)
           }
 
           this.intermediateValue = JSON.parse(JSON.stringify(element));
           break;
-      
+
         case 'rename':
           this.intermediateValue = step.name;
           break;
+        case 'remove':
+          this.isActionDelete = true;
       }
 
       this.actionType = type;
@@ -188,23 +201,7 @@ export default {
   }
 
   .el-dialog__wrapper.action-dialog {
-    
-    .el-dialog {
-      border-radius: 5px;
-      padding: 20px;
-    }
-
-    .el-dialog__header {
-      padding: 0;
-      font-size: 18px;
-      line-height: 22px;
-      font-weight: bold;
-      text-align: center;
-    }
-
     .el-dialog__body {
-      padding: 0;
-
       input:not(.el-input__inner) {
         width: 100%;
         margin: 20px 0;
@@ -222,23 +219,6 @@ export default {
 
     .basic-delay {
       padding: 20px 0;
-    }
-
-    .el-dialog__footer {
-      padding: 0;
-
-      button {
-        background-color: #6A12CB;
-        border-radius: 5px;
-        line-height: 16px;
-        font-weight: normal;
-        padding: 7px 20px;
-
-        &.cancel {
-          background-color: transparent;
-          color: #000;
-        }
-      }
     }
   }
 </style>

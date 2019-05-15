@@ -1,37 +1,55 @@
 <template>
 <div class="message-condition">
-  <el-select 
-    :class="[{'campaign-type': true}, element.value.messageType]" 
+  <el-select
+    :class="[{'campaign-type': true}, element.value.messageType]"
     v-model="element.value.messageType"
     popper-class="campaign-type-dropdown"
-  >
-    <el-option class="story" label="Story Share" value="storyShare">Story Share</el-option>
-    <el-option class="post-share" label="Post Share" value="postShare">Post Share</el-option>
-    <el-option class="story-mention" label="Any message" value="any">Any message</el-option>
+    v-if="!hideSelect"
+    >
+    <el-option class="ad-reply" label="Ad Reply" value="adReply" v-if="availableTriggers.includes('adReply')">Ad Reply</el-option>
+    <el-option class="story" label="Story Reply" value="storyShare" v-if="availableTriggers.includes('storyShare')">Story Reply</el-option>
+    <el-option class="story" label="Story Mention" value="storyMention" v-if="availableTriggers.includes('storyMention')">Story Mention</el-option>
+    <el-option class="post-share" label="Post Reply" value="postShare" v-if="availableTriggers.includes('postShare')">Post Reply</el-option>
+    <el-option class="story" label="Media Share" value="mediaShare" v-if="availableTriggers.includes('mediaShare')">Media Share</el-option>
+    <el-option class="story-mention" :label="listName || 'Keyword'" value="any" v-if="canHasAny && availableTriggers.includes('any')">{{ listName || 'Keyword' }}</el-option>
   </el-select>
-  <template v-if="['storyShare', 'any'].includes(element.value.messageType)">
-    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+  <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
+    <keywords
+      v-model="element.value.keywords"
+      :tag-prefix="tagPrefix"
+      :tag-name="tagName"
+      :message-type="element.value.messageType"
+      @set-tag-name="$emit('set-tag-name', $event)"
+      >
+      <slot></slot>
+    </keywords>
   </template>
-  <template v-if="element.value.messageType == 'postShare'">
+  <template v-if="['postShare', 'adReply'].includes(element.value.messageType)">
     <input placeholder="Please enter URL" v-model="element.value.link">
     <div class="notice">Leave empty to target any url.</div>
-    <condition-list :element="element" v-if="mode == 'list-conditions'"></condition-list>
-    <keywords v-model="element.value.keywords" v-else></keywords>
+    <keywords v-model="element.value.keywords" :message-type="element.value.messageType">
+      <slot></slot>
+    </keywords>
   </template>
-</div>  
+</div>
 </template>
 <script>
-import messageConditionMultiple from "./messageConditionMultiple.vue";
 import keywords from "../keywords.vue";
 
 export default {
-  props:['element', 'mode'],
+  props:['element', 'mode', 'hideSelect', 'canHasAny', 'tagName', 'tagPrefix', 'triggers', 'listName'],
 
   components: {
-    conditionList: messageConditionMultiple,
     keywords
-  } 
+  },
+
+  computed: {
+    availableTriggers() {
+      const allTriggers = ['adReply', 'storyShare', 'storyMention', 'postShare', 'mediaShare', 'any']
+
+      return this.triggers || allTriggers;
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -50,6 +68,18 @@ export default {
         top: 10px;
       }
 
+      &.storyMention .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
+      &.mediaShare .el-input--suffix:before {
+        background-image: url(../../assets/svg/bubble-w.svg);
+        height: 11px;
+        top: 10px;
+      }
+
       &.any .el-input--suffix:before {
         background-image: url(../../assets/svg/timer-w.svg);
         height: 13px;
@@ -62,10 +92,17 @@ export default {
         top: 12px;
       }
 
+      &.adReply .el-input--suffix:before {
+        background-image: url(../../assets/svg/ad-w.svg);
+        height: 10px;
+        width: 14px;
+        top: 10px;
+      }
+
       .el-input--suffix {
         &:before {
           content: '';
-          width: 13px; 
+          width: 13px;
           position: absolute;
           left: 12px;
         }
@@ -130,10 +167,10 @@ export default {
     .el-select-dropdown__item {
       color: #A9A9A9;
       padding: 0 20px 0 35px;
-      
+
       &:before {
         content: '';
-        width: 13px; 
+        width: 13px;
         position: absolute;
         left: 12px;
       }
@@ -154,6 +191,13 @@ export default {
         background-image: url(../../assets/svg/link.svg);
         height: 7px;
         top: 14px;
+      }
+
+      &.ad-reply:before {
+        background-image: url(../../assets/svg/ad.svg);
+        height: 10px;
+        top: 12px;
+        width: 14px;
       }
 
       &:first-child {

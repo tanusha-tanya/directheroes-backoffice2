@@ -1,0 +1,188 @@
+@keyframes rotation {
+  0% { transform:rotate(0deg); }
+  100% { transform:rotate(360deg); }
+}
+
+.account-card {
+  padding: 17px;
+  width: 177px;
+  height: 222px;
+  text-align: center;
+  text-decoration: none;
+  transition: .5s border-width, .5s border-color;
+
+  .account-photo {
+    width: 98px;
+    height: 98px;
+    border-radius: 50px;
+    background-size: contain;
+    background-position: center;
+    margin: 0 auto 15px;
+  }
+
+  .account-login {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 18px;
+    color: #3C3C3C;
+  }
+
+  .account-follow-info {
+    display: flex;
+    font-size: 13px;
+    margin-top: 15px;
+    color: #828282;
+    justify-content: space-around;
+  }
+}
+
+.account-website {
+  text-decoration: none;
+  margin-top: 5px;
+  font-weight: bold;
+  color: #5334DC;
+  word-break: break-all;
+}
+
+.container-area {
+  background: #FFF;
+  border: 1px solid #DBDBDB;
+  box-shadow: 0px 2px 4px rgba(215, 215, 215, 0.5);
+  border-radius: 10px;
+}
+
+.w800 {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.w968 {
+  max-width: 968px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.content-title {
+  color: #A9A9A9;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+.list-item {
+  padding: 10px;
+  display: flex;
+  font-size: 13px;
+  color: #828282;
+  align-items: center;
+  border-bottom: 1px solid #DBDBDB;
+
+  &:not(.header):hover {
+    background-color: rgba(#6A12CB, .04)
+  }
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  background-size: contain;
+  background-position: center;
+  border-radius: 26px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+button {
+  &:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+
+  &.loading {
+    color: transparent;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: calc(50% - 10px);
+      left: calc(50% - 10px);
+      width: 15px;
+      height: 15px;
+      border-radius: 100%;
+      border: 3px solid #FFF;
+      border-bottom-color: transparent;
+      animation: rotation  .8s infinite linear;
+    }
+  }
+}
+
+.account-dh-info {
+  width: 230px;
+  border-right: 1px solid #EEEEEE;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+
+  .account-dh-photo {
+    width: 98px;
+    height: 98px;
+    border-radius: 50px;
+    background-position: center;
+    background-size: contain;
+    margin-bottom: 10px;
+  }
+
+  .account-dh-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .account-dh-joined {
+    font-size: 10px;
+    flex-grow: 1;
+  }
+
+  button {
+    border-radius: 30px;
+    background-color: transparent;
+    font-weight: normal;
+    color: #828282;
+    border: 1px solid #DBDBDB;
+  }
+}
+
+.form-row {
+  display: flex;
+  margin: 0 -10px 10px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 10px;
+
+    & > div:not(.error) {
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 15px;
+      min-height: 37px;
+    }
+
+    input {
+      padding: 9px;
+    }
+  }
+}

@@ -7,6 +7,7 @@
   </div>
 </template>
 <script>
+import Vue from 'vue'
 import axios from 'axios'
 
 export default {
@@ -30,7 +31,7 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       }).then(({ data }) => {
-        this.element.value = data.response.body
+        Vue.set(this.element, 'value', data.response.body);
       });
 
       event.preventDefault();

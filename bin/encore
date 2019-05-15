@@ -18,15 +18,14 @@ cd "${PROJECT_DIR}"
 
 case "${ACTION}" in
   "production")
+    mkdir -p "${PROJECT_DIR}/public/build"
+    rm -rf "${PROJECT_DIR}/public/build.old"
     docker-compose exec php yarn run encore production --verbose
+    mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
+    mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
     cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
     ;;
   "dev")
-    docker-compose exec php yarn run encore dev --verbose
-    cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
-    ;;
-  "both")
-    docker-compose exec php yarn run encore production --verbose
     docker-compose exec php yarn run encore dev --verbose
     cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
     ;;

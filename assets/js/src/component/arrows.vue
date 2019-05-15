@@ -7,7 +7,7 @@
     <!-- <circle cx="10" cy="10" r="5" fill="#FAFAFA" stroke="#DDDDDD" stroke-width="2"/>
     <circle cx="726" cy="180" r="5"          fill="#FAFAFA" stroke="#DDDDDD" />
     <path   d="M 726 180 C 276 87 270 10 0 0" fill="none" stroke="#DDDDDD"/> -->
-  </svg>  
+  </svg>
 </template>
 <script>
 
@@ -19,13 +19,13 @@ export default {
   },
 
   props: ['refs', 'arrows', 'scale'],
-  
+
   methods: {
     recalcPathes() {
       setTimeout(() => {
         const { refs, getElement, scale } = this;
         const areaRect = this.$el.getBoundingClientRect();
-       
+
         this.pathes = this.arrows.map(arrow => {
           const isToPoint = arrow.child == 'toPoint';
           let parent = getElement(arrow.parent);
@@ -34,43 +34,44 @@ export default {
           if (!parent || !child) return;
 
           parent = parent[0] || parent;
-          child = child[0] || child; 
-          
+          child = child[0] || child;
+
           const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
           const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
           const isOnTop = startRect.top + startRect.height < endRect.top;
           const isOnBottom = startRect.top > endRect.top + endRect.height;
-          const isOnRight = startRect.left + startRect.width < endRect.left;
-          const isOnLeft = startRect.left > endRect.left + endRect.width
+          const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
+          const isOnLeft = startRect.left > endRect.left;
+          const isOnLeftFull = startRect.left > endRect.left + endRect.width;
+          const isOnRightFull = startRect.left + startRect.width < endRect.left;
 
-          if(!isOnTop && !isOnBottom && !isOnRight && !isOnLeft) return;
+          if(!isOnTop && !isOnBottom && !isOnRightFull && !isOnLeftFull) return;
 
-          const startX = ((((isOnTop || isOnBottom) && startRect.left + 0.5 * startRect.width) ||
-            (isOnRight && startRect.left + startRect.width) ||
-            (isOnLeft && startRect.left)) - areaRect.left) / scale
+          const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
 
-          const startY = (((isOnTop && startRect.top + startRect.height) || 
-            (isOnBottom && startRect.top) ||
-            ((isOnLeft || isOnRight) && startRect.top + 0.5 * startRect.height)) - areaRect.top) / scale
+          const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
 
-          const endX = ((((isOnTop || isOnBottom) && endRect.left + 0.5 * endRect.width) ||
-            (isOnRight && endRect.left) ||
-            (isOnLeft && endRect.left + endRect.width)) - areaRect.left) / scale
+          const endX = (((((isOnLeft && !isOnLeftFull) || isOnRightFull) && endRect.left) || (endRect.left + endRect.width)) - areaRect.left) / scale
 
-          const endY = (((isOnTop && endRect.top) || 
-            (isOnBottom && endRect.top + endRect.height) ||
-            ((isOnLeft || isOnRight) && endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
-          
+          const endY = (((endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
+
           const deltaX = (endX - startX) * .5
           const deltaY = (endY - startY) * .5
-          
-          let path = ((isOnTop || isOnBottom) && `M${ startX } ${ startY } Q${ startX } ${ startY + deltaY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`) || 
-            ((isOnLeft || isOnRight) && `M${ startX } ${ startY } Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY } T${ endX } ${ endY }`)
-        
-          let angle = (isOnTop && 90) || (isOnBottom && 270) || (isOnLeft && 180) || 0;
-          
+
+          let path = `M${ startX } ${ startY } `
+
+          if (!isOnLeftFull && !isOnRightFull) {
+            path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
+          } else {
+            path += `Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY }`
+          }
+
+          path += `T${ endX } ${ endY }`
+
+          let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
+
           return {
-            line: path, 
+            line: path || '',
             arrow: {
               x: endX,
               y: endY,
@@ -87,14 +88,14 @@ export default {
           element = container.$refs[id];
           return true
         }
-        
+
         container.$children.find(child => findElement(child));
       }
       const { refs } = this;
       let element = null;
 
       findElement(refs);
-      
+
       return element
     }
   },
@@ -105,6 +106,7 @@ export default {
 
   watch: {
     '$store.state.newPoint'(newValue) {
+
       if (newValue) {
         this.recalcPathes()
       } else {

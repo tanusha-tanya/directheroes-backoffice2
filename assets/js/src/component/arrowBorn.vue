@@ -1,5 +1,5 @@
 <template>
-  <div class='arrow-born' @click="createPoint"><span>+</span></div>  
+  <div class='arrow-born' @click="createPoint"><span>+</span></div>
 </template>
 <script>
 import Vue from 'vue'
@@ -29,17 +29,15 @@ export default {
 </script>
 <style lang="scss">
   .arrow-born {
-    color: #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #fff;
+    text-align: center;
     height: 15px;
     width: 15px;
     font-size: 16px;
     border-radius: 7px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    line-height: 10px;
+    background-color: #2e9d7b;
+    border: 1px solid #2e9d7b;
     cursor: pointer;
+    line-height: 15px;
   }
 </style>
