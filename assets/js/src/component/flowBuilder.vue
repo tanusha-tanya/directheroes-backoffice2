@@ -9,7 +9,7 @@
       @drop="dropHandler"
       ref="flowBuilder"
       >
-      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `5000px`, minWidth: `5000px`}">
+      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `5000px`, minWidth: `5000px`, transformOrigin: scalePosition}">
         <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'"></campaign-card>
         <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" v-else></broadcast-card>
         <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
@@ -100,6 +100,12 @@ export default {
 
     builder() {
       return this;
+    },
+
+    scalePosition() {
+      const { scale } = this;
+      const center = 55;
+      return `${ center }% ${ center }%`
     }
   },
 
@@ -210,11 +216,9 @@ export default {
     findCampaignCard() {
       const campaignCard = this.$refs[this.entryStep.id];
       const { $el } = this.$refs.flowBuilder;
-      console.log($el.clientWidth/ 2);
 
       $el.scrollTop = (campaignCard.$el.offsetTop - $el.clientHeight / 2) + campaignCard.$el.clientHeight / 2;
       $el.scrollLeft = (campaignCard.$el.offsetLeft - $el.clientWidth / 2) + campaignCard.$el.clientWidth / 2;
-
     },
 
     // resetDraggedCardToOriginalPos() {
@@ -248,6 +252,10 @@ export default {
     // }
   },
 
+  mounted() {
+    if (!this.currentEntryItem) return;
+    this.findCampaignCard();
+  },
 
   watch:{
     '$store.state.newPoint'(newValue, oldValue) {
@@ -270,6 +278,10 @@ export default {
 
         if (entry) {
           this.getArrows();
+
+          if (oldEntry || !this._isMounted) return;
+
+          this.findCampaignCard();
         }
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
