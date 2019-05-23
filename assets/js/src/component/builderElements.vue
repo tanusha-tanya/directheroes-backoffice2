@@ -25,6 +25,7 @@ import { Drag } from 'vue-drag-drop';
 import image from '../assets/svg/image.svg'
 import chatbubble from '../assets/svg/chatbubble.svg'
 import flash from '../assets/svg/flash.svg'
+import subscribe from '../assets/svg/subscribe.svg'
 import stopwatch from '../assets/svg/stopwatch.svg'
 import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
@@ -79,6 +80,16 @@ export default {
             }
           }
         },
+        {
+          name: 'Subscribe',
+          svg: subscribe,
+          template: {
+            type: 'subscriptionControl',
+            value: {
+              action: 'subscribe'
+            }
+          }
+        },
         // {
         //   name: 'Video',
         //   svg: socialYoutube,
@@ -92,25 +103,25 @@ export default {
 
   props:['type'],
 
-  // methods: {
-  //   visible(element) {
-  //     if (this.dhAccount.labs) return true;
+  methods: {
+    visible(element) {
+      if (this.dhAccount.labs) return true;
 
-  //     return !['Triggers'].includes(element.name)
-  //   }
-  // }
+      return !['Subscribe'].includes(element.name)
+    }
+  }
 }
 </script>
 <style lang="scss">
   .builder-elements {
     position: fixed;
-    top: calc(50% - 165px);
+    top: calc(50% - 200px);
     z-index: 2;
-    right: 0;
+    right: 20px;
     width: 79px;
     background: #FFFFFF;
     border: 2px solid #E8E8E8;
-    border-radius: 10px 0px 0px 10px;
+    border-radius: 10px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
 
     .builder-element {

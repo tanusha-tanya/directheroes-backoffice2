@@ -297,11 +297,11 @@ export default {
       background-color: #fff;
       padding: 0 10px;
       z-index: 10;
-      top: 100px;
+      top: 105px;
       left: calc(50% - 10px);
       width: 200px;
       border: 2px solid #E8E8E8;
-      border-radius: 0 0 10px 10px;
+      border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
     }
   }
