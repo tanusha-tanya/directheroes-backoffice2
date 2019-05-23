@@ -1,42 +1,45 @@
 <template>
   <div class="flow-builder">
-    <drop
-      :class="{ 'flow-builder-area': true, dragged }"
-      tag="div"
-      v-if="currentEntryItem"
-      @dragover="dragEnter"
-      @dragleave="dragLeave"
-      @drop="dropHandler"
-      ref="flowBuilder"
-      >
-      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `5000px`, minWidth: `5000px`, transformOrigin: scalePosition}">
-        <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'"></campaign-card>
-        <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" v-else></broadcast-card>
-        <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
-        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
-      </div>
-      <builder-elements v-if="!disabled"></builder-elements>
-      <div class="zoom-element">
-        <el-slider
-          v-model="scale"
-          :min=".5"
-          :max="1.5"
-          :step=".1"
+      <drop
+        :class="{ 'flow-builder-area': true, dragged }"
+        tag="div"
+        v-if="currentEntryItem"
+        @dragover="dragEnter"
+        @dragleave="dragLeave"
+        @drop="dropHandler"
+        ref="flowBuilder"
         >
-        </el-slider>
-        <div class="go-to-position" @click="findCampaignCard">
-          <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
-            <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
-              c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
-            <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
-              C109.368,56.352,56.352,109.368,48.944,176H16c-8.832,0-16,7.168-16,16c0,8.832,7.168,16,16,16h32.944
-              C56.352,274.632,109.368,327.648,176,335.056V368c0,8.832,7.168,16,16,16c8.832,0,16-7.168,16-16v-32.944
-              c66.632-7.408,119.648-60.424,127.056-127.056H368c8.832,0,16-7.168,16-16C384,183.168,376.832,176,368,176z M192,304
-              c-61.76,0-112-50.24-112-112S130.24,80,192,80s112,50.24,112,112S253.76,304,192,304z"/>
-          </svg>
+        <div class="builder-wrap" style="position:absolute">
+          <div class="builder-area" :style="{ left, top, transform: `scale(${ scale })`, minHeight: `5000px`, minWidth: `5000px`, transformOrigin: transformOrigin}" ref="builderArea">
+            <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'"></campaign-card>
+            <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" v-else></broadcast-card>
+            <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
+            <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
+          </div>
         </div>
-      </div>
-    </drop>
+        <builder-elements v-if="!disabled"></builder-elements>
+        <div class="zoom-element">
+          <el-slider
+            v-model="scale"
+            :min=".5"
+            :max="1.5"
+            :step=".1"
+          >
+          </el-slider>
+          <div class="go-to-position" @click="findCampaignCard">
+            <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
+              <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
+                c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
+              <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
+                C109.368,56.352,56.352,109.368,48.944,176H16c-8.832,0-16,7.168-16,16c0,8.832,7.168,16,16,16h32.944
+                C56.352,274.632,109.368,327.648,176,335.056V368c0,8.832,7.168,16,16,16c8.832,0,16-7.168,16-16v-32.944
+                c66.632-7.408,119.648-60.424,127.056-127.056H368c8.832,0,16-7.168,16-16C384,183.168,376.832,176,368,176z M192,304
+                c-61.76,0-112-50.24-112-112S130.24,80,192,80s112,50.24,112,112S253.76,304,192,304z"/>
+            </svg>
+          </div>
+        </div>
+      </drop>
+    </div>
   </div>
 </template>
 <script>
@@ -59,6 +62,9 @@ export default {
       height: '100%',
       scale: 1,
       originalPosition: null,
+      transformOrigin: null,
+      left: 0,
+      top: 0,
     }
   },
 
@@ -101,12 +107,6 @@ export default {
     builder() {
       return this;
     },
-
-    scalePosition() {
-      const { scale } = this;
-      const center = 55;
-      return `${ center }% ${ center }%`
-    }
   },
 
   methods: {
@@ -216,10 +216,31 @@ export default {
     findCampaignCard() {
       const campaignCard = this.$refs[this.entryStep.id];
       const { $el } = this.$refs.flowBuilder;
+      let scrollTimeoutId = null
 
       $el.scrollTop = (campaignCard.$el.offsetTop - $el.clientHeight / 2) + campaignCard.$el.clientHeight / 2;
       $el.scrollLeft = (campaignCard.$el.offsetLeft - $el.clientWidth / 2) + campaignCard.$el.clientWidth / 2;
+
+      // this.calcScalePosition();
     },
+
+    calcScalePosition() {
+      const { scale } = this;
+      const { flowBuilder, builderArea } = this.$refs;
+
+      if (!flowBuilder || !builderArea) return;
+
+      const flowRect = flowBuilder.$el.getBoundingClientRect();
+      const builderRect = builderArea.getBoundingClientRect();
+
+      const x = builderRect.x > 0 || builderRect.y > 0 ? 1 : Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
+      const y = builderRect.x > 0 || builderRect.y > 0 ? 1 : Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
+
+      console.log(builderRect, x, y);
+
+
+      this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
+    }
 
     // resetDraggedCardToOriginalPos() {
     //   const draggedCard = this.currentEntryItem.steps.find(dragged => dragged.id === this.originalPosition.id);
@@ -254,6 +275,7 @@ export default {
 
   mounted() {
     if (!this.currentEntryItem) return;
+
     this.findCampaignCard();
   },
 
@@ -263,6 +285,10 @@ export default {
 
       this.$el[newValue ? 'addEventListener' : 'removeEventListener']('mousemove', this.arrowPoint)
       this.$el[newValue ? 'addEventListener' : 'removeEventListener']('click', this.removePoint)
+    },
+
+    scale() {
+      this.calcScalePosition();
     },
 
     currentEntryItem: {
@@ -279,9 +305,11 @@ export default {
         if (entry) {
           this.getArrows();
 
-          if (oldEntry || !this._isMounted) return;
-
-          this.findCampaignCard();
+          if (!oldEntry && this._isMounted) {
+            this.$nextTick(() => {
+              this.findCampaignCard();
+            });
+          };
         }
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
@@ -317,12 +345,15 @@ export default {
     }
 
     .builder-area {
-      position: absolute;
+      position: relative;
       top: 0;
       left: 0;
       min-width: 5000px;
       min-height: 5000px;
-      transform-origin: left top;
+      // transform-origin: left top;
+      // margin: 450px;
+      border: 2px dashed #E2E2E2;
+      transition: transform 300ms linear 0s;
     }
 
     .zoom-element {
@@ -332,11 +363,11 @@ export default {
       background-color: #fff;
       padding: 0 0 0 10px;
       z-index: 10;
-      top: 100px;
+      top: 110px;
       left: calc(50% - 10px);
       width: 230px;
       border: 2px solid #E8E8E8;
-      border-radius: 0 0 10px 10px;
+      border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
 
       .el-slider {

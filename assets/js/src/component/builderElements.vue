@@ -106,11 +106,11 @@ export default {
     position: fixed;
     top: calc(50% - 165px);
     z-index: 2;
-    right: 0;
+    right: 20px;
     width: 79px;
     background: #FFFFFF;
     border: 2px solid #E8E8E8;
-    border-radius: 10px 0px 0px 10px;
+    border-radius: 10px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
 
     .builder-element {
