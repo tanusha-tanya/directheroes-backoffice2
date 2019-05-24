@@ -41,7 +41,7 @@
           <div class="remove-element" @click="elementToDelete = triggerElement">&times</div>
         </div>
         <div class="element-body" v-if="!triggerElement.displaySettings.collapsed">
-          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :triggers="triggersList"></component>
+          <component :is="elementComponents[triggerElement.type]" :element="triggerElement" :triggers="triggersList" :tag="tag"></component>
         </div>
       </div>
       <confirm-dialog
@@ -136,7 +136,7 @@ export default {
     }
   },
 
-  props: ['broadcast'],
+  props: ['broadcast', 'tag'],
 
   methods: {
     dragEnter(data) {

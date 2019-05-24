@@ -10,8 +10,8 @@
       ref="flowBuilder"
       >
       <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
-        <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'"></campaign-card>
-        <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" v-else></broadcast-card>
+        <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
+        <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
         <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
         <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
       </div>

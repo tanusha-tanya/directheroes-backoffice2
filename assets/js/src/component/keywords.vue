@@ -103,6 +103,10 @@ export default {
         display: none;
       }
 
+      .tag-item {
+        display: none;
+      }
+
       img.element-warning {
         right: 12px !important;
         top: 8px !important;
@@ -123,6 +127,10 @@ export default {
       background-color: transparent;
 
       .el-select {
+        display: none;
+      }
+
+      .tag-item {
         display: none;
       }
 
