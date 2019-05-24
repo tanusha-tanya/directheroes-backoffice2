@@ -221,6 +221,10 @@ export default {
       $el.scrollTop = (campaignCard.$el.offsetTop - $el.clientHeight / 2) + campaignCard.$el.clientHeight / 2;
       $el.scrollLeft = (campaignCard.$el.offsetLeft - $el.clientWidth / 2) + campaignCard.$el.clientWidth / 2;
 
+      $el.addEventListener('transitionend', (event) => {
+        console.log(event);
+
+      })
       // this.calcScalePosition();
     },
 
@@ -233,11 +237,10 @@ export default {
       const flowRect = flowBuilder.$el.getBoundingClientRect();
       const builderRect = builderArea.getBoundingClientRect();
 
-      const x = builderRect.x > 0 || builderRect.y > 0 ? 1 : Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
-      const y = builderRect.x > 0 || builderRect.y > 0 ? 1 : Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
+      const x = Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
+      const y = Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
 
       console.log(builderRect, x, y);
-
 
       this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
     }
