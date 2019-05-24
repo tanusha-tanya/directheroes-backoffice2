@@ -14,6 +14,7 @@
       class="builder-element"
       v-for="element in elements"
       :key="element.name"
+      v-if="visible(element)"
     >
       <div class="icon" :style="{'background-image': `url(${element.svg})`}"/>
       <div class="builder-element-title">{{element.name}}</div>
@@ -105,7 +106,7 @@ export default {
 
   methods: {
     visible(element) {
-      if (this.dhAccount.labs) return true;
+      if (this.dhAccount.isViewedByAdmin) return true;
 
       return !['Subscribe'].includes(element.name)
     }
