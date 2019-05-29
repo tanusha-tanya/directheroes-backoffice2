@@ -153,17 +153,18 @@ export default {
     },
 
     tagPrefix(item){
-      const index = this.anyItems.indexOf(item)
+      const index = this.element.value.conditionList.indexOf(item);
+      // const index = this.anyItems.indexOf(item)
       const { tag } = this;
       const tagPrefix = `${ tag }_${ index + 1 }`
 
-      if (item.messageType !== 'any') return;
+      // if (item.messageType !== 'any') return;
 
-      if (tag && (item.namePrefix != tagPrefix)) {
+      if (typeof tag == 'number' && (item.namePrefix != tagPrefix)) {
         Vue.set(item, 'namePrefix', tagPrefix);
       }
 
-      return tag ? item.namePrefix : '';
+      return typeof tag == 'number' ? item.namePrefix : '';
     },
   },
 
