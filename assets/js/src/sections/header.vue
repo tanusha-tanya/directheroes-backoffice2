@@ -12,7 +12,7 @@
       </div>
       <el-popover placement="bottom" trigger="hover" v-if="dhAccount">
         <div class="dh-account-popover">
-          <a href="mailto:admin@directheroes.com">Help</a>
+          <a href="mailto:support@directheroes.com">Help</a>
           <router-link :to="{ name: 'dhProfile' }">Settings</router-link>
           <a href="/logout">Log out</a>
         </div>
