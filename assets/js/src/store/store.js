@@ -16,6 +16,7 @@ export default new VueX.Store({
   state: {
     dhAccount: null,
     accounts: [],
+    scale: 1,
     newPoint: null,
     arrowConnectData: null,
     arrows: [],
