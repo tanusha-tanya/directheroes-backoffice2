@@ -166,8 +166,8 @@ export default {
       this.currentEntryItem.steps.push({
         ...step,
         displaySettings:{
-          positionX: (event.offsetX - 20) / this.scale,
-          positionY: (event.offsetY - 20) / this.scale,
+          positionX: (event.offsetX - 20),
+          positionY: (event.offsetY - 20),
           collapsed: false
         }
       });
