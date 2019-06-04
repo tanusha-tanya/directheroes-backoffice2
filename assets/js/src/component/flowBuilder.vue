@@ -10,7 +10,7 @@
     ref="flowBuilder"
     v-move="scrollOnMove"
     >
-    <div class="builder-wrap" style="position:absolute">
+    <div class="builder-wrap" style="position:absolute"  @wheel="wheelZoom">
       <div class="builder-area" :style="scaleStyle"
         ref="builderArea"
         >
@@ -349,6 +349,12 @@ export default {
       if (event.target !== builderArea) return;
 
       flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
+    },
+
+    wheelZoom(event) {
+      console.log();
+
+      this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (event.deltaY > 0 ? 1 : -1)))
     }
 
     // resetDraggedCardToOriginalPos() {
