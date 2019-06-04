@@ -8,6 +8,7 @@
     @dragleave="dragLeave"
     @drop="dropHandler"
     ref="flowBuilder"
+    v-move="scrollOnMove"
     >
     <div class="builder-wrap" style="position:absolute">
       <div class="builder-area" :style="scaleStyle"
@@ -340,6 +341,14 @@ export default {
       // console.log(scaleX, scaleY);
 
       // this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
+    },
+
+    scrollOnMove({stepX, stepY, event}) {
+      const { flowBuilder, builderArea } = this.$refs;
+
+      if (event.target !== builderArea) return;
+
+      flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
     }
 
     // resetDraggedCardToOriginalPos() {
@@ -429,7 +438,7 @@ export default {
 
   .flow-builder-area {
     position: absolute;
-    overflow: auto;
+    overflow: hidden;
     top: 0;
     left: 0;
     right: 0;
@@ -449,6 +458,7 @@ export default {
       // transform-origin: left top;
       // margin: 450px;
       border: 2px dashed #E2E2E2;
+      cursor: move;
       // transition: transform 300ms linear 0s;
     }
 
