@@ -238,24 +238,9 @@ export default {
         inline: 'center'
       })
 
-      // $el.scrollTop = (campaignCard.$el.offsetTop / scale - $el.clientHeight * scale / 2) + campaignCard.$el.clientHeight * scale / 2;
-      // $el.scrollLeft = (campaignCard.$el.offsetLeft * scale  - $el.clientWidth * scale / 2) + campaignCard.$el.clientWidth * scale / 2;
       if (behavior) return;
 
       this.calcScalePosition(1, 1);
-
-      $el.addEventListener('transitionend', (event) => {
-        if (builderArea !== event.target) return;
-
-        // const scrollPosition = {
-        //   x: $el.scrollLeft,
-        //   y: $el.scrollTop,
-        // }
-
-        // this.transformOrigin = '0 0';
-
-        // $el.scrollTo(scrollPosition.x, scrollPosition.y);
-      });
     },
 
     calcScalePosition(newScale, oldScale) {
@@ -346,15 +331,23 @@ export default {
     scrollOnMove({stepX, stepY, event}) {
       const { flowBuilder, builderArea } = this.$refs;
 
-      if (event.target !== builderArea) return;
+      // if (event.target !== builderArea) return;
 
       flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
     },
 
-    wheelZoom(event) {
-      console.log();
+    wheelZoom(event, other) {
+      const { deltaY, shiftKey, ctrlKey } = event;
 
-      this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (event.deltaY > 0 ? 1 : -1)))
+      event.preventDefault(),
+      event.stopPropagation();
+
+      if (shiftKey) {
+        this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (deltaY > 0 ? 1 : -1)))
+        return;
+      } else {
+        this.scrollOnMove({stepX: ctrlKey && deltaY || 0, stepY: !ctrlKey && deltaY || 0, event });
+      }
     }
 
     // resetDraggedCardToOriginalPos() {
