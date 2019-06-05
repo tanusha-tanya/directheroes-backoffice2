@@ -337,7 +337,7 @@ export default {
     },
 
     wheelZoom(event, other) {
-      const { deltaY, shiftKey, ctrlKey } = event;
+      const { deltaX, deltaY, shiftKey, ctrlKey } = event;
 
       event.preventDefault(),
       event.stopPropagation();
@@ -346,7 +346,7 @@ export default {
         this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (deltaY > 0 ? 1 : -1)))
         return;
       } else {
-        this.scrollOnMove({stepX: ctrlKey && deltaY || 0, stepY: !ctrlKey && deltaY || 0, event });
+        this.scrollOnMove({stepX: deltaX || (ctrlKey && deltaY) || 0, stepY: !ctrlKey && deltaY || 0, event });
       }
     }
 
