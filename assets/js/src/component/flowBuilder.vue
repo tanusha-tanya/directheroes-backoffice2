@@ -15,7 +15,7 @@
         <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
         <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
       </div>
-      <builder-elements v-if="!disabled"></builder-elements>
+      <builder-elements v-if="!disabled" :type="entryType"></builder-elements>
       <div class="zoom-element">
         <el-slider
           v-model="scale"
