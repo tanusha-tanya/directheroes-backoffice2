@@ -7,6 +7,7 @@
         <el-option label="All" :value="null"></el-option>
         <el-option label="Subscribed" :value="true"></el-option>
         <el-option label="Unsubscribed" :value="false"></el-option>
+        <el-option label="Ignored" value="ignored" v-if="isAdmin"></el-option>
       </el-select>
       <el-select v-model="status" @change="getAudience">
         <el-option label="All" value="audience"></el-option>
