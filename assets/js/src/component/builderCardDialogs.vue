@@ -128,7 +128,7 @@ export default {
               }
             }
 
-            Array.prototype.unshift(step.elements, element)
+            step.elements.splice(0, 0, element);
           }
 
           this.intermediateValue = JSON.parse(JSON.stringify(element));
