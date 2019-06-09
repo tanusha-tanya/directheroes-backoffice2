@@ -3,7 +3,7 @@ version: '3.5'
 services:
     # data container is a workaround for docker issue: https://github.com/docker/docker/issues/2259
     data:
-        image: bitnami/minideb:jessie
+        image: bitnami/minideb:stretch
         volumes:
             - .:/var/www/symfony:rw
             - ../volumes/redis:/data:rw
