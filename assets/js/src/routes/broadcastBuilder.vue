@@ -35,7 +35,8 @@
       </div>
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
-          <el-checkbox
+          <check-box-branch v-for="item in subscriberMainCategory" :key="item.name" :item="item" :checkedList="broadcastStep.settings.categoryList"></check-box-branch>
+          <!-- <el-checkbox
             v-for="subscriber in account.subscriberCategoryList"
             :key="subscriber.id"
             :checked="isCheckedSubscriber(subscriber.id)"
@@ -43,7 +44,7 @@
             @change="checkSubscriber(subscriber, $event)"
             >
             {{ subscriber.name }}
-          </el-checkbox>
+          </el-checkbox> -->
         </div>
       </div>
     </div>
@@ -52,6 +53,7 @@
 </template>
 <script>
 import flowBuilder from '../component/flowBuilder.vue'
+import checkBoxBranch from '../component/checkBoxBranch.vue'
 import moment from 'moment'
 import Vue from 'vue'
 import utils from '../utils'
@@ -85,7 +87,8 @@ export default {
   },
 
   components: {
-    flowBuilder
+    flowBuilder,
+    checkBoxBranch
   },
 
   computed: {
@@ -132,6 +135,54 @@ export default {
       if (!currentBroadcast) return;
 
       return utils.hasCampaignWarning(currentBroadcast);
+    },
+
+    subscriberMainCategory() {
+      const { subscriberCategoryList, campaignList, broadcastList } = this.account;
+      const subscriberMainCategories = []
+
+      subscriberCategoryList.forEach((item, index) => {
+        if (item.isCampaignMainCategory) {
+          const mainCategory = subscriberMainCategories.find(category => category.mdbCampaignId == item.mdbCampaignId);
+
+          if (!mainCategory) {
+            subscriberMainCategories.push(item);
+          } else if (!mainCategory.isCampaignMainCategory) {
+            subscriberMainCategories.splice(subscriberMainCategories.indexOf(mainCategory), 1, item);
+          }
+
+          return;
+        } else if (item.mdbCampaignId) {
+          let mainCategory = subscriberMainCategories.find(category => category.mdbCampaignId == item.mdbCampaignId);
+
+          if (!mainCategory) {
+            const campaigns = campaignList.concat(broadcastList);
+            const parentCampaign = campaigns.find(campaign => campaign.id == item.mdbCampaignId);
+
+            mainCategory = { name: parentCampaign.name, mdbCampaignId: parentCampaign.id }
+
+            subscriberMainCategories.push(mainCategory);
+          }
+
+          mainCategory.list = mainCategory.list || [];
+
+          mainCategory.list.push(item)
+        } else {
+          let mainCategory = subscriberMainCategories.find(category => !category.mdbCampaignId);
+
+          if (!mainCategory) {
+            mainCategory = { name: 'Manual' }
+
+            subscriberMainCategories.push(mainCategory);
+          }
+
+          mainCategory.list = mainCategory.list || [];
+
+          mainCategory.list.push(item);
+        }
+      })
+
+      return subscriberMainCategories
     }
   },
 
@@ -247,7 +298,7 @@ export default {
 
   .broadcast-settings-campaign-list {
     height: 100%;
-    width: 200px;
+    width: 250px;
     overflow: auto;
     border-right: 1px solid #DBDBDB;
 
