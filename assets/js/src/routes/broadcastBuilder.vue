@@ -35,7 +35,7 @@
       </div>
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
-          <check-box-branch v-for="item in subscriberMainCategory" :key="item.name" :item="item" :checkedList="broadcastStep.settings.categoryList"></check-box-branch>
+          <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="broadcastStep.settings.categoryList"></check-box-branch>
           <!-- <el-checkbox
             v-for="subscriber in account.subscriberCategoryList"
             :key="subscriber.id"
@@ -146,9 +146,9 @@ export default {
           const mainCategory = subscriberMainCategories.find(category => category.mdbCampaignId == item.mdbCampaignId);
 
           if (!mainCategory) {
-            subscriberMainCategories.push(item);
+            subscriberMainCategories.push(JSON.parse(JSON.stringify(item)));
           } else if (!mainCategory.isCampaignMainCategory) {
-            subscriberMainCategories.splice(subscriberMainCategories.indexOf(mainCategory), 1, item);
+            subscriberMainCategories.splice(subscriberMainCategories.indexOf(mainCategory), 1, JSON.parse(JSON.stringify(item)));
           }
 
           return;

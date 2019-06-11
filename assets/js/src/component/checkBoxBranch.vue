@@ -1,15 +1,18 @@
 <template>
-  <div class="checkbox-branch">
+  <div class="checkbox-branch" v-if="item.subscribersCount == undefined || item.subscribersCount">
     <div class="checkbox-branch-item">
       <div class="checkbox-branch-toggler" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
       <el-checkbox v-if="typeof item.subscribersCount !== 'undefined'" :checked="Boolean(isChecked(item.id))" @change="checkHandler(item)"></el-checkbox>
       {{ item.name }} <span v-if="typeof item.subscribersCount !== 'undefined'">[{{ item.subscribersCount }} subscribers]</span>
     </div>
     <div class="checkbox-branch-list" v-if="!collapsed && item.list && item.list.length">
-      <div class="checkbox-branch-kidney" v-for="listItem in item.list" :key="listItem.id">
-        <el-checkbox :checked="Boolean(isChecked(listItem.id))" @change="checkHandler(listItem)"></el-checkbox>
-        {{ listItem.name }} <span v-if="typeof listItem.subscribersCount !== 'undefined'">[{{ listItem.subscribersCount }} subscribers]</span>
-      </div>
+      <template v-for="listItem in item.list" >
+        <div class="checkbox-branch-kidney" :key="listItem.id" v-if="listItem.subscribersCount">
+          <el-checkbox :checked="Boolean(isChecked(listItem.id))" @change="checkHandler(listItem)"></el-checkbox>
+          {{ listItem.name }} <span v-if="typeof listItem.subscribersCount !== 'undefined'">[{{ listItem.subscribersCount }} subscribers]</span>
+        </div>
+      </template>
+
     </div>
   </div>
 </template>
