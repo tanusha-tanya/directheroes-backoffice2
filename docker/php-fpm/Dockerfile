@@ -1,4 +1,4 @@
-FROM adorofeev/php-fpm-nodejs
+FROM adorofeev/php-fpm-nodejs:php73
 
 # switch to root (parent image uses www-data user)
 USER root

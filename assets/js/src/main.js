@@ -116,6 +116,12 @@ Vue.mixin({
 
     dhAccount() {
       return this.$store.state.dhAccount
+    },
+
+    isAdmin() {
+      const { isViewedByAdmin } = this.dhAccount;
+
+      return isViewedByAdmin;
     }
   },
 

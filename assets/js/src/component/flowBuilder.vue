@@ -1,26 +1,26 @@
 <template>
   <div class="flow-builder">
-  <drop
-    :class="{ 'flow-builder-area': true, dragged }"
-    tag="div"
-    v-if="currentEntryItem"
-    @dragover="dragEnter"
-    @dragleave="dragLeave"
-    @drop="dropHandler"
-    ref="flowBuilder"
-    v-move="scrollOnMove"
-    >
-    <div class="builder-wrap" style="position:absolute"  @wheel="wheelZoom">
-      <div class="builder-area" :style="scaleStyle"
-        ref="builderArea"
-        >
-        <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
-        <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
-        <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
-        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
+    <drop
+      :class="{ 'flow-builder-area': true, dragged }"
+      tag="div"
+      v-if="currentEntryItem"
+      @dragover="dragEnter"
+      @dragleave="dragLeave"
+      @drop="dropHandler"
+      ref="flowBuilder"
+      v-move="scrollOnMove"
+      >
+      <div class="builder-wrap" style="position:absolute"  @wheel="wheelZoom">
+        <div class="builder-area" :style="scaleStyle"
+          ref="builderArea"
+          >
+          <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
+          <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
+          <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
+          <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
+        </div>
       </div>
-    </div>
-    <builder-elements v-if="!disabled"></builder-elements>
+      <builder-elements v-if="!disabled" :type="entryType"></builder-elements>
       <div class="zoom-element">
         <el-slider
           v-model="scale"
@@ -331,7 +331,9 @@ export default {
     scrollOnMove({stepX, stepY, event}) {
       const { flowBuilder, builderArea } = this.$refs;
 
-      // if (event.target !== builderArea) return;
+      console.log(event);
+
+      if (event.type !== 'wheel' && event.target !== builderArea) return;
 
       flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
     },
@@ -346,7 +348,7 @@ export default {
         this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (deltaY > 0 ? 1 : -1)))
         return;
       } else {
-        this.scrollOnMove({stepX: deltaX || (ctrlKey && deltaY) || 0, stepY: !ctrlKey && deltaY || 0, event });
+        this.scrollOnMove({stepX: (deltaX || (ctrlKey && deltaY) || 0) * -1, stepY: (!ctrlKey && deltaY || 0) * -1, event });
       }
     }
 

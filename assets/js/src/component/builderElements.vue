@@ -4,7 +4,7 @@
       :is="Drag"
       :transfer-data="stepData"
       class="builder-element step-add"
-      v-if="!type"
+      v-if="type !== 'broadcastEntry'"
     >
       <div class="icon" :style="{'background-image': `url(${plus})`}"/>
     </component>
@@ -106,6 +106,8 @@ export default {
 
   methods: {
     visible(element) {
+      if (this.type == 'broadcastEntry' && ['Triggers'].includes(element.name)) return false;
+
       if (this.dhAccount.isViewedByAdmin) return true;
 
       return !['Subscribe'].includes(element.name)

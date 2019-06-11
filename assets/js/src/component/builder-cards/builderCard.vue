@@ -33,6 +33,8 @@ export default {
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
 
+        event.preventDefault(),
+        event.stopPropagation();
 
         return false;
       }
