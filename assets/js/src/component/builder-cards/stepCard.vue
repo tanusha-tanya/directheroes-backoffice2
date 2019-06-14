@@ -9,7 +9,7 @@
     </template>
     <template slot="body">
       <div class="arrow-connect" v-if="$store.state.newPoint && !isParentOfArrow" @click="setArrowConnect"></div>
-      <draggable :list="elementList" handle=".drag-handler" @change="replaceElements">
+      <draggable :list="elementList" handle=".drag-handler" @change="replaceElements" filter=".el-input">
         <div
           class="element-container"
           v-for="element in elementList"

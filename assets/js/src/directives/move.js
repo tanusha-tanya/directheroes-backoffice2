@@ -30,6 +30,8 @@ Vue.directive('move', {
       const { $moveData } = el;
       const { clientX, clientY } = event.touches ? event.touches[0] : event;
 
+      if (el !== event.target) return;
+
       $moveData.startX = clientX;
       $moveData.startY = clientY;
 

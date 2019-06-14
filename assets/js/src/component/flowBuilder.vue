@@ -8,11 +8,11 @@
       @dragleave="dragLeave"
       @drop="dropHandler"
       ref="flowBuilder"
-      v-move="scrollOnMove"
       >
       <div class="builder-wrap" style="position:absolute"  @wheel="wheelZoom">
         <div class="builder-area" :style="scaleStyle"
           ref="builderArea"
+          v-move="scrollOnMove"
           >
           <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
           <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
@@ -330,8 +330,6 @@ export default {
 
     scrollOnMove({stepX, stepY, event}) {
       const { flowBuilder, builderArea } = this.$refs;
-
-      console.log(event);
 
       if (event.type !== 'wheel' && event.target !== builderArea) return;
 
