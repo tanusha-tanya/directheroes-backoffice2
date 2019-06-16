@@ -47,7 +47,12 @@
           </el-checkbox> -->
         </div>
       </div>
-      <div class="broadcast-additional-info">Total subscribers: {{ totalSubscribers }}</div>
+      <div class="broadcast-additional-info">
+        Total subscribers:
+        <span v-if="inGetCount" class="broadcast-esimating">estimating...</span>
+        <span v-else-if="totalSubscribers == null" class="broadcast-count-error">Failed to calculate</span>
+        <span v-else>{{ totalSubscribers }}</span>
+      </div>
     </div>
   </div>
 </div>
@@ -82,7 +87,8 @@ export default {
       isSettings: false,
       timeToStart: null,
       broadcastTimeout: null,
-      totalSubscribers: '?',
+      inGetCount: true,
+      totalSubscribers: null,
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < Date.now();
@@ -202,7 +208,12 @@ export default {
       }).then(({ data }) => {
         const { count } = data.response.body
 
+        this.inGetCount = false;
+
         this.totalSubscribers = count
+      }).catch(error => {
+        this.totalSubscribers = null
+        this.inGetCount = false;
       })
     },
 
@@ -252,15 +263,13 @@ export default {
     },
 
     'broadcastStep.settings.categoryList'() {
-      this.totalSubscribers = '?';
+      this.inGetCount = true;
 
       clearTimeout(countTimeout);
 
       countTimeout = setTimeout(() => {
-        console.log('sad');
-
         this.getTotalSubscribers();
-      }, 3000);
+      }, 2000);
     }
   }
 }
@@ -269,6 +278,15 @@ export default {
 .broadcast-builder {
   flex-grow: 1;
   position: relative;
+
+  .broadcast-esimating {
+    animation: blink 1.5s linear infinite;
+    color: #67c23a;
+  }
+
+  .broadcast-count-error {
+    color: #ff0048;
+  }
 
   .broadcast-settings {
     position: absolute;
