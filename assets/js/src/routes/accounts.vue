@@ -41,7 +41,7 @@
       <div class="info-text">Not Problem!  To add more accounts,  just purchase a new Instagram account subscription for only $97 per month.</div>
       <div class="action-block">
         <img src="../assets/svg/extra-account.svg" alt="">
-        <router-link :to="{ name: 'accountBuy'}" tag="button">Buy now!</router-link>
+        <router-link :to="{ name: 'addonBuy', query: { code: extraAccountPlan } }" tag="button">Buy now!</router-link>
       </div>
     </el-dialog>
   </div>
@@ -82,6 +82,12 @@ export default {
   computed: {
     accounts() {
       return this.$store.state.accounts
+    },
+
+    extraAccountPlan() {
+      const { dhAccount } = this;
+
+      return dhAccount.availableAddons.extraAccount
     },
 
     isLimitReached() {
