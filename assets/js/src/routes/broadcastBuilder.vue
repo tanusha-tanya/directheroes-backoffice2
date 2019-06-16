@@ -47,16 +47,20 @@
           </el-checkbox> -->
         </div>
       </div>
+      <div class="broadcast-additional-info">Total subscribers: {{ totalSubscribers }}</div>
     </div>
   </div>
 </div>
 </template>
 <script>
+import axios from 'axios'
 import flowBuilder from '../component/flowBuilder.vue'
 import checkBoxBranch from '../component/checkBoxBranch.vue'
 import moment from 'moment'
 import Vue from 'vue'
 import utils from '../utils'
+
+let countTimeout = null;
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -78,6 +82,7 @@ export default {
       isSettings: false,
       timeToStart: null,
       broadcastTimeout: null,
+      totalSubscribers: '?',
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < Date.now();
@@ -187,6 +192,20 @@ export default {
   },
 
   methods: {
+    getTotalSubscribers() {
+      const { categoryList } = this.broadcastStep.settings;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
+        method: 'post',
+        data: { categories:categoryList.map(category => category.id) }
+      }).then(({ data }) => {
+        const { count } = data.response.body
+
+        this.totalSubscribers = count
+      })
+    },
+
     setCurrentBroadcast(route) {
       const { broadcastId } = route.params;
       const { broadcastList } = this.$store.state.currentAccount;
@@ -194,21 +213,7 @@ export default {
 
       this.currentBroadcast = currentBroadcast;
 
-      this.updateBroadcastStatus()
-    },
-
-    checkSubscriber(subscriber, checked) {
-      const { categoryList } = this.broadcastStep.settings;
-
-      if (checked) {
-        categoryList.push(subscriber);
-      } else {
-        categoryList.splice(categoryList.indexOf(categoryList.find(customer => customer.id === subscriber.id)), 1)
-      }
-    },
-
-    isCheckedSubscriber(id) {
-      return (this.broadcastStep.settings.categoryList).some(subscriber => subscriber.id == id)
+      this.updateBroadcastStatus();
     },
 
     setNowDate() {
@@ -245,6 +250,18 @@ export default {
 
       this.setCurrentBroadcast(this.$route);
     },
+
+    'broadcastStep.settings.categoryList'() {
+      this.totalSubscribers = '?';
+
+      clearTimeout(countTimeout);
+
+      countTimeout = setTimeout(() => {
+        console.log('sad');
+
+        this.getTotalSubscribers();
+      }, 3000);
+    }
   }
 }
 </script>
@@ -260,14 +277,17 @@ export default {
     left: 0;
     right: 0;
     background-color: rgba(196, 196, 196, 0.7);
-    z-index: 5;
+    z-index: 10;
   }
 
   .broadcast-settings-area {
     background-color: #fff;
-    padding-bottom: 20px;
     border-radius: 0 0 10px 10px;
     margin: 0 10px;
+  }
+
+  .broadcast-additional-info {
+    padding: 10px;
   }
 
   .broadcast-settings-controls {
