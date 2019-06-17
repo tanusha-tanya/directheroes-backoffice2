@@ -20,6 +20,7 @@
     "libsodium-wrappers": "^0.7.4",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
+    "pouchdb": "^7.1.1",
     "vue": "^2.5.11",
     "vue-drag-drop": "^1.1.4",
     "vue-router": "^3.0.1",
