@@ -93,23 +93,23 @@ export default {
   },
 
   methods: {
-    saveCampaign: debounce(function() {
-      this.$store.dispatch('saveCampaign', this.currentEntryItem)
-        // .then(({ data }) => {
-        //   this.$message.success({
-        //     message: 'Success saved',
-        //     duration: 3000,
-        //     center: true
-        //   });
-        // })
-        .catch(() => {
-          this.$message.error({
-            message: 'Could not save data',
-            duration: 3000,
-            center: true
-          })
-        });
-    }, 3000),
+    // saveCampaign: debounce(function() {
+    //   this.$store.dispatch('saveCampaign', this.currentEntryItem)
+    //     // .then(({ data }) => {
+    //     //   this.$message.success({
+    //     //     message: 'Success saved',
+    //     //     duration: 3000,
+    //     //     center: true
+    //     //   });
+    //     // })
+    //     .catch(() => {
+    //       this.$message.error({
+    //         message: 'Could not save data',
+    //         duration: 3000,
+    //         center: true
+    //       })
+    //     });
+    // }, 3000),
 
     dragEnter(data) {
      if (!data || data.type != "regular") return;
@@ -257,8 +257,6 @@ export default {
 
         entry.isActive = entry.isEnabled && !this.hasWarning;
         entry.isIncomplete = this.hasWarning;
-
-        this.saveCampaign();
       },
       deep: true
     },

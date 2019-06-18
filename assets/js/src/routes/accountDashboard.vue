@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import PouchDB from 'pouchdb';
 
 export default {
   computed: {
@@ -27,18 +26,6 @@ export default {
       return this.$store.state.currentAccount
     }
   },
-
-  created() {
-    const { dhAccount } = this;
-
-    //const db = new PouchDB(`http://couchdb.app02.beta.directheroes.com:5984/dronic`)
-    const db = new PouchDB(`dronic`)
-
-    db.info().then(info => {
-      console.log(info);
-
-    })
-  }
 }
 </script>
 

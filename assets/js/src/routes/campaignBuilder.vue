@@ -82,7 +82,11 @@ export default {
 
   computed:{
     campaigns() {
-      return this.$store.state.currentAccount.campaignList
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return;
+
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry")
     },
 
     hasWarning() {
@@ -97,11 +101,11 @@ export default {
   methods: {
     setCurrentCampaign(route) {
       let { campaignId } = route.params;
-      const { campaignList } = this.$store.state.currentAccount;
+      const { campaigns } = this;
 
-      if (!campaignId) return;
+      if (!campaignId || !campaigns) return;
 
-      const currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
+      const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
 
       currentCampaign.steps.forEach(step => {
         if (step.displaySettings) return;
@@ -117,11 +121,6 @@ export default {
 
       if (currentCampaign) {
         this.currentCampaign = currentCampaign;
-      } else {
-        this.$store.dispatch('getCampaignTemplates', { campaign:currentCampaign })
-          .then(({ data }) => {
-            this.currentCampaign = data.campaign;
-          });
       }
     },
 
@@ -137,7 +136,7 @@ export default {
   },
 
   watch:{
-    '$store.state.accounts'() {
+    '$store.state.currentAccountData'() {
       if (this.currentCampaign) return;
 
       this.setCurrentCampaign(this.$route);
