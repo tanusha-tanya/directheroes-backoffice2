@@ -73,8 +73,6 @@ export default {
 
       db.get(String(accountId))
         .catch(error => {
-          console.log(error);
-
           if (error.status !== 404) return;
 
           return db.put({
