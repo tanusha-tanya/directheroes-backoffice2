@@ -97,15 +97,16 @@ export default {
 
       if (!currentAccountData) return [];
 
-      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry")
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     }
   },
 
   methods: {
     deleteCampaign() {
-      const { currentAccountData } = this.$store.state;
+      // const { currentAccountData } = this.$store.state;
 
-      currentAccountData.campaigns.splice(currentAccountData.campaigns.indexOf(this.campaignToDelete), 1);
+      // currentAccountData.campaigns.splice(currentAccountData.campaigns.indexOf(this.campaignToDelete), 1);
+      this.campaignToDelete.isArchived = true;
       this.campaignToDelete = null
     },
 

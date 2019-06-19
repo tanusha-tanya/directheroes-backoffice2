@@ -86,7 +86,7 @@ export default {
 
       if (!currentAccountData) return;
 
-      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry")
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     },
 
     hasWarning() {
@@ -125,13 +125,17 @@ export default {
     },
 
     deleteCampaign() {
-      this.$store.dispatch('deleteCampaign', this.currentCampaign)
-        .then(({ data }) => {
-          const { currentAccount } = this.$store.state;
-          const { campaignList } = currentAccount;
+      const { currentAccount } = this.$store.state;
 
-          this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
-        })
+      this.currentCampaign.isArchived = true;
+      this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
+      // this.$store.dispatch('deleteCampaign', this.currentCampaign)
+      //   .then(({ data }) => {
+      //     const { currentAccount } = this.$store.state;
+      //     const { campaignList } = currentAccount;
+
+      //     this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
+      //   })
     },
   },
 
