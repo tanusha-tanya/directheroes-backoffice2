@@ -49,9 +49,12 @@ export default {
         return;
       }
 
-      // const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
-      const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
-      // db.info();
+      const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
+      // const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
+      db.info()
+      // .then(info => {
+      //   console.log(info)
+      // });
 
       this.pouchDB = db;
 
@@ -70,6 +73,8 @@ export default {
 
       db.get(String(accountId))
         .catch(error => {
+          console.log(error);
+
           if (error.status !== 404) return;
 
           return db.put({
