@@ -21,14 +21,9 @@
       </div>
       <builder-elements v-if="!disabled" :type="entryType"></builder-elements>
       <div class="zoom-element">
-        <el-slider
-          v-model="scale"
-          :min=".1"
-          :max="2"
-          :step=".1"
-        >
-        </el-slider>
-        <div class="go-to-position" @click="findCampaignCard('smooth')">
+        <button @click="scaleTo(0.9)">−</button>
+        <button @click="scaleTo(1.1)">+</button>
+        <div class="go-to-position" @click="findCampaignCard()">
           <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
             <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
               c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
@@ -60,15 +55,8 @@ export default {
   data() {
     return {
       dragged: false,
-      // originX: 0,
-      // originY: 0,
-      // translateX: 0,
-      // translateY: 0,
-      // scaleStyle: null,
-      // scaledOriginX: 0,
-      // scaledOriginY: 0,
-      // moreOne: false,
       zoomTool: null,
+      scale: 1,
     }
   },
 
@@ -111,28 +99,6 @@ export default {
     builder() {
       return this;
     },
-
-    scale: {
-      get() {
-        return this.$store.state.scale
-      },
-      set(value) {
-        const { $store, zoomTool, scale } = this;
-
-        $store.commit('set', {path: 'scale', value});
-
-        if (zoomTool) {
-          const { builderArea, flowBuilder } = this.$refs;
-          const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
-          const builderAreaRect = builderArea.getBoundingClientRect();
-
-          const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
-          const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
-
-          zoomTool.zoomTo(positionX, positionY, 1 + (value - scale));
-        }
-      }
-    }
   },
 
   methods: {
@@ -153,6 +119,17 @@ export default {
           })
         });
     }, 3000),
+
+    scaleTo(ration) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
+      const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+
+      const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
+      const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
+
+      zoomTool.smoothZoom(positionX, positionY, ration);
+    },
 
     dragEnter(data) {
      if (!data || data.type != "regular") return;
@@ -246,121 +223,24 @@ export default {
       const campaignCardRect = campaignCard.$el.getBoundingClientRect();
       const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
       const { x, y } = zoomTool.getTransform();
-      // const campaignCard = this.$refs[this.entryStep.id];
-      // const { builderArea, flowBuilder } = this.$refs
-      // const { $el } = flowBuilder;
 
-      // campaignCard.$el.scrollIntoView({
-      //   behavior: behavior || 'auto',
-      //   block: 'center',
-      //   inline: 'center'
-      // })
       const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
       const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
 
-      console.log(flowBuilderRect);
-
       zoomTool.moveTo(positionX, positionY, smooth)
-
-      // if (behavior) return;
-
-
-
-      // this.calcScalePosition(1, 1);
     },
 
-    // calcScalePosition(newScale, oldScale) {
-    //   const { originX, originY, translateX, translateY } = this;
-    //   const { flowBuilder, builderArea } = this.$refs;
-    //   const { $el: flowElement } = flowBuilder;
-    //   const scaleRound = (item) => +item.toFixed(10).replace(/^(\-)?(.*)\./, "$10.")
+    initZoom() {
+      const zoomTool = panzoom(this.$refs.builderArea, {
+        maxZoom: 2,
+        minZoom: 0.1
+      })
 
-    //   if (!flowBuilder || !builderArea) return;
+      zoomTool.on('zoom', () => {
+        this.scale = zoomTool.getTransform().scale;
+      })
 
-    //   const flowRect = flowElement.getBoundingClientRect();
-    //   const builderRect = builderArea.getBoundingClientRect();
-
-    //   const left = (flowRect.width - flowRect.left) / 2;
-    //   const top = (flowRect.height - flowRect.top) / 2;
-
-    //   const x = left - builderArea.offsetLeft - builderRect.left;
-    //   const y = top - builderArea.offsetTop - builderRect.top;
-
-    //   let newOriginX = x / oldScale;
-    //   let newOriginY = y / oldScale;
-
-    //   let newTranslateX = translateX;
-    //   let newTranslateY = translateY;
-
-    //   if (newOriginX != originX || newOriginY != originY) {
-    //     const lastX = originX * oldScale;
-    //     const lastY = originY * oldScale;
-
-    //     this.originX = newOriginX;
-    //     this.originY = newOriginY;
-
-    //     if (Math.abs(x - lastX) > 1 || Math.abs(y - lastY) > 1 ) {
-    //       newTranslateX = translateX + (x - lastX) * (1 - 1 / oldScale);
-    //       newTranslateY = translateY + (y - lastY) * (1 - 1 / oldScale);
-    //     } else if (oldScale !== 1 || x !== lastX && y !== lastY) {
-    //       this.originX = lastX / oldScale
-    //       this.originY = lastY / oldScale;
-    //     }
-
-    //     this.translateX = newTranslateX;
-    //     this.translateY = newTranslateY;
-    //   }
-
-    //   if (this.moreOne) {
-    //     flowElement.scrollLeft += this.scaledOriginX;
-    //     flowElement.scrollTop += this.scaledOriginY;
-
-    //     this.moreOne = false;
-    //   }
-
-    //   this.scaleStyle = {
-    //     transformOrigin: `${ this.originX }px ${ this.originY }px`,
-    //     transform: `scale(${ newScale })`,
-    //     transition: 'transform .3s linear'
-    //   }
-
-    //   // flowBuilder.$el.scrollTop -= newTranslateY - translateY;
-    //   // flowBuilder.$el.scrollLeft -= newTranslateX - translateX;
-
-    //   // if (newScale >= 1) {
-    //   //   const scaleMoreDiff = 1 - newScale;
-    //   //   const scaleLessDiff = newScale - 1 || 1;
-
-    //   //   this.scaledOriginX = this.originX * scaleMoreDiff;
-    //   //   this.scaledOriginY = this.originY * scaleMoreDiff;
-
-    //   //   const scrollLeft = flowElement.scrollLeft - this.scaledOriginX;
-    //   //   const scrollTop = flowElement.scrollTop - this.scaledOriginY;
-
-    //   //   const scrollX = scaleRound(scrollLeft) / scaleLessDiff;
-    //   //   const scrollY = scaleRound(scrollTop) / scaleLessDiff;
-
-    //   //   this.scaleStyle.transformOrigin = `${ scrollX }px ${ scrollY }px`
-
-    //   //   flowElement.scrollTop = scrollTop;
-    //   //   flowElement.scrollLeft = scrollLeft;
-
-    //   //   this.moreOne = true;
-    //   // }
-    //   // const x = Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
-    //   // const y = Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
-
-    //   // console.log(scaleX, scaleY);
-
-    //   // this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
-    // },
-
-    scrollOnMove({stepX, stepY, event}) {
-      // const { flowBuilder, builderArea } = this.$refs;
-
-      // if (event.type !== 'wheel' && event.target !== builderArea) return;
-
-      // flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
+      this.zoomTool = zoomTool;
     },
 
     // resetDraggedCardToOriginalPos() {
@@ -410,12 +290,7 @@ export default {
 
     currentEntryItem: {
       handler: function (entry, oldEntry) {
-        // setTimeout(() => {
-        //   const { flowBuilder } = this.$refs
 
-        //   this.width = `${ flowBuilder.$el.scrollWidth * this.scale }px`
-        //   this.height = `${ flowBuilder.$el.scrollHeight * this.scale }px`
-        // }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
 
@@ -424,16 +299,7 @@ export default {
 
           if (!oldEntry && this._isMounted) {
             this.$nextTick(() => {
-              this.zoomTool = panzoom(this.$refs.builderArea, {
-                maxZoom: 2,
-                minZoom: 0.1
-              })
-
-              // this.zoomTool.on('zoom', (event) => {
-              //   const { scale } = event.getTransform()
-
-              //   this.$store.commit('set', {path: 'scale', value: parseFloat(scale.toFixed(1))});
-              // })
+              this.initZoom();
 
               this.findCampaignCard();
             });
@@ -490,17 +356,24 @@ export default {
       align-items: center;
       position: fixed;
       background-color: #fff;
-      padding: 0 0 0 10px;
+      padding:3px;
       z-index: 10;
       top: 105px;
       left: calc(50% - 10px);
-      width: 230px;
       border: 2px solid #E8E8E8;
       border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
 
-      .el-slider {
-        flex-grow: 1;
+      button {
+        color: #409EFF;
+        background-color: transparent;
+        font-size: 24px;
+        padding: 4px 16px;
+        border-radius: 0;
+
+        &:first-child {
+          border-right: 1px solid #E8E8E8;
+        }
       }
 
       .go-to-position {
