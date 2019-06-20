@@ -9,10 +9,9 @@
       @drop="dropHandler"
       ref="flowBuilder"
       >
-      <div class="builder-wrap" style="position:absolute"  @wheel="wheelZoom">
-        <div class="builder-area" :style="scaleStyle"
+      <div class="builder-wrap" style="position:absolute">
+        <div class="builder-area"
           ref="builderArea"
-          v-move="scrollOnMove"
           >
           <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
           <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
@@ -24,8 +23,8 @@
       <div class="zoom-element">
         <el-slider
           v-model="scale"
-          :min=".5"
-          :max="1.5"
+          :min=".1"
+          :max="2"
           :step=".1"
         >
         </el-slider>
@@ -45,6 +44,7 @@
   </div>
 </template>
 <script>
+import panzoom from 'panzoom';
 import ObjectId from '../utils/ObjectId'
 import EventBus from '../utils/event-bus'
 import Collision from '../utils/collision'
@@ -60,14 +60,15 @@ export default {
   data() {
     return {
       dragged: false,
-      originX: 0,
-      originY: 0,
-      translateX: 0,
-      translateY: 0,
-      scaleStyle: null,
-      scaledOriginX: 0,
-      scaledOriginY: 0,
-      moreOne: false,
+      // originX: 0,
+      // originY: 0,
+      // translateX: 0,
+      // translateY: 0,
+      // scaleStyle: null,
+      // scaledOriginX: 0,
+      // scaledOriginY: 0,
+      // moreOne: false,
+      zoomTool: null,
     }
   },
 
@@ -116,8 +117,15 @@ export default {
         return this.$store.state.scale
       },
       set(value) {
-        const { $store, calcScalePosition } = this;
-        calcScalePosition(value, $store.state.scale);
+        const { $store } = this;
+        const { zoomTool } = this;
+        const { builderArea, flowBuilder } = this.$refs;
+        const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+        const { x, y } = zoomTool.getTransform();
+
+        // calcScalePosition(value, $store.state.scale);
+        zoomTool.zoomTo(x - (flowBuilderRect.x + flowBuilderRect.width) / 2, y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
         $store.commit('set', {path: 'scale', value});
       }
     }
@@ -227,128 +235,129 @@ export default {
       this.$store.commit('set', {path: 'newPoint', value: null});
     },
 
-    findCampaignCard(behavior) {
+    findCampaignCard(smooth) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
       const campaignCard = this.$refs[this.entryStep.id];
-      const { builderArea, flowBuilder } = this.$refs
-      const { $el } = flowBuilder;
+      const campaignCardRect = campaignCard.$el.getBoundingClientRect();
+      const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+      const { x, y } = zoomTool.getTransform();
+      // const campaignCard = this.$refs[this.entryStep.id];
+      // const { builderArea, flowBuilder } = this.$refs
+      // const { $el } = flowBuilder;
 
-      campaignCard.$el.scrollIntoView({
-        behavior: behavior || 'auto',
-        block: 'center',
-        inline: 'center'
-      })
+      // campaignCard.$el.scrollIntoView({
+      //   behavior: behavior || 'auto',
+      //   block: 'center',
+      //   inline: 'center'
+      // })
+      const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
+      const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
 
-      if (behavior) return;
+      console.log(flowBuilderRect);
 
-      this.calcScalePosition(1, 1);
+      zoomTool.moveTo(positionX, positionY, smooth)
+
+      // if (behavior) return;
+
+
+
+      // this.calcScalePosition(1, 1);
     },
 
-    calcScalePosition(newScale, oldScale) {
-      const { originX, originY, translateX, translateY } = this;
-      const { flowBuilder, builderArea } = this.$refs;
-      const { $el: flowElement } = flowBuilder;
-      const scaleRound = (item) => +item.toFixed(10).replace(/^(\-)?(.*)\./, "$10.")
+    // calcScalePosition(newScale, oldScale) {
+    //   const { originX, originY, translateX, translateY } = this;
+    //   const { flowBuilder, builderArea } = this.$refs;
+    //   const { $el: flowElement } = flowBuilder;
+    //   const scaleRound = (item) => +item.toFixed(10).replace(/^(\-)?(.*)\./, "$10.")
 
-      if (!flowBuilder || !builderArea) return;
+    //   if (!flowBuilder || !builderArea) return;
 
-      const flowRect = flowElement.getBoundingClientRect();
-      const builderRect = builderArea.getBoundingClientRect();
+    //   const flowRect = flowElement.getBoundingClientRect();
+    //   const builderRect = builderArea.getBoundingClientRect();
 
-      const left = (flowRect.width - flowRect.left) / 2;
-      const top = (flowRect.height - flowRect.top) / 2;
+    //   const left = (flowRect.width - flowRect.left) / 2;
+    //   const top = (flowRect.height - flowRect.top) / 2;
 
-      const x = left - builderArea.offsetLeft - builderRect.left;
-      const y = top - builderArea.offsetTop - builderRect.top;
+    //   const x = left - builderArea.offsetLeft - builderRect.left;
+    //   const y = top - builderArea.offsetTop - builderRect.top;
 
-      let newOriginX = x / oldScale;
-      let newOriginY = y / oldScale;
+    //   let newOriginX = x / oldScale;
+    //   let newOriginY = y / oldScale;
 
-      let newTranslateX = translateX;
-      let newTranslateY = translateY;
+    //   let newTranslateX = translateX;
+    //   let newTranslateY = translateY;
 
-      if (newOriginX != originX || newOriginY != originY) {
-        const lastX = originX * oldScale;
-        const lastY = originY * oldScale;
+    //   if (newOriginX != originX || newOriginY != originY) {
+    //     const lastX = originX * oldScale;
+    //     const lastY = originY * oldScale;
 
-        this.originX = newOriginX;
-        this.originY = newOriginY;
+    //     this.originX = newOriginX;
+    //     this.originY = newOriginY;
 
-        if (Math.abs(x - lastX) > 1 || Math.abs(y - lastY) > 1 ) {
-          newTranslateX = translateX + (x - lastX) * (1 - 1 / oldScale);
-          newTranslateY = translateY + (y - lastY) * (1 - 1 / oldScale);
-        } else if (oldScale !== 1 || x !== lastX && y !== lastY) {
-          this.originX = lastX / oldScale
-          this.originY = lastY / oldScale;
-        }
+    //     if (Math.abs(x - lastX) > 1 || Math.abs(y - lastY) > 1 ) {
+    //       newTranslateX = translateX + (x - lastX) * (1 - 1 / oldScale);
+    //       newTranslateY = translateY + (y - lastY) * (1 - 1 / oldScale);
+    //     } else if (oldScale !== 1 || x !== lastX && y !== lastY) {
+    //       this.originX = lastX / oldScale
+    //       this.originY = lastY / oldScale;
+    //     }
 
-        this.translateX = newTranslateX;
-        this.translateY = newTranslateY;
-      }
+    //     this.translateX = newTranslateX;
+    //     this.translateY = newTranslateY;
+    //   }
 
-      if (this.moreOne) {
-        flowElement.scrollLeft += this.scaledOriginX;
-        flowElement.scrollTop += this.scaledOriginY;
+    //   if (this.moreOne) {
+    //     flowElement.scrollLeft += this.scaledOriginX;
+    //     flowElement.scrollTop += this.scaledOriginY;
 
-        this.moreOne = false;
-      }
+    //     this.moreOne = false;
+    //   }
 
-      this.scaleStyle = {
-        transformOrigin: `${ this.originX }px ${ this.originY }px`,
-        transform: `scale(${ newScale })`
-      }
+    //   this.scaleStyle = {
+    //     transformOrigin: `${ this.originX }px ${ this.originY }px`,
+    //     transform: `scale(${ newScale })`,
+    //     transition: 'transform .3s linear'
+    //   }
 
-      flowBuilder.$el.scrollTop -= newTranslateY - translateY;
-      flowBuilder.$el.scrollLeft -= newTranslateX - translateX;
+    //   // flowBuilder.$el.scrollTop -= newTranslateY - translateY;
+    //   // flowBuilder.$el.scrollLeft -= newTranslateX - translateX;
 
-      if (newScale >= 1) {
-        const scaleMoreDiff = 1 - newScale;
-        const scaleLessDiff = newScale - 1 || 1;
+    //   // if (newScale >= 1) {
+    //   //   const scaleMoreDiff = 1 - newScale;
+    //   //   const scaleLessDiff = newScale - 1 || 1;
 
-        this.scaledOriginX = this.originX * scaleMoreDiff;
-        this.scaledOriginY = this.originY * scaleMoreDiff;
+    //   //   this.scaledOriginX = this.originX * scaleMoreDiff;
+    //   //   this.scaledOriginY = this.originY * scaleMoreDiff;
 
-        const scrollLeft = flowElement.scrollLeft - this.scaledOriginX;
-        const scrollTop = flowElement.scrollTop - this.scaledOriginY;
+    //   //   const scrollLeft = flowElement.scrollLeft - this.scaledOriginX;
+    //   //   const scrollTop = flowElement.scrollTop - this.scaledOriginY;
 
-        const scrollX = scaleRound(scrollLeft) / scaleLessDiff;
-        const scrollY = scaleRound(scrollTop) / scaleLessDiff;
+    //   //   const scrollX = scaleRound(scrollLeft) / scaleLessDiff;
+    //   //   const scrollY = scaleRound(scrollTop) / scaleLessDiff;
 
-        this.scaleStyle.transformOrigin = `${ scrollX }px ${ scrollY }px`
+    //   //   this.scaleStyle.transformOrigin = `${ scrollX }px ${ scrollY }px`
 
-        flowElement.scrollTop = scrollTop;
-        flowElement.scrollLeft = scrollLeft;
+    //   //   flowElement.scrollTop = scrollTop;
+    //   //   flowElement.scrollLeft = scrollLeft;
 
-        this.moreOne = true;
-      }
-      // const x = Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
-      // const y = Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
+    //   //   this.moreOne = true;
+    //   // }
+    //   // const x = Math.abs(builderRect.x + flowRect.x) + flowRect.width / 2;
+    //   // const y = Math.abs(builderRect.y + flowRect.y) + flowRect.height / 2;
 
-      // console.log(scaleX, scaleY);
+    //   // console.log(scaleX, scaleY);
 
-      // this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
-    },
+    //   // this.transformOrigin = `${ x * 100 / builderRect.width }% ${ x  * 100 / builderRect.height }%`
+    // },
 
     scrollOnMove({stepX, stepY, event}) {
-      const { flowBuilder, builderArea } = this.$refs;
+      // const { flowBuilder, builderArea } = this.$refs;
 
-      if (event.type !== 'wheel' && event.target !== builderArea) return;
+      // if (event.type !== 'wheel' && event.target !== builderArea) return;
 
-      flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
+      // flowBuilder.$el.scrollTo(flowBuilder.$el.scrollLeft - stepX, flowBuilder.$el.scrollTop - stepY)
     },
-
-    wheelZoom(event, other) {
-      const { deltaX, deltaY, shiftKey, ctrlKey } = event;
-
-      event.preventDefault(),
-      event.stopPropagation();
-
-      if (shiftKey) {
-        this.scale = Math.min(1.5, Math.max(0.5, this.scale + 0.1 * (deltaY > 0 ? 1 : -1)))
-        return;
-      } else {
-        this.scrollOnMove({stepX: (deltaX || (ctrlKey && deltaY) || 0) * -1, stepY: (!ctrlKey && deltaY || 0) * -1, event });
-      }
-    }
 
     // resetDraggedCardToOriginalPos() {
     //   const draggedCard = this.currentEntryItem.steps.find(dragged => dragged.id === this.originalPosition.id);
@@ -411,6 +420,17 @@ export default {
 
           if (!oldEntry && this._isMounted) {
             this.$nextTick(() => {
+              this.zoomTool = panzoom(this.$refs.builderArea, {
+                maxZoom: 2,
+                minZoom: 0.1
+              })
+
+              this.zoomTool.on('zoom', (event) => {
+                const { scale } = event.getTransform()
+
+                this.$store.commit('set', {path: 'scale', value: parseFloat(scale.toFixed(1))});
+              })
+
               this.findCampaignCard();
             });
           };

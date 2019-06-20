@@ -51,6 +51,10 @@ export default {
       initialMouseY = event.clientY;
       document.addEventListener('mousemove', mouseMove);
       document.addEventListener('mouseup', mouseUp);
+
+      event.preventDefault(),
+      event.stopPropagation();
+
       return false;
     },
   },
