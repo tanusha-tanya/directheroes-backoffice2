@@ -117,16 +117,20 @@ export default {
         return this.$store.state.scale
       },
       set(value) {
-        const { $store } = this;
-        const { zoomTool } = this;
-        const { builderArea, flowBuilder } = this.$refs;
-        const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
-        const { x, y } = zoomTool.getTransform();
-
-        // calcScalePosition(value, $store.state.scale);
-        zoomTool.zoomTo(x - (flowBuilderRect.x + flowBuilderRect.width) / 2, y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+        const { $store, zoomTool, scale } = this;
 
         $store.commit('set', {path: 'scale', value});
+
+        if (zoomTool) {
+          const { builderArea, flowBuilder } = this.$refs;
+          const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+          const builderAreaRect = builderArea.getBoundingClientRect();
+
+          const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
+          const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
+
+          zoomTool.zoomTo(positionX, positionY, 1 + (value - scale));
+        }
       }
     }
   },
@@ -425,11 +429,11 @@ export default {
                 minZoom: 0.1
               })
 
-              this.zoomTool.on('zoom', (event) => {
-                const { scale } = event.getTransform()
+              // this.zoomTool.on('zoom', (event) => {
+              //   const { scale } = event.getTransform()
 
-                this.$store.commit('set', {path: 'scale', value: parseFloat(scale.toFixed(1))});
-              })
+              //   this.$store.commit('set', {path: 'scale', value: parseFloat(scale.toFixed(1))});
+              // })
 
               this.findCampaignCard();
             });
