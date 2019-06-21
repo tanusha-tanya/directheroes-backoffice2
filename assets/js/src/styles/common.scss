@@ -3,6 +3,12 @@
   100% { transform:rotate(360deg); }
 }
 
+@keyframes blink{
+  0%{opacity: 0;}
+  50%{opacity: 1;}
+  100%{opacity: 0;}
+}
+
 .account-card {
   padding: 17px;
   width: 177px;

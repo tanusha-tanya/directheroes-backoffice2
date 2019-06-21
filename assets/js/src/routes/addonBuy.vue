@@ -3,7 +3,7 @@
 
     <div class="container-area">
       <div class="container-header">
-        Planes
+        Plans
       </div>
       <div class="container-body">
         <div class="loading-content" v-if="inGetPlanes">
@@ -56,7 +56,6 @@ export default {
       cardInfo: null,
       purchasing: false,
       inGetPlanes: false,
-      planList: null,
       error: null,
       code: null,
     }
@@ -64,6 +63,8 @@ export default {
 
   methods: {
     buyPlane() {
+      const { code } = this;
+
       this.error = false;
       this.purchased = false;
       this.purchasing = true;
@@ -72,8 +73,12 @@ export default {
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/add-subscription`,
         method: 'post',
         data: {
-          type: 'extraAccount',
-          quantity: 1
+          cartItems: code.map(plan => {
+            return {
+              plan: plan.code,
+              quantity: 1
+            }
+          })
         }
       }).then(({ data }) => {
         const { success, error } = data.request;
