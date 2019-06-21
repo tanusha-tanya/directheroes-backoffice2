@@ -93,7 +93,7 @@ export default {
     &.adReply, &.postShare {
       position: absolute !important;
       top: 37px;
-      width: 37px;
+      width: 37px !important;
       right: 0px;
       height: 40px;
       border-color: transparent;
