@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
+  <div class="builder-card" @mousedown="blockEvent" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -57,6 +57,13 @@ export default {
 
       return false;
     },
+
+    blockEvent(event) {
+      // event.preventDefault();
+      event.stopPropagation();
+
+      return false;
+    }
   },
 
   props: ['settings']

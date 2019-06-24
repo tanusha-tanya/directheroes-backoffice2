@@ -233,7 +233,13 @@ export default {
     initZoom() {
       const zoomTool = panzoom(this.$refs.builderArea, {
         maxZoom: 2,
-        minZoom: 0.1
+        minZoom: 0.1,
+        beforeWheel(event) {
+          return !event.altKey;
+        },
+        filterKey(event) {
+          return true;
+        }
       })
 
       zoomTool.on('zoom', () => {
