@@ -21,15 +21,15 @@ let startX, startY, initialMouseX, initialMouseY;
 export default {
   methods: {
     mouseDown(event) {
-      const { settings } = this;
+      const { settings, scale } = this;
       const startingPos = {};
       startingPos['x'] = settings.positionX;
       startingPos['y'] = settings.positionY;
       this.$emit('mousedown', startingPos)
 
       const mouseMove = (event) => {
-        const left = startX + (event.clientX - initialMouseX);
-        const top = startY + (event.clientY - initialMouseY);
+        const left = startX + (event.clientX - initialMouseX) / scale;
+        const top = startY + (event.clientY - initialMouseY) / scale;
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
 
@@ -66,7 +66,7 @@ export default {
     }
   },
 
-  props: ['settings']
+  props: ['settings', 'scale']
 };
 </script>
 <style lang="scss">

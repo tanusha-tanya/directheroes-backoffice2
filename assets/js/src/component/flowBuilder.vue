@@ -13,16 +13,21 @@
         <div class="builder-area"
           ref="builderArea"
           >
-          <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
-          <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
-          <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
-          <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
+          <campaign-card  :scale="scaleValue" :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
+          <broadcast-card :scale="scaleValue" :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
+          <step-card :scale="scaleValue" :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
+          <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows>
         </div>
       </div>
       <builder-elements v-if="!disabled" :type="entryType"></builder-elements>
       <div class="zoom-element">
-        <button @click="scaleTo(0.9)">−</button>
-        <button @click="scaleTo(1.1)">+</button>
+        <el-slider
+          v-model="scale"
+          :min=".1"
+          :max="2"
+          :step=".1"
+        >
+        </el-slider>
         <div class="go-to-position" @click="findCampaignCard()">
           <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
             <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
@@ -51,12 +56,14 @@ import arrows from './arrows.vue'
 import { Drop } from 'vue-drag-drop';
 import builderElements from './builderElements.vue'
 
+let zoomTimeout = null;
+
 export default {
   data() {
     return {
       dragged: false,
       zoomTool: null,
-      scale: 1,
+      scaleValue: 1,
     }
   },
 
@@ -99,6 +106,27 @@ export default {
     builder() {
       return this;
     },
+
+    scale: {
+      get() {
+        const { scaleValue } = this;
+
+        return scaleValue && parseFloat(scaleValue.toFixed(1)) || 1;
+      },
+      set(value) {
+        const { zoomTool, scaleValue } = this;
+
+        if (!zoomTool || scaleValue == value) return;
+
+        clearTimeout(zoomTimeout);
+
+        zoomTimeout = setTimeout(() => {
+          this.scaleValue = value;
+
+          this.scaleTo(value / scaleValue);
+        }, 100);
+      }
+    }
   },
 
   methods: {
@@ -236,7 +264,7 @@ export default {
         minZoom: 0.1,
         smoothScroll: false,
         beforeWheel(event) {
-          return !event.altKey;
+          return !event.shiftKey;
         },
         filterKey(event) {
           return true;
@@ -244,7 +272,7 @@ export default {
       })
 
       zoomTool.on('zoom', () => {
-        this.scale = zoomTool.getTransform().scale;
+        this.scaleValue = zoomTool.getTransform().scale;
       })
 
       this.zoomTool = zoomTool;
@@ -358,29 +386,26 @@ export default {
       // transition: transform 300ms linear 0s;
     }
 
+    .builder-wrap {
+      outline: none;
+    }
+
     .zoom-element {
       display: flex;
       align-items: center;
       position: fixed;
       background-color: #fff;
-      padding:3px;
+      padding: 0 0 0 10px;
       z-index: 10;
       top: 105px;
       left: calc(50% - 10px);
+      width: 230px;
       border: 2px solid #E8E8E8;
       border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
 
-      button {
-        color: #409EFF;
-        background-color: transparent;
-        font-size: 24px;
-        padding: 4px 16px;
-        border-radius: 0;
-
-        &:first-child {
-          border-right: 1px solid #E8E8E8;
-        }
+      .el-slider {
+        flex-grow: 1;
       }
 
       .go-to-position {

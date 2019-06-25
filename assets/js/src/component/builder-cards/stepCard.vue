@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+  <builder-card :scale="scale" class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
     <template slot="header">
       {{ step.name || '&nbsp;'}}
     </template>
@@ -120,7 +120,7 @@ export default {
     draggable,
   },
 
-  props: ['step', 'tag'],
+  props: ['step', 'tag', 'scale'],
 
   computed: {
     isParentOfArrow() {
