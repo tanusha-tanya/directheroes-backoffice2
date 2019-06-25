@@ -234,6 +234,7 @@ export default {
       const zoomTool = panzoom(this.$refs.builderArea, {
         maxZoom: 2,
         minZoom: 0.1,
+        smoothScroll: false,
         beforeWheel(event) {
           return !event.altKey;
         },
