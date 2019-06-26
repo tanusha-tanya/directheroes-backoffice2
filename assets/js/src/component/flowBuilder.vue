@@ -263,6 +263,7 @@ export default {
         maxZoom: 2,
         minZoom: 0.1,
         smoothScroll: false,
+        zoomDoubleClickSpeed: 1,
         beforeWheel(event) {
           return !event.shiftKey;
         },
