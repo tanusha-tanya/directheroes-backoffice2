@@ -6,6 +6,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faCheckCircle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelopeOpen, faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import './directives/move'
 // import sodium from 'libsodium-wrappers'
 
 library.add(faUser, faEnvelopeOpen, faEnvelope, faCheckCircle, faClock, faEye, faEyeSlash);

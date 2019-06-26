@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
+  <div class="builder-card" @mousedown="blockEvent" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -21,17 +21,21 @@ let startX, startY, initialMouseX, initialMouseY;
 export default {
   methods: {
     mouseDown(event) {
-      const { settings } = this;
+      const { settings, scale } = this;
       const startingPos = {};
       startingPos['x'] = settings.positionX;
       startingPos['y'] = settings.positionY;
       this.$emit('mousedown', startingPos)
 
       const mouseMove = (event) => {
-        const left = startX + (event.clientX - initialMouseX);
-        const top = startY+ (event.clientY - initialMouseY);
+        const left = startX + (event.clientX - initialMouseX) / scale;
+        const top = startY + (event.clientY - initialMouseY) / scale;
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
+
+        event.preventDefault(),
+        event.stopPropagation();
+
         return false;
       }
 
@@ -47,11 +51,22 @@ export default {
       initialMouseY = event.clientY;
       document.addEventListener('mousemove', mouseMove);
       document.addEventListener('mouseup', mouseUp);
+
+      event.preventDefault(),
+      event.stopPropagation();
+
       return false;
     },
+
+    blockEvent(event) {
+      // event.preventDefault();
+      event.stopPropagation();
+
+      return false;
+    }
   },
 
-  props: ['settings']
+  props: ['settings', 'scale']
 };
 </script>
 <style lang="scss">

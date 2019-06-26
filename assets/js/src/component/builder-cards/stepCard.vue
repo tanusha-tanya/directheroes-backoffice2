@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+  <builder-card :scale="scale" class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
     <template slot="header">
       {{ step.name || '&nbsp;'}}
     </template>
@@ -120,7 +120,7 @@ export default {
     draggable,
   },
 
-  props: ['step', 'tag'],
+  props: ['step', 'tag', 'scale'],
 
   computed: {
     isParentOfArrow() {
@@ -291,8 +291,8 @@ export default {
     border-color: #2E9E7B;
     background-color: #2E9E7B;
     box-shadow: 0 0 10px #F5F5F5;
-    top: 130px;
-    left: 450px;
+    top: calc(50% + 190px);
+    left: calc(50% + 415px);
 
     .builder-card-header {
       font-family: 'AbeatbyKai';

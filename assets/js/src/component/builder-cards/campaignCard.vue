@@ -1,5 +1,5 @@
 <template>
-    <builder-card class="campaign-card" :settings="campaignStep.displaySettings" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+    <builder-card :scale="scale" class="campaign-card" :settings="campaignStep.displaySettings" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="header-controls">
         <builder-card-dialogs :step="campaign" :short="true"></builder-card-dialogs>
@@ -38,7 +38,7 @@ export default {
     builderCardDialogs
   },
 
-  props: ['campaign', 'tag'],
+  props: ['campaign', 'tag', 'scale'],
 
   methods: {
     handleMouseDown(position) {
@@ -63,8 +63,8 @@ export default {
 <style lang="scss">
   div.campaign-card {
     background-color: #2A4294;
-    top: 100px;
-    left: 50px;
+    top: calc(50% + 140px);
+    left: calc(50% + 30px);
 
     .builder-card-body {
       min-height: 140px;
