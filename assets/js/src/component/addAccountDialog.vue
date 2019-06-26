@@ -295,7 +295,7 @@ export default {
         this.account.login = (accountAuth && accountAuth.login) || '';
         this.account.password = '';
 
-        if (accountAuth.twoFactor && accountAuth.twoFactor.verificationCode) {
+        if (accountAuth && accountAuth.twoFactor && accountAuth.twoFactor.verificationCode) {
           delete accountAuth.twoFactor.verificationCode;
         }
 
