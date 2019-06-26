@@ -67,22 +67,44 @@
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
       <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
-    <div class="step" v-if="twoFactor">
-      <div class="step-info">
-        <div class="step-number">
-          4
+    <template v-if="twoFactor && twoFAMethodChoose">
+      <div class="step">
+        <div class="step-info">
+          <div class="step-number">
+            4
+          </div>
+          <div class="step-description">
+            Two factor authorization is enabled on your account, please choose 2FA source
+          </div>
         </div>
-        <div class="step-description">
-          Two factor authorization is enabled on your account, you should receive an SMS with verification code in a minute
+        <div class="step-elements">
+          <el-radio v-model="selected2FAMethod" label="1" :disabled="!twoFactor.twoFactorMethod.includes(1)">SMS</el-radio>
+          <el-radio v-model="selected2FAMethod" label="3" :disabled="!twoFactor.twoFactorMethod.includes(3)">Application</el-radio>
+          <el-radio v-model="selected2FAMethod" label="2">Backup code</el-radio>
+        </div>
+        <div class="step-verify">
+          <button @click="twoFAMethodChoose=false">Choose</button>
         </div>
       </div>
-      <input placeholder="Verification Code" v-model="code" @input="error = null" maxlength="6" :disabled="loading">
-      <div class="error" v-if="error">{{ error }}</div>
-      <div class="step-verify">
-        <button :class="{ loading: loading && !isResendCode }" :disabled="code.length < 6 || loading" @click="checkTFCode">Verify</button>
-        <button :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+    </template>
+    <template v-else-if="twoFactor && !twoFAMethodChoose">
+      <div class="step">
+        <div class="step-info">
+          <div class="step-number">
+            4
+          </div>
+          <div class="step-description">
+            {{selected2FAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
+          </div>
+        </div>
+        <input placeholder="Verification Code" v-model="code" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
+        <div class="error" v-if="error">{{ error }}</div>
+        <div class="step-verify">
+          <button :class="{ loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
+          <button v-if="selected2FAMethod != 2" :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+        </div>
       </div>
-    </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -103,6 +125,8 @@ export default {
       error: null,
       loading: false,
       code: '',
+      twoFAMethodChoose: true,
+      selected2FAMethod: null,
       isResendCode: false,
       triangle
     }
@@ -129,21 +153,6 @@ export default {
 
       return accountAuth && accountAuth.twoFactor
     },
-
-    accountError() {
-      const { accountAuth } = this;
-
-      if (!accountAuth) return;
-
-      if (!accountAuth.isPasswordValid) {
-        return 'Your password seems to be invalid'
-      } else if (accountAuth.igChallenge) {
-        return 'Please open Instagram application and click "It was me" if prompted, then try connecting account again'
-      } else if (accountAuth.isLoggedIn) {
-        return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
-      }
-    },
-
   },
 
   methods: {
@@ -162,8 +171,26 @@ export default {
       })
     },
 
+    accountError() {
+      const { accountAuth } = this;
+
+      if (!accountAuth) return;
+
+      if (!accountAuth.isPasswordValid) {
+        return 'Your password seems to be invalid'
+      } else if (accountAuth.igChallenge) {
+        return 'Please open Instagram application and click "It was me" if prompted, then try connecting account again'
+      } else if (accountAuth.twoFactor && accountAuth.twoFactor.verificationCode) {
+        delete accountAuth.twoFactor.verificationCode;
+
+        return 'The code was rejected by Instagram. Please try again, or contact support if problem persists.'
+      } else if (accountAuth.isLoggedIn) {
+        return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
+      }
+    },
+
     actionAccount() {
-      const { $store, accountAuth, account } = this;
+      const { $store, accountAuth, account, selected2FAMethod } = this;
       let request;
 
       this.loading = true;
@@ -171,6 +198,11 @@ export default {
 
       if (accountAuth) {
         accountAuth.password = account.password
+
+        if (accountAuth.twoFactor) {
+          accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
+        }
+
         request = $store.dispatch('saveAccount', accountAuth)
       } else {
         request = $store.dispatch('addAccount', account)
@@ -187,8 +219,8 @@ export default {
           if (account.igErrorMessage) {
             this.error = account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '');
           }
-          else if (accountError) {
-            this.error = accountError;
+          else if (accountError()) {
+            this.error = accountError();
           } else if (account.isLoggedIn && account.isPasswordValid) {
             this.$emit('close-dialog', false);
           }
@@ -223,14 +255,28 @@ export default {
     },
 
     resendTFCode() {
-      const { actionAccount } = this;
+      const { actionAccount, accountAuth, selected2FAMethod } = this;
 
       this.isResendCode = true;
+
+      accountAuth.twoFactor = { twoFactorMethod: selected2FAMethod };
 
       actionAccount().then(() => {
         this.isResendCode = false;
       })
-    }
+    },
+
+    // setTwoFactorMethod() {
+    //   const { selected2FAMethod, twoFactor, accountAuth, resendTFCode } = this;
+    //   const { twoFactorMethod } = twoFactor;
+    //   const isEqualMethods = selected2FAMethod == twoFactorMethod;
+
+    //   if (isEqualMethods || selected2FAMethod == 3) {
+    //     this.twoFAMethodChoose = false;
+    //   } else {
+    //     resendTFCode()
+    //   }
+    // }
   },
 
   created() {
@@ -248,11 +294,20 @@ export default {
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
         this.account.password = '';
-        this.error = accountError;
+
+        if (accountAuth.twoFactor && accountAuth.twoFactor.verificationCode) {
+          delete accountAuth.twoFactor.verificationCode;
+        }
+
+        this.error = accountError();
+
         this.checkConnection();
       } else {
         this.error = null;
         this.code = '';
+        this.twoFAMethodChoose = true;
+        this.selected2FAMethod = null;
+
         clearTimeout(this.checkingTimeout)
       }
     },
@@ -327,6 +382,20 @@ export default {
 
     .step-description {
       margin-top: 6px;
+    }
+
+    .step-elements {
+      display: flex;
+      flex-direction: column;
+
+      padding: 10px 35px;
+
+      .el-radio {
+        margin: 5px 0;
+        & + .el-radio {
+          margin-left: 0;
+        }
+      }
     }
 
     .download-buttons {

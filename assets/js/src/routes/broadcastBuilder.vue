@@ -204,7 +204,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
         method: 'post',
-        data: { categories:categoryList.map(category => category.id) }
+        data: { categories:categoryList.map(category => category.id), accountId: this.account.id }
       }).then(({ data }) => {
         const { count } = data.response.body
 
