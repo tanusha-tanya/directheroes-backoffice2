@@ -14,7 +14,8 @@ import {
   Popover,
   Pagination,
   Tooltip,
-  DatePicker
+  DatePicker,
+  Radio
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -31,6 +32,7 @@ import 'element-ui/lib/theme-chalk/message.css';
 import 'element-ui/lib/theme-chalk/pagination.css';
 import 'element-ui/lib/theme-chalk/tooltip.css';
 import 'element-ui/lib/theme-chalk/checkbox.css';
+import 'element-ui/lib/theme-chalk/radio.css';
 import 'element-ui/lib/theme-chalk/date-picker.css';
 
 
@@ -49,3 +51,4 @@ Vue.use(Pagination);
 Vue.use(Tooltip);
 Vue.use(DatePicker);
 Vue.use(Checkbox);
+Vue.use(Radio);
