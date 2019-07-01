@@ -62,8 +62,8 @@
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null">
-      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null">
+      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="nope">
+      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="nope">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
       <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
@@ -171,20 +171,24 @@ export default {
       })
     },
 
-    accountError() {
-      const { accountAuth } = this;
+    accountError(account) {
+      account = account || this.accountAuth;
 
-      if (!accountAuth) return;
+      if (!account) return;
 
-      if (!accountAuth.isPasswordValid) {
+      console.log(account);
+
+      if (account.igErrorMessage) {
+        return account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '');
+      } else if (!account.isPasswordValid) {
         return 'Your password seems to be invalid'
-      } else if (accountAuth.igChallenge) {
+      } else if (account.igChallenge) {
         return 'Please open Instagram application and click "It was me" if prompted, then try connecting account again'
-      } else if (accountAuth.twoFactor && accountAuth.twoFactor.verificationCode) {
-        delete accountAuth.twoFactor.verificationCode;
+      } else if (account.twoFactor && accountAuth.twoFactor.verificationCode) {
+        delete account.twoFactor.verificationCode;
 
         return 'The code was rejected by Instagram. Please try again, or contact support if problem persists.'
-      } else if (accountAuth.isLoggedIn) {
+      } else if (account.isLoggedIn) {
         return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
       }
     },
@@ -216,11 +220,8 @@ export default {
 
           this.$emit('set-auth-account', account)
 
-          if (account.igErrorMessage) {
-            this.error = account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '');
-          }
-          else if (accountError()) {
-            this.error = accountError();
+          if (accountError(account)) {
+            this.error = accountError(account);
           } else if (account.isLoggedIn && account.isPasswordValid) {
             this.$emit('close-dialog', false);
           }
