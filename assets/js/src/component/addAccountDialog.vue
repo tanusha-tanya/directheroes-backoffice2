@@ -176,8 +176,6 @@ export default {
 
       if (!account) return;
 
-      console.log(account);
-
       if (account.igErrorMessage) {
         return account.igErrorMessage.replace('InstagramAPI\\Response\\LoginResponse: ', '');
       } else if (!account.isPasswordValid) {

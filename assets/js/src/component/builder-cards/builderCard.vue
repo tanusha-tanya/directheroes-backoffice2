@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" @mousedown="blockEvent" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
+  <div class="builder-card" @mousedown="blockEvent" :style="{ top: settings.positionY || settings.positionY === 0 ? `${ settings.positionY }px`: null, left: settings.positionX || settings.positionX === 0 ? `${ settings.positionX }px` : null}">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -30,6 +30,9 @@ export default {
       const mouseMove = (event) => {
         const left = startX + (event.clientX - initialMouseX) / scale;
         const top = startY + (event.clientY - initialMouseY) / scale;
+
+        console.log(top, left);
+
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
 
