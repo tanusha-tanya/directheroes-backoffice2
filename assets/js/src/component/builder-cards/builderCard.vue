@@ -31,8 +31,6 @@ export default {
         const left = startX + (event.clientX - initialMouseX) / scale;
         const top = startY + (event.clientY - initialMouseY) / scale;
 
-        console.log(top, left);
-
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
 
