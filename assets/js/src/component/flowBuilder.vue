@@ -265,6 +265,12 @@ export default {
         smoothScroll: false,
         zoomDoubleClickSpeed: 1,
         beforeWheel(event) {
+          if (!event.shiftKey) {
+            const { x, y } = zoomTool.getTransform();
+
+            zoomTool.moveTo(x - event.deltaX, y - event.deltaY)
+          }
+
           return !event.shiftKey;
         },
         filterKey(event) {
@@ -326,7 +332,6 @@ export default {
 
     currentEntryItem: {
       handler: function (entry, oldEntry) {
-
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
 
