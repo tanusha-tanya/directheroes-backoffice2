@@ -62,8 +62,8 @@
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="nope">
-      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="nope">
+      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
+      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
       <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
@@ -188,7 +188,7 @@ export default {
         delete account.twoFactor.verificationCode;
 
         return 'The code was rejected by Instagram. Please try again, or contact support if problem persists.'
-      } else if (account.isLoggedIn) {
+      } else if (!account.isLoggedIn) {
         return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
       }
     },
@@ -216,12 +216,13 @@ export default {
         .then(({ data }) => {
           const { accountError } = this;
           const { account } = data.response.body;
+          const error = accountError(account);
           this.loading = false;
 
           this.$emit('set-auth-account', account)
 
-          if (accountError(account)) {
-            this.error = accountError(account);
+          if (error) {
+            this.error = error;
           } else if (account.isLoggedIn && account.isPasswordValid) {
             this.$emit('close-dialog', false);
           }
