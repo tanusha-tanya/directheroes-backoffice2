@@ -43,7 +43,7 @@
       <stripe-payment :goal="plan.code || 'createPlanSubscription'" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            <div class="plane-info">You will be charged <strong>${{plan.price}}</strong></div>
+            <div class="plane-info" v-if="plan.price">You will be charged <strong>${{plan.price}}</strong></div>
             <div class="error">{{globalError}}</div>
             <button :class="{loading: creating}" @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError || creating">
               Join right now
