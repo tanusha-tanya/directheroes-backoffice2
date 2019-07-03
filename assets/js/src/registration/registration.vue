@@ -90,7 +90,7 @@ export default {
     },
 
     plan() {
-      return dh.plan
+      return dh.plan || {}
     }
   },
 
