@@ -27,14 +27,14 @@
                   <path d="M288,409.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V409.3z" fill="currentColor"/>
                 </svg>
               </div>
-              <div class="element-name">{{elementsNames[element.type]}}</div>
+              <div class="element-name">{{elementsNames[element.devType || element.type]}}</div>
               <element-warning :element="element"></element-warning>
               <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
             </span>
             <div class="remove-element" @click="elementToDelete = element">&times</div>
           </div>
           <div class="element-body" v-if="!element.displaySettings.collapsed">
-            <component :is="elementComponents[element.type]" :element="element"></component>
+            <component :is="elementComponents[element.devType || element.type]" :element="element"></component>
           </div>
         </div>
       </draggable>
@@ -85,6 +85,7 @@ import subscriptionControl from '../elements/subscriptionControl.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
+import manualElement from "../elements/manualElement.vue";
 import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
 import elementWarning from '../elementWarning.vue'
 
@@ -96,7 +97,8 @@ export default {
         sendImageAction: 'Image',
         basicDelay: 'Delay',
         messageConditionMultiple: 'Triggers',
-        subscriptionControl: 'Subscription'
+        subscriptionControl: 'Subscription',
+        manualElement: 'Manual',
       },
       elementComponents: {
         sendImageAction,
@@ -104,6 +106,7 @@ export default {
         messageConditionMultiple,
         basicDelay,
         subscriptionControl,
+        manualElement
       },
       dragged: false,
       elementToDelete: null,
