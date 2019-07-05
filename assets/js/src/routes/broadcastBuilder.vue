@@ -3,7 +3,7 @@
   <div class="broadcast-builder-controls">
     <span>Broadcast Builder</span>
     <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
-    <div class="info" v-if="currentBroadcast">
+    <div class="info" v-if="currentBroadcast && !hasWarning">
       <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
       <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
       <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
@@ -286,7 +286,7 @@ export default {
     setNowDate() {
       const { broadcastStep } = this;
 
-      broadcastStep.status.statusText = 'running'
+      // broadcastStep.status.statusText = 'running'
       this.startAt = moment().utc().format()
     },
 
@@ -304,6 +304,13 @@ export default {
       if (diff < 60 * 1000 && diff > 0) {
         timeout = 1000;
       } else if (!this.timeToStart) {
+        this.$store.dispatch('saveCampaign', this.currentBroadcast)
+        .then(({ data }) => {
+          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 10 * 1000)
+        })
+        .catch(() => {
+          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 30 * 1000)
+        });
         return;
       }
 
