@@ -62,6 +62,10 @@ export default {
       case 'sendRequestAction':
         if (!element.value.url) {
           warning = 'Please enter hook url'
+        } else if (!element.value.status) {
+          warning = 'Please verify hook url'
+        } else if (element.value.status == 'fail') {
+          warning = 'Please enter correct hook url'
         }
       break;
       case "any":
