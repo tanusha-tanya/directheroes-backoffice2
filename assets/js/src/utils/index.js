@@ -59,6 +59,11 @@ export default {
           warning = 'Please add at least one element'
         }
       break;
+      case 'sendRequestAction':
+        if (!element.value.url) {
+          warning = 'Please enter hook url'
+        }
+      break;
       case "any":
         if (emptyMoreOne) {
           warning = 'There can only be one empty element in a list'
