@@ -1,6 +1,6 @@
 <template>
   <div class="request-action">
-    <input placeholder="Please enter hook URL" v-model="element.value.url" @input="error = null; isOK = null">
+    <input placeholder="Please enter hook URL" v-model="element.value.url" @input="clearStatuses">
     <div class="error" v-if="error">{{error}}</div>
     <div class="success-status" v-if="isOk">Ok</div>
     <button :class="{ loading }" :disabled="loading || !element.value.url.length" @click="testHookUrl">Send test</button>
@@ -22,6 +22,11 @@ export default {
   props:['element'],
 
   methods: {
+    clearStatuses() {
+      this.error = null;
+      this.isOk = false;
+    },
+
     testHookUrl() {
       const { value } =  this.element
 
