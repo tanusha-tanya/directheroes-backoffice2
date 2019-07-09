@@ -1,8 +1,7 @@
 <template>
   <div class="request-action">
     <input placeholder="Please enter hook URL" v-model="element.value.url" @input="clearStatuses">
-    <div class="error" v-if="error">{{error}}</div>
-    <div class="success-status" v-if="isOk">Ok</div>
+    <div :class="[{'status-message': true}, element.value.status]">{{statusText || 'Send URL to validation'}}</div>
     <button :class="{ loading }" :disabled="loading || !element.value.url.length" @click="testHookUrl">Send test</button>
   </div>
 </template>
@@ -12,9 +11,11 @@ import axios from 'axios'
 
 export default {
   data() {
+    const { status } =  this.element.value
+
     return {
       loading: false,
-      error: null,
+      statusText: (status == 'fail' && 'Validation URL error' ) || (status == 'success' && 'Validation URL is Ok' ) || null,
       isOk: null
     }
   },
@@ -23,15 +24,18 @@ export default {
 
   methods: {
     clearStatuses() {
-      this.error = null;
-      this.isOk = false;
+      const { value } = this.element;
+
+      this.statusText = null;
+      value.status = null;
     },
 
     testHookUrl() {
       const { value } =  this.element
 
       this.loading = true
-      this.error = null
+      this.statusText = null
+      value.status = null;
 
       axios({
         url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/send-request`,
@@ -39,15 +43,20 @@ export default {
         data: value,
       }).then(({ data }) => {
         this.loading = false
-        this.isOk = true
+
+        this.statusText = 'Validation URL is Ok'
+
+        Vue.set(value, 'status', 'success')
       }).catch(error => {
         const { response } = error
 
         if (!response) {
-          this.error = 'Server error, try later'
+          this.statusText = 'Server error, try later'
         } else {
-          this.error = response.data.request.statusCode
+          this.statusText = response.data.request.statusMessage
         }
+
+        Vue.set(value, 'status', 'fail')
 
         this.loading = false
       })
@@ -68,14 +77,17 @@ export default {
     margin-top: 10px;
   }
 
-  .error {
-    color: #f44336;
+  .status-message {
     margin-top: 10px;
-  }
+    color: #A9A9A9;
 
-  .success-status {
-    color: #67c23a;
-    margin-top: 10px;
+    &.fail {
+      color: #f44336;
+    }
+
+    &.success {
+      color: #67c23a;
+    }
   }
 }
 </style>
