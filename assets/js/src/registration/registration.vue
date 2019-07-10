@@ -40,9 +40,10 @@
       <div class="title">
         Payment Information
       </div>
-      <stripe-payment goal="createPlanSubscription" ref="stripePayment">
+      <stripe-payment :goal="plan.code || 'createPlanSubscription'" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
+            <div class="plane-info" v-if="plan.price">You will be charged <strong>${{plan.price}}</strong></div>
             <div class="error">{{globalError}}</div>
             <button :class="{loading: creating}" @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError || creating">
               Join right now
@@ -86,6 +87,10 @@ export default {
       const { errors } = this;
 
       return Object.keys(errors).some(error => errors[error]);
+    },
+
+    plan() {
+      return dh.plan || {}
     }
   },
 
@@ -186,7 +191,7 @@ body {
 #app {
   padding: 20px 0;
   min-height: 100vh;
-  background: linear-gradient(230.73deg, rgba(34, 106, 247, 0.85) 5.64%, rgba(98, 45, 206, 0.85) 58.18%);
+  // background: linear-gradient(230.73deg, rgba(34, 106, 247, 0.85) 5.64%, rgba(98, 45, 206, 0.85) 58.18%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,7 +234,7 @@ body {
   }
 }
 
-input, div.form-row label > div.StripeElement {
+input[type=password], input, div.form-row label > div.StripeElement {
   padding: 5px 15px;
   border: 1px solid #d0d0d0;
   border-radius: 50px;
@@ -315,6 +320,11 @@ button {
   margin: 15px -20px 0;
   text-align: center;
   border-top: 1px solid #D0D0D0;
+}
+
+.plane-info {
+  margin-bottom: 20px;
+  font-size: 18px;
 }
 
 .form-row {

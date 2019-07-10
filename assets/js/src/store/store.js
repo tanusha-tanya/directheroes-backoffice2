@@ -43,6 +43,21 @@ export default new VueX.Store({
         const { accountList, dhAccount } = data.response.body;
 
         // dhAccount.igAccountLimit = 2;
+        // console.log(accountList);
+        // accountList.forEach(account => {
+        //   const broadcast = account.broadcastList[0];
+
+        //   if (!broadcast) return;
+
+        //   broadcast.steps[0].status = {
+        //     remainingMessages: 1234,
+        //     sentMessages: 74258,
+        //     remainingConversations: 984,
+        //     completedConversations: 24180,
+        //     statusText: 'running',
+        //     estimatedTime: 38712
+        //   }
+        // })
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });

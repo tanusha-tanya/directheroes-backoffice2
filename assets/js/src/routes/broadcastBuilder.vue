@@ -3,7 +3,7 @@
   <div class="broadcast-builder-controls">
     <span>Broadcast Builder</span>
     <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
-    <div class="info" v-if="currentBroadcast">
+    <div class="info" v-if="currentBroadcast && !hasWarning">
       <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
       <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
       <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
@@ -45,6 +45,24 @@
             >
             {{ subscriber.name }}
           </el-checkbox> -->
+        </div>
+        <div class="broadcast-chart">
+          <el-progress type="circle" :percentage="messagesInfo.sentPercent" :stroke-width="12" color="#64c6cc"></el-progress>
+          <div class="broadcast-chart-info">
+            Messages sent
+            <strong>{{messagesInfo.sentMessages}} / {{messagesInfo.sentMessages + messagesInfo.remainingMessages}}</strong>
+          </div>
+        </div>
+        <div class="broadcast-chart">
+          <el-progress type="circle" :percentage="conversationInfo.completedPercent" :stroke-width="12" color="#473cd0"></el-progress>
+          <div class="broadcast-chart-info">
+            Conversation completed
+            <strong>{{conversationInfo.completedConversations}} / {{conversationInfo.completedConversations + conversationInfo.remainingConversations}}</strong>
+          </div>
+        </div>
+        <div class="broadcast-estimated-time" v-if="estimatedTime">
+          Estimated time
+          <div><strong>{{estimatedTime}}</strong></div>
         </div>
       </div>
       <div class="broadcast-additional-info">
@@ -194,6 +212,44 @@ export default {
       })
 
       return subscriberMainCategories
+    },
+
+    messagesInfo() {
+      const { sentMessages, remainingMessages } = this.broadcastStep.status;
+
+      return {
+        sentMessages: sentMessages || 0,
+        sentPercent: Math.floor(100 - (remainingMessages || 1) * 100 / (sentMessages || 1)),
+        remainingMessages: remainingMessages || 0
+      };
+    },
+
+    conversationInfo() {
+      const { completedConversations, remainingConversations } = this.broadcastStep.status;
+
+      return {
+        completedConversations: completedConversations || 0,
+        completedPercent: Math.floor(100 - (remainingConversations || 1) * 100 / (completedConversations || 1)),
+        remainingConversations: remainingConversations || 0
+      };
+    },
+
+    estimatedTime() {
+      const { estimatedTime } = this.broadcastStep.status;
+      const date = new Date(null);
+
+      if (!estimatedTime) return;
+
+      date.setSeconds(estimatedTime);
+
+      let stringTime = date.getUTCHours() + 'h ' + date.getUTCMinutes() + 'm ' +  date.getUTCSeconds() + 's';
+
+
+      if (date.getDay()) {
+        stringTime = date.getUTCDay() + 'd ' + stringTime;
+      }
+
+      return  stringTime
     }
   },
 
@@ -230,7 +286,7 @@ export default {
     setNowDate() {
       const { broadcastStep } = this;
 
-      broadcastStep.status.statusText = 'running'
+      // broadcastStep.status.statusText = 'running'
       this.startAt = moment().utc().format()
     },
 
@@ -248,6 +304,13 @@ export default {
       if (diff < 60 * 1000 && diff > 0) {
         timeout = 1000;
       } else if (!this.timeToStart) {
+        this.$store.dispatch('saveCampaign', this.currentBroadcast)
+        .then(({ data }) => {
+          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 10 * 1000)
+        })
+        .catch(() => {
+          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 30 * 1000)
+        });
         return;
       }
 
@@ -332,6 +395,33 @@ export default {
     height: 200px;
     border-bottom: 1px solid #DBDBDB;
     padding: 10px;
+    display: flex;
+  }
+
+  .broadcast-chart {
+    padding: 0 30px;
+
+    .broadcast-chart-info {
+      color: #828282;
+      font-size: 11px;
+      text-align: center;
+
+      strong {
+        font-size: 18px;
+        display: block;
+      }
+    }
+  }
+
+  .broadcast-estimated-time {
+    color: #828282;
+    padding: 0 30px;
+    text-align: center;
+    font-size: 18px;
+    line-height: normal;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .broadcast-settings-campaign-list {
