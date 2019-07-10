@@ -32,6 +32,8 @@ import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
 import infinite from '../assets/svg/infinite.svg'
 import plus from '../assets/svg/plus-outline.svg'
+import jsonfile from '../assets/svg/json-file.svg'
+import zapier from '../assets/svg/zapier.svg'
 
 export default {
   data() {
@@ -91,6 +93,30 @@ export default {
             }
           }
         },
+        {
+          name: 'Zapier',
+          svg: zapier,
+          template: {
+            type: 'sendRequestAction',
+            value: {
+              selectedTypes: [
+                'email'
+              ],
+              url: ''
+            }
+          }
+        },
+        {
+          name: 'Manual',
+          svg: jsonfile,
+          template: {
+            devType: 'manualElement',
+            type: 'sendTextAction',
+            value: {
+              text: 'JSON-data'
+            }
+          }
+        },
         // {
         //   name: 'Video',
         //   svg: socialYoutube,
@@ -110,7 +136,7 @@ export default {
 
       if (this.dhAccount.isViewedByAdmin) return true;
 
-      return !['Subscribe'].includes(element.name)
+      return !['Subscribe', 'Manual', 'Zapier'].includes(element.name)
     }
   }
 }
