@@ -63,8 +63,13 @@ export default {
 <style lang="scss">
   div.campaign-card {
     background-color: #2A4294;
-    top: calc(50% + 140px);
-    left: calc(50% + 30px);
+    top: calc(50% + 140px)  !important;
+    left: 30px !important;
+
+    .builder-card-drag-handler {
+      pointer-events: none;
+      cursor: default;
+    }
 
     .builder-card-body {
       min-height: 140px;

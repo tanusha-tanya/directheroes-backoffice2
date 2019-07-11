@@ -15,7 +15,7 @@
           >
           <campaign-card  :scale="scaleValue" :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
           <broadcast-card :scale="scaleValue" :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
-          <step-card :scale="scaleValue" :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
+          <step-card :deltaPosition="deltaPosition" :scale="scaleValue" :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
           <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows>
         </div>
       </div>
@@ -64,6 +64,7 @@ export default {
       dragged: false,
       zoomTool: null,
       scaleValue: 1,
+      deltaPosition: null
     }
   },
 
@@ -343,6 +344,16 @@ export default {
               this.initZoom();
 
               this.findCampaignCard();
+
+              const { entryStep } = this;
+              const entryElement = this.$refs[entryStep.id].$el;
+
+              if (!entryStep.displaySettings.positionX && !entryStep.displaySettings.positionY) return;
+
+              this.deltaPosition = {
+                x: entryElement.offsetLeft - entryStep.displaySettings.positionX,
+                y: entryElement.offsetTop - entryStep.displaySettings.positionY
+              }
             });
           };
         }
