@@ -39,10 +39,10 @@ if (Encore.isProduction()) {
   Encore
     .setOutputPath('./assets/jsV5/dist')
     .setPublicPath('/dist/')
-    .enableEslintLoader(config => {
-        config.configFile = './assets/jsV5/.eslintrc.js';
-        console.log(config);
-    });
+    // .enableEslintLoader(config => {
+    //     config.configFile = './assets/jsV5/.eslintrc.js';
+    //     console.log(config);
+    // });
 
   config = Encore.getWebpackConfig()
 

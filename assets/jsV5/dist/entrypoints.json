@@ -1,0 +1,14 @@
+{
+  "entrypoints": {
+    "app": {
+      "js": [
+        "http://directheroes.local:8080/dist/app.js"
+      ]
+    },
+    "register": {
+      "js": [
+        "http://directheroes.local:8080/dist/register.js"
+      ]
+    }
+  }
+}
