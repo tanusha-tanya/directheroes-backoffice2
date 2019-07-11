@@ -137,7 +137,7 @@ export default {
 
       if (this.dhAccount.isViewedByAdmin) return true;
 
-      return !['Subscribe', 'Manual'].includes(element.name)
+      return !['Subscribe', 'Manual', 'Zapier'].includes(element.name)
     }
   }
 }
