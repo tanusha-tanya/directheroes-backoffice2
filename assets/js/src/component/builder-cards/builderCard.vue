@@ -41,7 +41,6 @@ export default {
       startingPos['y'] = settings.positionY;
       this.$emit('mousedown', startingPos);
 
-
       const mouseMove = (event) => {
         const left = (startX - deltaX) + (event.clientX - initialMouseX) / scale;
         const top = (startY - deltaY) + (event.clientY - initialMouseY) / scale;

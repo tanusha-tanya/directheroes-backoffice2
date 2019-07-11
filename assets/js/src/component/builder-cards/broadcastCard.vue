@@ -200,8 +200,13 @@ export default {
   div.broadcast-card {
     background-color: #2A4294;
     box-shadow: 0 0 10px #F5F5F5;
-    top: 130px;
-    left: 450px;
+    top: calc(50% + 140px)  !important;
+    left: 30px !important;
+
+    .builder-card-drag-handler {
+      pointer-events: none;
+      cursor: default;
+    }
 
     .builder-card-header {
       font-family: 'AbeatbyKai';
