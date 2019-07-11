@@ -97,12 +97,13 @@ export default {
           name: 'Zapier',
           svg: zapier,
           template: {
-            type: 'sendRequestAction',
+            type: 'callWebhookAction',
             value: {
               selectedTypes: [
-                'email'
+                'subscriberEmail'
               ],
-              url: ''
+              url: '',
+              status: null
             }
           }
         },
@@ -136,7 +137,7 @@ export default {
 
       if (this.dhAccount.isViewedByAdmin) return true;
 
-      return !['Subscribe', 'Manual', 'Zapier'].includes(element.name)
+      return !['Subscribe', 'Manual'].includes(element.name)
     }
   }
 }
@@ -144,7 +145,7 @@ export default {
 <style lang="scss">
   .builder-elements {
     position: fixed;
-    top: calc(50% - 200px);
+    top: calc(50% - 260px);
     z-index: 2;
     right: 20px;
     width: 79px;

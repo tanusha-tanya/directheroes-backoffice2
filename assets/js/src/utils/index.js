@@ -59,7 +59,7 @@ export default {
           warning = 'Please add at least one element'
         }
       break;
-      case 'sendRequestAction':
+      case 'callWebhookAction':
         if (!element.value.url) {
           warning = 'Please enter hook url'
         } else if (!element.value.status) {

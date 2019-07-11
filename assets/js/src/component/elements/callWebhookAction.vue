@@ -38,7 +38,7 @@ export default {
       value.status = null;
 
       axios({
-        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/send-request`,
+        url: `${ dh.apiUrl }/api/2.0.0/${ dh.userName }/campaign/call-webhook`,
         method: 'POST',
         data: value,
       }).then(({ data }) => {

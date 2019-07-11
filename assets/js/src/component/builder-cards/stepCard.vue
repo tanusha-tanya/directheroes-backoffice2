@@ -81,7 +81,7 @@ import confirmDialog from '../confirmDialog.vue'
 import { Drop } from 'vue-drag-drop';
 import builderCardDialogs from '../builderCardDialogs'
 import sendImageAction from '../elements/sendImageAction.vue'
-import sendRequestAction from '../elements/sendRequestAction.vue'
+import callWebhookAction from '../elements/callWebhookAction.vue'
 import subscriptionControl from '../elements/subscriptionControl.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
@@ -100,7 +100,7 @@ export default {
         messageConditionMultiple: 'Triggers',
         subscriptionControl: 'Subscription',
         manualElement: 'Manual',
-        sendRequestAction: 'Zapier'
+        callWebhookAction: 'Zapier'
       },
       elementComponents: {
         sendImageAction,
@@ -109,7 +109,7 @@ export default {
         basicDelay,
         subscriptionControl,
         manualElement,
-        sendRequestAction
+        callWebhookAction
       },
       dragged: false,
       elementToDelete: null,
