@@ -10,6 +10,7 @@
   </svg>
 </template>
 <script>
+import debounce from 'lodash/debounce'
 
 export default {
   data() {
@@ -21,66 +22,70 @@ export default {
   props: ['refs', 'arrows', 'scale'],
 
   methods: {
-    recalcPathes() {
-      setTimeout(() => {
-        const { refs, getElement, scale } = this;
-        const areaRect = this.$el.getBoundingClientRect();
+    recalcPathes: debounce(function () {
+      const { refs, getElement, scale } = this;
+      const areaRect = this.$el.getBoundingClientRect();
 
-        this.pathes = this.arrows.map(arrow => {
-          const isToPoint = arrow.child == 'toPoint';
-          let parent = getElement(arrow.parent);
-          let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
+      this.pathes = this.arrows.map(arrow => {
+        const isToPoint = arrow.child == 'toPoint';
+        let parent = getElement(arrow.parent);
+        let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
 
-          if (!parent || !child) return;
+        if (!parent || !child) return;
 
-          parent = parent[0] || parent;
-          child = child[0] || child;
+        parent = parent[0] || parent;
+        child = child[0] || child;
 
-          const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
-          const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
-          const isOnTop = startRect.top + startRect.height < endRect.top;
-          const isOnBottom = startRect.top > endRect.top + endRect.height;
-          const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
-          const isOnLeft = startRect.left > endRect.left;
-          const isOnLeftFull = startRect.left > endRect.left + endRect.width;
-          const isOnRightFull = startRect.left + startRect.width < endRect.left;
+        const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
+        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
+        const isOnTop = startRect.top + startRect.height < endRect.top;
+        const isOnBottom = startRect.top > endRect.top + endRect.height;
+        const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
+        const isOnLeft = startRect.left > endRect.left;
+        const isOnLeftFull = startRect.left > endRect.left + endRect.width;
+        const isOnRightFull = startRect.left + startRect.width < endRect.left;
 
-          if(!isOnTop && !isOnBottom && !isOnRightFull && !isOnLeftFull) return;
+        if(!isOnTop && !isOnBottom && !isOnRightFull && !isOnLeftFull) return;
 
-          const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
+        const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
 
-          const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
+        const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
 
-          const endX = (((((isOnLeft && !isOnLeftFull) || isOnRightFull) && endRect.left) || (endRect.left + endRect.width)) - areaRect.left) / scale
+        const endX = (((((isOnLeft && !isOnLeftFull) || isOnRightFull) && endRect.left) || (endRect.left + endRect.width)) - areaRect.left) / scale
 
-          const endY = (((endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
+        const endY = (((endRect.top + 0.5 * endRect.height)) - areaRect.top) / scale
 
-          const deltaX = (endX - startX) * .5
-          const deltaY = (endY - startY) * .5
+        const deltaX = (endX - startX) * .5
+        const deltaY = (endY - startY) * .5
 
-          let path = `M${ startX } ${ startY } `
+        let path = `M${ startX } ${ startY } `
 
-          if (!isOnLeftFull && !isOnRightFull) {
-            path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
-          } else {
-            path += `Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY }`
+        if (!isOnLeftFull && !isOnRightFull) {
+          path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
+        } else {
+          path += `Q${ startX + deltaX } ${ startY } ${ endX - deltaX } ${ endY - deltaY }`
+        }
+
+        path += `T${ endX } ${ endY }`
+
+        let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
+
+        console.log({
+          x: endX,
+          y: endY,
+          angle
+        });
+
+        return {
+          line: path || '',
+          arrow: {
+            x: endX,
+            y: endY,
+            angle
           }
-
-          path += `T${ endX } ${ endY }`
-
-          let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
-
-          return {
-            line: path || '',
-            arrow: {
-              x: endX,
-              y: endY,
-              angle
-            }
-          }
-        })
-      }, 100)
-    },
+        }
+      })
+    }, 0),
 
     getElement(id) {
       const findElement = container => {

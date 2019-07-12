@@ -8,11 +8,13 @@ export default {
   props: ['element'],
 
   methods: {
-    createPoint() {
+    createPoint(event) {
       const { $store, element } = this;
 
       $store.commit('set', { path: 'newPoint', value: {}});
       $store.state.arrows.push({parent: this.element.id, child: 'toPoint' })
+
+      event.stopPropagation();
     }
   },
 

@@ -241,7 +241,7 @@ export default {
       $store.commit('set', { path: 'arrows', value: arrows })
     },
 
-    removePoint() {
+    removePoint(event) {
       this.$store.commit('set', {path: 'newPoint', value: null});
     },
 
@@ -348,12 +348,12 @@ export default {
               const { entryStep } = this;
               const entryElement = this.$refs[entryStep.id].$el;
 
-              if (!entryStep.displaySettings.positionX && !entryStep.displaySettings.positionY) return;
-
-              this.deltaPosition = {
-                x: entryElement.offsetLeft - entryStep.displaySettings.positionX,
-                y: entryElement.offsetTop - entryStep.displaySettings.positionY
-              }
+              if (entryStep.displaySettings.positionX || entryStep.displaySettings.positionY) {
+                this.deltaPosition = {
+                  x: entryElement.offsetLeft - entryStep.displaySettings.positionX,
+                  y: entryElement.offsetTop - entryStep.displaySettings.positionY
+                }
+              };
             });
           };
         }
