@@ -135,9 +135,9 @@ export default {
     visible(element) {
       if (this.type == 'broadcastEntry' && ['Triggers'].includes(element.name)) return false;
 
-      if (this.dhAccount.isViewedByAdmin) return true;
+      if (this.dhAccount.isViewedByAdmin || (this.dhAccount.labs && element.name === 'Zapier')) return true;
 
-      return !['Subscribe', 'Manual', 'Zapier'].includes(element.name)
+      return !['Subscribe', 'Manual'].includes(element.name)
     }
   }
 }
