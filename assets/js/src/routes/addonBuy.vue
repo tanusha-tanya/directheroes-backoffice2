@@ -85,9 +85,11 @@ export default {
         }
       }).then(({ data }) => {
         const { success, error } = data.request;
+        const { dhAccount } = data.response.body;
         this.purchasing = false;
 
         if (success) {
+          this.$store.commit('set', { path:'dhAccount', value: dhAccount })
           this.$router.push({ name: 'accounts', params:{ isBuy: 'add'}})
         } else {
           this.error = error.message;

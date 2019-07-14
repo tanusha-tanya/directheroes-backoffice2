@@ -50,8 +50,8 @@ import videoHelp from './routes/videoHelp.vue'
 import bookHelp from './routes/bookHelp.vue'
 import addonBuy from './routes/addonBuy.vue'
 import addonPayment from './routes/addonPayment.vue'
-import extraAccountBuy from './routes/extraAccountBuy.vue'
-import extraAccountPayment from './routes/extraAccountPayment.vue'
+// import extraAccountBuy from './routes/extraAccountBuy.vue'
+// import extraAccountPayment from './routes/extraAccountPayment.vue'
 
 const router = new VueRouter({
   routes:[
@@ -66,8 +66,8 @@ const router = new VueRouter({
     },
     { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
     { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },
-    { name: 'accountBuy', path: '/account-buy', component: extraAccountBuy },
-    { name: 'accountPayment', path: '/account-buy/payment', component: extraAccountPayment },
+    // { name: 'accountBuy', path: '/account-buy', component: extraAccountBuy },
+    // { name: 'accountPayment', path: '/account-buy/payment', component: extraAccountPayment },
     { path: '/:accountId', component: accountDetails,
       children: [
         { name: 'accountHome', path: '', component: accountDashboard },
