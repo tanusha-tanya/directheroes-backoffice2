@@ -32,6 +32,8 @@ import socialyoutube from '../assets/svg/social-youtube.svg'
 import navicon from '../assets/svg/navicon.svg'
 import infinite from '../assets/svg/infinite.svg'
 import plus from '../assets/svg/plus-outline.svg'
+import jsonfile from '../assets/svg/json-file.svg'
+import zapier from '../assets/svg/zapier.svg'
 
 export default {
   data() {
@@ -91,6 +93,31 @@ export default {
             }
           }
         },
+        {
+          name: 'Zapier',
+          svg: zapier,
+          template: {
+            type: 'callWebhookAction',
+            value: {
+              selectedTypes: [
+                'subscriberEmail'
+              ],
+              url: '',
+              status: null
+            }
+          }
+        },
+        {
+          name: 'Manual',
+          svg: jsonfile,
+          template: {
+            devType: 'manualElement',
+            type: 'sendTextAction',
+            value: {
+              text: 'JSON-data'
+            }
+          }
+        },
         // {
         //   name: 'Video',
         //   svg: socialYoutube,
@@ -108,9 +135,9 @@ export default {
     visible(element) {
       if (this.type == 'broadcastEntry' && ['Triggers'].includes(element.name)) return false;
 
-      if (this.dhAccount.isViewedByAdmin) return true;
+      if (this.dhAccount.isViewedByAdmin || (this.dhAccount.labs && element.name === 'Zapier')) return true;
 
-      return !['Subscribe'].includes(element.name)
+      return !['Subscribe', 'Manual'].includes(element.name)
     }
   }
 }
@@ -118,7 +145,7 @@ export default {
 <style lang="scss">
   .builder-elements {
     position: fixed;
-    top: calc(50% - 200px);
+    top: calc(50% - 260px);
     z-index: 2;
     right: 20px;
     width: 79px;

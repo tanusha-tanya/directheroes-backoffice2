@@ -1,5 +1,5 @@
 <template>
-  <div class="builder-card" :style="{ top: settings.positionY ? `${ settings.positionY }px`: null, left: settings.positionX ? `${ settings.positionX }px` : null}">
+  <div class="builder-card" @mousedown="blockEvent" :style="{ top: settings.positionY || settings.positionY === 0 ? `${ settings.positionY + deltaY }px`: null, left: settings.positionX || settings.positionX === 0 ? `${ settings.positionX + deltaX }px` : null}">
     <div class="builder-card-header" >
       <span class="builder-card-drag-handler" @mousedown="mouseDown">
         <slot name="header"></slot>
@@ -19,19 +19,38 @@ import EventBus from '../../utils/event-bus.js'
 let startX, startY, initialMouseX, initialMouseY;
 
 export default {
+  computed: {
+    deltaX() {
+      const { deltaPosition } = this;
+
+      return (deltaPosition && deltaPosition.x) || 0
+    },
+
+    deltaY() {
+      const { deltaPosition } = this;
+
+      return (deltaPosition && deltaPosition.y) || 0
+    }
+  },
+
   methods: {
     mouseDown(event) {
-      const { settings } = this;
+      const { settings, scale, deltaX, deltaY } = this;
       const startingPos = {};
       startingPos['x'] = settings.positionX;
       startingPos['y'] = settings.positionY;
-      this.$emit('mousedown', startingPos)
+      this.$emit('mousedown', startingPos);
 
       const mouseMove = (event) => {
-        const left = startX + (event.clientX - initialMouseX);
-        const top = startY+ (event.clientY - initialMouseY);
+        const left = (startX - deltaX) + (event.clientX - initialMouseX) / scale;
+        const top = (startY - deltaY) + (event.clientY - initialMouseY) / scale;
+
         Vue.set(settings, 'positionY', top < 0 ? 0 : top);
         Vue.set(settings, 'positionX', left < 0 ? 0 : left);
+
+        event.preventDefault(),
+        event.stopPropagation();
+
         return false;
       }
 
@@ -47,11 +66,22 @@ export default {
       initialMouseY = event.clientY;
       document.addEventListener('mousemove', mouseMove);
       document.addEventListener('mouseup', mouseUp);
+
+      event.preventDefault(),
+      event.stopPropagation();
+
       return false;
     },
+
+    blockEvent(event) {
+      // event.preventDefault();
+      event.stopPropagation();
+
+      return false;
+    }
   },
 
-  props: ['settings']
+  props: ['settings', 'scale', 'deltaPosition']
 };
 </script>
 <style lang="scss">
@@ -62,6 +92,7 @@ export default {
   user-select: none;
   background-color: #000;
   z-index: 1;
+  cursor: default;
 }
 
 .builder-card-header {

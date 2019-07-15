@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+  <builder-card :scale="scale" :deltaPosition="deltaPosition" class="step-card" :settings="step.displaySettings" :ref="step.id" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
     <template slot="header">
       {{ step.name || '&nbsp;'}}
     </template>
@@ -27,14 +27,14 @@
                   <path d="M288,409.3c0,3.7-3,6.7-6.7,6.7h-50.5c-3.7,0-6.7-3-6.7-6.7v-50.5c0-3.7,3-6.7,6.7-6.7h50.5c3.7,0,6.7,3,6.7,6.7V409.3z" fill="currentColor"/>
                 </svg>
               </div>
-              <div class="element-name">{{elementsNames[element.type]}}</div>
+              <div class="element-name">{{elementsNames[element.devType || element.type]}}</div>
               <element-warning :element="element"></element-warning>
               <div class="collapse-toggle" >{{ element.displaySettings.collapsed ? '+' : '-'}}</div>
             </span>
             <div class="remove-element" @click="elementToDelete = element">&times</div>
           </div>
           <div class="element-body" v-if="!element.displaySettings.collapsed">
-            <component :is="elementComponents[element.type]" :element="element"></component>
+            <component :is="elementComponents[element.devType || element.type]" :element="element"></component>
           </div>
         </div>
       </draggable>
@@ -81,10 +81,12 @@ import confirmDialog from '../confirmDialog.vue'
 import { Drop } from 'vue-drag-drop';
 import builderCardDialogs from '../builderCardDialogs'
 import sendImageAction from '../elements/sendImageAction.vue'
+import callWebhookAction from '../elements/callWebhookAction.vue'
 import subscriptionControl from '../elements/subscriptionControl.vue'
 import basicDelay from '../elements/basicDelay.vue'
 import sendTextAction from '../elements/sendTextAction.vue'
 import messageCondition from "../elements/messageCondition.vue";
+import manualElement from "../elements/manualElement.vue";
 import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
 import elementWarning from '../elementWarning.vue'
 
@@ -96,7 +98,9 @@ export default {
         sendImageAction: 'Image',
         basicDelay: 'Delay',
         messageConditionMultiple: 'Triggers',
-        subscriptionControl: 'Subscription'
+        subscriptionControl: 'Subscription',
+        manualElement: 'Manual',
+        callWebhookAction: 'Zapier'
       },
       elementComponents: {
         sendImageAction,
@@ -104,6 +108,8 @@ export default {
         messageConditionMultiple,
         basicDelay,
         subscriptionControl,
+        manualElement,
+        callWebhookAction
       },
       dragged: false,
       elementToDelete: null,
@@ -120,7 +126,7 @@ export default {
     draggable,
   },
 
-  props: ['step', 'tag'],
+  props: ['step', 'tag', 'scale', 'deltaPosition'],
 
   computed: {
     isParentOfArrow() {
@@ -291,8 +297,8 @@ export default {
     border-color: #2E9E7B;
     background-color: #2E9E7B;
     box-shadow: 0 0 10px #F5F5F5;
-    top: 130px;
-    left: 450px;
+    top: calc(50% + 190px);
+    left: 445px;
 
     .builder-card-header {
       font-family: 'AbeatbyKai';

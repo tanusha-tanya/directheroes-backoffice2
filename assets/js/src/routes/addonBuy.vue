@@ -11,8 +11,11 @@
         </div>
         <template v-else>
           <div class="plane-item" v-for="codeItem in code" :key="codeItem.code">
-            <strong>{{codeItem.name}}</strong>
-            <div>{{codeItem.description}}</div>
+            <div>
+              <strong>{{codeItem.name}}</strong>
+              <div>{{codeItem.description}}</div>
+            </div>
+            <div class="plane-price">${{codeItem.price}}</div>
           </div>
         </template>
       </div>
@@ -82,9 +85,11 @@ export default {
         }
       }).then(({ data }) => {
         const { success, error } = data.request;
+        const { dhAccount } = data.response.body;
         this.purchasing = false;
 
         if (success) {
+          this.$store.commit('set', { path:'dhAccount', value: dhAccount })
           this.$router.push({ name: 'accounts', params:{ isBuy: 'add'}})
         } else {
           this.error = error.message;
@@ -161,6 +166,14 @@ export default {
 
     .plane-item {
       font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .plane-price {
+        font-size: 24px;
+        font-weight: bold;
+      }
 
       strong {
         font-size: 16px;

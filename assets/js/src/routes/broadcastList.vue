@@ -167,7 +167,7 @@ export default {
     broadcastStatus(broadcast) {
       const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
 
-      return !broadcastEntry.isActive ? 'Incomplete' : broadcastEntry.status.statusText;
+      return !broadcast.isActive ? 'Incomplete' : broadcastEntry.status.statusText;
     },
 
     hasWarning(broadcast) {
@@ -249,6 +249,10 @@ export default {
       width: 17%;
       padding: 0 10px;
       flex-shrink: 0;
+
+      &:first-letter {
+        text-transform: uppercase;
+      }
     }
   }
 }

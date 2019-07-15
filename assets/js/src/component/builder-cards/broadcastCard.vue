@@ -1,5 +1,5 @@
 <template>
-  <builder-card class="broadcast-card" :settings="broadcastStep.displaySettings">
+  <builder-card :scale="scale" class="broadcast-card" :settings="broadcastStep.displaySettings">
     <template slot="header">
       {{ broadcast.name || '&nbsp;'}}
     </template>
@@ -136,7 +136,7 @@ export default {
     }
   },
 
-  props: ['broadcast', 'tag'],
+  props: ['broadcast', 'tag', 'scale'],
 
   methods: {
     dragEnter(data) {
@@ -200,8 +200,13 @@ export default {
   div.broadcast-card {
     background-color: #2A4294;
     box-shadow: 0 0 10px #F5F5F5;
-    top: 130px;
-    left: 450px;
+    top: calc(50% + 140px)  !important;
+    left: 30px !important;
+
+    .builder-card-drag-handler {
+      pointer-events: none;
+      cursor: default;
+    }
 
     .builder-card-header {
       font-family: 'AbeatbyKai';

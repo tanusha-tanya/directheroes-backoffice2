@@ -9,26 +9,42 @@
       @drop="dropHandler"
       ref="flowBuilder"
       >
-      <div class="builder-area" :style="{ width, height, transform: `scale(${ scale })`, minHeight: `${ 100 / scale }%`, minWidth: `${ 100 / scale }%`}">
-        <campaign-card :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
-        <broadcast-card :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
-        <step-card :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
-        <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scale"></arrows>
+      <div class="builder-wrap" style="position:absolute">
+        <div class="builder-area"
+          ref="builderArea"
+          >
+          <campaign-card  :scale="scaleValue" :campaign="currentEntryItem" :ref="entryStep.id" v-if="entryType == 'campaignEntry'" :tag="0"></campaign-card>
+          <broadcast-card :scale="scaleValue" :class="{ disabled }" :broadcast="currentEntryItem" :ref="entryStep.id" :tag="0" v-else></broadcast-card>
+          <step-card :deltaPosition="deltaPosition" :scale="scaleValue" :class="{ disabled }" :step="step" v-for="(step, index) in steps" :key="step.id" :ref="step.id" :tag="index + 1" @delete-step="deleteStep"></step-card>
+          <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows>
+        </div>
       </div>
       <builder-elements v-if="!disabled" :type="entryType"></builder-elements>
       <div class="zoom-element">
         <el-slider
           v-model="scale"
-          :min=".5"
-          :max="1.5"
+          :min=".1"
+          :max="2"
           :step=".1"
         >
         </el-slider>
+        <div class="go-to-position" @click="findCampaignCard()">
+          <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
+            <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
+              c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
+            <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
+              C109.368,56.352,56.352,109.368,48.944,176H16c-8.832,0-16,7.168-16,16c0,8.832,7.168,16,16,16h32.944
+              C56.352,274.632,109.368,327.648,176,335.056V368c0,8.832,7.168,16,16,16c8.832,0,16-7.168,16-16v-32.944
+              c66.632-7.408,119.648-60.424,127.056-127.056H368c8.832,0,16-7.168,16-16C384,183.168,376.832,176,368,176z M192,304
+              c-61.76,0-112-50.24-112-112S130.24,80,192,80s112,50.24,112,112S253.76,304,192,304z"/>
+          </svg>
+        </div>
       </div>
     </drop>
   </div>
 </template>
 <script>
+import panzoom from 'panzoom';
 import ObjectId from '../utils/ObjectId'
 import EventBus from '../utils/event-bus'
 import Collision from '../utils/collision'
@@ -40,14 +56,15 @@ import arrows from './arrows.vue'
 import { Drop } from 'vue-drag-drop';
 import builderElements from './builderElements.vue'
 
+let zoomTimeout = null;
+
 export default {
   data() {
     return {
       dragged: false,
-      width: '100%',
-      height: '100%',
-      scale: 1,
-      originalPosition: null,
+      zoomTool: null,
+      scaleValue: 1,
+      deltaPosition: null
     }
   },
 
@@ -89,6 +106,27 @@ export default {
 
     builder() {
       return this;
+    },
+
+    scale: {
+      get() {
+        const { scaleValue } = this;
+
+        return scaleValue && parseFloat(scaleValue.toFixed(1)) || 1;
+      },
+      set(value) {
+        const { zoomTool, scaleValue } = this;
+
+        if (!zoomTool || scaleValue == value) return;
+
+        clearTimeout(zoomTimeout);
+
+        zoomTimeout = setTimeout(() => {
+          this.scaleValue = value;
+
+          this.scaleTo(value / scaleValue);
+        }, 100);
+      }
     }
   },
 
@@ -110,6 +148,17 @@ export default {
     //       })
     //     });
     // }, 3000),
+
+    scaleTo(ration) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
+      const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+
+      const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
+      const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
+
+      zoomTool.smoothZoom(positionX, positionY, ration);
+    },
 
     dragEnter(data) {
      if (!data || data.type != "regular") return;
@@ -136,8 +185,8 @@ export default {
       this.currentEntryItem.steps.push({
         ...step,
         displaySettings:{
-          positionX: (event.offsetX - 20) / this.scale,
-          positionY: (event.offsetY - 20) / this.scale,
+          positionX: (event.offsetX - 20),
+          positionY: (event.offsetY - 20),
           collapsed: false
         }
       });
@@ -192,8 +241,49 @@ export default {
       $store.commit('set', { path: 'arrows', value: arrows })
     },
 
-    removePoint() {
+    removePoint(event) {
       this.$store.commit('set', {path: 'newPoint', value: null});
+    },
+
+    findCampaignCard(smooth) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
+      const campaignCard = this.$refs[this.entryStep.id];
+      const campaignCardRect = campaignCard.$el.getBoundingClientRect();
+      const flowBuilderRect = flowBuilder.$el.getBoundingClientRect();
+      const { x, y } = zoomTool.getTransform();
+
+      const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
+      const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
+      zoomTool.moveTo(positionX, positionY, smooth)
+    },
+
+    initZoom() {
+      const zoomTool = panzoom(this.$refs.builderArea, {
+        maxZoom: 2,
+        minZoom: 0.1,
+        smoothScroll: false,
+        zoomDoubleClickSpeed: 1,
+        beforeWheel(event) {
+          if (!event.shiftKey) {
+            const { x, y } = zoomTool.getTransform();
+
+            zoomTool.moveTo(x - event.deltaX, y - event.deltaY)
+          }
+
+          return !event.shiftKey;
+        },
+        filterKey(event) {
+          return true;
+        }
+      })
+
+      zoomTool.on('zoom', () => {
+        this.scaleValue = zoomTool.getTransform().scale;
+      })
+
+      this.zoomTool = zoomTool;
     },
 
     // resetDraggedCardToOriginalPos() {
@@ -227,6 +317,11 @@ export default {
     // }
   },
 
+  mounted() {
+    if (!this.currentEntryItem) return;
+
+    this.findCampaignCard();
+  },
 
   watch:{
     '$store.state.newPoint'(newValue, oldValue) {
@@ -238,17 +333,29 @@ export default {
 
     currentEntryItem: {
       handler: function (entry, oldEntry) {
-        setTimeout(() => {
-          const { flowBuilder } = this.$refs
-
-          this.width = `${ flowBuilder.$el.scrollWidth * this.scale }px`
-          this.height = `${ flowBuilder.$el.scrollHeight * this.scale }px`
-        }, 100)
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
 
         if (entry) {
           this.getArrows();
+
+          if (!oldEntry && this._isMounted) {
+            this.$nextTick(() => {
+              this.initZoom();
+
+              this.findCampaignCard();
+
+              const { entryStep } = this;
+              const entryElement = this.$refs[entryStep.id].$el;
+
+              if (entryStep.displaySettings.positionX || entryStep.displaySettings.positionY) {
+                this.deltaPosition = {
+                  x: entryElement.offsetLeft - entryStep.displaySettings.positionX,
+                  y: entryElement.offsetTop - entryStep.displaySettings.positionY
+                }
+              };
+            });
+          };
         }
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
@@ -270,7 +377,7 @@ export default {
 
   .flow-builder-area {
     position: absolute;
-    overflow: auto;
+    overflow: hidden;
     top: 0;
     left: 0;
     right: 0;
@@ -282,25 +389,47 @@ export default {
     }
 
     .builder-area {
-      position: absolute;
+      position: relative;
       top: 0;
       left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      transform-origin: left top;
+      min-width: 5000px;
+      min-height: 5000px;
+      // transform-origin: left top;
+      // margin: 450px;
+      border: 2px dashed #E2E2E2;
+      cursor: move;
+      // transition: transform 300ms linear 0s;
+    }
+
+    .builder-wrap {
+      outline: none;
     }
 
     .zoom-element {
+      display: flex;
+      align-items: center;
       position: fixed;
       background-color: #fff;
-      padding: 0 10px;
+      padding: 0 0 0 10px;
       z-index: 10;
       top: 105px;
       left: calc(50% - 10px);
-      width: 200px;
+      width: 230px;
       border: 2px solid #E8E8E8;
       border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+
+      .el-slider {
+        flex-grow: 1;
+      }
+
+      .go-to-position {
+        flex-shrink: 0;
+        width: 33px;
+        margin: 2px 0 0 10px;
+        padding: 0 5px;
+        border-left: 2px solid #E8E8E8;
+      }
     }
   }
 
