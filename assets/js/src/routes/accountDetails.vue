@@ -5,7 +5,7 @@
 </template>
 <script>
 import PouchDB from 'pouchdb';
-import debounce from 'lodash/debounce'
+import debounce from 'lodash/debounce';
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -50,15 +50,13 @@ export default {
       }
 
       const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
+      // const db = new PouchDB({name: dhAccount.userCode});
       // const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
-      db.info()
-      // .then(info => {
-      //   console.log(info)
-      // });
+      db.info().then(console.log)
 
       this.pouchDB = db;
 
-      db.changes().on('change', (a) => {
+      db.changes({ live: true }).on('change', (a) => {
         const { currentAccountData } = this.$store.state;
 
         console.log('Db Changes',currentAccountData, a);
@@ -101,6 +99,8 @@ export default {
         this.revUpdate = true;
 
         data._rev = record.rev;
+      }).catch(error => {
+        console.dir(error)
       })
     }, 1000)
   },
