@@ -131,35 +131,50 @@ export default {
         steps: [
           {
             id: (new ObjectId).toString(),
-            type: 'campaignEntry',
-            name: 'Campaign Entry Step',
-            elements: [{
-              id: (new ObjectId).toString(),
-              type: 'messageConditionMultiple',
-              value: {
-                conditionList: [{
-                  id: (new ObjectId).toString(),
-                  messageType: 'any',
-                  keywords: [],
-                  onMatch: {
-                    id: (new ObjectId).toString(),
-                    type: 'goToStep',
-                    value: {
-                      stepId: connectStepId
-                    },
-                    displaySettings: {
-                      collapsed: false,
-                      visible: true
-                    }
-                  },
-                  namePrefix: '0_1'
-                }]
-              },
-              displaySettings: {
-                collapsed: false,
-                visible: true
+            elements: [
+              {
+                id: (new ObjectId).toString(),
+                type: "rule",
+                condition: {
+                  entity: "message",
+                  field: "text",
+                  operand: "contains",
+                  value: []
+                },
+                level: 0,
+                onMatch: {
+                  action: "goto",
+                  target: connectStepId
+                }
               }
-            }],
+            ],
+            // elements: [{
+            //   id: (new ObjectId).toString(),
+            //   type: 'messageConditionMultiple',
+            //   value: {
+            //     conditionList: [{
+            //       id: (new ObjectId).toString(),
+            //       messageType: 'any',
+            //       keywords: [],
+            //       onMatch: {
+            //         id: (new ObjectId).toString(),
+            //         type: 'goToStep',
+            //         value: {
+            //           stepId: connectStepId
+            //         },
+            //         displaySettings: {
+            //           collapsed: false,
+            //           visible: true
+            //         }
+            //       },
+            //       namePrefix: '0_1'
+            //     }]
+            //   },
+            //   displaySettings: {
+            //     collapsed: false,
+            //     visible: true
+            //   }
+            // }],
             displaySettings: {
               collapsed: false
             }

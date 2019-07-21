@@ -49,9 +49,9 @@ export default {
         return;
       }
 
-      const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
+      // const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
       // const db = new PouchDB({name: dhAccount.userCode});
-      // const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
+      const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
       db.info().then(console.log)
 
       this.pouchDB = db;
@@ -59,7 +59,7 @@ export default {
       db.changes({ live: true }).on('change', (a) => {
         const { currentAccountData } = this.$store.state;
 
-        console.log('Db Changes',currentAccountData, a);
+        // console.log('Db Changes',currentAccountData, a);
 
         // if (!currentAccountData) return;
 
@@ -98,9 +98,13 @@ export default {
       pouchDB.put(data).then(record => {
         this.revUpdate = true;
 
+        console.log('Record', record);
+
         data._rev = record.rev;
+
+        console.log('Data', data);
       }).catch(error => {
-        console.dir(error)
+        console.dir(data._rev, error)
       })
     }, 1000)
   },

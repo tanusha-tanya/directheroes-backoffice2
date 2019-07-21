@@ -70,12 +70,6 @@ export default {
 
         let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
 
-        console.log({
-          x: endX,
-          y: endY,
-          angle
-        });
-
         return {
           line: path || '',
           arrow: {
