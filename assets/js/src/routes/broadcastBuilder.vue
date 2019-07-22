@@ -3,7 +3,10 @@
   <div class="broadcast-builder-controls">
     <span>Broadcast Builder</span>
     <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
-    <div class="info" v-if="currentBroadcast && !hasWarning">
+    <div class="info" v-if="currentBroadcast && isComplete">
+      <div>Broadcast complete</div>
+    </div>
+    <div class="info" v-else-if="currentBroadcast && !hasWarning">
       <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
       <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
       <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
@@ -145,6 +148,11 @@ export default {
 
         // this.updateBroadcastStatus();
       }
+    },
+
+    isComplete() {
+      const { broadcastStep } = this
+      return broadcastStep.status.statusText == 'completed'
     },
 
     isStarted() {
