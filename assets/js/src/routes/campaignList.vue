@@ -97,7 +97,8 @@ export default {
 
       if (!currentAccountData) return [];
 
-      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
+      return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     }
   },
 
@@ -133,6 +134,16 @@ export default {
             id: (new ObjectId).toString(),
             elements: [
               {
+                type: "rule",
+                condition: {
+                  entity: "event",
+                  field: "type",
+                  operand: "eq",
+                  value: "directMessage"
+                },
+                level: 0,
+              },
+              {
                 id: (new ObjectId).toString(),
                 type: "rule",
                 condition: {
@@ -141,47 +152,19 @@ export default {
                   operand: "contains",
                   value: []
                 },
-                level: 0,
+                level: 1,
                 onMatch: {
                   action: "goto",
                   target: connectStepId
                 }
               }
             ],
-            // elements: [{
-            //   id: (new ObjectId).toString(),
-            //   type: 'messageConditionMultiple',
-            //   value: {
-            //     conditionList: [{
-            //       id: (new ObjectId).toString(),
-            //       messageType: 'any',
-            //       keywords: [],
-            //       onMatch: {
-            //         id: (new ObjectId).toString(),
-            //         type: 'goToStep',
-            //         value: {
-            //           stepId: connectStepId
-            //         },
-            //         displaySettings: {
-            //           collapsed: false,
-            //           visible: true
-            //         }
-            //       },
-            //       namePrefix: '0_1'
-            //     }]
-            //   },
-            //   displaySettings: {
-            //     collapsed: false,
-            //     visible: true
-            //   }
-            // }],
             displaySettings: {
               collapsed: false
             }
           },
           {
             id: connectStepId,
-            type: 'regular',
             name: 'Step #1',
             elements: [],
             displaySettings: {

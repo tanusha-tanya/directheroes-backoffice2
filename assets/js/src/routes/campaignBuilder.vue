@@ -86,7 +86,8 @@ export default {
 
       if (!currentAccountData) return;
 
-      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
+      return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     },
 
     hasWarning() {
@@ -106,6 +107,8 @@ export default {
       if (!campaignId || !campaigns) return;
 
       const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
+
+      console.log(campaigns);
 
       currentCampaign.steps.forEach(step => {
         if (step.displaySettings) return;
