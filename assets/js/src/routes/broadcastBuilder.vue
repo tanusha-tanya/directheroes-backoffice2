@@ -143,7 +143,7 @@ export default {
         Vue.set(settings, 'startAt', moment(value).utc().format());
         settings.startTimeSetAt = moment().utc().format();
 
-        this.updateBroadcastStatus();
+        // this.updateBroadcastStatus();
       }
     },
 
@@ -280,7 +280,7 @@ export default {
 
       this.currentBroadcast = currentBroadcast;
 
-      this.updateBroadcastStatus();
+      // this.updateBroadcastStatus();
     },
 
     setNowDate() {
