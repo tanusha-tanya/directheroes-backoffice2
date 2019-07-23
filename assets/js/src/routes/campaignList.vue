@@ -133,16 +133,16 @@ export default {
           {
             id: (new ObjectId).toString(),
             elements: [
-              {
-                type: "rule",
-                condition: {
-                  entity: "event",
-                  field: "type",
-                  operand: "eq",
-                  value: "directMessage"
-                },
-                level: 0,
-              },
+              // {
+              //   type: "rule",
+              //   condition: {
+              //     entity: "event",
+              //     field: "type",
+              //     operand: "eq",
+              //     value: "directMessage"
+              //   },
+              //   level: 0,
+              // },
               {
                 id: (new ObjectId).toString(),
                 type: "rule",
@@ -152,7 +152,7 @@ export default {
                   operand: "contains",
                   value: []
                 },
-                level: 1,
+                level: 0,
                 onMatch: {
                   action: "goto",
                   target: connectStepId

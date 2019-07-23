@@ -91,11 +91,11 @@ export default {
 
   computed:{
     steps() {
-      return this.currentEntryItem.steps.filter(step => step.type == 'regular')
+      return this.currentEntryItem.steps.slice(1);
     },
 
     entryStep() {
-      return this.currentEntryItem.steps.find(step => step.type = this.entryType)
+      return this.currentEntryItem.steps[0]
     },
 
     arrows() {

@@ -108,8 +108,6 @@ export default {
 
       const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
 
-      console.log(campaigns);
-
       currentCampaign.steps.forEach(step => {
         if (step.displaySettings) return;
 
