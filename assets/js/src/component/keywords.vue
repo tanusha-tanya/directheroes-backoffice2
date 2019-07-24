@@ -90,59 +90,8 @@ export default {
     border-radius: 8px;
     background-color: #fff;
 
-    &.adReply, &.postShare {
-      position: absolute !important;
-      top: 37px;
-      width: 37px !important;
-      right: 0px;
-      height: 40px;
-      border-color: transparent;
-      background-color: transparent;
-
-      .el-select {
-        display: none;
-      }
-
-      .tag-item {
-        display: none;
-      }
-
-      img.element-warning {
-        right: 12px !important;
-        top: 8px !important;
-      }
-
-      .list-condition-container {
-        z-index: 5;
-      }
-    }
-
-    &.storyMention, &.storyShare, &.mediaShare {
-      position: absolute !important;
-      top: 17px;
-      width: 37px;
-      right: -11px;
-      height: 0;
-      border-color: transparent;
-      background-color: transparent;
-
-      .el-select {
-        display: none;
-      }
-
-      .tag-item {
-        display: none;
-      }
-
-      img.element-warning {
-        right: 38px !important;
-        top: -13px !important;
-      }
-
-      .list-condition-container {
-        z-index: 5;
-      }
-
+    .el-select {
+      width: 100%;
     }
 
     .tag-item {
