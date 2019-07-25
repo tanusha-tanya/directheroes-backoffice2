@@ -10,14 +10,11 @@
         {{ruleTitles[rule.type]}}
       </div>
       <template v-if="rule.type === 'list'">
-        <template>
-          <keywords
-            v-for="element in rule.elements"
-            v-model="element.condition.value"
-            :key="element.id"
-            >
-          </keywords>
-        </template>
+        <div class="rule-item-keywords" v-for="element in rule.elements" :key="element.id" :ref="element.id">
+          <keywords v-model="element.condition.value"></keywords>
+          <arrow-born :class="{'no-connection': !element.onMatch }" :element="element" @connect-arrow="connectArrow(element, $event)"></arrow-born>
+        </div>
+        <div class="rule-add-list-item" @click="addListCondition()" >+ Click to add list item</div>
       </template>
     </div>
   </div>
@@ -25,6 +22,7 @@
 
 <script>
 import keywords from "../keywords.vue";
+import arrowBorn from '../arrowBorn.vue'
 
 export default {
   // data() {
@@ -38,7 +36,8 @@ export default {
   props: ['elements'],
 
   components: {
-    keywords
+    keywords,
+    arrowBorn
   },
 
   computed: {
@@ -114,6 +113,31 @@ export default {
 
   .keywords {
     margin-top: 10px;
+  }
+
+  .rule-item-keywords {
+    position: relative;
+  }
+
+  .arrow-born.no-connection {
+    background-color: #ff4d4d;
+    border-color: #ff4d4d;
+    animation: scale-element-1-2 1s infinite;
+  }
+
+  .rule-add-list-item {
+    margin-top: 5px;
+  }
+
+  .add-condition, .rule-add-list-item {
+    width: 100%;
+    color: #DDDDDD;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    text-align: center;
+    line-height: normal;
+    font-size: 16px;
+    padding: 6px;
   }
 }
 </style>

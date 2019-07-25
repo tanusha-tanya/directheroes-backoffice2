@@ -219,23 +219,27 @@ export default {
         const { collapsed: elementCollapsed } = element.displaySettings || {}
         const parentId = collapsed ? step.id : elementCollapsed ? element.id : null
 
-        switch(element.type) {
-          case 'messageConditionMultiple':
-            element.value.conditionList.forEach(item => {
-              if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
+        if (element.type !== 'rule' || !element.onMatch || element.onMatch.action !== 'goto') return;
 
-              if (!currentEntryItem.steps.find(step => step.id === item.onMatch.value.stepId)) {
-                delete item.onMatch;
-                return
-              }
+        arrows.push({ parent: parentId || element.id, child: element.onMatch.target });
 
-              arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
-            })
-          break;
-          case 'goToStep':
-            arrows.push({ parent: step.id, child: element.value.stepId });
-          break;
-        }
+        // switch(element.onMatch) {
+        //   // case 'messageConditionMultiple':
+        //   //   element.value.conditionList.forEach(item => {
+        //   //     if (!item.onMatch || item.onMatch.type !== 'goToStep' || !item.onMatch.value.stepId ) return;
+
+        //   //     if (!currentEntryItem.steps.find(step => step.id === item.onMatch.value.stepId)) {
+        //   //       delete item.onMatch;
+        //   //       return
+        //   //     }
+
+        //   //     arrows.push({ parent: parentId || item.id, child: item.onMatch.value.stepId });
+        //   //   })
+        //   // break;
+        //   case 'goToStep':
+        //     arrows.push({ parent: step.id, child: element.value.stepId });
+        //   break;
+      //   }
       }))
 
       $store.commit('set', { path: 'arrows', value: arrows })
