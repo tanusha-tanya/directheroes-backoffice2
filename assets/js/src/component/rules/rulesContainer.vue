@@ -14,7 +14,8 @@
           <keywords v-model="element.condition.value"></keywords>
           <arrow-born :class="{'no-connection': !element.onMatch }" :element="element" @connect-arrow="connectArrow(element, $event)"></arrow-born>
         </div>
-        <div class="rule-add-list-item" @click="addListCondition()" >+ Click to add list item</div>
+        <div class="rule-add-list-item" @click="addListRule()" v-if="!hasEmptyList">+ Click to add list item</div>
+        <element-warning :element="Object.assign({}, element, { emptyListRuleMoreOne })"></element-warning>
       </template>
     </div>
   </div>
@@ -22,7 +23,8 @@
 
 <script>
 import keywords from "../keywords.vue";
-import arrowBorn from '../arrowBorn.vue'
+import arrowBorn from '../arrowBorn.vue';
+import ObjectId from '../../utils/ObjectId'
 
 export default {
   // data() {
@@ -83,6 +85,48 @@ export default {
         postReply: 'Post Reply',
         adReply: 'Ad Reply',
         storyReply: 'Story Reply',
+      }
+    },
+
+    emptyListRuleMoreOne() {
+      return this.anyItems.filter(item => !item.keywords.length).length > 1;
+    },
+
+    hasEmptyList() {
+      const { rules } = this;
+
+      return rules.some(rule => {
+        return rule.type == 'list' && rule.elements.some( element => !element.condition.value.length)
+      })
+    },
+  },
+
+  methods: {
+    addListRule() {
+      const newListRule =  {
+        id: (new ObjectId).toString(),
+        type: "rule",
+        condition: {
+          entity: "message",
+          field: "text",
+          operand: "contains",
+          value: []
+        },
+        onFail: {
+          action: "fallthrough"
+        }
+      };
+      const { elements } = this;
+      const lastListRuleIndex = elements.reduce((lastIndex, element, index) => {
+        const newLastIndex = element.type == 'rule' && element.entity === 'message' && element.operand === 'contains' && index;
+
+        return newLastIndex > -1 ? index : lastIndex
+      }, null);
+
+      if (lastListRuleIndex === null) {
+        elements.push(newListRule)
+      } else {
+        elements.splice(lastListRuleIndex + 1, 0, newListRule)
       }
     }
   }
