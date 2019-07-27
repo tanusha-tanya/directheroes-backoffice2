@@ -111,6 +111,7 @@
 <script>
 import triangle from '../assets/triangle.svg'
 import axios from 'axios';
+import sodium from 'libsodium-wrappers'
 
 export default {
   data() {
