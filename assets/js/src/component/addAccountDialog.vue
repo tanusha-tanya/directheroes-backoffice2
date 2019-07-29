@@ -163,7 +163,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = true || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -194,12 +194,24 @@ export default {
 
     actionAccount() {
       const { $store, accountAuth, account, selected2FAMethod } = this;
-      const publicKey = sodium.from_base64(this.dhAccount.publicKey, 1);
-      const cryptedPassword = sodium.to_base64(new TextDecoder("utf-8").decode(sodium.crypto_box_seal(account.password, publicKey)));
+      console.log(sodium);
+
+      const publicKey = sodium.from_base64(this.dhAccount.publicKey, 5);
+      const cryptedPassword = sodium.to_base64(sodium.crypto_box_seal(account.password, publicKey), 5);
       let request;
 
       this.loading = true;
       this.error = null;
+
+      // const zzz = sodium.from_base64(cryptedPassword, 5);
+
+      // const xxx = sodium.from_base64(this.dhAccount.keyPair, 1);
+
+      // console.log(xxx, this.dhAccount.keyPair);
+
+      // console.log(sodium.crypto_box_seal_open(zzz, publicKey, xxx));
+
+      console.log(cryptedPassword);
 
       if (accountAuth) {
         accountAuth.password = cryptedPassword;
