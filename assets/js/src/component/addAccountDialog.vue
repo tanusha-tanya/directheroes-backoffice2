@@ -194,13 +194,15 @@ export default {
 
     actionAccount() {
       const { $store, accountAuth, account, selected2FAMethod } = this;
+      const publicKey = sodium.from_base64(this.dhAccount.publicKey, 1);
+      const cryptedPassword = sodium.to_base64(new TextDecoder("utf-8").decode(sodium.crypto_box_seal(account.password, publicKey)));
       let request;
 
       this.loading = true;
       this.error = null;
 
       if (accountAuth) {
-        accountAuth.password = account.password
+        accountAuth.password = cryptedPassword;
 
         if (accountAuth.twoFactor) {
           accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
@@ -208,7 +210,7 @@ export default {
 
         request = $store.dispatch('saveAccount', accountAuth)
       } else {
-        request = $store.dispatch('addAccount', account)
+        request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
       }
 
       request
