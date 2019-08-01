@@ -23,10 +23,10 @@
           <!-- <div class="campaign-builder-option">
             <el-switch v-model="currentCampaign.settings.allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
           </div> -->
-          <div class="campaign-builder-option" v-if="dhAccount.isViewedByAdmin">
+          <div class="campaign-builder-option" v-if="false && dhAccount.isViewedByAdmin">
             <el-switch v-model="currentCampaign.settings.messageRequestOnly" :width="22"></el-switch> Trigger message request only
           </div>
-          <div class="campaign-builder-option" v-if="dhAccount.isViewedByAdmin">
+          <div class="campaign-builder-option" v-if="false && dhAccount.isViewedByAdmin">
             <el-switch v-model="currentCampaign.settings.nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
           </div>
           <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
