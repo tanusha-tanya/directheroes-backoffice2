@@ -125,52 +125,49 @@ export default {
         isActive: false,
         isIncomplete: true,
         isArchived: false,
-        settings: {
-          allowReEnter: false
-        },
         name: newCampaignName,
         steps: [
-          {
-            id: (new ObjectId).toString(),
-            elements: [
-              // {
-              //   type: "rule",
-              //   condition: {
-              //     entity: "event",
-              //     field: "type",
-              //     operand: "eq",
-              //     value: "directMessage"
-              //   },
-              //   level: 0,
-              // },
-              {
-                id: (new ObjectId).toString(),
-                type: "rule",
-                condition: {
-                  entity: "message",
-                  field: "text",
-                  operand: "contains",
-                  value: []
-                },
-                level: 0,
-                onMatch: {
-                  action: "goto",
-                  target: connectStepId
-                }
-              }
-            ],
-            displaySettings: {
-              collapsed: false
-            }
-          },
-          {
-            id: connectStepId,
-            name: 'Step #1',
-            elements: [],
-            displaySettings: {
-              collapsed: false
-            }
-          }
+          // {
+          //   id: (new ObjectId).toString(),
+          //   elements: [
+          //     // {
+          //     //   type: "rule",
+          //     //   condition: {
+          //     //     entity: "event",
+          //     //     field: "type",
+          //     //     operand: "eq",
+          //     //     value: "directMessage"
+          //     //   },
+          //     //   level: 0,
+          //     // },
+          //     {
+          //       id: (new ObjectId).toString(),
+          //       type: "rule",
+          //       condition: {
+          //         entity: "message",
+          //         field: "text",
+          //         operand: "contains",
+          //         value: []
+          //       },
+          //       level: 0,
+          //       onMatch: {
+          //         action: "goto",
+          //         target: connectStepId
+          //       }
+          //     }
+          //   ],
+          //   displaySettings: {
+          //     collapsed: false
+          //   }
+          // },
+          // {
+          //   id: connectStepId,
+          //   name: 'Step #1',
+          //   elements: [],
+          //   displaySettings: {
+          //     collapsed: false
+          //   }
+          // }
         ],
       }
 

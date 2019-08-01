@@ -1,5 +1,5 @@
 <template>
-  <div :class="['keywords', messageType]">
+  <div class="keywords">
     <el-select
       :value="value"
       placeholder="Matches any text, click to edit"
@@ -12,22 +12,6 @@
       @keydown.native="keywordsKeydown"
     >
     </el-select>
-    <slot></slot>
-    <div v-if="tagPrefix" class="tag-item" @click="tagNameSet">#{{tagPrefix}}<span v-if="tagName">_</span>{{tagName}}</div>
-    <el-dialog
-      :visible.sync="isActionRename"
-      title="Rename tag"
-      width="321px"
-      append-to-body
-      class="action-dialog"
-      :show-close="false"
-    >
-      <input v-model="intermediateValue" placeholder="Enter Tag name" maxlength="20"/>
-      <template slot="footer">
-        <button @click="saveChanges">Save</button>
-        <button class="cancel" @click="isActionRename = false">Close</button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -39,7 +23,7 @@ export default {
     }
   },
 
-  props: ['value', 'tag-prefix', 'tag-name', 'message-type'],
+  props: ['value'],
 
   methods: {
     keywordsChange(value) {
@@ -69,25 +53,12 @@ export default {
 
         return false;
       }
-    },
-
-    tagNameSet() {
-      this.intermediateValue = this.tagName;
-      this.isActionRename = true;
-    },
-
-    saveChanges() {
-      this.isActionRename = false;
-
-      this.$emit('set-tag-name', this.intermediateValue);
     }
   }
 }
 </script>
 <style lang="scss">
   .keywords {
-    border: 1px solid #DDDDDD;
-    border-radius: 8px;
     background-color: #fff;
 
     .el-select {
@@ -109,17 +80,15 @@ export default {
     }
 
     .el-input__inner {
-      padding-right: 0;
+      padding: 0;
       border: none;
-      // border-color: #DDDDDD;
-      // border-radius: 8px;
-      min-height: 68px;
       background-color: transparent;
     }
 
     .el-select__tags {
       top: 4px;
       transform: translateY(0);
+      max-width: 100% !important;
     }
 
     .el-tag {
