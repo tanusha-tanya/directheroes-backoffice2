@@ -3,8 +3,8 @@
     <div class="add-step-button" slot="reference">
     </div>
     <div class="types-of-elements">
-      <div class="type-of-element trigger-elements">
-        <add-triggers-popup @on-select="selectElement">
+      <div class="type-of-element trigger-elements" v-if="false">
+        <add-triggers-popup @on-select="selectElement" >
           <span>Triggers</span>
         </add-triggers-popup>
       </div>

@@ -16,10 +16,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import keywords from '../keywords';
-import ObjectId from '../../utils/ObjectId'
-import addTriggerPopup from '../addTriggerPopup'
-import addStepPopup from '../addStepPopup'
+import ObjectId from '../../utils/ObjectId';
+import addTriggerPopup from '../addTriggerPopup';
+import addStepPopup from '../addStepPopup';
 
 export default {
 
@@ -73,10 +74,10 @@ export default {
         ]
       }
 
-      rule.onMatch = {
+      Vue.set(rule, 'onMatch', {
         action: 'goto',
         target: step
-      }
+      });
 
       this.$emit('add-step', step);
     }
