@@ -14,8 +14,8 @@
             <span>Triggers</span>
           </add-triggers-popup>
         </div>
-        <div class="type-of-element action-elements">
-          <add-action-popup @on-select="selectElement">
+        <div class="type-of-element action-elements" v-if="false">
+          <add-action-popup @on-select="selectElement" >
             <span>Actions</span>
           </add-action-popup>
         </div>
