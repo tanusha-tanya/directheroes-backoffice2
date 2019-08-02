@@ -76,7 +76,7 @@ export default {
 
       Vue.set(rule, 'onMatch', {
         action: 'goto',
-        target: step
+        target: step.id
       });
 
       this.$emit('add-step', step);
