@@ -46,7 +46,7 @@ export default {
         }
 
         const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
-        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
+        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).querySelector('.step-item-header').getBoundingClientRect();
         const isOnTop = startRect.top + startRect.height < endRect.top;
         const isOnBottom = startRect.top > endRect.top + endRect.height;
         const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
