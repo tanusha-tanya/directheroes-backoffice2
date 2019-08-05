@@ -38,9 +38,14 @@ export default {
 
 <style lang="scss">
   .step-item {
-    position: absolute;
-    min-height: 90px;
+    position: relative;
     width: 246px;
+    flex-grow: 1;
+    margin: 30px 0;
+
+    &:not(step-item) {
+      flex-shrink: 0;
+    }
 
     .step-item-header {
       padding: 10px;
@@ -51,8 +56,6 @@ export default {
     }
 
     &.entry-step {
-      top: calc(20% );
-      left: 30px;
       border: 2px solid #1DC27C;
       border-radius: 5px;
 
@@ -81,9 +84,6 @@ export default {
 
     &:not(.entry-step) {
       &.step-action-type {
-        top: calc(50% - 190px);
-        left: 445px;
-
         .step-item-header {
           color: #F4B109;
           background-color: rgba(#F4B109, .25);

@@ -128,18 +128,6 @@ export default {
 
       const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
 
-      currentCampaign.steps.forEach(step => {
-        if (step.displaySettings) return;
-
-        Object.assign(step, {
-          displaySettings: {
-            positionX: null,
-            positionY: null,
-            collapsed: false
-          }
-        })
-      })
-
       if (currentCampaign) {
         this.currentCampaign = currentCampaign;
       }

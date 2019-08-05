@@ -1,7 +1,7 @@
 <template>
   <div class="rule-items">
     <template v-for="element in elements">
-      <div class="rule-item" v-if="ruleType(element) == 'list'" :key="element.id">
+      <div class="rule-item" v-if="ruleType(element) == 'list'" :key="element.id" :ref="element.id">
         <div class="rule-item-title">{{ ruleTitles['list'] }}</div>
         <keywords v-model="element.condition.value"></keywords>
         <add-step-popup @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-step-popup>
