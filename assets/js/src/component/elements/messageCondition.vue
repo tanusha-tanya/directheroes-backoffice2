@@ -49,6 +49,17 @@ export default {
 
       return this.triggers || allTriggers;
     }
+  },
+
+  watch: {
+    'element.value.messageType'(newType, oldType) {
+      const { element } = this;
+
+      if (newType === oldType) return;
+
+      element.value.keywords = [];
+      delete element.value.link
+    }
   }
 }
 </script>
