@@ -6,7 +6,7 @@
     border-radius: 1rem;
     margin-bottom: 1rem;
     font-size: 1rem;" v-if="!cardInfo.last4">
-      You will be charged <strong>$97</strong> and subscribed <strong>Hero</strong> plan
+      You will be charged <strong>$97</strong> and subscribed to <strong>Hero</strong> plan
     </div>
     <div v-if="!isSetPayment">
       <div class="form-row">
