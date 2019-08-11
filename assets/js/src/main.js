@@ -50,6 +50,8 @@ import videoHelp from './routes/videoHelp.vue'
 import bookHelp from './routes/bookHelp.vue'
 import addonBuy from './routes/addonBuy.vue'
 import addonPayment from './routes/addonPayment.vue'
+import easyWebinar from './routes/easyWebinar.vue'
+
 // import extraAccountBuy from './routes/extraAccountBuy.vue'
 // import extraAccountPayment from './routes/extraAccountPayment.vue'
 
@@ -81,6 +83,7 @@ const router = new VueRouter({
       ]
     },
     { path: '/:isBuy?', name: 'accounts', component: accounts },
+    { path: '/webinar-join', name: 'easywebinar-join', component: easyWebinar },
   ]
 })
 
