@@ -49,7 +49,7 @@ export default {
         return;
       }
 
-      const db = new PouchDB(`https://couchdb.app02.beta.directheroes.com/${ dhAccount.userCode }`);
+      const db = new PouchDB(dhAccount.couchdbUrl);
       // const db = new PouchDB({name: dhAccount.userCode});
       // const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
       db.info().then(console.log)

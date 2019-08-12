@@ -125,6 +125,13 @@ Vue.mixin({
     }
   },
 
+  methods: {
+    blockEvent() {
+      event.stopPropagation();
+      return false;
+    }
+  },
+
   watch: {
     '$store.state.dhAccount'(dhAccount) {
       if (!dhAccount || dhAccount.subscription.isActive) return;

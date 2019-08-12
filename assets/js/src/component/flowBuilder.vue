@@ -1,5 +1,25 @@
 <template>
-  <div class="flow-builder" v-if="entryItem">
+  <div class="flow-builder" v-if="entryItem" ref="flowBuilder">
+    <div class="zoom-element" @mousedown="blockEvent">
+      <el-slider
+        v-model="scale"
+        :min=".1"
+        :max="2"
+        :step=".1"
+      >
+      </el-slider>
+      <div class="go-to-position" @click="findEntryStep">
+        <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
+          <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
+            c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
+          <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
+            C109.368,56.352,56.352,109.368,48.944,176H16c-8.832,0-16,7.168-16,16c0,8.832,7.168,16,16,16h32.944
+            C56.352,274.632,109.368,327.648,176,335.056V368c0,8.832,7.168,16,16,16c8.832,0,16-7.168,16-16v-32.944
+            c66.632-7.408,119.648-60.424,127.056-127.056H368c8.832,0,16-7.168,16-16C384,183.168,376.832,176,368,176z M192,304
+            c-61.76,0-112-50.24-112-112S130.24,80,192,80s112,50.24,112,112S253.76,304,192,304z"/>
+        </svg>
+      </div>
+    </div>
     <div class="builder-area" ref="builderArea">
       <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
@@ -23,21 +43,24 @@
 <script>
 import panzoom from 'panzoom';
 import stepItem from './stepItem';
-import arrows from './arrows.vue'
+import arrows from './arrows';
+
+let zoomTimeout = null;
 
 export default {
   data() {
     return {
+      zoomTool: null,
       scaleValue: 1,
       arrows: [],
     }
   },
 
-  props: ['entryItem'],
+  props: ['entryItem', 'hasWarning'],
 
   components: {
     stepItem,
-    arrows
+    arrows,
   },
 
   computed: {
@@ -46,8 +69,6 @@ export default {
       const stepRows = [];
       const arrows =[];
       let levelIndex = 0;
-
-      console.log('rows');
 
       steps.forEach((step, index) => {
         if (!index) {
@@ -96,14 +117,120 @@ export default {
 
     builder() {
       return this
+    },
+
+    scale: {
+      get() {
+        const { scaleValue } = this;
+
+        return scaleValue && parseFloat(scaleValue.toFixed(1)) || 1;
+      },
+      set(value) {
+        const { zoomTool, scaleValue } = this;
+
+        if (!zoomTool || scaleValue == value) return;
+
+        clearTimeout(zoomTimeout);
+
+        zoomTimeout = setTimeout(() => {
+          this.scaleValue = value;
+
+          this.scaleTo(value / scaleValue);
+        }, 100);
+      }
     }
   },
 
   methods: {
     addStep(step) {
       const { entryItem } = this;
+      const firstElement = step.elements[0];
+
+      if (firstElement === 'action') {
+        step.name = 'New message'
+      } else if (firstElement === 'rule') {
+        step.name = 'Trigger'
+      }
 
       entryItem.steps.push(step);
+    },
+
+    initZoom() {
+      const zoomTool = panzoom(this.$refs.builderArea, {
+        maxZoom: 2,
+        minZoom: 0.1,
+        smoothScroll: false,
+        zoomDoubleClickSpeed: 1,
+        beforeWheel(event) {
+          if (!event.shiftKey) {
+            const { x, y } = zoomTool.getTransform();
+
+            zoomTool.moveTo(x - event.deltaX, y - event.deltaY)
+          }
+
+          return !event.shiftKey;
+        },
+        filterKey(event) {
+          return true;
+        }
+      })
+
+      zoomTool.on('zoom', () => {
+        this.scaleValue = zoomTool.getTransform().scale;
+      })
+
+      this.zoomTool = zoomTool;
+    },
+
+    scaleTo(ration) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
+      const flowBuilderRect = flowBuilder.getBoundingClientRect();
+
+      const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
+      const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
+
+      zoomTool.smoothZoom(positionX, positionY, ration);
+    },
+
+    findEntryStep() {
+      const { zoomTool, entryItem } = this;
+      const { flowBuilder } = this.$refs;
+      const campaignCard = this.$refs[entryItem.steps[0].id][0];
+      const campaignCardRect = campaignCard.$el.getBoundingClientRect();
+      const flowBuilderRect = flowBuilder.getBoundingClientRect();
+      const { x, y } = zoomTool.getTransform();
+
+      const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
+      const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
+      zoomTool.moveTo(positionX, positionY)
+    },
+  },
+
+  watch:{
+    entryItem: {
+      handler: function (entry, oldEntry) {
+
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+
+        if (entry) {
+          if (!oldEntry && this._isMounted) {
+            this.$nextTick(() => {
+              this.initZoom();
+              this.findEntryStep();
+            });
+          };
+        }
+
+        if (!oldEntry || !entry || entry.id !== oldEntry.id) {
+          return;
+        }
+
+        entry.isActive = entry.isEnabled && !this.hasWarning;
+        entry.isIncomplete = this.hasWarning;
+      },
+      deep: true
     },
   }
 }
@@ -114,18 +241,48 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  outline: none;
 
   .builder-area {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100%;
+    position: relative;
   }
 
   .steps-row {
     margin-left: 60px;
     display: flex;
     flex-direction: column;
+  }
+
+  .zoom-element {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    background-color: #fff;
+    padding: 0 0 0 10px;
+    z-index: 10;
+    top: 105px;
+    left: calc(50% - 10px);
+    width: 230px;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.16);
+
+    .el-slider {
+      flex-grow: 1;
+    }
+
+    .go-to-position {
+      flex-shrink: 0;
+      width: 33px;
+      margin: 2px 0 0 10px;
+      padding: 0 5px;
+      border-left: 2px solid #E8E8E8;
+    }
   }
 }
 </style>

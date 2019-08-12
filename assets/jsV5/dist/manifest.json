@@ -17,7 +17,7 @@
   "dist/images/gear.svg": "http://directheroes.local:8080/dist/images/gear.89a98c6c.svg",
   "dist/images/home.svg": "http://directheroes.local:8080/dist/images/home.935ff31e.svg",
   "dist/images/ig-avatar.jpg": "http://directheroes.local:8080/dist/images/ig-avatar.8323e88b.jpg",
-  "dist/images/image-placeholder.svg": "http://directheroes.local:8080/dist/images/image-placeholder.25f681b7.svg",
+  "dist/images/image-placeholder.svg": "http://directheroes.local:8080/dist/images/image-placeholder.710d52d4.svg",
   "dist/images/logo-white.svg": "http://directheroes.local:8080/dist/images/logo-white.4623971c.svg",
   "dist/images/logo.png": "http://directheroes.local:8080/dist/images/logo.4e1e98dc.png",
   "dist/images/multipoints.svg": "http://directheroes.local:8080/dist/images/multipoints.14d05cdc.svg",
@@ -31,5 +31,6 @@
   "dist/images/triangle.svg": "http://directheroes.local:8080/dist/images/triangle.15c92383.svg",
   "dist/images/ubuntu.svg": "http://directheroes.local:8080/dist/images/ubuntu.0f67e9e9.svg",
   "dist/images/windows.svg": "http://directheroes.local:8080/dist/images/windows.e9b2dce1.svg",
-  "dist/images/youtube.svg": "http://directheroes.local:8080/dist/images/youtube.c57967bc.svg"
+  "dist/images/youtube.svg": "http://directheroes.local:8080/dist/images/youtube.c57967bc.svg",
+  "dist/images/cross.svg": "http://directheroes.local:8080/dist/images/cross.a630a7b0.svg"
 }

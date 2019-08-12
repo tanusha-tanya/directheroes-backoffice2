@@ -1,9 +1,17 @@
 <template>
   <div class="rule-items">
     <template v-for="element in elements">
-      <div class="rule-item" v-if="ruleType(element) == 'list'" :key="element.id" :ref="element.id">
+      <div class="rule-item" :key="element.id" :ref="element.id">
         <div class="rule-item-title">{{ ruleTitles['list'] }}</div>
-        <keywords v-model="element.condition.value"></keywords>
+        <template v-if="ruleType(element) == 'list'">
+          <keywords v-model="element.condition.value"></keywords>
+        </template>
+        <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
+          <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
+        </template>
+        <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
+          <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
+        </template>
         <add-step-popup @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-step-popup>
       </div>
     </template>

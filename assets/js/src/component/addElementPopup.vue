@@ -4,9 +4,9 @@
         <slot></slot>
       </template>
       <div class="favorite-elements">
-        <!-- <div class="element-item" v-for="action in actions" :key="action.title">
+        <div class="element-item" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
           {{action.title}}
-        </div> -->
+        </div>
       </div>
       <div class="types-of-elements">
         <div class="type-of-element trigger-elements">
@@ -14,7 +14,7 @@
             <span>Triggers</span>
           </add-triggers-popup>
         </div>
-        <div class="type-of-element action-elements" v-if="false">
+        <div class="type-of-element action-elements">
           <add-action-popup @on-select="selectElement" >
             <span>Actions</span>
           </add-action-popup>
@@ -31,6 +31,27 @@ export default {
   data() {
     return {
       isShow: false,
+      actions: [
+        {
+          title: 'Text',
+          template: {
+            type: 'action',
+            body: {
+              action: 'sendText',
+              text: ''
+            }
+          }
+        },
+        {
+          title: 'Image',
+          template: {
+            type: 'action',
+            body: {
+              action: 'sendMedia',
+            }
+          }
+        }
+      ]
     }
   },
 

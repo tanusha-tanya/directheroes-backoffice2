@@ -29,15 +29,15 @@ export default {
             }
           }
         },
-        // {
-        //   title: 'Image',
-        //   template: {
-        //     type: 'action',
-        //     body: {
-        //       action: 'sendImage',
-        //     }
-        //   }
-        // }
+        {
+          title: 'Image',
+          template: {
+            type: 'action',
+            body: {
+              action: 'sendImage',
+            }
+          }
+        }
       ]
     }
   },
