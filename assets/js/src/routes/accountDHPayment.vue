@@ -1,5 +1,13 @@
 <template>
   <div class="account-dh-payment" v-if="!loading">
+    <div style="
+    padding: 1rem;
+    background: #c2b9ff;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;" v-if="!cardInfo.last4">
+      You will be charged <strong>$97</strong> and subscribed to <strong>Hero</strong> plan
+    </div>
     <div v-if="!isSetPayment">
       <div class="form-row">
         <label>Full Name
