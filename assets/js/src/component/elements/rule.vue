@@ -47,6 +47,8 @@ export default {
         postReply: 'Post Reply',
         adReply: 'Ad Reply',
         storyReply: 'Story Reply',
+        storyMention: 'Story Mention',
+        mediaShare: 'mediaShare'
       }
     },
   },
