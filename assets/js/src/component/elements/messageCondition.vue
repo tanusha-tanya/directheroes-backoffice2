@@ -11,7 +11,7 @@
     <el-option class="story" label="Story Mention" value="storyMention" v-if="availableTriggers.includes('storyMention')">Story Mention</el-option>
     <el-option class="post-share" label="Post Reply" value="postShare" v-if="availableTriggers.includes('postShare')">Post Reply</el-option>
     <el-option class="story" label="Media Share" value="mediaShare" v-if="availableTriggers.includes('mediaShare')">Media Share</el-option>
-    <el-option class="story-mention" :label="listName || 'Keyword'" value="any" v-if="canHasAny && availableTriggers.includes('any')">{{ listName || 'Keyword' }}</el-option>
+    <el-option class="story-mention" :label="listName || ' Keyword'" value="any" v-if="canHasAny && availableTriggers.includes('any')">{{ listName || 'Keyword' }}</el-option>
   </el-select>
   <template v-if="['storyMention', 'storyShare', 'any', 'mediaShare'].includes(element.value.messageType)">
     <keywords
