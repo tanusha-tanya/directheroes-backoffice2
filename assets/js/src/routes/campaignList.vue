@@ -1,61 +1,68 @@
 <template>
-<div class="campaign-list w968">
-  <div class="content-title">Campaigns</div>
-  <div class="campaign-controls">
-    <span></span>
-    <button @click="isAddCampaign = true">+ New Campaign</button>
-  </div>
-  <div class="container-area">
-    <div class="list-item header">
-      <div class="campaign-row">Campaign Name</div>
-      <div class="active-row">Status</div>
+  <div class="campaign-list w968">
+    <div class="content-title">Campaigns</div>
+    <div class="campaign-controls">
+      <span></span>
+      <button @click="isAddCampaign = true">+ New Campaign</button>
     </div>
-    <router-link class="list-item" :to="{name: 'accountCampaign', params:{ campaignId:campaign.id }}" v-for="campaign in account.campaignList" :key="campaign.id">
-      <div class="campaign-row">
-        <el-tooltip
-          class="campaign-warning" effect="light"
-          content="The flow is incomplete, please fix all warnings before activating it"
-          v-if="hasWarning(campaign)">
-          <img src="../assets/triangle.svg">
-        </el-tooltip>
-        {{ campaign.name }}
+    <div class="container-area">
+      <div class="list-item header">
+        <div class="campaign-row">Campaign Name</div>
+        <div class="active-row">Status</div>
       </div>
-      <div class="active-row">
-        {{campaign.isActive ? 'Active' : campaign.isEnabled ? 'Incomplete' : 'Disabled'}}
-      </div>
-      <div class="delete-row">
-        <div class="trash-button" @click.stop.prevent="campaignToDelete = campaign">
-          <img src="../assets/svg/trash.svg"/>
+      <router-link
+        class="list-item"
+        :to="{name: 'accountCampaign', params:{ campaignId:campaign.id }}"
+        v-for="campaign in campaigns"
+        :key="campaign.id"
+      >
+        <div class="campaign-row">
+          <el-tooltip
+            class="campaign-warning"
+            effect="light"
+            content="The flow is incomplete, please fix all warnings before activating it"
+            v-if="hasWarning(campaign)"
+          >
+            <img src="../assets/triangle.svg">
+          </el-tooltip>
+          {{ campaign.name }}
         </div>
-      </div>
-    </router-link>
+        <div
+          class="active-row"
+        >{{campaign.isActive ? 'Active' : campaign.isEnabled ? 'Incomplete' : 'Disabled'}}</div>
+        <div class="delete-row">
+          <div class="trash-button" @click.stop.prevent="campaignToDelete = campaign">
+            <img src="../assets/svg/trash.svg">
+          </div>
+        </div>
+      </router-link>
+    </div>
+    <el-dialog
+      :visible.sync="isAddCampaign"
+      title="Create New Campaign"
+      class="campaign-dialog"
+      width="321px"
+      append-to-body
+      :show-close="false"
+    >
+      <input v-model="newCampaignName" placeholder="Enter Campaign name">
+      <template slot="footer">
+        <button @click="createCampaign">Create</button>
+        <button class="cancel" @click="isAddCampaign = false">Close</button>
+      </template>
+    </el-dialog>
+    <confirm-dialog
+      v-model="toDelete"
+      title="Delete campaign"
+      message="Are you sure you want to delete campaign?"
+      @success="deleteCampaign"
+    ></confirm-dialog>
   </div>
-  <el-dialog
-    :visible.sync="isAddCampaign"
-    title="Create New Campaign"
-    class="campaign-dialog"
-    width="321px"
-    append-to-body
-    :show-close="false"
-    >
-    <input v-model="newCampaignName" placeholder="Enter Campaign name"/>
-    <template slot="footer">
-      <button @click="createCampaign">Create</button>
-      <button class="cancel" @click="isAddCampaign = false">Close</button>
-    </template>
-  </el-dialog>
-  <confirm-dialog
-    v-model="toDelete"
-    title="Delete campaign"
-    message="Are you sure you want to delete campaign?"
-    @success="deleteCampaign"
-    >
-  </confirm-dialog>
-</div>
 </template>
 <script>
 import moment from 'moment'
 import utils from '../utils'
+import ObjectId from '../utils/ObjectId'
 import confirmDialog from '../component/confirmDialog.vue'
 
 export default {
@@ -83,28 +90,103 @@ export default {
       set(value) {
         this.campaignToDelete = value;
       }
+    },
+
+    campaigns() {
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return [];
+
+      return currentAccountData.campaigns//.filter(campaign => !campaign.isArchived)
+      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     }
   },
 
   methods: {
     deleteCampaign() {
-      this.$store.dispatch('deleteCampaign', this.campaignToDelete)
-      this.campaignToDelete = null
+      const { currentAccountData } = this.$store.state;
+
+      currentAccountData.campaigns.splice(currentAccountData.campaigns.indexOf(this.campaignToDelete), 1);
+      // this.campaignToDelete.isArchived = true;
+      // this.campaignToDelete = null
     },
 
     createCampaign() {
-      const { currentAccount } = this.$store.state;
+      const { newCampaignName, $store } = this;
+      const { currentAccount, currentAccountData } = $store.state;
 
-      this.$store.dispatch('createCampaign', {
-        name: this.newCampaignName
-      }).then(({ data }) => {
-        const { campaign } = data;
+      const connectStepId = (new ObjectId).toString();
 
-        this.isAddCampaign = false;
-        this.newCampaignName = '';
+      const newCampaign = {
+        id: (new ObjectId).toString(),
+        igAccountId: currentAccount.id,
+        createdAt: Date.now(),
+        isEnabled: false,
+        isActive: false,
+        isIncomplete: true,
+        isArchived: false,
+        name: newCampaignName,
+        steps: [
+          // {
+          //   id: (new ObjectId).toString(),
+          //   elements: [
+          //     // {
+          //     //   type: "rule",
+          //     //   condition: {
+          //     //     entity: "event",
+          //     //     field: "type",
+          //     //     operand: "eq",
+          //     //     value: "directMessage"
+          //     //   },
+          //     //   level: 0,
+          //     // },
+          //     {
+          //       id: (new ObjectId).toString(),
+          //       type: "rule",
+          //       condition: {
+          //         entity: "message",
+          //         field: "text",
+          //         operand: "contains",
+          //         value: []
+          //       },
+          //       level: 0,
+          //       onMatch: {
+          //         action: "goto",
+          //         target: connectStepId
+          //       }
+          //     }
+          //   ],
+          //   displaySettings: {
+          //     collapsed: false
+          //   }
+          // },
+          // {
+          //   id: connectStepId,
+          //   name: 'Step #1',
+          //   elements: [],
+          //   displaySettings: {
+          //     collapsed: false
+          //   }
+          // }
+        ],
+      }
 
-        this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
-      })
+      currentAccountData.campaigns.push(newCampaign);
+
+      this.isAddCampaign = false;
+      this.newCampaignName = '';
+
+      this.$router.push({ name: 'accountCampaign', params: { campaignId: newCampaign.id, accountId: currentAccount.id } })
+      // this.$store.dispatch('createCampaign', {
+      //   name: this.newCampaignName
+      // }).then(({ data }) => {
+      //   const { campaign } = data;
+
+      //   this.isAddCampaign = false;
+      //   this.newCampaignName = '';
+
+      //   this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
+      // })
 
     },
 
@@ -136,7 +218,7 @@ export default {
 
     button {
       border-radius: 50px;
-      background-color: #6A12CB;
+      background-color: #6a12cb;
       padding: 5px 26px;
     }
   }
@@ -153,7 +235,7 @@ export default {
       // justify-content: space-between;
 
       &:hover {
-        background-color: transparent
+        background-color: transparent;
       }
     }
 
@@ -181,7 +263,6 @@ export default {
 }
 
 .el-dialog__wrapper.campaign-dialog {
-
   .el-dialog {
     border-radius: 5px;
     padding: 20px;
@@ -204,10 +285,10 @@ export default {
       font-size: 15px;
       line-height: 18px;
       padding: 4px 10px 6px;
-      border: 1px solid #DBDBDB;
+      border: 1px solid #dbdbdb;
 
       &::placeholder {
-        color: #A9A9A9;
+        color: #a9a9a9;
         text-align: center;
       }
     }
@@ -217,7 +298,7 @@ export default {
     padding: 0;
 
     button {
-      background-color: #6A12CB;
+      background-color: #6a12cb;
       border-radius: 5px;
       line-height: 16px;
       font-weight: normal;

@@ -28,6 +28,6 @@ export default {
         border-color: #c0c4cc;
       }
     }
-  } 
+  }
 }
 </style>

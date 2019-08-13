@@ -21,6 +21,7 @@ export default new VueX.Store({
     arrowConnectData: null,
     arrows: [],
     currentAccount: null,
+    currentAccountData: null,
     firstLoad: false,
     isfullSideBar: true,
     serverKey: null,

@@ -13,7 +13,7 @@
       <div class="reach-row">Reach</div>
       <div class="status-row">Status</div>
     </div>
-    <router-link class="list-item" :to="{name: 'accountBroadcast', params:{ broadcastId:broadcast.id }}" v-for="broadcast in account.broadcastList" :key="broadcast.id">
+    <router-link class="list-item" :to="{name: 'accountBroadcast', params:{ broadcastId:broadcast.id }}" v-for="broadcast in broadcasts" :key="broadcast.id">
       <div class="broadcast-row">
         <el-tooltip
           class="broadcast-warning" effect="light"
@@ -56,6 +56,7 @@
 <script>
 import moment from 'moment'
 import utils from '../utils'
+import ObjectId from '../utils/ObjectId'
 
 export default {
   data() {
@@ -68,23 +69,77 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount
+    },
+
+    broadcasts() {
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return [];
+
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "broadcastEntry" && !campaign.isArchived)
     }
   },
 
   methods: {
     createBroadcast() {
-      const { currentAccount } = this.$store.state;
+      const { newBroadcastName, $store } = this;
+      const { currentAccount, currentAccountData } = $store.state;
 
-      this.$store.dispatch('createBroadcast', {
-        name: this.newBroadcastName
-      }).then(({ data }) => {
-        const { campaign } = data;
+      const newBroadcast = {
+        id: (new ObjectId).toString(),
+        name: newBroadcastName,
+        igAccountId: currentAccount.id,
+        createdAt: Date.now(),
+        isEnabled: true,
+        isActive: false,
+        isIncomplete: true,
+        isArchived: false,
+        steps: [{
+          id: (new ObjectId).toString(),
+          type: 'broadcastEntry',
+          name: 'Broadcast Entry Step',
+          elements: [{
+            id: (new ObjectId).toString(),
+            type: 'sendTextAction',
+            value: {
+              text: '',
+              textPreview: '',
+              maxPossibleLength: 0,
+              isTextTruncated: false
+            },
+            displaySettings: {
+              collapsed: false,
+              visible: true
+            }
+          }],
+          settings: {
+            categoryList: []
+          },
+          displaySettings: {
+            collapsed: false
+          },
+          status: {
+            statusText: 'draft'
+          }
+        }],
+      }
 
-        this.isAddBroadcast = false;
-        this.newBroadcastName = '';
+      currentAccountData.campaigns.push(newBroadcast);
 
-        this.$router.push({ name: 'accountBroadcast', params: { broadcastId: campaign.id, accountId: currentAccount.id } })
-      })
+      this.isAddBroadcast = false;
+      this.newBroadcastName = '';
+
+       this.$router.push({ name: 'accountBroadcast', params: { broadcastId: newBroadcast.id, accountId: currentAccount.id } })
+      // this.$store.dispatch('createBroadcast', {
+      //   name: this.newBroadcastName
+      // }).then(({ data }) => {
+      //   const { campaign } = data;
+
+      //   this.isAddBroadcast = false;
+      //   this.newBroadcastName = '';
+
+      //   this.$router.push({ name: 'accountBroadcast', params: { broadcastId: campaign.id, accountId: currentAccount.id } })
+      // })
     },
 
     broadcastSchedule(broadcast) {

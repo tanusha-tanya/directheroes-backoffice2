@@ -128,6 +128,14 @@ export default {
       return this.$store.state.currentAccount;
     },
 
+    broadcasts() {
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return [];
+
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "broadcastEntry" && !campaign.isArchived)
+    },
+
     broadcastStep() {
       if (!this.currentBroadcast) return;
 
@@ -265,6 +273,13 @@ export default {
     getTotalSubscribers() {
       const { categoryList } = this.broadcastStep.settings;
 
+      if (!categoryList.length) {
+        this.totalSubscribers = 0
+        this.inGetCount = false;
+
+        return;
+      }
+
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
         method: 'post',
@@ -283,12 +298,13 @@ export default {
 
     setCurrentBroadcast(route) {
       const { broadcastId } = route.params;
-      const { broadcastList } = this.$store.state.currentAccount;
-      const currentBroadcast = broadcastList.find(broadcast => broadcast.id == broadcastId);
+      const { broadcasts } = this;
+      const currentBroadcast = broadcasts.find(broadcast => broadcast.id == broadcastId);
 
-      this.currentBroadcast = currentBroadcast;
-
-      // this.updateBroadcastStatus();
+      if (currentBroadcast) {
+        this.currentBroadcast = currentBroadcast;
+        this.updateBroadcastStatus();
+      }
     },
 
     setNowDate() {
@@ -327,7 +343,7 @@ export default {
   },
 
   watch:{
-    '$store.state.accounts'() {
+    '$store.state.currentAccountData'() {
       if (this.currentBroadcast) return;
 
       this.setCurrentBroadcast(this.$route);

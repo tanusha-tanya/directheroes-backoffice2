@@ -9,7 +9,7 @@
           <div>{{ account.followerCount || 0 }}<br/>followers </div>
         </div>
       </div>
-      <div class="account-info"> 
+      <div class="account-info">
         <div class="account-name">{{ account.fullName }}<div class="account-post-count"><strong>{{ account.postCount }}</strong> posts</div> </div>
         <div class="account-bio">{{ account.bio }}</div>
         <a class="account-website" :href="account.website" target="_blank">{{ account.website }}</a>
@@ -19,12 +19,13 @@
 </template>
 
 <script>
+
 export default {
   computed: {
     account() {
       return this.$store.state.currentAccount
     }
-  }
+  },
 }
 </script>
 
@@ -51,7 +52,7 @@ export default {
 
     .account-name {
       font-size: 18px;
-      line-height: 22px; 
+      line-height: 22px;
       color: #3C3C3C;
       display: flex;
       align-items: center;
