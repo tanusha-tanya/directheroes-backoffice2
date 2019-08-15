@@ -163,7 +163,7 @@ export default {
 
         if (matchElement && !matchElement.onMatch) return;
 
-        const { target } = matchElement.onMatch;
+        const target = matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target));
 
         if (target !== step.id) return;
 
@@ -230,6 +230,21 @@ export default {
 
       zoomTool.moveTo(positionX, positionY)
     },
+
+    findWarningStep(warningStep) {
+      console.log(warningStep);
+
+    }
+  },
+
+  mounted() {
+    const { entryItem, $refs } = this;
+    const { builderArea } = $refs;
+
+    if (!builderArea || !entryItem) return;
+
+    this.initZoom();
+    this.findEntryStep();
   },
 
   watch:{
@@ -272,8 +287,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100%;
     position: relative;
+    width: 5000px;
+    height: 5000px;
   }
 
   .steps-row {

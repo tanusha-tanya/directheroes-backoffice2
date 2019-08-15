@@ -123,22 +123,9 @@ export default {
   hasCampaignWarning(campaign) {
     const { campaignElementValidate } = this;
 
-    return campaign.steps.some(step => {
-      if (campaignElementValidate(step)) {
-        return true;
-      }
-
+    return campaign.steps.find(step => {
       return step.elements.some(element => {
-        if (element.type === 'messageConditionMultiple') {
-          const { conditionList } = element.value;
-          const emptyAnyItem = conditionList.filter(item => item.messageType === 'any' && !item.keywords.length);
-
-          return element.value.conditionList.some(conditionItem => {
-            return Boolean(campaignElementValidate({ ...conditionItem, emptyMoreOne: emptyAnyItem > 1 }))
-          })
-        } else {
-          return campaignElementValidate(element);
-        }
+        return campaignElementValidate(element);
       });
     });
   },

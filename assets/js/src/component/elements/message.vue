@@ -1,9 +1,12 @@
 <template>
   <div class="message-items">
     <template v-for="element in elements">
-      <div :class="[{'message-item': true}, elementClass(element.body.action)]" v-if="element.type !== 'linker'" :key="element.id">
+      <div class="message-item" v-if="element.type !== 'linker'" :key="element.id">
         <element-warning :element="element"></element-warning>
-        <template v-if="element.body.action === 'sendText'">
+        <template v-if="element.type === 'group' && element.displaySettings.type === 'delay'">
+          <delay :element="element"></delay>
+        </template>
+        <template v-else-if="element.body.action === 'sendText'">
           <el-input
             type="textarea"
             placeholder="Please input"
@@ -53,6 +56,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
+import delay from './delay';
 import linker from '../linker'
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
@@ -63,7 +67,8 @@ export default {
   components: {
     addElementPopup,
     elementWarning,
-    linker
+    linker,
+    delay
   },
 
   computed: {
@@ -83,7 +88,13 @@ export default {
       const { elements } = this;
       const { displaySettings } = element;
 
-      if (element.type === 'action' && displaySettings && displaySettings.subType === 'message') {
+      if (['group', 'action'].includes(element.type) && displaySettings && displaySettings.subType === 'message') {
+        if (element.type === 'group') {
+          element.elements.forEach(element => {
+            element.id = (new ObjectId).toString()
+          })
+        }
+
         elements.push({
           id: (new ObjectId).toString(),
           ...element
@@ -162,21 +173,12 @@ export default {
     // border-bottom: 1px solid #D8D8D8;
     position: relative;
 
-    &.send-text-message {
-      .element-warning {
-        right: 24px;
-        top: 22px;
-        z-index: 5;
-      }
+    .element-warning {
+      right: 24px;
+      top: 22px;
+      z-index: 5;
     }
 
-    &.send-media-message {
-      .element-warning {
-        right: 24px;
-        top: 22px;
-        z-index: 5;
-      }
-    }
 
     .el-textarea {
       .el-textarea__inner {

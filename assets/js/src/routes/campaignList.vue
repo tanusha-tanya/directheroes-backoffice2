@@ -108,7 +108,7 @@ export default {
 
       currentAccountData.campaigns.splice(currentAccountData.campaigns.indexOf(this.campaignToDelete), 1);
       // this.campaignToDelete.isArchived = true;
-      // this.campaignToDelete = null
+      this.campaignToDelete = null
     },
 
     createCampaign() {

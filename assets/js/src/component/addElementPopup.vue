@@ -4,7 +4,7 @@
       <slot></slot>
     </template>
     <div class="favorite-elements">
-      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(action.template.body.action)}" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
+      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(getActionElement(action).body.action)}" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
         {{action.title}}
       </div>
     </div>
@@ -36,6 +36,9 @@ export default {
           title: 'Text',
           template: {
             type: 'action',
+            displaySettings: {
+              subType: 'message'
+            },
             body: {
               action: 'sendText',
               text: ''
@@ -46,9 +49,46 @@ export default {
           title: 'Image',
           template: {
             type: 'action',
+            displaySettings: {
+              subType: 'message'
+            },
             body: {
               action: 'sendMedia',
             }
+          }
+        },
+        {
+          title: 'Delay',
+          template: {
+            type: 'group',
+            displaySettings: {
+              type: 'delay',
+              subType: 'message'
+            },
+            elements: [
+              {
+                type: 'action',
+                body: {
+                  action: 'registerTimeout',
+                  delta: 300
+                }
+              },
+              {
+                type: 'checkpoint'
+              },
+              {
+                type: 'rule',
+                condition: {
+                  entity: 'time',
+                  field: 'delta',
+                  operand: 'eq',
+                  value: 300
+                },
+                onMatch: {
+                  action: 'fallthrough'
+                }
+              },
+            ]
           }
         }
       ]
@@ -72,6 +112,14 @@ export default {
     selectElement(element) {
       this.$emit('add-element', JSON.parse(JSON.stringify(element)));
       this.isShow = false;
+    },
+
+    getActionElement(message) {
+      if (message.template.type === 'group') {
+        return message.template.elements.find(element => element.type === 'action')
+      } else {
+        return message.template
+      }
     }
   }
 }

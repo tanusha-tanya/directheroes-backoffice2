@@ -107,7 +107,6 @@ export default {
       if (!currentAccountData) return;
 
       return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
-      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
     },
 
     hasWarning() {
@@ -143,7 +142,8 @@ export default {
       const { currentAccount } = this.$store.state;
 
       this.currentCampaign.isArchived = true;
-      this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
+      this.isDeleteDialog = false;
+      this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } });
     },
 
     addStep(element) {

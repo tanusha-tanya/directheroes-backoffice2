@@ -7,7 +7,7 @@
   </template>
   <template v-for="message in messages">
     <div
-      :class="{'message-item':true, 'message-disabled': availableList && !availableList.includes(message.template.body.action)}"
+      :class="{'message-item':true, 'message-disabled': availableList && !availableList.includes(getActionElement(message).body.action)}"
       :key="message.title"
       @click="selectAction(message)">
       {{message.title}}
@@ -46,6 +46,40 @@ export default {
               action: 'sendMedia',
             }
           }
+        },
+        {
+          title: 'Delay',
+          template: {
+            type: 'group',
+            displaySettings: {
+              type: 'delay',
+              subType: 'message'
+            },
+            elements: [
+              {
+                type: 'action',
+                body: {
+                  action: 'registerTimeout',
+                  delta: 300
+                }
+              },
+              {
+                type: 'checkpoint'
+              },
+              {
+                type: 'rule',
+                condition: {
+                  entity: 'time',
+                  field: 'delta',
+                  operand: 'eq',
+                  value: 300
+                },
+                onMatch: {
+                  action: 'fallthrough'
+                }
+              },
+            ]
+          }
         }
       ]
     }
@@ -55,12 +89,12 @@ export default {
 
   computed: {
     hasAvailableMessage() {
-      const { availableList, messages } = this;
+      const { availableList, messages, getActionElement } = this;
 
       if (!availableList) return true;
 
       return messages.some(message => {
-        return availableList.includes(message.template.body.action)
+        return availableList.includes(getActionElement(message).body.action)
       })
     }
   },
@@ -69,6 +103,13 @@ export default {
     selectAction(message) {
       this.$emit('on-select', JSON.parse(JSON.stringify(message.template)));
       this.isShow = false;
+    },
+    getActionElement(message) {
+      if (message.template.type === 'group') {
+        return message.template.elements.find(element => element.type === 'action')
+      } else {
+        return message.template
+      }
     }
   }
 }

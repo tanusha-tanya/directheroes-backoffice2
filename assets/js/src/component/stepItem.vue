@@ -56,7 +56,7 @@ export default {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
 
-      return ['sendText', 'sendMedia'].concat(messageTypes);
+      return ['sendText', 'sendMedia', 'delay'].concat(messageTypes);
     },
 
     isEntry() {
@@ -83,6 +83,12 @@ export default {
             ...element
           }
         ]
+      }
+
+      if (element.type === 'group') {
+        element.elements.forEach(element => {
+          element.id = (new ObjectId).toString()
+        })
       }
 
       elements.push({

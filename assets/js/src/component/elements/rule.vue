@@ -41,7 +41,7 @@ import elementWarning from '../elementWarning'
 export default {
   data() {
     return {
-      availableList: ['sendMedia', 'sendText', 'addCategory', 'removeCategory']
+      availableList: ['sendMedia', 'sendText', 'registerTimeout','addCategory', 'removeCategory']
     }
   },
 
@@ -109,6 +109,12 @@ export default {
             ...element
           }
         ]
+      }
+
+      if (element.type === 'group') {
+        element.elements.forEach(element => {
+          element.id = (new ObjectId).toString()
+        })
       }
 
       const matchElement = utils.getOnMatchElement(rule);
