@@ -26,6 +26,9 @@ export default {
           title: 'Text',
           template: {
             type: 'action',
+            displaySettings: {
+              subType: 'message'
+            },
             body: {
               action: 'sendText',
               text: ''
@@ -36,6 +39,9 @@ export default {
           title: 'Image',
           template: {
             type: 'action',
+            displaySettings: {
+              subType: 'message'
+            },
             body: {
               action: 'sendMedia',
             }

@@ -1,4 +1,13 @@
+const getOnMatchElement = (element) => {
+  const { type, condition, onMatch } = element;
+  const { value } = condition || {};
 
+  if (value === 'postReply' &&  onMatch.elements) {
+    return onMatch.elements[0];
+  } else if (['linker', 'rule'].includes(type)) {
+    return element;
+  }
+}
 
 export default {
   types: {
@@ -40,7 +49,6 @@ export default {
   },
 
   campaignElementValidate(element) {
-    const { onMatch } = element;
     let warning = null;
 
     switch(element.type) {
@@ -61,11 +69,9 @@ export default {
         }
         break;
       case 'rule':
-        const { value, entity, operand } = element.condition;
+        const matchElement = getOnMatchElement(element);
 
-        if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value) && !onMatch) {
-          warning = 'Element has no target step'
-        } else if (entity === 'message' && operand === 'contains' && !onMatch) {
+        if (!matchElement || !matchElement.onMatch) {
           warning = 'Element has no target step'
         }
         break;
@@ -135,5 +141,7 @@ export default {
         }
       });
     });
-  }
+  },
+
+  getOnMatchElement
 }

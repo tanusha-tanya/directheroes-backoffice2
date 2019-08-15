@@ -144,18 +144,14 @@ export default {
 
       this.currentCampaign.isArchived = true;
       this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
-      // this.$store.dispatch('deleteCampaign', this.currentCampaign)
-      //   .then(({ data }) => {
-      //     const { currentAccount } = this.$store.state;
-      //     const { campaignList } = currentAccount;
-
-      //     this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
-      //   })
     },
 
     addStep(element) {
       const step = {
         id: (new ObjectId).toString(),
+        displaySettings: {
+          isEntry: true
+        },
         elements: [
           {
             id: (new ObjectId).toString(),

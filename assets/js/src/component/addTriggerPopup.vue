@@ -65,6 +65,17 @@
               onFail: {
                 action: 'fallthrough',
               },
+              onMatch: {
+                action: 'chain',
+                elements: [{
+                  condition: {
+                    entity: 'post',
+                    field: 'id',
+                    operand: 'eq',
+                    value: ''
+                  }
+                }]
+              }
             },
           },
           {

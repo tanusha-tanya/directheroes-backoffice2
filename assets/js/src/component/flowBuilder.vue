@@ -23,7 +23,7 @@
     <div class="builder-area" ref="builderArea">
       <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
-          <div class="step-item empty-blank" v-if="typeof stepRowItem === 'string'" :key="rowItemIndex"></div>
+          <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
           <step-item
             v-else
             :class="{'entry-step': !rowIndex}"
@@ -46,6 +46,7 @@ import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
 import Vue from 'vue';
+import utils from '../utils'
 
 let zoomTimeout = null;
 
@@ -88,15 +89,10 @@ export default {
         }
 
         const linkElements = step.elements.filter(element => element.type === 'rule' || element.type === 'linker').map(element => {
-          let target = null;
+          const matchElement = utils.getOnMatchElement(element);
+          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
 
-          switch(element.type) {
-            case 'rule':
-              target = (element.onMatch && element.onMatch.target) || 'empty';
-            break;
-            case 'linker':
-              target = element.target;
-          }
+          if (!target) return null;
 
           arrows.push({parent: element.id, child: target});
 
@@ -148,8 +144,10 @@ export default {
       const { entryItem } = this;
       const firstElement = step.elements[0];
 
-      if (firstElement.type === 'action') {
+      if (firstElement.displaySettings && firstElement.displaySettings.subType === 'message') {
         step.name = 'New message'
+      } else if (firstElement.type === 'action') {
+        step.name = 'Action'
       } else if (firstElement.type === 'rule') {
         step.name = 'Trigger'
       }
@@ -161,16 +159,18 @@ export default {
       const { steps } = this.entryItem;
 
       steps.some(stepItem => stepItem.elements.some( (element, index) => {
-        if (element.type !== 'linker' && !element.onMatch) return;
+        const matchElement = utils.getOnMatchElement(element);
 
-        const target = element.target || element.onMatch.target;
+        if (matchElement && !matchElement.onMatch) return;
+
+        const { target } = matchElement.onMatch;
 
         if (target !== step.id) return;
 
         if (element.type == 'linker') {
           stepItem.elements.splice(index, 1)
         } else {
-           Vue.set(element, 'onMatch', undefined);
+          Vue.set(matchElement, 'onMatch', undefined);
         }
 
         return true;

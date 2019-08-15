@@ -7,17 +7,22 @@
         <template v-if="ruleType(element) == 'list'">
           <keywords v-model="element.condition.value"></keywords>
         </template>
-        <!-- <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
-          <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
+        <template v-else-if="ruleType(element) == 'postReply'">
+          <el-input
+            size="small"
+            placeholder="Please enter post URL"
+            v-model="element.onMatch.elements[0].condition.value"
+          >
+          </el-input>
         </template>
-        <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
-          <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
-        </template> -->
-        <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-step-popup>
+        <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!hasOnMatch(element)"></add-step-popup>
+        <div class="rule-delete-button" @click="deleteRule(element)" v-if="elements.length > 1 && !hasOnMatch(element)">
+          <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z" fill="currentColor" fill-rule="evenodd"/></svg>
+        </div>
       </div>
     </template>
     <div class="add-rule-button">
-      <add-trigger-popup @on-select="addTrigger">
+      <add-trigger-popup @on-select="addTrigger" :available-list="availableTriggerList">
         <span>+ Add rule item</span>
       </add-trigger-popup>
     </div>
@@ -26,6 +31,7 @@
 
 <script>
 import Vue from 'vue';
+import utils from '../../utils'
 import keywords from '../keywords';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
@@ -35,11 +41,11 @@ import elementWarning from '../elementWarning'
 export default {
   data() {
     return {
-      availableList: ['sendMedia', 'sendText']
+      availableList: ['sendMedia', 'sendText', 'addCategory', 'removeCategory']
     }
   },
 
-  props: ['elements'],
+  props: ['elements', 'isEntry'],
 
   components: {
     keywords,
@@ -59,9 +65,22 @@ export default {
         mediaShare: 'Media Share'
       }
     },
+
+    availableTriggerList() {
+      const { isEntry } = this;
+      const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
+
+      return messageTypes;
+    },
   },
 
   methods: {
+    hasOnMatch(element) {
+      const matchElement = utils.getOnMatchElement(element);
+
+      return matchElement && matchElement.onMatch;
+    },
+
     ruleType(element) {
       const { value, entity, operand } = element.condition;
 
@@ -92,12 +111,20 @@ export default {
         ]
       }
 
-      Vue.set(rule, 'onMatch', {
+      const matchElement = utils.getOnMatchElement(rule);
+
+      Vue.set(matchElement, 'onMatch', {
         action: 'goto',
         target: step.id
       });
 
       this.$emit('add-step', step);
+    },
+
+    deleteRule(element) {
+      const { elements } = this;
+
+      elements.splice(elements.indexOf(element), 1);
     }
   }
 }
@@ -145,12 +172,34 @@ export default {
         }
       }
     }
+
+    &:hover {
+      .rule-delete-button {
+        opacity: 1;
+      }
+    }
   }
 
   .add-rule-button {
     padding: 8px;
     text-align: center;
     color: #ccc;
+    cursor: pointer;
+  }
+
+  .rule-delete-button {
+    width: 10px;
+    height: 10px;
+    color: #b4b4b4;
+    position: absolute;
+    right: 7px;
+    top: 2px;
+    opacity: 0;
+    cursor: pointer;
+
+    &:hover {
+      color: #e74c49;
+    }
   }
 }
 </style>

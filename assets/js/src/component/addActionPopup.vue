@@ -22,25 +22,26 @@ export default {
     return {
       isShow: false,
       actions: [
-        // {
-        //   title: 'Text',
-        //   template: {
-        //     type: 'action',
-        //     body: {
-        //       action: 'sendText',
-        //       text: ''
-        //     }
-        //   }
-        // },
-        // {
-        //   title: 'Image',
-        //   template: {
-        //     type: 'action',
-        //     body: {
-        //       action: 'sendMedia',
-        //     }
-        //   }
-        // }
+        {
+          title: 'Add tag',
+          template: {
+            type: 'action',
+            body: {
+              action: 'addCategory',
+              name: []
+            }
+          }
+        },
+        {
+          title: 'Remove tag',
+          template: {
+            type: 'action',
+            body: {
+              action: 'removeCategory',
+              name: []
+            }
+          }
+        }
       ]
     }
   },
