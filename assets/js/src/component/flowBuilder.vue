@@ -30,6 +30,7 @@
             :step="stepRowItem"
             :flow-name="!rowIndex && entryItem.name"
             @add-step="addStep"
+            @delete-step="deleteStep"
             :key="rowItemIndex"
             :ref="stepRowItem.id"
             ></step-item>
@@ -44,6 +45,7 @@
 import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
+import Vue from 'vue';
 
 let zoomTimeout = null;
 
@@ -146,13 +148,35 @@ export default {
       const { entryItem } = this;
       const firstElement = step.elements[0];
 
-      if (firstElement === 'action') {
+      if (firstElement.type === 'action') {
         step.name = 'New message'
-      } else if (firstElement === 'rule') {
+      } else if (firstElement.type === 'rule') {
         step.name = 'Trigger'
       }
 
       entryItem.steps.push(step);
+    },
+
+    deleteStep(step) {
+      const { steps } = this.entryItem;
+
+      steps.some(stepItem => stepItem.elements.some( (element, index) => {
+        if (element.type !== 'linker' && !element.onMatch) return;
+
+        const target = element.target || element.onMatch.target;
+
+        if (target !== step.id) return;
+
+        if (element.type == 'linker') {
+          stepItem.elements.splice(index, 1)
+        } else {
+           Vue.set(element, 'onMatch', undefined);
+        }
+
+        return true;
+      }))
+
+      steps.splice(steps.indexOf(step), 1)
     },
 
     initZoom() {

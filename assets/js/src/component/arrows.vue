@@ -38,7 +38,7 @@ export default {
 
         switch(child.step.elements[0].type) {
           case 'action':
-            color = '#F4B109'
+            color = '#B2B2B2'
           break;
           case 'rule':
             color = '#5CA6A6'

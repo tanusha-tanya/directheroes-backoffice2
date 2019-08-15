@@ -1,30 +1,30 @@
 <template>
-    <el-popover popper-class="add-element-popup" placement="right" trigger="click" v-model="isShow">
-      <template slot="reference">
-        <slot></slot>
-      </template>
-      <div class="favorite-elements">
-        <div class="element-item" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
-          {{action.title}}
-        </div>
+  <el-popover popper-class="add-element-popup" placement="right" trigger="click" v-model="isShow">
+    <template slot="reference">
+      <slot></slot>
+    </template>
+    <div class="favorite-elements">
+      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(action.template.body.action)}" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
+        {{action.title}}
       </div>
-      <div class="types-of-elements">
-        <div class="type-of-element trigger-elements">
-          <add-triggers-popup @on-select="selectElement">
-            <span>Triggers</span>
-          </add-triggers-popup>
-        </div>
-        <div class="type-of-element action-elements">
-          <add-action-popup @on-select="selectElement" >
-            <span>Actions</span>
-          </add-action-popup>
-        </div>
+    </div>
+    <div class="types-of-elements">
+      <div class="type-of-element">
+        <add-trigger-popup :available-list="availableList" @on-select="selectElement" >
+          <span class="trigger-elements">Triggers</span>
+        </add-trigger-popup>
       </div>
-    </el-popover>
+      <div class="type-of-element">
+        <add-action-popup :available-list="availableList" @on-select="selectElement">
+          <span class="action-elements">Actions</span>
+        </add-action-popup>
+      </div>
+    </div>
+  </el-popover>
 </template>
 
 <script>
-import addTriggersPopup from './addTriggerPopup'
+import addTriggerPopup from './addTriggerPopup'
 import addActionPopup from './addActionPopup'
 
 export default {
@@ -56,13 +56,21 @@ export default {
   },
 
   components: {
-    addTriggersPopup,
+    addTriggerPopup,
     addActionPopup
+  },
+
+  computed: {
+    availableList() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+
+      return ['sendText', 'sendMedia'].concat(messageTypes)
+    }
   },
 
   methods: {
     selectElement(element) {
-      this.$emit('add-element', element);
+      this.$emit('add-element', JSON.parse(JSON.stringify(element)));
       this.isShow = false;
     }
   }

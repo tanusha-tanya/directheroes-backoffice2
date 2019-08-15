@@ -1,7 +1,12 @@
 <template>
 <div :class="[{'step-item': true}, `step-${ stepType }-type`]" @mousedown="blockEvent">
   <div class="step-item-header">
-    {{flowName || step.name || '&nbsp;'}}
+    <span>
+      {{flowName || step.name || '&nbsp;'}}
+    </span>
+    <div class="step-delete-button" v-if="!flowName && !hasChilds" @click="$emit('delete-step', step)">
+      <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
+    </div>
   </div>
   <component :is="stepType" :elements="step.elements" @add-step="$emit('add-step', $event)"></component>
 </div>
@@ -25,6 +30,12 @@ export default {
 
       return step.elements.length && step.elements[0].type
     },
+
+    hasChilds() {
+      const { elements } = this.step;
+
+      return elements.some(element => element.onMatch || element.type === 'linker')
+    }
   }
 }
 </script>
@@ -46,13 +57,29 @@ export default {
       font-size: 13px;
       color: #2D2D2D;
       border-radius: 5px 5px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
+    .step-delete-button {
+      color: #A9A9A9;
+      width: 13px;
+    }
+
+    // &.step-action-type {
+    //   .step-item-header {
+    //     color: #F4B109;
+    //     background-color: rgba(#F4B109, .25);
+    //     border: 1px solid #F4B109;
+    //   }
+    // }
 
     &.step-action-type {
       .step-item-header {
-        color: #F4B109;
-        background-color: rgba(#F4B109, .25);
-        border: 1px solid #F4B109;
+        color: #2D2D2D;
+        background-color: rgba(#E7E7E7, .25);
+        border: 1px solid #E7E7E7;
       }
     }
 
@@ -85,5 +112,18 @@ export default {
       }
     }
 
+    .add-step-button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+
+    .element-warning {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
 </style>

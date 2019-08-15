@@ -2,17 +2,18 @@
   <div class="rule-items">
     <template v-for="element in elements">
       <div class="rule-item" :key="element.id" :ref="element.id">
-        <div class="rule-item-title">{{ ruleTitles['list'] }}</div>
+        <element-warning :element="element"></element-warning>
+        <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
         <template v-if="ruleType(element) == 'list'">
           <keywords v-model="element.condition.value"></keywords>
         </template>
-        <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
+        <!-- <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
           <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
         </template>
         <template v-else-if="['adReply', 'storyReply'].includes(ruleType(element))">
           <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
-        </template>
-        <add-step-popup @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-step-popup>
+        </template> -->
+        <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-step-popup>
       </div>
     </template>
     <div class="add-rule-button">
@@ -29,15 +30,22 @@ import keywords from '../keywords';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
 import addStepPopup from '../addStepPopup';
+import elementWarning from '../elementWarning'
 
 export default {
+  data() {
+    return {
+      availableList: ['sendMedia', 'sendText']
+    }
+  },
 
   props: ['elements'],
 
   components: {
     keywords,
     addTriggerPopup,
-    addStepPopup
+    addStepPopup,
+    elementWarning
   },
 
   computed: {
@@ -48,7 +56,7 @@ export default {
         adReply: 'Ad Reply',
         storyReply: 'Story Reply',
         storyMention: 'Story Mention',
-        mediaShare: 'mediaShare'
+        mediaShare: 'Media Share'
       }
     },
   },
@@ -57,7 +65,7 @@ export default {
     ruleType(element) {
       const { value, entity, operand } = element.condition;
 
-      if (['postReply', 'adReply', 'storyReply'].includes(value)) {
+      if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value)) {
         return value;
       } else if (entity === 'message' && operand === 'contains') {
         return 'list'

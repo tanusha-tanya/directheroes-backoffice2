@@ -1,15 +1,18 @@
 <template>
-<el-popover popper-class="add-action-popup" placement="right" v-model="isShow" trigger="hover">
+<el-popover popper-class="add-action-popup" :disabled="!hasAvailableAction" placement="right" v-model="isShow" trigger="hover">
   <template slot="reference">
-    <slot></slot>
+    <span :class="{'add-disabled-popup': !hasAvailableAction}">
+      <slot></slot>
+    </span>
   </template>
-  <div
-    class="action-item"
-    v-for="action in actions"
-    :key="action.title"
-    @click="selectAction(action)">
-    {{action.title}}
-  </div>
+  <template v-for="action in actions">
+    <div
+      :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(action.template.body.action)}"
+      :key="action.title"
+      @click="selectAction(action)">
+      {{action.title}}
+    </div>
+  </template>
 </el-popover>
 </template>
 
@@ -19,32 +22,46 @@ export default {
     return {
       isShow: false,
       actions: [
-        {
-          title: 'Text',
-          template: {
-            type: 'action',
-            body: {
-              action: 'sendText',
-              text: ''
-            }
-          }
-        },
-        {
-          title: 'Image',
-          template: {
-            type: 'action',
-            body: {
-              action: 'sendImage',
-            }
-          }
-        }
+        // {
+        //   title: 'Text',
+        //   template: {
+        //     type: 'action',
+        //     body: {
+        //       action: 'sendText',
+        //       text: ''
+        //     }
+        //   }
+        // },
+        // {
+        //   title: 'Image',
+        //   template: {
+        //     type: 'action',
+        //     body: {
+        //       action: 'sendMedia',
+        //     }
+        //   }
+        // }
       ]
+    }
+  },
+
+  props: ['availableList'],
+
+  computed: {
+    hasAvailableAction() {
+      const { availableList, actions } = this;
+
+      if (!availableList) return true;
+
+      return actions.some(action => {
+        return availableList.includes(action.template.body.action)
+      })
     }
   },
 
   methods: {
     selectAction(action) {
-      this.$emit('on-select', action.template);
+      this.$emit('on-select', JSON.parse(JSON.stringify(action.template)));
       this.isShow = false;
     }
   }
@@ -62,6 +79,11 @@ export default {
 
     &:hover {
       background-color: #F8F8F8;
+    }
+
+    &.action-disabled {
+      opacity: .3;
+      pointer-events: none;
     }
   }
 }

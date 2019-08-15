@@ -40,50 +40,75 @@ export default {
   },
 
   campaignElementValidate(element) {
-    const { onMatch, emptyMoreOne } = element;
+    const { onMatch } = element;
     let warning = null;
 
-    switch(element.type || element.messageType) {
-      case 'sendImageAction':
-        if (!element.value) {
-          warning = 'Image not uploaded'
+    switch(element.type) {
+      case 'action':
+        const { action, text, mediaId } = element.body;
+
+        switch (action) {
+          case 'sendMedia':
+            if (!mediaId) {
+              warning = 'Image not uploaded'
+            }
+            break;
+          case 'sendText':
+            if (!text) {
+              warning = 'Enter text'
+            }
+            break;
         }
-      break;
-      case 'sendTextAction':
-        if (!element.value.text) {
-          warning = 'Enter text'
-        }
-      break;
-      case 'regular':
-        if (!element.elements.length) {
-          warning = 'Please add at least one element'
-        }
-      break;
-      case 'callWebhookAction':
-        if (!element.value.url) {
-          warning = 'Please enter hook url'
-        } else if (!element.value.status) {
-          warning = 'Please verify hook url'
-        } else if (element.value.status == 'fail') {
-          warning = 'Please enter correct hook url'
-        }
-      break;
-      case "any":
-        if (emptyMoreOne) {
-          warning = 'There can only be one empty element in a list'
-        } else if (!onMatch) {
-          warning = 'List element has no target step'
-        }
-      break;
-      case 'adReply':
-      case 'storyShare':
-      case 'storyMention':
-      case 'postShare':
-      case 'mediaShare':
-        if (!onMatch) {
+        break;
+      case 'rule':
+        const { value, entity, operand } = element.condition;
+
+        if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value) && !onMatch) {
+          warning = 'Element has no target step'
+        } else if (entity === 'message' && operand === 'contains' && !onMatch) {
           warning = 'Element has no target step'
         }
-      break;
+        break;
+      // case 'sendImageAction':
+      //   if (!element.value) {
+      //     warning = 'Image not uploaded'
+      //   }
+      // break;
+      // case 'sendTextAction':
+      //   if (!element.value.text) {
+      //     warning = 'Enter text'
+      //   }
+      // break;
+      // case 'regular':
+      //   if (!element.elements.length) {
+      //     warning = 'Please add at least one element'
+      //   }
+      // break;
+      // case 'callWebhookAction':
+      //   if (!element.value.url) {
+      //     warning = 'Please enter hook url'
+      //   } else if (!element.value.status) {
+      //     warning = 'Please verify hook url'
+      //   } else if (element.value.status == 'fail') {
+      //     warning = 'Please enter correct hook url'
+      //   }
+      // break;
+      // case "any":
+      //   if (emptyMoreOne) {
+      //     warning = 'There can only be one empty element in a list'
+      //   } else if (!onMatch) {
+      //     warning = 'List element has no target step'
+      //   }
+      // break;
+      // case 'adReply':
+      // case 'storyShare':
+      // case 'storyMention':
+      // case 'postShare':
+      // case 'mediaShare':
+      //   if (!onMatch) {
+      //     warning = 'Element has no target step'
+      //   }
+      // break;
     }
 
     return warning

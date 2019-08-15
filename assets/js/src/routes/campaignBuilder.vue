@@ -45,11 +45,11 @@
         </div>
         <div class="campaign-choose-buttons">
           <div class="campaign-choose-button">
-            <add-element-popup @add-element="addElement">
+            <add-step-popup @add-step="addStep" :available-list="availableElements">
               <span>New flow</span>
-            </add-element-popup>
+            </add-step-popup>
           </div>
-          <div class="campaign-choose-button">Clone flow</div>
+          <!-- <div class="campaign-choose-button">Clone flow</div> -->
         </div>
         <div class="campaign-choose-info">
           You can also create a block by double clicking on the canvas
@@ -71,7 +71,7 @@ import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
 import confirmDialog from '../component/confirmDialog.vue'
-import addElementPopup from '../component/addElementPopup.vue'
+import addStepPopup from '../component/addStepPopup.vue'
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -97,7 +97,7 @@ export default {
   components: {
     flowBuilder,
     confirmDialog,
-    addElementPopup
+    addStepPopup
   },
 
   computed:{
@@ -116,6 +116,12 @@ export default {
       if (!currentCampaign) return;
 
       return utils.hasCampaignWarning(currentCampaign);
+    },
+
+    availableElements() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
+
+      return messageTypes;
     }
   },
 
@@ -147,7 +153,7 @@ export default {
       //   })
     },
 
-    addElement(element) {
+    addStep(element) {
       const step = {
         id: (new ObjectId).toString(),
         elements: [
@@ -226,6 +232,7 @@ export default {
   flex-grow: 1;
   position: relative;
   background-color: #fafafa;
+  width: 100%;
 
   .campaign-builder-controls {
     display: flex;
@@ -417,5 +424,10 @@ export default {
       }
     }
   }
+}
+
+.add-disabled-popup {
+  opacity: .3;
+  pointer-events: none;
 }
 </style>

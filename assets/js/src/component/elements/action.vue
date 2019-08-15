@@ -1,7 +1,8 @@
 <template>
   <div class="action-items">
     <template v-for="action in elements">
-      <div :class="[{'action-item': true}, elementClass(action.body.action)]"  :key="action.id">
+      <div :class="[{'action-item': true}, elementClass(action.body.action)]" v-if="action.type !== 'linker'" :key="action.id">
+        <element-warning :element="action"></element-warning>
         <template v-if="action.body.action === 'sendText'">
           <el-input
             type="textarea"
@@ -37,32 +38,43 @@
         </div>
       </div>
     </template>
-    <div class="action-add-button">
+    <div class="action-add-button" v-if="!linker">
       <add-element-popup @add-element="addElement">
         <div class="action-add-event">
 
         </div>
       </add-element-popup>
     </div>
+    <linker :linker="linker" v-if="linker"></linker>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import Vue from 'vue';
-import addElementPopup from '../addElementPopup'
+import addElementPopup from '../addElementPopup';
+import linker from '../linker'
 import ObjectId from '../../utils/ObjectId';
+import elementWarning from '../elementWarning'
 
 export default {
   props: ['elements'],
 
   components: {
     addElementPopup,
+    elementWarning,
+    linker
   },
 
   computed: {
     dh() {
       return dh
+    },
+
+    linker() {
+      const { elements } = this;
+
+      return elements.find(element => element.type === 'linker');
     }
   },
 
@@ -70,10 +82,30 @@ export default {
     addElement(element) {
       const { elements } = this;
 
-      elements.push({
-        id: (new ObjectId).toString(),
-        ...element
-      })
+      if (element.type === 'action') {
+        elements.push({
+          id: (new ObjectId).toString(),
+          ...element
+        })
+      } else {
+        const step = {
+          id: (new ObjectId).toString(),
+          elements: [
+            {
+              id: (new ObjectId).toString(),
+              ...element
+            }
+          ]
+        }
+
+        elements.push({
+          id: (new ObjectId).toString(),
+          type: 'linker',
+          target: step.id
+        })
+
+        this.$emit('add-step', step);
+      }
     },
 
     uploadImage(event, element) {
@@ -128,6 +160,22 @@ export default {
     padding: 18px 18px 0;
     // border-bottom: 1px solid #D8D8D8;
     position: relative;
+
+    &.send-text-action {
+      .element-warning {
+        right: 24px;
+        top: 22px;
+        z-index: 5;
+      }
+    }
+
+    &.send-media-action {
+      .element-warning {
+        right: 24px;
+        top: 22px;
+        z-index: 5;
+      }
+    }
 
     .el-textarea {
       .el-textarea__inner {
