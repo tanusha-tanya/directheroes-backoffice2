@@ -70,7 +70,7 @@
                 elements: [{
                   condition: {
                     entity: 'post',
-                    field: 'id',
+                    field: 'url',
                     operand: 'eq',
                     value: ''
                   }
