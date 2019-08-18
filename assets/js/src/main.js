@@ -130,8 +130,6 @@ Vue.mixin({
 
   methods: {
     blockEvent(event) {
-      console.log(event);
-
       event.stopPropagation();
       return false;
     }

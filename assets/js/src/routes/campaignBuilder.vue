@@ -2,7 +2,7 @@
   <div class="campaign-builder">
     <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
-      <div class="campaign-warning" v-if="currentCampaign && hasWarning"><img src="../assets/triangle.svg">This flow is incomplete</div>
+      <div class="campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign" >
         Activate
         <template v-if="hasWarning">
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <flow-builder v-else :entry-item="currentCampaign" :has-warning="hasWarning"></flow-builder>
+    <flow-builder v-else :entry-item="currentCampaign" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
     <confirm-dialog
       v-model="isDeleteDialog"
       title="Delete campaign"
@@ -161,6 +161,13 @@ export default {
       }
 
       this.currentCampaign.steps.push(step);
+    },
+
+    findWarningStep() {
+      const { hasWarning } = this;
+      const { flowBuilder } = this.$refs;
+
+      flowBuilder.findEntryStep(hasWarning.id);
     }
   },
 
@@ -249,6 +256,7 @@ export default {
       margin-right: 10%;
       display: flex;
       align-items: center;
+      cursor: pointer;
 
       img {
         margin-right: 5px;

@@ -8,7 +8,7 @@
         :step=".1"
       >
       </el-slider>
-      <div class="go-to-position" @click="findEntryStep">
+      <div class="go-to-position" @click="findEntryStep()">
         <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
           <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
             c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
@@ -217,10 +217,10 @@ export default {
       zoomTool.smoothZoom(positionX, positionY, ration);
     },
 
-    findEntryStep() {
+    findEntryStep(stepId) {
       const { zoomTool, entryItem } = this;
       const { flowBuilder } = this.$refs;
-      const campaignCard = this.$refs[entryItem.steps[0].id][0];
+      const campaignCard = this.$refs[stepId || entryItem.steps[0].id][0];
       const campaignCardRect = campaignCard.$el.getBoundingClientRect();
       const flowBuilderRect = flowBuilder.getBoundingClientRect();
       const { x, y } = zoomTool.getTransform();
@@ -231,10 +231,6 @@ export default {
       zoomTool.moveTo(positionX, positionY)
     },
 
-    // findWarningStep(warningStep) {
-    //   console.log(warningStep);
-
-    // }
   },
 
   mounted() {
