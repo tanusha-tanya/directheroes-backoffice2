@@ -10,8 +10,11 @@
           <el-input
             type="textarea"
             placeholder="Please input"
-            :autosize="{ maxRows: 10}"
+            :autosize="{maxRows: 10}"
+            maxlength="1000"
             v-model="element.body.text"
+            show-word-limit
+            @scroll.native="scrollTest"
           >
           </el-input>
         </template>
@@ -156,6 +159,11 @@ export default {
       const { elements } = this;
 
       elements.splice(elements.indexOf(element), 1);
+    },
+
+    scrollTest(event) {
+      console.log(event);
+
     }
   }
 }
@@ -181,14 +189,20 @@ export default {
 
 
     .el-textarea {
+
       .el-textarea__inner {
         resize: none;
         border: none;
-        background-color: #F2F2F2;
+        background-color: #fff;
         border-radius: 7px;
 
         &:focus {
           border-color: transparent;
+          background-color: #F2F2F2;
+        }
+
+        &:hover {
+          background-color: #F2F2F2;
         }
       }
     }

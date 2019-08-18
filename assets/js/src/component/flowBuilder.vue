@@ -231,10 +231,10 @@ export default {
       zoomTool.moveTo(positionX, positionY)
     },
 
-    findWarningStep(warningStep) {
-      console.log(warningStep);
+    // findWarningStep(warningStep) {
+    //   console.log(warningStep);
 
-    }
+    // }
   },
 
   mounted() {

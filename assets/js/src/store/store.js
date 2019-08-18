@@ -43,6 +43,11 @@ export default new VueX.Store({
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
+        // if (process.env.NODE_ENV === 'development') {
+        //   console.log('IsDev');
+
+        // }
+
         // dhAccount.igAccountLimit = 2;
         // console.log(accountList);
         // accountList.forEach(account => {
