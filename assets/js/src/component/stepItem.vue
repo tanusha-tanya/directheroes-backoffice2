@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import elementsPermissions from '../elements/permissions'
 import action from './elements/action'
+import condition from './elements/condition'
 import rule from './elements/rule'
 import message from './elements/message'
 import utils from '../utils'
@@ -29,6 +31,7 @@ export default {
   components: {
     message,
     action,
+    condition,
     rule,
     addStepPopup
   },
@@ -56,7 +59,7 @@ export default {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
 
-      return ['sendText', 'sendMedia', 'delay'].concat(messageTypes);
+      return elementsPermissions.fromActionStep.concat(messageTypes);
     },
 
     isEntry() {
@@ -189,6 +192,14 @@ export default {
         color: #5CA6A6;
         background-color: rgba(#5CA6A6, .25);
         border: 1px solid #5CA6A6;
+      }
+    }
+
+    &.step-condition-type {
+      .step-item-header {
+        color:#FF9B71;
+        background-color: rgba(#FF9B71, .25);
+        border: 1px solid #FF9B71;
       }
     }
 

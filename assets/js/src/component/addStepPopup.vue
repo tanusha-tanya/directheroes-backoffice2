@@ -19,6 +19,11 @@
           <span class="action-elements">Actions</span>
         </add-action-popup>
       </div>
+      <div class="type-of-element">
+        <add-condition-popup :available-list="availableList" @on-select="selectElement">
+          <span class="condition-elements">Conditions</span>
+        </add-condition-popup>
+      </div>
     </div>
   </el-popover>
 </template>
@@ -27,6 +32,7 @@
 import addMessagePopup from './addMessagePopup';
 import addTriggerPopup from './addTriggerPopup';
 import addActionPopup from './addActionPopup';
+import addConditionPopup from './addConditionPopup';
 
 export default {
   data() {
@@ -40,7 +46,8 @@ export default {
   components: {
     addTriggerPopup,
     addActionPopup,
-    addMessagePopup
+    addMessagePopup,
+    addConditionPopup
   },
 
   methods: {
@@ -81,6 +88,12 @@ export default {
         .message-elements:hover {
           border-color: #6A12CB;
           color: #6A12CB;
+          background-color: #F8F8F8;
+        }
+
+        .condition-elements:hover {
+          border-color: #FF9B71;
+          color: #FF9B71;
           background-color: #F8F8F8;
         }
 

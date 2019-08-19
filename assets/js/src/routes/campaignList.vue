@@ -128,47 +128,6 @@ export default {
         isArchived: false,
         name: newCampaignName,
         steps: [
-          // {
-          //   id: (new ObjectId).toString(),
-          //   elements: [
-          //     // {
-          //     //   type: "rule",
-          //     //   condition: {
-          //     //     entity: "event",
-          //     //     field: "type",
-          //     //     operand: "eq",
-          //     //     value: "directMessage"
-          //     //   },
-          //     //   level: 0,
-          //     // },
-          //     {
-          //       id: (new ObjectId).toString(),
-          //       type: "rule",
-          //       condition: {
-          //         entity: "message",
-          //         field: "text",
-          //         operand: "contains",
-          //         value: []
-          //       },
-          //       level: 0,
-          //       onMatch: {
-          //         action: "goto",
-          //         target: connectStepId
-          //       }
-          //     }
-          //   ],
-          //   displaySettings: {
-          //     collapsed: false
-          //   }
-          // },
-          // {
-          //   id: connectStepId,
-          //   name: 'Step #1',
-          //   elements: [],
-          //   displaySettings: {
-          //     collapsed: false
-          //   }
-          // }
         ],
       }
 
@@ -178,17 +137,6 @@ export default {
       this.newCampaignName = '';
 
       this.$router.push({ name: 'accountCampaign', params: { campaignId: newCampaign.id, accountId: currentAccount.id } })
-      // this.$store.dispatch('createCampaign', {
-      //   name: this.newCampaignName
-      // }).then(({ data }) => {
-      //   const { campaign } = data;
-
-      //   this.isAddCampaign = false;
-      //   this.newCampaignName = '';
-
-      //   this.$router.push({ name: 'accountCampaign', params: { campaignId: campaign.id, accountId: currentAccount.id } })
-      // })
-
     },
 
     hasWarning(campaign) {

@@ -1,91 +1,17 @@
 <template>
   <div class="delay-action">
-    Delay <input-autosize v-model="timeValue" @input.native="checkTime" only-numbers></input-autosize>
-     <el-select v-model="timeType" size="mini">
-      <el-option label="Hours" value="hours"></el-option>
-      <el-option label="Minutes" value="minutes"></el-option>
-      <el-option label="Seconds" value="seconds"></el-option>
-    </el-select>
+    Delay <timeout :element="element"></timeout>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import utils from '../../utils';
-import inputAutosize from '../inputAutosize';
+import timeout from '../timeout'
 
 export default {
-  data() {
-    return {
-      timeValue: 1
-    }
-  },
-
   props: ['element'],
 
   components: {
-    inputAutosize
-  },
-
-  computed: {
-    seconds: {
-      get() {
-        const { element } = this;
-        const actionDelta = element.elements[0].body.delta;
-
-        return actionDelta
-      },
-      set(value) {
-        const { element } = this;
-        const actionElement = element.elements[0];
-        const ruleElement = element.elements[2];
-
-        actionElement.body.delta = value;
-        ruleElement.condition.value = value;
-      }
-    },
-
-    timeType: {
-      get() {
-        const { seconds } = this
-
-        return utils.secondsToTimeType(seconds)
-      },
-
-      set(value) {
-        this.seconds = 1 * utils.types[value];
-      }
-    },
-  },
-
-  methods: {
-    calculate() {
-      const { seconds } = this;
-      const { timeType } = this;
-
-      return utils.timeFromSeconds(seconds, timeType)
-    },
-
-    checkTime() {
-      this.timeValue = this.calculate();
-    }
-  },
-
-  created() {
-    this.timeValue = this.calculate();
-  },
-
-  watch: {
-    seconds() {
-      this.$nextTick(() => {
-        this.timeValue = this.calculate();
-      })
-    },
-    timeValue(value) {
-      const { timeType } = this;
-
-      this.seconds = Math.min(259200, value * utils.types[timeType]) || 1;
-    }
+    timeout
   }
 }
 </script>
@@ -103,28 +29,8 @@ export default {
     justify-content: center;
     align-items: center;
 
-    .input-autosize {
-      margin: 0 2px;
-    }
-
-    .el-select {
-      .el-input{
-        width: auto;
-      }
-
-      .el-input__inner {
-        font-family: sans-serif;
-        border: none;
-        background-color: transparent;
-        padding: 0;
-        width: 53px;
-        font-size: 12px;
-        color: #2c3e50;
-      }
-
-      .el-input__suffix {
-        display: none;
-      }
+    .timeout {
+      margin-left: 2px;
     }
   }
 </style>

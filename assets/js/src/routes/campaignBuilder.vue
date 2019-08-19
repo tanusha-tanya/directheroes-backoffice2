@@ -67,6 +67,7 @@
   </div>
 </template>
 <script>
+import elementsPermissions from '../elements/permissions'
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
@@ -120,7 +121,7 @@ export default {
     availableElements() {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
-      return messageTypes;
+      return elementsPermissions.fromFlow.concat(messageTypes);
     }
   },
 

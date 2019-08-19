@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import elementsPermissions from '../../elements/permissions'
 import Vue from 'vue';
 import utils from '../../utils'
 import keywords from '../keywords';
@@ -41,7 +42,7 @@ import elementWarning from '../elementWarning'
 export default {
   data() {
     return {
-      availableList: ['sendMedia', 'sendText', 'registerTimeout','addCategory', 'removeCategory']
+      availableList: elementsPermissions.fromTrigger
     }
   },
 
@@ -70,7 +71,7 @@ export default {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
 
-      return messageTypes;
+      return elementsPermissions.fromTriggerStep.concat(messageTypes);
     },
   },
 

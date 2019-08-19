@@ -36,12 +36,20 @@ export default {
         parent = parent[0] || parent;
         child = child[0] || child;
 
-        switch(child.step.elements[0].type) {
+        const firstElement = child.step.elements[0];
+
+        switch((firstElement.displaySettings && firstElement.displaySettings.subType) || firstElement.type) {
+          case 'message':
+            color = '#B2B2B2'
+          break;
           case 'action':
-            color = child.step.elements[0].body.name ? '#F4B109' : '#B2B2B2'
+            color = '#F4B109'
           break;
           case 'rule':
             color = '#5CA6A6'
+          break;
+          case 'condition':
+            color = '#FF9B71'
           break;
         }
 

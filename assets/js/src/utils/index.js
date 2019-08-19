@@ -1,8 +1,10 @@
 const getOnMatchElement = (element) => {
-  const { type, condition, onMatch } = element;
+  const { type, condition, onMatch, displaySettings } = element;
   const { value } = condition || {};
 
-  if (value === 'postReply' &&  onMatch.elements) {
+  if (type === 'group' && displaySettings && ['delay', 'timeout'].includes(displaySettings.type)) {
+    return element.elements[2]
+  } else if (value === 'postReply' &&  onMatch.elements) {
     return onMatch.elements[0];
   } else if (['linker', 'rule'].includes(type)) {
     return element;

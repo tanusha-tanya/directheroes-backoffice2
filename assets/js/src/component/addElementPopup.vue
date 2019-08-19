@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import elementsPermissions from '../elements/permissions'
 import messages from '../elements/messages';
 import addTriggerPopup from './addTriggerPopup'
 import addActionPopup from './addActionPopup'
@@ -45,7 +46,7 @@ export default {
     availableList() {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
 
-      return ['sendText', 'sendMedia'].concat(messageTypes)
+      return elementsPermissions.fromMessageStep.concat(messageTypes)
     }
   },
 

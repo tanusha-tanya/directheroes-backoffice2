@@ -7,7 +7,7 @@
   </template>
   <template v-for="message in messages">
     <div
-      :class="{'message-item':true, 'message-disabled': availableList && !availableList.includes(getActionElement(message).body.action)}"
+      :class="{'message-item':true, 'message-disabled': availableList && !availableList.includes(message.template.displaySettings.type || message.template.body.action)}"
       :key="message.title"
       @click="selectAction(message)">
       {{message.title}}
@@ -37,7 +37,7 @@ export default {
       if (!availableList) return true;
 
       return messages.some(message => {
-        return availableList.includes(getActionElement(message).body.action)
+        return availableList.includes(message.template.displaySettings.type || message.template.body.action)
       })
     }
   },
@@ -46,14 +46,6 @@ export default {
     selectAction(message) {
       this.$emit('on-select', JSON.parse(JSON.stringify(message.template)));
       this.isShow = false;
-    },
-
-    getActionElement(message) {
-      if (message.template.type === 'group') {
-        return message.template.elements.find(element => element.type === 'action')
-      } else {
-        return message.template
-      }
     }
   }
 }

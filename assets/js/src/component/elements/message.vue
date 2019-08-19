@@ -113,6 +113,12 @@ export default {
           ]
         }
 
+        if (element.type === 'group') {
+          element.elements.forEach(element => {
+            element.id = (new ObjectId).toString()
+          })
+        }
+
         elements.push({
           id: (new ObjectId).toString(),
           type: 'linker',

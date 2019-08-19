@@ -4,7 +4,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'condition'
+        subType: 'condition',
+        type: 'timeout'
       },
       elements: [
         {

@@ -88,15 +88,23 @@ export default {
           }))
         }
 
-        const linkElements = step.elements.filter(element => element.type === 'rule' || element.type === 'linker').map(element => {
+        const linkElements = [];
+
+        step.elements.filter(element => element.type === 'group' || element.type === 'rule' || element.type === 'linker').forEach(element => {
           const matchElement = utils.getOnMatchElement(element);
           const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
+          const failTarget = matchElement.onFail && matchElement.onFail.target
 
-          if (!target) return null;
+          linkElements.push(target || null);
 
-          arrows.push({parent: element.id, child: target});
+          if (matchElement !== 'linker' && failTarget) {
+            arrows.push({parent: `${element.id}-fail`, child: failTarget});
+            linkElements.push(failTarget)
+          }
 
-          return target;
+          if (target) {
+            arrows.push({parent: element.id, child: target});
+          }
         })
 
         if (!linkElements.length) return;
@@ -146,6 +154,8 @@ export default {
 
       if (firstElement.displaySettings && firstElement.displaySettings.subType === 'message') {
         step.name = 'New message'
+      } else if (firstElement.displaySettings && firstElement.displaySettings.subType === 'condition') {
+        step.name = 'Condition'
       } else if (firstElement.type === 'action') {
         step.name = 'Action'
       } else if (firstElement.type === 'rule') {
@@ -161,16 +171,17 @@ export default {
       steps.some(stepItem => stepItem.elements.some( (element, index) => {
         const matchElement = utils.getOnMatchElement(element);
 
-        if (matchElement && !matchElement.onMatch) return;
+        if (!matchElement) return;
 
-        const target = matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target));
+        const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
+        const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
 
-        if (target !== step.id) return;
+        if ((target !== step.id) && (failTarget !== step.id)) return;
 
         if (element.type == 'linker') {
           stepItem.elements.splice(index, 1)
         } else {
-          Vue.set(matchElement, 'onMatch', undefined);
+          Vue.set(matchElement, failTarget ? 'onFail' : 'onMatch', undefined);
         }
 
         return true;
