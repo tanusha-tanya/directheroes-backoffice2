@@ -17,32 +17,13 @@
 </template>
 
 <script>
+import actions from '../elements/actions';
+
 export default {
   data() {
     return {
       isShow: false,
-      actions: [
-        {
-          title: 'Add tag',
-          template: {
-            type: 'action',
-            body: {
-              action: 'addCategory',
-              name: []
-            }
-          }
-        },
-        {
-          title: 'Remove tag',
-          template: {
-            type: 'action',
-            body: {
-              action: 'removeCategory',
-              name: []
-            }
-          }
-        }
-      ]
+      actions,
     }
   },
 

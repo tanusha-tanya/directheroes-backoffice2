@@ -17,71 +17,14 @@
 </template>
 
 <script>
+import messages from '../elements/messages';
+import conditions from '../elements/conditions';
+
 export default {
   data() {
     return {
       isShow: false,
-      messages: [
-        {
-          title: 'Text',
-          template: {
-            type: 'action',
-            displaySettings: {
-              subType: 'message'
-            },
-            body: {
-              action: 'sendText',
-              text: ''
-            }
-          }
-        },
-        {
-          title: 'Image',
-          template: {
-            type: 'action',
-            displaySettings: {
-              subType: 'message'
-            },
-            body: {
-              action: 'sendMedia',
-            }
-          }
-        },
-        {
-          title: 'Delay',
-          template: {
-            type: 'group',
-            displaySettings: {
-              type: 'delay',
-              subType: 'message'
-            },
-            elements: [
-              {
-                type: 'action',
-                body: {
-                  action: 'registerTimeout',
-                  delta: 300
-                }
-              },
-              {
-                type: 'checkpoint'
-              },
-              {
-                type: 'rule',
-                condition: {
-                  entity: 'time',
-                  field: 'delta',
-                  operand: 'eq',
-                  value: 300
-                },
-                onMatch: {
-                  action: 'fallthrough'
-                }
-              },
-            ]
-          }
-        }
-      ]
+      messages
     }
   },
 
@@ -104,6 +47,7 @@ export default {
       this.$emit('on-select', JSON.parse(JSON.stringify(message.template)));
       this.isShow = false;
     },
+
     getActionElement(message) {
       if (message.template.type === 'group') {
         return message.template.elements.find(element => element.type === 'action')

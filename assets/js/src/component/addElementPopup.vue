@@ -4,7 +4,7 @@
       <slot></slot>
     </template>
     <div class="favorite-elements">
-      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(getActionElement(action).body.action)}" v-for="action in actions" :key="action.title" @click="selectElement(action.template)">
+      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(getActionElement(action).body.action)}" v-for="action in messages" :key="action.title" @click="selectElement(action.template)">
         {{action.title}}
       </div>
     </div>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import messages from '../elements/messages';
 import addTriggerPopup from './addTriggerPopup'
 import addActionPopup from './addActionPopup'
 
@@ -31,67 +32,7 @@ export default {
   data() {
     return {
       isShow: false,
-      actions: [
-        {
-          title: 'Text',
-          template: {
-            type: 'action',
-            displaySettings: {
-              subType: 'message'
-            },
-            body: {
-              action: 'sendText',
-              text: ''
-            }
-          }
-        },
-        {
-          title: 'Image',
-          template: {
-            type: 'action',
-            displaySettings: {
-              subType: 'message'
-            },
-            body: {
-              action: 'sendMedia',
-            }
-          }
-        },
-        {
-          title: 'Delay',
-          template: {
-            type: 'group',
-            displaySettings: {
-              type: 'delay',
-              subType: 'message'
-            },
-            elements: [
-              {
-                type: 'action',
-                body: {
-                  action: 'registerTimeout',
-                  delta: 300
-                }
-              },
-              {
-                type: 'checkpoint'
-              },
-              {
-                type: 'rule',
-                condition: {
-                  entity: 'time',
-                  field: 'delta',
-                  operand: 'eq',
-                  value: 300
-                },
-                onMatch: {
-                  action: 'fallthrough'
-                }
-              },
-            ]
-          }
-        }
-      ]
+      messages
     }
   },
 
