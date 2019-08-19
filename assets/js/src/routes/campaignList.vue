@@ -121,6 +121,7 @@ export default {
         id: (new ObjectId).toString(),
         igAccountId: currentAccount.id,
         createdAt: Date.now(),
+        type: 'regular',
         isEnabled: false,
         isActive: false,
         isIncomplete: true,
