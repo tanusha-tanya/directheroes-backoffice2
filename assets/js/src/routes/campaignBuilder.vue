@@ -153,13 +153,13 @@ export default {
         displaySettings: {
           isEntry: true
         },
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
+        elements: []
       }
+
+
+
+      step.elements.push
+
 
       this.currentCampaign.steps.push(step);
     },
