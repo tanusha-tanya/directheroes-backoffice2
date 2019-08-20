@@ -4,7 +4,7 @@ let timeout = conditions.find(condition => condition.title === 'Timeout');
 
 if (timeout) {
   timeout = JSON.parse(JSON.stringify(timeout));
-
+  timeout.template.elements.splice(1,0, { type: 'checkout' });
   timeout.template.elements[2].onMatch = { action: 'fallthrough' };
   timeout.template.displaySettings.type ='delay';
   timeout.template.displaySettings.subType ='message';

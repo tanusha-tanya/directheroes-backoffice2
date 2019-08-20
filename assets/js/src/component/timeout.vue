@@ -37,8 +37,8 @@ export default {
       },
       set(value) {
         const { element } = this;
-        const actionElement = element.elements[0];
-        const ruleElement = element.elements[2];
+        const actionElement = element.elements.find(element => element.type === 'action');
+        const ruleElement = element.find(element => element.type === 'rule');
 
         actionElement.body.delta = value;
         ruleElement.condition.value = value;
