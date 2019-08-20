@@ -43,7 +43,7 @@ export default {
 
     methods: {
       triggerType(element) {
-        const { value, entity, operand } = element.template.condition;
+        const { value, entity, operand } = element.template.elements.find(element => element.type === 'rule').condition;
 
         if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value)) {
           return value;

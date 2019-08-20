@@ -1,25 +1,14 @@
 <template>
   <div class="rule-items">
     <template v-for="element in elements">
-      <div class="rule-item" :key="element.id" :ref="element.id">
-        <element-warning :element="element"></element-warning>
-        <div class="rule-item-title">{{ ruleTitles[ruleType(element)] }}</div>
-        <template v-if="ruleType(element) == 'list'">
-          <keywords v-model="element.condition.value"></keywords>
-        </template>
-        <template v-else-if="ruleType(element) == 'postReply'">
-          <el-input
-            size="small"
-            placeholder="Please enter post URL"
-            v-model="element.onMatch.elements[0].condition.value"
-          >
-          </el-input>
-        </template>
-        <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!hasOnMatch(element)"></add-step-popup>
-        <div class="rule-delete-button" @click="deleteRule(element)" v-if="elements.length > 1 && !hasOnMatch(element)">
-          <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z" fill="currentColor" fill-rule="evenodd"/></svg>
-        </div>
-      </div>
+      <rule-item
+        :element="element"
+        is-entry="isEntry"
+        :key="element.id"
+        @delete-trigger="deleteRule"
+        @create-step="createStep(element, $event)"
+        :elements="elements"
+        ></rule-item>
     </template>
     <div class="add-rule-button">
       <add-trigger-popup @on-select="addTrigger" :available-list="availableTriggerList">
@@ -30,43 +19,23 @@
 </template>
 
 <script>
-import elementsPermissions from '../../elements/permissions'
+
 import Vue from 'vue';
 import utils from '../../utils'
-import keywords from '../keywords';
+import ruleItem from './ruleItem';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
-import addStepPopup from '../addStepPopup';
-import elementWarning from '../elementWarning'
+import elementsPermissions from '../../elements/permissions'
 
 export default {
-  data() {
-    return {
-      availableList: elementsPermissions.fromTrigger
-    }
-  },
-
   props: ['elements', 'isEntry'],
 
   components: {
-    keywords,
+    ruleItem,
     addTriggerPopup,
-    addStepPopup,
-    elementWarning
   },
 
   computed: {
-    ruleTitles() {
-      return {
-        list: 'Keywords',
-        postReply: 'Post Reply',
-        adReply: 'Ad Reply',
-        storyReply: 'Story Reply',
-        storyMention: 'Story Mention',
-        mediaShare: 'Media Share'
-      }
-    },
-
     availableTriggerList() {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
@@ -76,24 +45,17 @@ export default {
   },
 
   methods: {
-    hasOnMatch(element) {
-      const matchElement = utils.getOnMatchElement(element);
-
-      return matchElement && matchElement.onMatch;
-    },
-
-    ruleType(element) {
-      const { value, entity, operand } = element.condition;
-
-      if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value)) {
-        return value;
-      } else if (entity === 'message' && operand === 'contains') {
-        return 'list'
-      }
-    },
 
     addTrigger(element) {
-      const { elements } = this;
+      const { elements, isEntry } = this;
+
+      if (element.type === 'group' && element.displaySettings.type === 'trigger') {
+        if (isEntry) {
+          element = element.elements.find(element => element.type === 'rule');
+        } else {
+          element.elements.forEach(element => element.id = (new ObjectId).toString())
+        }
+      }
 
       elements.push({
         id: (new ObjectId).toString(),
@@ -116,6 +78,15 @@ export default {
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
+
+        console.log(rule, element);
+
+        if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
+          const checkpoint = rule.elements.find(element => element.type === 'checkpoint')
+          const elementRule = element.elements.find(element => element.type === 'rule')
+
+          elementRule.checkpointId = checkpoint.id
+        }
       }
 
       const matchElement = utils.getOnMatchElement(rule);

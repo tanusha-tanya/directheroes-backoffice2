@@ -23,7 +23,7 @@ export default {
     linkerType() {
       const { linkerChild } = this;
 
-      return linkerChild.elements[0].type
+      return (linkerChild.elements[0].type === 'group' && linkerChild.elements[0].displaySettings.subType) || linkerChild.elements[0].type
     },
 
     linkerName() {

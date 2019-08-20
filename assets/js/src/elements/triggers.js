@@ -1,27 +1,17 @@
 export default [
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
-      }
-    ]
-  },
-  {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Keywords',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Keywords',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -32,22 +22,23 @@ export default [
           onFail: {
             action: 'fallthrough',
           },
-        },
-      }
-    ]
+        }
+      ]
+    },
   },
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Media Share',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Media Share',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -58,22 +49,23 @@ export default [
           onFail: {
             action: 'fallthrough',
           },
-        },
-      }
-    ]
+        }
+      ]
+    },
   },
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Post Reply',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Post Reply',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -96,21 +88,22 @@ export default [
             }]
           }
         },
-      },
-    ]
+      ]
+    },
   },
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Story Reply',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Story Reply',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -121,22 +114,23 @@ export default [
           onFail: {
             action: 'fallthrough',
           },
-        },
-      }
-    ]
+        }
+      ]
+    },
   },
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Story Mention',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Story Mention',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -147,22 +141,23 @@ export default [
           onFail: {
             action: 'fallthrough',
           },
-        },
-      }
-    ]
+        }
+      ]
+    },
   },
   {
-    type: 'group',
-    displaySettings: {
-      type: 'trigger'
-    },
-    elements: [
-      {
-        type: 'checkpoint'
+    title: 'Ad Reply',
+    template: {
+      type: 'group',
+      displaySettings: {
+        type: 'trigger',
+        subType: 'rule'
       },
-      {
-        title: 'Ad Reply',
-        template: {
+      elements: [
+        {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -173,8 +168,8 @@ export default [
           onFail: {
             action: 'fallthrough',
           },
-        },
-      }
-    ]
+        }
+      ]
+    },
   },
 ]

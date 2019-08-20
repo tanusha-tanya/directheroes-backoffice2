@@ -1,14 +1,20 @@
 const getOnMatchElement = (element) => {
-  const { type, condition, onMatch, displaySettings } = element;
-  const { value } = condition || {};
+  const { type } = element;
+  let matchElement = element;
 
-  if (type === 'group' && displaySettings && ['delay', 'timeout'].includes(displaySettings.type)) {
-    return element.elements[2]
-  } else if (value === 'postReply' &&  onMatch.elements) {
-    return onMatch.elements[0];
-  } else if (['linker', 'rule'].includes(type)) {
-    return element;
+  if (!['group', 'linker', 'rule'].includes(type)) return;
+
+  if (type === 'group') {
+    matchElement = element.elements.find(element => element.type === 'rule');
   }
+
+  if (matchElement.condition && matchElement.condition.value === 'postReply' &&  matchElement.onMatch.elements) {
+    return matchElement.onMatch.elements[0];
+  } else if (['linker', 'rule'].includes(type)) {
+    return matchElement;
+  }
+
+  return matchElement;
 }
 
 export default {

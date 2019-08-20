@@ -156,10 +156,14 @@ export default {
         elements: []
       }
 
+      if (element.type === 'group' && element.displaySettings.type === 'trigger') {
+        element = element.elements.find(element => element.type === 'rule');
+      }
 
-
-      step.elements.push
-
+      step.elements.push( {
+        id: (new ObjectId).toString(),
+        ...element
+      })
 
       this.currentCampaign.steps.push(step);
     },

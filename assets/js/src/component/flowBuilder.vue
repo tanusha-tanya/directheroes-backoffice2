@@ -92,6 +92,7 @@ export default {
 
         step.elements.filter(element => element.type === 'group' || element.type === 'rule' || element.type === 'linker').forEach(element => {
           const matchElement = utils.getOnMatchElement(element);
+
           const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
           const failTarget = matchElement.onFail && matchElement.onFail.target
 
@@ -158,7 +159,7 @@ export default {
         step.name = 'Condition'
       } else if (firstElement.type === 'action') {
         step.name = 'Action'
-      } else if (firstElement.type === 'rule') {
+      } else if (firstElement.type === 'rule' || firstElement.displaySettings && firstElement.displaySettings.subType === 'rule') {
         step.name = 'Trigger'
       }
 

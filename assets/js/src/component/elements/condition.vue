@@ -67,11 +67,11 @@ export default {
     },
 
     hasOnMatch(element) {
-      return element.elements[2].onMatch
+      return element.elements.find(element => element.type === 'rule').onMatch
     },
 
     hasOnFail(element) {
-      return element.elements[2].onFail
+      return element.elements.find(element => element.type === 'rule').onFail
     },
 
     createStep(condition, element, onFail) {
@@ -91,7 +91,7 @@ export default {
         })
       }
 
-      const matchElement = condition.elements[2];
+      const matchElement = condition.elements.find(element => element.type === 'rule');
 
       Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
         action: 'goto',
