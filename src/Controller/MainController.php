@@ -22,6 +22,7 @@ class MainController extends Controller
         return $this->render('base.html.twig', [
             'apiUrl' => $apiUrl,
             'userName' => $username,
+            'easywebinarLink' => 'https://directheroes.easywebinar.live'
         ]);
     }
 }

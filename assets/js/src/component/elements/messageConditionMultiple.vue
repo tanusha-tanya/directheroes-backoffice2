@@ -60,7 +60,7 @@ export default {
     },
 
     emptyMoreOne() {
-      return this.anyItems.filter(item => !item.keywords.length).length > 1;
+      return this.anyItems.filter(item => item.keywords && !item.keywords.length).length > 1;
     },
 
     toDeleteTrigger: {

@@ -24,6 +24,9 @@
         <router-link class="side-bar-item" :to="{ name: 'book-help' }">
           <img :src="pdf"/><span class="side-bar-title">Documents</span>
         </router-link>
+        <router-link class="side-bar-item" :to="{ name: 'easywebinar-join' }">
+          <img :src="easywebinar"/><span class="side-bar-title">Join the Webinar!</span>
+        </router-link>
       </div>
       <div class="content-container" v-if="dhAccount">
         <router-view></router-view>
@@ -47,6 +50,7 @@ import socialBuffer from './assets/svg/social-buffer.svg'
 import youtube from './assets/svg/youtube.svg'
 import pdf from './assets/svg/pdf.svg'
 import broadcast from './assets/svg/broadcast.svg'
+import easywebinar from './assets/svg/youtube.svg'
 
 export default {
   name: 'app',
@@ -59,6 +63,7 @@ export default {
       youtube,
       broadcast,
       pdf,
+      easywebinar
     }
   },
 

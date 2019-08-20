@@ -17,10 +17,14 @@
           window.dh = {
             apiUrl: '{{ apiUrl }}',
             userName: '{{ userName }}',
+            easywebinarLink: '{{ easywebinarLink }}',
           }
         </script>
         {% block javascripts %}
             <script src="{{ asset('build/app.js') }}"></script>
+            <!-- Start of directheroes Zendesk Widget script -->
+            <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=39dd763c-01d2-4270-9360-87c5aebd90c3"> </script>
+            <!-- End of directheroes Zendesk Widget script -->
         {% endblock %}
     </body>
 </html>
