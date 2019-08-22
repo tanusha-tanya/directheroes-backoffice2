@@ -223,22 +223,22 @@ export default {
     },
 
     messagesInfo() {
-      const { sentMessages, remainingMessages } = this.broadcastStep.status;
+      const { sentMessages = 0, remainingMessages = 0 } = this.broadcastStep.status;
 
       return {
-        sentMessages: sentMessages || 0,
-        sentPercent: Math.floor(100 - (remainingMessages || 1) * 100 / (sentMessages || 1)),
-        remainingMessages: remainingMessages || 0
+        sentMessages: sentMessages,
+        sentPercent: Math.ceil(100 - remainingMessages * 100 / (sentMessages + remainingMessages)) || 0,
+        remainingMessages: remainingMessages
       };
     },
 
     conversationInfo() {
-      const { completedConversations, remainingConversations } = this.broadcastStep.status;
+      const { completedConversations = 0, remainingConversations = 0 } = this.broadcastStep.status;
 
       return {
-        completedConversations: completedConversations || 0,
-        completedPercent: Math.floor(100 - (remainingConversations || 1) * 100 / (completedConversations || 1)),
-        remainingConversations: remainingConversations || 0
+        completedConversations: completedConversations,
+        completedPercent: Math.ceil(100 - remainingConversations * 100 / (completedConversations + remainingConversations)) || 0,
+        remainingConversations: remainingConversations
       };
     },
 
