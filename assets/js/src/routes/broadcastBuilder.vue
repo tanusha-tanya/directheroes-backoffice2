@@ -237,7 +237,7 @@ export default {
 
       return {
         completedConversations: completedConversations,
-        completedPercent: Math.ceil(100 - remainingConversations * 100 / completedConversations) || 0,
+        completedPercent: Math.ceil(100 - remainingConversations * 100 / (completedConversations + remainingConversations)) || 0,
         remainingConversations: remainingConversations
       };
     },
