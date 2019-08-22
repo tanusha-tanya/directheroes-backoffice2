@@ -111,6 +111,7 @@
 <script>
 import triangle from '../assets/triangle.svg'
 import axios from 'axios';
+import sodium from 'libsodium-wrappers'
 
 export default {
   data() {
@@ -193,13 +194,25 @@ export default {
 
     actionAccount() {
       const { $store, accountAuth, account, selected2FAMethod } = this;
+      let publicKey = null;
+
+      Object.keys(sodium.base64_variants).some(variant => {
+        try {
+          publicKey = sodium.from_base64(this.dhAccount.publicKey, sodium.base64_variants[variant]);
+          return true;
+        } catch (error) {
+          return false
+        }
+      })
+
+      const cryptedPassword = sodium.to_base64(sodium.crypto_box_seal(account.password, publicKey), 1);
       let request;
 
       this.loading = true;
       this.error = null;
 
       if (accountAuth) {
-        accountAuth.password = account.password
+        accountAuth.password = cryptedPassword;
 
         if (accountAuth.twoFactor) {
           accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
@@ -207,7 +220,7 @@ export default {
 
         request = $store.dispatch('saveAccount', accountAuth)
       } else {
-        request = $store.dispatch('addAccount', account)
+        request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
       }
 
       request
