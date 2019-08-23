@@ -19,7 +19,7 @@
 import elementsPermissions from '../elements/permissions'
 import action from './elements/action'
 import condition from './elements/condition'
-import rule from './elements/rule'
+import trigger from './elements/trigger'
 import message from './elements/message'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
@@ -32,7 +32,7 @@ export default {
     message,
     action,
     condition,
-    rule,
+    trigger,
     addStepPopup
   },
 
@@ -40,8 +40,9 @@ export default {
     stepType() {
       const { step } = this;
       const firstElement = step.elements[0];
+      const { displaySettings } = firstElement;
 
-      return (firstElement.displaySettings && firstElement.displaySettings.subType) || firstElement.type
+      return (displaySettings && displaySettings.subType) || firstElement.type
     },
 
     hasChilds() {
@@ -187,7 +188,7 @@ export default {
       }
     }
 
-    &.step-rule-type {
+    &.step-trigger-type {
       .step-item-header {
         color: #5CA6A6;
         background-color: rgba(#5CA6A6, .25);

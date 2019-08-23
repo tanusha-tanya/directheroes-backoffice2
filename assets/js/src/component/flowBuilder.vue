@@ -151,16 +151,27 @@ export default {
   methods: {
     addStep(step) {
       const { entryItem } = this;
-      const firstElement = step.elements[0];
+      const firstElementSettings = step.elements[0].displaySettings;
 
-      if (firstElement.displaySettings && firstElement.displaySettings.subType === 'message') {
-        step.name = 'New message'
-      } else if (firstElement.displaySettings && firstElement.displaySettings.subType === 'condition') {
-        step.name = 'Condition'
-      } else if (firstElement.type === 'action') {
-        step.name = 'Action'
-      } else if (firstElement.type === 'rule' || firstElement.displaySettings && firstElement.displaySettings.subType === 'rule') {
-        step.name = 'Trigger'
+      switch (firstElementSettings.subType) {
+        case 'message':
+          step.name = 'New message'
+          break;
+        case 'condition':
+          step.name = 'Condition'
+          break;
+        case 'action':
+          step.name = 'Action'
+          break;
+        case 'trigger':
+          step.name = 'Trigger'
+          break;
+        case 'input':
+          step.name = 'User Input'
+          break;
+        case 'sub-input':
+          step.name = 'Collect'
+          break;
       }
 
       entryItem.steps.push(step);

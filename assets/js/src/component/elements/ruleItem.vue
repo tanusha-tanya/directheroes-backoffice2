@@ -43,8 +43,10 @@ import elementsPermissions from '../../elements/permissions'
 
 export default {
   data() {
+    const condition = this.isEntry ? [] : ['timeout'];
+
     return {
-      availableList: elementsPermissions.fromTrigger
+      availableList: condition.concat(elementsPermissions.fromTrigger),
     }
   },
 
@@ -64,8 +66,7 @@ export default {
     },
 
     ruleType() {
-      const matchElement = utils.getOnMatchElement(this.rule);
-      const { value, entity, operand } = matchElement.condition;
+      const { value, entity, operand } = this.rule.condition;
 
       if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value)) {
         return value;
@@ -86,13 +87,9 @@ export default {
     },
 
     rule() {
-      const { element } = this;
+      const { elements } = this.element;
 
-      if (element.type == 'group') {
-        return element.elements.find(element => element.type === 'rule')
-      }
-
-      return element
+      return elements.find(element => element.type === 'rule')
     },
   }
 };

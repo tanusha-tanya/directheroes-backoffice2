@@ -4,8 +4,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger',
       },
       elements: [
         {
@@ -31,8 +30,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger'
       },
       elements: [
         {
@@ -58,8 +56,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger'
       },
       elements: [
         {
@@ -96,8 +93,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger'
       },
       elements: [
         {
@@ -123,8 +119,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger'
       },
       elements: [
         {
@@ -150,8 +145,7 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        type: 'trigger',
-        subType: 'rule'
+        subType: 'trigger'
       },
       elements: [
         {

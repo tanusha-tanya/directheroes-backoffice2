@@ -1,6 +1,6 @@
 export default {
   fromFlow: [],
-  fromTrigger: ['sendMedia', 'sendText', 'delay', 'timeout', 'addCategory', 'removeCategory'],
+  fromTrigger: ['sendMedia', 'sendText', 'delay', 'addCategory', 'removeCategory'],
   fromTriggerStep: [],
   fromMessageStep: ['sendText', 'sendMedia', 'delay', 'timeout'],
   fromActionStep: ['sendText', 'sendMedia', 'delay'],

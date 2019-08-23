@@ -3,7 +3,7 @@
     <template v-for="element in elements">
       <rule-item
         :element="element"
-        is-entry="isEntry"
+        :is-entry="isEntry"
         :key="element.id"
         @delete-trigger="deleteRule"
         @create-step="createStep(element, $event)"
@@ -45,17 +45,17 @@ export default {
   },
 
   methods: {
-
     addTrigger(element) {
       const { elements, isEntry } = this;
 
-      if (element.type === 'group' && element.displaySettings.type === 'trigger') {
-        if (isEntry) {
-          element = element.elements.find(element => element.type === 'rule');
-        } else {
-          element.elements.forEach(element => element.id = (new ObjectId).toString())
-        }
+      if (isEntry) {
+        const { elements } = element;
+        const checkpoint = elements.find(element => element.type === 'checkpoint');
+
+        elements.splice(elements.indexOf(checkpoint), 1);
       }
+
+      element.elements.forEach(element => element.id = (new ObjectId).toString())
 
       elements.push({
         id: (new ObjectId).toString(),
@@ -79,7 +79,6 @@ export default {
           element.id = (new ObjectId).toString()
         })
 
-        console.log(rule, element);
 
         if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
           const checkpoint = rule.elements.find(element => element.type === 'checkpoint')

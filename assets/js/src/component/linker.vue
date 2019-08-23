@@ -22,15 +22,16 @@ export default {
 
     linkerType() {
       const { linkerChild } = this;
+      const firstElement = linkerChild.elements[0];
 
-      return (linkerChild.elements[0].type === 'group' && linkerChild.elements[0].displaySettings.subType) || linkerChild.elements[0].type
+      return (firstElement.type === 'group' && firstElement.displaySettings.subType) || firstElement.type
     },
 
     linkerName() {
       const { linkerType } = this;
 
       switch (linkerType) {
-        case 'rule':
+        case 'trigger':
           return 'Triggers'
         case 'action':
           return 'Action'
