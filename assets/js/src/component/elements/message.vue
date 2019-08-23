@@ -96,6 +96,14 @@ export default {
           element.elements.forEach(element => {
             element.id = (new ObjectId).toString()
           })
+
+          if (element.displaySettings.type === 'delay') {
+            const { elements } = element;
+            const checkpoint = elements.find(element => element.type === 'checkpoint');
+            const action = elements.find(element => element.type === 'action');
+
+            action.checkpointId = checkpoint.id;
+          }
         }
 
         elements.push({

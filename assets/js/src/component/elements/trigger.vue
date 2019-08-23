@@ -75,6 +75,7 @@ export default {
       }
 
       if (element.type === 'group') {
+        console.log('triger');
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
@@ -82,9 +83,9 @@ export default {
 
         if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
           const checkpoint = rule.elements.find(element => element.type === 'checkpoint')
-          const elementRule = element.elements.find(element => element.type === 'rule')
+          const actionElement = element.elements.find(element => element.type === 'action')
 
-          elementRule.checkpointId = checkpoint.id
+          actionElement.checkpointId = checkpoint.id
         }
       }
 

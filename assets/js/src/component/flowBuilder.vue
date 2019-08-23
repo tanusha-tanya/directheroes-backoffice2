@@ -151,11 +151,19 @@ export default {
   methods: {
     addStep(step) {
       const { entryItem } = this;
-      const firstElementSettings = step.elements[0].displaySettings;
+      const firstElementSettings = step.elements[0];
 
-      switch (firstElementSettings.subType) {
+      switch (firstElementSettings.displaySettings.subType) {
         case 'message':
           step.name = 'New message'
+
+          if (firstElementSettings.displaySettings.type === 'delay') {
+            const { elements } = firstElementSettings;
+            const checkpoint = elements.find(element => element.type === 'checkpoint');
+            const action = elements.find(element => element.type === 'action');
+
+            action.checkpointId = checkpoint.id;
+          }
           break;
         case 'condition':
           step.name = 'Condition'

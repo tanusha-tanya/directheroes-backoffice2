@@ -28,17 +28,26 @@ export default {
   },
 
   computed: {
+    actionElement() {
+      const { elements } = this.element;
+
+      return elements.find(element => element.type === 'action')
+    },
+
+    ruleElement() {
+      const { elements } = this.element;
+
+      return elements.find(element => element.type === 'rule')
+    },
+
     seconds: {
       get() {
-        const { element } = this;
-        const actionDelta = element.elements[0].body.delta;
+        const { actionElement } = this;
 
-        return actionDelta
+        return actionElement.body.delta
       },
       set(value) {
-        const { element } = this;
-        const actionElement = element.elements.find(element => element.type === 'action');
-        const ruleElement = element.find(element => element.type === 'rule');
+        const { actionElement, ruleElement } = this;
 
         actionElement.body.delta = value;
         ruleElement.condition.value = value;

@@ -27,9 +27,6 @@ export default {
     inputChange(event) {
       const value = this.isNumbers ? event.target.value.replace(/[^0-9]/g,'') : event.target.value;
 
-      console.log(this.isNumbers, event.target.value.replace(/[^0-9]/g,''));
-
-
       this.$emit('input', value);
     },
 
