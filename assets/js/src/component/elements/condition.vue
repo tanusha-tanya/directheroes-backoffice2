@@ -108,6 +108,7 @@ export default {
   .condition-items {
     background-color: #fff;
     border-radius: 0 0 5px 5px;
+    border: 1px solid #D8D8D8;
 
     .condition-timeout {
 

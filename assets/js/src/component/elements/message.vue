@@ -61,6 +61,7 @@ import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
 import delay from './delay';
 import linker from '../linker'
+import { userInputSubscriber } from '../../elements/userInput'
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
 
@@ -111,6 +112,7 @@ export default {
           ...element
         })
       } else {
+        let subStep = null;
         const step = {
           id: (new ObjectId).toString(),
           elements: [
@@ -125,6 +127,22 @@ export default {
           element.elements.forEach(element => {
             element.id = (new ObjectId).toString()
           })
+
+          if (displaySettings.subType === 'user-input') {
+            const rule = element.elements.find(element => element.type === 'rule');
+
+            subStep = {
+              id: (new ObjectId).toString(),
+              elements: [
+                {
+                  id: (new ObjectId).toString(),
+                  ...userInputSubscriber
+                }
+              ]
+            }
+
+            rule.onMatch = {action: 'goto', target: subStep.id}
+          }
         }
 
         elements.push({
@@ -134,6 +152,10 @@ export default {
         })
 
         this.$emit('add-step', step);
+
+        if (subStep) {
+          this.$emit('add-step', subStep);
+        }
       }
     },
 

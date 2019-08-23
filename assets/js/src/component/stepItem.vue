@@ -21,6 +21,7 @@ import action from './elements/action'
 import condition from './elements/condition'
 import trigger from './elements/trigger'
 import message from './elements/message'
+import userInput from './elements/userInput'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
 import addStepPopup from './addStepPopup';
@@ -33,7 +34,8 @@ export default {
     action,
     condition,
     trigger,
-    addStepPopup
+    addStepPopup,
+    userInput
   },
 
   computed: {
@@ -209,6 +211,14 @@ export default {
         color:#FF9B71;
         background-color: rgba(#FF9B71, .25);
         border: 1px solid #FF9B71;
+      }
+    }
+
+    &.step-user-input-type, &.step-sub-input-type {
+      .step-item-header {
+        color:#717FFF;
+        background-color: rgba(#717FFF, .25);
+        border: 1px solid #717FFF;
       }
     }
 

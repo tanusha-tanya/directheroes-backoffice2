@@ -174,7 +174,7 @@ export default {
         case 'trigger':
           step.name = 'Trigger'
           break;
-        case 'input':
+        case 'user-input':
           step.name = 'User Input'
           break;
         case 'sub-input':

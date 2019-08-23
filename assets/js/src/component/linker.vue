@@ -35,6 +35,8 @@ export default {
           return 'Triggers'
         case 'action':
           return 'Action'
+        case 'user-input':
+          return 'User Input'
       }
     },
   }
@@ -55,6 +57,12 @@ export default {
       background-color: rgba(#5CA6A6, .25);
       border: 1px solid #5CA6A6;
       border-radius: 7px;
+    }
+
+    .linker-user-input-type {
+      color: #717FFF;
+      background-color: rgba(#717FFF, .25);
+      border: 1px solid #717FFF;
     }
   }
 </style>

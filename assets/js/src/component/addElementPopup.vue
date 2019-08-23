@@ -4,8 +4,8 @@
       <slot></slot>
     </template>
     <div class="favorite-elements">
-      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(getActionElement(action).body.action)}" v-for="action in messages" :key="action.title" @click="selectElement(action.template)">
-        {{action.title}}
+      <div :class="{'element-item': true, 'element-disabled': !availableList.includes(getElementType(element))}" v-for="element in elements" :key="element.title" @click="selectElement(element.template)">
+        {{element.title}}
       </div>
     </div>
     <div class="types-of-elements">
@@ -26,14 +26,17 @@
 <script>
 import elementsPermissions from '../elements/permissions'
 import messages from '../elements/messages';
+import { userInput } from '../elements/userInput';
 import addTriggerPopup from './addTriggerPopup'
 import addActionPopup from './addActionPopup'
 
 export default {
   data() {
+    const elements = messages.concat([userInput]);
+
     return {
       isShow: false,
-      messages
+      elements
     }
   },
 
@@ -56,11 +59,13 @@ export default {
       this.isShow = false;
     },
 
-    getActionElement(message) {
-      if (message.template.type === 'group') {
-        return message.template.elements.find(element => element.type === 'action')
+    getElementType(element) {
+      const { template } = element;
+
+      if (template.type === 'group') {
+        return template.displaySettings.type || template.displaySettings.subType
       } else {
-        return message.template
+        return template.body.action
       }
     }
   }

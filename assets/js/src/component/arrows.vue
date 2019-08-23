@@ -45,11 +45,14 @@ export default {
           case 'action':
             color = '#F4B109'
           break;
-          case 'rule':
+          case 'trigger':
             color = '#5CA6A6'
           break;
           case 'condition':
             color = '#FF9B71'
+          break;
+          case 'user-input':
+            color = '#717FFF'
           break;
         }
 

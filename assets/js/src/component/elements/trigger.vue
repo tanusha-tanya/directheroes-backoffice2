@@ -75,7 +75,6 @@ export default {
       }
 
       if (element.type === 'group') {
-        console.log('triger');
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
@@ -111,6 +110,7 @@ export default {
 <style lang="scss">
 .rule-items {
   background-color: #fff;
+  border: 1px solid #D8D8D8;
   border-radius: 0 0 5px 5px;
 
   .rule-item {
