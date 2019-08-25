@@ -65,6 +65,23 @@
       <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
       <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
+      <div class="challenge-notices">
+        <div class="notice-item">
+          <strong>1.</strong><span>Please open the Instagram app and click "it was me" button; refresh your news feed couple times if you don't see this message</span>
+        </div>
+        <div class="notice-item">
+          <strong>2.</strong><span>Make sure you are following those requirements:</span>
+          <div class="notice-list-item">you are not using VPN on your computer</div>
+          <div class="notice-list-item">you have the Instagram account you are looking to connect in Instagram app on your phone</div>
+          <div class="notice-list-item">the IP address of your computer and your phone is the same, you can check it by visiting <a href="https://www.myip.com/">www.myip.com</a>  on both devices</div>
+        </div>
+        <div class="notice-item">
+          <strong>3.</strong><span>If any of above requirements is not met, then please correct it and try again</span>
+        </div>
+        <div class="notice-item">
+          <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
+        </div>
+      </div>
       <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
@@ -154,6 +171,12 @@ export default {
 
       return accountAuth && accountAuth.twoFactor
     },
+
+    challenge() {
+      const { accountAuth } = this;
+
+      return accountAuth && accountAuth.igChallenge
+    },
   },
 
   methods: {
@@ -163,7 +186,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = true || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -182,7 +205,7 @@ export default {
       } else if (!account.isPasswordValid) {
         return 'Your password seems to be invalid'
       } else if (account.igChallenge) {
-        return 'Please open Instagram application and click "It was me" if prompted, then try connecting account again'
+        return 'Instagram rejected the log in attempt'
       } else if (account.twoFactor && accountAuth.twoFactor.verificationCode) {
         delete account.twoFactor.verificationCode;
 
@@ -341,7 +364,6 @@ export default {
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;
-
     // &.dialog-fade-enter-active {
     //   animation: none;
     // }
@@ -352,6 +374,7 @@ export default {
 
     .el-dialog__header, .el-dialog__body {
       padding: 0;
+      word-break: break-word !important;
     }
 
     .el-dialog__title {
@@ -391,6 +414,23 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .challenge-notices {
+      margin-top: 10px;
+      color: #2c3e50;
+    }
+
+    .notice-item {
+      margin-bottom: 5px;
+      & > strong {
+        margin-right: 5px;
+      }
+
+      .notice-list-item:before {
+        content: '-';
+        margin-right: 3px;
+      }
     }
 
     .step-description {
