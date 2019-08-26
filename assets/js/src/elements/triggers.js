@@ -68,7 +68,7 @@ export default [
             entity: 'message',
             field: 'type',
             operand: 'eq',
-            value: 'postReply'
+            value: 'postShare'
           },
           onFail: {
             action: 'fallthrough',
@@ -105,7 +105,18 @@ export default [
             entity: 'message',
             field: 'type',
             operand: 'eq',
-            value: 'storyReply'
+            value: 'storyShare'
+          },
+          onMatch: {
+            action: 'chain',
+            elements: [{
+              condition: {
+                entity: 'post',
+                field: 'hashtag',
+                operand: 'eq',
+                value: ''
+              }
+            }]
           },
           onFail: {
             action: 'fallthrough',

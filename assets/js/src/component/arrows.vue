@@ -53,6 +53,8 @@ export default {
           break;
           case 'user-input':
             color = '#717FFF'
+          case 'sub-input':
+            color = '#717FFF'
           break;
         }
 

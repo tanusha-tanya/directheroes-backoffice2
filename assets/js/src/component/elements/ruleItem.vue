@@ -5,10 +5,17 @@
     <template v-if="ruleType == 'list'">
       <keywords v-model="rule.condition.value"></keywords>
     </template>
-    <template v-else-if="ruleType == 'postReply'">
+    <template v-else-if="ruleType == 'postShare'">
       <el-input
         size="small"
         placeholder="Please enter post URL"
+        v-model="rule.onMatch.elements[0].condition.value"
+      ></el-input>
+    </template>
+    <template v-else-if="ruleType == 'storyShare'">
+      <el-input
+        size="small"
+        placeholder="Please enter hashtags"
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>
@@ -68,7 +75,7 @@ export default {
     ruleType() {
       const { value, entity, operand } = this.rule.condition;
 
-      if (['postReply', 'adReply', 'storyReply', 'storyMention', 'mediaShare'].includes(value)) {
+      if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
         return value;
       } else if (entity === 'message' && operand === 'contains') {
         return 'list'
@@ -78,9 +85,9 @@ export default {
     ruleTitles() {
       return {
         list: 'Keywords',
-        postReply: 'Post Reply',
+        postShare: 'Post Reply',
         adReply: 'Ad Reply',
-        storyReply: 'Story Reply',
+        storyShare: 'Story Reply',
         storyMention: 'Story Mention',
         mediaShare: 'Media Share'
       }

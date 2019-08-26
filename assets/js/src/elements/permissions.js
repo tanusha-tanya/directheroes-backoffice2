@@ -5,5 +5,5 @@ export default {
   fromMessageStep: ['sendText', 'sendMedia', 'delay', 'timeout', 'user-input'],
   fromActionStep: ['sendText', 'sendMedia', 'delay'],
   fromCondition: ['sendText', 'sendMedia', 'delay'],
-  fromUserInputFails: [],
+  fromUserInputFails: ['sendText', 'sendMedia', 'delay'],
 }

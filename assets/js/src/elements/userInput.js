@@ -50,7 +50,8 @@ export let userInputZapier = {
     url: '',
     data: {
       entity: 'subscriber',
-      field: 'email'
+      field: 'email',
+      status: null
     }
   }
 }
