@@ -33,6 +33,7 @@
             @delete-step="deleteStep"
             :key="rowItemIndex"
             :ref="stepRowItem.id"
+            :steps="entryItem.steps"
             ></step-item>
         </template>
       </div>
@@ -187,6 +188,7 @@ export default {
 
     deleteStep(step) {
       const { steps } = this.entryItem;
+      const userInputElement = step.elements.find(element => element.displaySettings.subType == "user-input")
 
       steps.some(stepItem => stepItem.elements.some( (element, index) => {
         const matchElement = utils.getOnMatchElement(element);
@@ -206,6 +208,13 @@ export default {
 
         return true;
       }))
+
+      if (userInputElement) {
+        const matchElement = utils.getOnMatchElement(userInputElement);
+        const subStep = steps.find(step => step.id === matchElement.onMatch.target);
+
+        steps.splice(steps.indexOf(subStep), 1)
+      }
 
       steps.splice(steps.indexOf(step), 1)
     },
@@ -261,7 +270,6 @@ export default {
 
       zoomTool.moveTo(positionX, positionY)
     },
-
   },
 
   mounted() {
