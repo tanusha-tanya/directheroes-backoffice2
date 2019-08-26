@@ -8,7 +8,7 @@ const getOnMatchElement = (element) => {
     matchElement = element.elements.find(element => element.type === 'rule');
   }
 
-  if (matchElement.condition && ['postShare', 'storyShare'].includes(matchElement.condition.value) &&  matchElement.onMatch.elements) {
+  if (matchElement.condition && ['postShare', 'storyMention'].includes(matchElement.condition.value) &&  matchElement.onMatch.elements) {
     return matchElement.onMatch.elements[0];
   } else if (['linker', 'rule'].includes(type)) {
     return matchElement;

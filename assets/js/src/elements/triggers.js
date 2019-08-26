@@ -107,17 +107,6 @@ export default [
             operand: 'eq',
             value: 'storyShare'
           },
-          onMatch: {
-            action: 'chain',
-            elements: [{
-              condition: {
-                entity: 'post',
-                field: 'hashtag',
-                operand: 'eq',
-                value: ''
-              }
-            }]
-          },
           onFail: {
             action: 'fallthrough',
           },
@@ -143,6 +132,17 @@ export default [
             field: 'type',
             operand: 'eq',
             value: 'storyMention'
+          },
+          onMatch: {
+            action: 'chain',
+            elements: [{
+              condition: {
+                entity: 'post',
+                field: 'hashtag',
+                operand: 'eq',
+                value: ''
+              }
+            }]
           },
           onFail: {
             action: 'fallthrough',

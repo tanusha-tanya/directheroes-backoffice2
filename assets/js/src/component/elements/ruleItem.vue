@@ -12,7 +12,7 @@
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>
-    <template v-else-if="ruleType == 'storyShare'">
+    <template v-else-if="ruleType == 'storyMention'">
       <el-input
         size="small"
         placeholder="Please enter hashtags"
