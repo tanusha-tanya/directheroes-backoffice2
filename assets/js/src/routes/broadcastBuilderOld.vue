@@ -1,43 +1,25 @@
 <template>
-  <div class="broadcast-builder">
-    <div class="broadcast-builder-controls">
-      <span>Broadcast Builder</span>
-      <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
-      <div class="info" v-if="currentBroadcast && isComplete">
-        <div>Broadcast complete</div>
-      </div>
-      <div class="info" v-else-if="currentBroadcast && !hasWarning">
-        <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
-        <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
-        <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
-        <div class="start-message" v-if="isStarted">Broadcast was started</div>
-        <div v-if="!startAt">Click to set broadcast</div>
-      </div>
-      <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
-      <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
-        <img src="../assets/svg/gear.svg"/>
-      </div>
+<div class="broadcast-builder">
+  <div class="broadcast-builder-controls">
+    <span>Broadcast Builder</span>
+    <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
+    <div class="info" v-if="currentBroadcast && isComplete">
+      <div>Broadcast complete</div>
     </div>
-    <div class="broadcast-first-step" v-if="currentBroadcast && !currentBroadcast.steps.length">
-      <div class="broadcast-flow-choose">
-        <div class="broadcast-choose-info">
-          Create
-        </div>
-        <div class="broadcast-choose-buttons">
-          <div class="broadcast-choose-button">
-            <add-step-popup @add-step="addStep" :available-list="availableElements">
-              <span>New flow</span>
-            </add-step-popup>
-          </div>
-          <!-- <div class="campaign-choose-button">Clone flow</div> -->
-        </div>
-        <div class="broadcast-choose-info">
-          You can also create a block by double clicking on the canvas
-        </div>
-      </div>
+    <div class="info" v-else-if="currentBroadcast && !hasWarning">
+      <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
+      <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
+      <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
+      <div class="start-message" v-if="isStarted">Broadcast was started</div>
+      <div v-if="!startAt">Click to set broadcast</div>
     </div>
-    <flow-builder v-else :entry-item="currentBroadcast" :has-warning="hasWarning" :disabled="currentBroadcast && (isStarted || notStarted)" ref="flowBuilder"></flow-builder>
-    <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
+    <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
+    <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
+      <img src="../assets/svg/gear.svg"/>
+    </div>
+  </div>
+  <flow-builder entry-type="broadcastEntry" :current-entry-item="currentBroadcast" :has-warning="hasWarning" :disabled="currentBroadcast && (isStarted || notStarted)"></flow-builder>
+  <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
     <div class="broadcast-settings-area" @click.stop="">
       <div class="broadcast-settings-controls">
         Broadcast on:
@@ -56,7 +38,7 @@
       </div>
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
-          <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="currentBroadcast.settings.categoryList"></check-box-branch>
+          <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="broadcastStep.settings.categoryList"></check-box-branch>
           <!-- <el-checkbox
             v-for="subscriber in account.subscriberCategoryList"
             :key="subscriber.id"
@@ -94,23 +76,20 @@
       </div>
     </div>
   </div>
-  </div>
+</div>
 </template>
 <script>
-import elementsPermissions from '../elements/permissions'
-import ObjectId from '../utils/ObjectId'
-import utils from '../utils'
-import Vue from 'vue'
 import axios from 'axios'
 import flowBuilder from '../component/flowBuilder.vue'
-import addStepPopup from '../component/addStepPopup.vue'
 import checkBoxBranch from '../component/checkBoxBranch.vue'
 import moment from 'moment'
+import Vue from 'vue'
+import utils from '../utils'
 
 let countTimeout = null;
 
 export default {
-   beforeRouteEnter(to, from, next) {
+  beforeRouteEnter(to, from, next) {
     next(accountBroadcast => {
       accountBroadcast.setCurrentBroadcast(to);
     })
@@ -135,17 +114,16 @@ export default {
         disabledDate(time) {
           return time.getTime() < Date.now();
         }
-      },
+      }
     }
   },
 
   components: {
     flowBuilder,
-    checkBoxBranch,
-    addStepPopup
+    checkBoxBranch
   },
 
-  computed:{
+  computed: {
     account() {
       return this.$store.state.currentAccount;
     },
@@ -155,19 +133,23 @@ export default {
 
       if (!currentAccountData) return [];
 
-      return currentAccountData.campaigns.filter(campaign => campaign.type === "broadcast")
-      // return currentAccountData.campaigns.filter(campaign => campaign.type === "broadcast" && !campaign.isArchived)
+      return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "broadcastEntry" && !campaign.isArchived)
     },
 
+    broadcastStep() {
+      if (!this.currentBroadcast) return;
+
+      return this.currentBroadcast.steps.find(step => step.type = 'broadcastEntry')
+    },
 
     startAt: {
       get() {
-        const { startAt } = this.currentBroadcast.settings;
+        const { startAt } = this.broadcastStep.settings;
 
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
-        const { settings } = this.currentBroadcast;
+        const { settings } = this.broadcastStep;
 
         Vue.set(settings, 'startAt', moment(value).utc().format());
         settings.startTimeSetAt = moment().utc().format();
@@ -177,17 +159,17 @@ export default {
     },
 
     isComplete() {
-      const { currentBroadcast } = this
-      return currentBroadcast.status.statusText == 'completed'
+      const { broadcastStep } = this
+      return broadcastStep.status.statusText == 'completed'
     },
 
     isStarted() {
-      const { currentBroadcast } = this
-      return currentBroadcast.status.statusText == 'running'
+      const { broadcastStep } = this
+      return broadcastStep.status.statusText == 'running'
     },
 
     notStarted() {
-      const { isStarted, startAt, currentBroadcast } = this;
+      const { isStarted, startAt, broadcastStep } = this;
 
       return !isStarted && startAt && moment().diff(new Date(startAt), 'minutes') > 1
     },
@@ -249,7 +231,7 @@ export default {
     },
 
     messagesInfo() {
-      const { sentMessages = 0, remainingMessages = 0 } = this.currentBroadcast.status;
+      const { sentMessages = 0, remainingMessages = 0 } = this.broadcastStep.status;
 
       return {
         sentMessages: sentMessages,
@@ -259,7 +241,7 @@ export default {
     },
 
     conversationInfo() {
-      const { completedConversations = 0, remainingConversations = 0 } = this.currentBroadcast.status;
+      const { completedConversations = 0, remainingConversations = 0 } = this.broadcastStep.status;
 
       return {
         completedConversations: completedConversations,
@@ -269,7 +251,7 @@ export default {
     },
 
     estimatedTime() {
-      const { estimatedTime } = this.currentBroadcast.status;
+      const { estimatedTime } = this.broadcastStep.status;
       const date = new Date(null);
 
       if (!estimatedTime) return;
@@ -284,16 +266,12 @@ export default {
       }
 
       return  stringTime
-    },
-
-    availableElements() {
-      return elementsPermissions.fromBroadcastFlow
     }
   },
 
   methods: {
     getTotalSubscribers() {
-      const { categoryList } = this.currentBroadcast.settings;
+      const { categoryList } = this.broadcastStep.settings;
 
       if (!categoryList.length) {
         this.totalSubscribers = 0
@@ -319,25 +297,25 @@ export default {
     },
 
     setCurrentBroadcast(route) {
-      const { campaignId } = route.params;
+      const { broadcastId } = route.params;
       const { broadcasts } = this;
-      const currentBroadcast = broadcasts.find(broadcast => broadcast.id == campaignId);
+      const currentBroadcast = broadcasts.find(broadcast => broadcast.id == broadcastId);
 
       if (currentBroadcast) {
         this.currentBroadcast = currentBroadcast;
-        // this.updateBroadcastStatus();
+        this.updateBroadcastStatus();
       }
     },
 
     setNowDate() {
-      const { currentBroadcast } = this;
+      const { broadcastStep } = this;
 
-      // currentBroadcast.status.statusText = 'running'
+      // broadcastStep.status.statusText = 'running'
       this.startAt = moment().utc().format()
     },
 
     updateBroadcastStatus() {
-      const { isStarted, startAt, currentBroadcast, notStarted } = this;
+      const { isStarted, startAt, broadcastStep, notStarted } = this;
       const diff = moment(new Date(startAt)).diff();
       let timeout = 60 * 1000;
 
@@ -362,36 +340,6 @@ export default {
 
       this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
     },
-
-    addStep(element) {
-      const step = {
-        id: (new ObjectId).toString(),
-        displaySettings: {
-          isEntry: true
-        },
-        elements: []
-      }
-
-      if (element.type === 'group') {
-        const { elements } = element;
-
-        elements.forEach(element => element.id = (new ObjectId).toString())
-      }
-
-      step.elements.push( {
-        id: (new ObjectId).toString(),
-        ...element
-      })
-
-      this.currentBroadcast.steps.push(step);
-    },
-
-    findWarningStep() {
-      const { hasWarning } = this;
-      const { flowBuilder } = this.$refs;
-
-      flowBuilder.findEntryStep(hasWarning.id);
-    }
   },
 
   watch:{
@@ -401,7 +349,7 @@ export default {
       this.setCurrentBroadcast(this.$route);
     },
 
-    'currentBroadcast.settings.categoryList'() {
+    'broadcastStep.settings.categoryList'() {
       this.inGetCount = true;
 
       clearTimeout(countTimeout);
@@ -417,8 +365,6 @@ export default {
 .broadcast-builder {
   flex-grow: 1;
   position: relative;
-  background-color: #fafafa;
-  width: 100%;
 
   .broadcast-esimating {
     animation: blink 1.5s linear infinite;
@@ -432,9 +378,7 @@ export default {
   .broadcast-settings {
     position: absolute;
     top: 50px;
-    bottom: 0;
-    left: 0;
-    right: 0;
+
     background-color: rgba(196, 196, 196, 0.7);
     z-index: 10;
   }
@@ -443,31 +387,30 @@ export default {
     background-color: #fff;
     border-radius: 0 0 10px 10px;
     margin: 0 10px;
-
-    .broadcast-settings-controls {
-      background-color: #F9F9F9;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #DBDBDB;
-      border-top: 1px solid #DBDBDB;
-
-      button {
-        margin: 0 5px;
-        background-color: #FFFFFF;
-        border: 1px solid #B0B0B0;
-        border-radius: 30px;
-        color: #919191;
-        padding: 0 26px;
-        font-size: 13px;
-        font-weight: normal;
-      }
-
-    }
   }
 
   .broadcast-additional-info {
     padding: 10px;
+  }
+
+  .broadcast-settings-controls {
+    background-color: #F9F9F9;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #DBDBDB;
+    border-top: 1px solid #DBDBDB;
+
+    button {
+      margin: 0 5px;
+      background-color: #FFFFFF;
+      border: 1px solid #B0B0B0;
+      border-radius: 30px;
+      color: #919191;
+      padding: 0 26px;
+      font-size: 13px;
+      font-weight: normal;
+    }
   }
 
   .broadcast-settings-info {
@@ -551,9 +494,9 @@ export default {
     display: flex;
     padding: 8px 5px 7px 13px;
     align-items: center;
+    justify-content: space-between;
     background-color: #fff;
     color: #A9A9A9;
-    box-shadow: 0 2px 14px rgba(0,0,0,.1);
 
     span {
       font-size: 24px;
@@ -599,7 +542,7 @@ export default {
     }
 
     .broadcast-builder-control {
-      font-size: 18px;;
+      font-size: 18px;
 
       &.gear {
         padding: 8px;
@@ -612,53 +555,8 @@ export default {
     }
   }
 
-  .broadcast-first-step {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: calc(100% - 50px);
-
-    .broadcast-choose-buttons {
-      background-color: #fff;
-      border: 1px dashed #979797;
-      padding: 0 10px;
-      border-radius: 5px;
-    }
-
-    .broadcast-choose-button {
-      padding: 20px 90px;
-      font-weight: bold;
-      color: #979797;
-      cursor: pointer;
-      text-align: center;
-
-      &:hover {
-        color: #6A12CB;;
-      }
-
-      &:not(:last-child) {
-        border-bottom: 1px dashed #979797;
-      }
-    }
-
-    .broadcast-choose-info {
-      color: #979797;
-      font-size: 11px;
-      line-height: 25px;
-
-      &.small {
-        font-size: 9px;
-      }
-    }
-  }
-
   .flow-builder {
     height: calc(100% - 50px);
   }
-}
-
-.add-disabled-popup {
-  opacity: .3;
-  pointer-events: none;
 }
 </style>

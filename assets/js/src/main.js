@@ -76,7 +76,7 @@ const router = new VueRouter({
         { name: 'accountCampaignList', path: 'campaigns', component: campaignList },
         { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
         { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
-        { name: 'accountBroadcast', path: 'broadcasts/:broadcastId', component: broadcastBuilder },
+        { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: broadcastBuilder },
         { name: 'audience', path: 'audience', component: accountThread },
         { name: 'accountThreadMessages', path: 'messages/:threadId/:subscribed?', component: accountThreadMessages },
         { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },

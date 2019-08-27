@@ -7,4 +7,5 @@ export default {
   fromCondition: ['sendText', 'sendMedia', 'delay'],
   fromUserInputFails: ['sendText', 'sendMedia', 'delay'],
   fromUserInput: ['sendText', 'sendMedia', 'delay'],
+  fromBroadcastFlow: ['sendText', 'sendMedia'],
 }
