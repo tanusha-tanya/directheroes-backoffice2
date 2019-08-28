@@ -1,7 +1,7 @@
 <template>
   <div class="user-sub-input">
     <div class="user-sub-input-select" :ref="linker && linker.id">
-      <el-select :value="element.body.action" @change="changeAction">
+      <el-select :value="element.body.action" @change="changeAction" size="small" popper-class="user-sub-input-dropdown">
         <el-option value="collect" label="Store Email"></el-option>
         <el-option value="webhook" label="Connect to Zapier"></el-option>
       </el-select>
@@ -12,9 +12,12 @@
       ></add-step-popup>
     </div>
     <div class="user-webhook-action" v-if="element.body.action === 'webhook'">
-      <input placeholder="Please enter hook URL" v-model="element.body.url" @input="clearStatuses">
-      <div :class="[{'status-message': true}, element.body.data.status]">{{statusText || 'Send URL to validation'}}</div>
-      <button :class="{ loading }" :disabled="loading || !element.body.url.length" @click="testHookUrl">Send test</button>
+      <div class="user-webhook-title">
+        Please enter hook URL
+      </div>
+      <input v-model="element.body.url" @input="clearStatuses">
+      <div :class="[{'status-message': true}, element.body.data.status]" v-if="statusText">{{statusText}}</div>
+      <button :class="{ loading }" :disabled="loading || !element.body.url.length" @click="testHookUrl" v-else>Send test</button>
     </div>
   </div>
 </template>
@@ -58,7 +61,7 @@ export default {
       const { element, error } = this;
       const { status } = element.body.data;
 
-      return error || (status == 'fail' && 'Validation URL error' ) || (status == 'success' && 'Validation URL is Ok' ) || null
+      return error || (status == 'fail' && 'Invalid' ) || (status == 'success' && 'Validated' ) || null
     },
 
     availableList() {
@@ -155,24 +158,48 @@ export default {
     border: 1px solid #D8D8D8;
 
     .user-sub-input-select {
-      padding: 10px;
+      padding: 10px 20px 10px 10px;
       position: relative;
+
+      .el-select {
+        width: 100%;
+
+        .el-select__caret {
+          color: #2D2D2D;
+        }
+
+        .el-input__inner {
+          background-color: #ECECEC;
+          color: #2D2D2D;
+          border-color: #717FFF
+        }
+      }
     }
 
     .user-webhook-action {
       padding: 9px 20px 13px;
-      text-align: center;
+
+      .user-webhook-title {
+        color: #828282;
+        margin-bottom: 3px;
+      }
 
       input {
         width: 100%;
+        height: 27px;
+        font: 11px/27px 'Lato';
+        padding: 0 10px;
       }
 
       button {
-        margin-top: 10px;
+        margin-top: 7px;
+        width: 100%;
+        background-color: #51C99E;
+        border-radius: 3px;
       }
 
       .status-message {
-        margin-top: 10px;
+        margin-top: 5px;
         color: #A9A9A9;
 
         &.fail {
@@ -214,6 +241,33 @@ export default {
         &:after, &:before {
           background-color: #6A12CB;
         }
+      }
+    }
+  }
+
+  .user-sub-input-dropdown {
+    border: 1px solid #717FFF;
+    margin-top: -32px !important;
+    overflow: hidden;
+
+    .popper__arrow {
+      display: none;
+    }
+
+    .el-scrollbar__view {
+      padding: 0;
+    }
+
+    .el-select-dropdown__item, .el-select-dropdown__item.selected {
+      font-size: 13px;
+      line-height: 26px;
+      color: #2D2D2D;
+      padding-top: 4px;
+      font-weight: normal;
+      background-color: #FFF;
+
+      &:hover {
+        background-color: #ECECEC;
       }
     }
   }

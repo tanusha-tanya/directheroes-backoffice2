@@ -51,18 +51,41 @@ export default {
     justify-content: flex-end;
 
     .linker-item {
-      padding: 8px 8px 8px 14px;
+      padding: 5px 8px 6px 14px;
       margin-left: auto;
+      display: flex;
+      align-items: center;
+      border-radius: 7px;
+
+      &:after {
+        content: '';
+        width: 14px;
+        height: 14px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin-left: 5px;
+      }
+    }
+
+    .linker-trigger-type {
       color: #5CA6A6;
       background-color: rgba(#5CA6A6, .25);
       border: 1px solid #5CA6A6;
-      border-radius: 7px;
+
+      &:after {
+        background-image: url(../assets/v5/triggers.png);
+      }
     }
 
     .linker-user-input-type {
       color: #717FFF;
       background-color: rgba(#717FFF, .25);
       border: 1px solid #717FFF;
+
+      &:after {
+        background-image: url(../assets/svgV5/userInput.svg);
+      }
     }
   }
 </style>

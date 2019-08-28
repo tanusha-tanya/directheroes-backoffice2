@@ -317,6 +317,7 @@ export default {
   height: 100%;
   overflow: hidden;
   outline: none;
+  font-family: 'Lato';
 
   .builder-area {
     display: flex;
@@ -325,6 +326,12 @@ export default {
     position: relative;
     width: 5000px;
     height: 5000px;
+  }
+
+  input {
+    border-radius: 3px;
+    border-color: #D8D8D8;
+    outline: navy;
   }
 
   .steps-row {

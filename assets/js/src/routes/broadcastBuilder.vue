@@ -657,7 +657,7 @@ export default {
   }
 }
 
-.add-disabled-popup {
+.add-disabled-popup > * {
   opacity: .3;
   pointer-events: none;
 }

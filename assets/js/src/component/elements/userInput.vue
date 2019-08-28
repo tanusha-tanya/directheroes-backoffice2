@@ -1,7 +1,7 @@
 <template>
   <div class="user-input-items">
     <div class="user-input-select">
-      <el-select v-model="inputElement.condition.value">
+      <el-select v-model="inputElement.condition.value" size="small" popper-class="user-input-dropdown">
         <el-option v-for="inputType in inputList" :key="inputType.value" :value="inputType.value" :label="inputType.title"></el-option>
       </el-select>
     </div>
@@ -102,6 +102,16 @@ export default {
 
     .el-select {
       width: 100%;
+
+      .el-select__caret {
+        color: #717FFF;
+      }
+
+      .el-input__inner {
+        background-color: #DBDFFF;
+        color: #717FFF;
+        border-color: #717FFF
+      }
     }
 
     .user-input-matches {
@@ -147,6 +157,33 @@ export default {
         &:after, &:before {
           background-color: #6A12CB;
         }
+      }
+    }
+  }
+
+  .user-input-dropdown {
+    border: 1px solid #717FFF;
+    margin-top: -32px !important;
+    overflow: hidden;
+
+    .popper__arrow {
+      display: none;
+    }
+
+    .el-scrollbar__view {
+      padding: 0;
+    }
+
+    .el-select-dropdown__item, .el-select-dropdown__item.selected {
+      font-size: 13px;
+      line-height: 26px;
+      color: #2D2D2D;
+      padding-top: 4px;
+      font-weight: normal;
+      background-color: #FFF;
+
+      &:hover {
+        background-color: #ECECEC;
       }
     }
   }

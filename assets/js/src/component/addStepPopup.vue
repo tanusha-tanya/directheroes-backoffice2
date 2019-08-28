@@ -69,32 +69,67 @@ export default {
         color: #828282;
         cursor: pointer;
 
+        .el-popover__reference span:before {
+          content: '';
+          display: inline-block;
+          width: 25px;
+          height: 25px;
+          background-position: center;
+          background-size: contain;
+          background-repeat: no-repeat;
+          margin-right: 9px;
+        }
+
         &:not(:last-child) {
           margin-bottom: 4px;
         }
 
-        .trigger-elements:hover {
-          border-color: #7EC6C6;
-          color: #7EC6C6;
-          background-color: #F8F8F8;
+        .trigger-elements{
+          &:before {
+            background-image: url(../assets/v5/triggers.png);
+            background-size: 80% auto !important;
+          }
+
+          &:hover {
+            border-color: #7EC6C6;
+            color: #7EC6C6;
+            background-color: #F8F8F8;
+          }
+        }
+        .action-elements{
+          &:before {
+            background-image: url(../assets/v5/actions.png);
+          }
+
+          &:hover {
+            border-color: #F4B109;
+            color: #F4B109;
+            background-color: #F8F8F8;
+          }
         }
 
-        .action-elements:hover {
-          border-color: #F4B109;
-          color: #F4B109;
-          background-color: #F8F8F8;
+        .message-elements {
+          &:before {
+            background-image: url(../assets/v5/messages.png);
+          }
+
+          &:hover {
+            border-color: #6A12CB;
+            color: #6A12CB;
+            background-color: #F8F8F8;
+          }
         }
 
-        .message-elements:hover {
-          border-color: #6A12CB;
-          color: #6A12CB;
-          background-color: #F8F8F8;
-        }
+        .condition-elements{
+          &:before {
+            background-image: url(../assets/v5/conditions.png);
+          }
 
-        .condition-elements:hover {
-          border-color: #FF9B71;
-          color: #FF9B71;
-          background-color: #F8F8F8;
+          &:hover {
+            border-color: #FF9B71;
+            color: #FF9B71;
+            background-color: #F8F8F8;
+          }
         }
 
         .el-popover__reference {
@@ -103,8 +138,9 @@ export default {
 
           & > span {
             border-radius: 5px;
-            display: block;
-            padding: 11px;
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
             border: 1px solid #D8D8D8;
           }
         }

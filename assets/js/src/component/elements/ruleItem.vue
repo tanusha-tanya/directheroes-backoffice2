@@ -8,7 +8,7 @@
     <template v-else-if="ruleType == 'postShare'">
       <el-input
         size="small"
-        placeholder="Please enter post URL"
+        placeholder="Leave empty to target any URL"
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>

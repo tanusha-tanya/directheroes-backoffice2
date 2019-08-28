@@ -23,7 +23,7 @@ export default {
 <style lang="scss">
 .element-warning {
   flex-shrink: 0;
-  width: 20px
+  width: 14px
 }
 </style>
 

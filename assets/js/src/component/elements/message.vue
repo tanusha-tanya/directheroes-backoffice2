@@ -11,12 +11,11 @@
             type="textarea"
             placeholder="Please input"
             :autosize="{maxRows: 10}"
-            maxlength="1000"
             v-model="element.body.text"
-            show-word-limit
-            @scroll.native="scrollTest"
+            @wheel.native="scrollBlock"
           >
           </el-input>
+          <div class="text-counter">{{countTextLength(element.body.text)}}/1000</div>
         </template>
         <template v-else-if="element.body.action === 'sendMedia'">
           <div class="send-media-preview" v-if="element.body.mediaId" :style="{'background-image': `url(${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/get?id=${ element.body.mediaId }&format=instagram)`}"></div>
@@ -197,9 +196,12 @@ export default {
       elements.splice(elements.indexOf(element), 1);
     },
 
-    scrollTest(event) {
-      console.log(event);
+    countTextLength(text) {
+      return new Blob([text]).size
+    },
 
+    scrollBlock(event) {
+      event.stopPropagation();
     }
   }
 }
@@ -223,14 +225,23 @@ export default {
       z-index: 5;
     }
 
+    .text-counter {
+      color: #4063F5;
+      font-style: italic;
+      font-size: 7px;
+      position: absolute;
+      bottom: 0;
+      right: 35px;
+    }
 
     .el-textarea {
-
       .el-textarea__inner {
         resize: none;
         border: none;
         background-color: #fff;
         border-radius: 7px;
+        padding: 5px 25px 15px 5px;
+        font: 11px/16px 'Lato';
 
         &:focus {
           border-color: transparent;
@@ -247,6 +258,8 @@ export default {
       .message-delete-button {
         opacity: 1;
       }
+
+
     }
   }
 

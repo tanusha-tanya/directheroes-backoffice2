@@ -92,10 +92,10 @@ export default {
     }
 
     .el-tag {
-      background-color: #2A3E98;
+      background-color: #5CA6A6;
       color: #fff;
       border-radius: 20px;
-      padding: 4px 15px 5px;
+      padding: 2px 10px 3px;
       height: auto;
       line-height: 14px;
     }

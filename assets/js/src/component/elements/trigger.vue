@@ -151,7 +151,18 @@ export default {
       }
     }
 
+    .el-input {
+      margin-top: 5px;
+      .el-input__inner {
+        height: 27px;
+        font: 11px/27px 'Lato';
+        padding: 0 10px;
+      }
+    }
+
     &:hover {
+      background-color: rgba(#5CA6A6, .25);
+
       .rule-delete-button {
         opacity: 1;
       }
@@ -163,6 +174,7 @@ export default {
     text-align: center;
     color: #ccc;
     cursor: pointer;
+    background-color: #F8F8F8;
   }
 
   .rule-delete-button {

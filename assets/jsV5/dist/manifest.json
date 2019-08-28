@@ -31,5 +31,14 @@
   "dist/images/triangle.svg": "http://directheroes.local:8080/dist/images/triangle.15c92383.svg",
   "dist/images/ubuntu.svg": "http://directheroes.local:8080/dist/images/ubuntu.0f67e9e9.svg",
   "dist/images/windows.svg": "http://directheroes.local:8080/dist/images/windows.e9b2dce1.svg",
-  "dist/images/youtube.svg": "http://directheroes.local:8080/dist/images/youtube.c57967bc.svg"
+  "dist/images/youtube.svg": "http://directheroes.local:8080/dist/images/youtube.c57967bc.svg",
+  "dist/images/triggers.png": "http://directheroes.local:8080/dist/images/triggers.7c4109c5.png",
+  "dist/images/actions.png": "http://directheroes.local:8080/dist/images/actions.c60bf9e5.png",
+  "dist/images/conditions.png": "http://directheroes.local:8080/dist/images/conditions.ef7a27d2.png",
+  "dist/images/messages.png": "http://directheroes.local:8080/dist/images/messages.177e2a63.png",
+  "dist/images/userInput.svg": "http://directheroes.local:8080/dist/images/userInput.f5254a87.svg",
+  "dist/images/text.svg": "http://directheroes.local:8080/dist/images/text.fdd8e2a6.svg",
+  "dist/images/delayBtn.svg": "http://directheroes.local:8080/dist/images/delayBtn.9c1bf869.svg",
+  "dist/images/image.svg": "http://directheroes.local:8080/dist/images/image.27bdd1d9.svg",
+  "dist/images/userInputBtn.svg": "http://directheroes.local:8080/dist/images/userInputBtn.be549346.svg"
 }

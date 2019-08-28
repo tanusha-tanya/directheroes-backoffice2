@@ -97,8 +97,7 @@ export default {
 
       if (!currentAccountData) return [];
 
-      return currentAccountData.campaigns//.filter(campaign => !campaign.isArchived)
-      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "campaignEntry" && !campaign.isArchived)
+      return currentAccountData.campaigns.filter(campaign => campaign.type == 'regular');
     }
   },
 
