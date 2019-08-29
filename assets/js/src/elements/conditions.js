@@ -26,5 +26,26 @@ export default [
         },
       ]
     }
+  },
+  {
+    title: 'Followers',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'followers'
+      },
+      elements: [
+        {
+          type: 'rule',
+          condition: {
+            entity: 'contact',
+            field: 'followers',
+            operand: 'lt',
+            value: 5000
+          }
+        },
+      ]
+    }
   }
 ]

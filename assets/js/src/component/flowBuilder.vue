@@ -366,5 +366,56 @@ export default {
       border-left: 2px solid #E8E8E8;
     }
   }
+
+  .hidden-select {
+    .el-input{
+      width: auto;
+    }
+
+    .el-input__inner {
+      font-family: sans-serif;
+      border: none;
+      background-color: transparent;
+      padding: 0;
+      width: 53px;
+      font-size: 12px;
+      color: #2c3e50;
+    }
+
+    .el-input__suffix {
+      display: none;
+    }
+  }
+}
+
+.small-dropdown {
+  background: #FFFFFF;
+  border: 1px solid #CFCFCF;
+  box-sizing: border-box;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  margin: -13px 0 0 20px !important;
+
+  .popper__arrow {
+    display: none;
+  }
+
+  .el-scrollbar__view {
+    padding: 0;
+  }
+
+  .el-select-dropdown__item, .el-select-dropdown__item.selected {
+    font-size: 11px;
+    line-height: 17px;
+    height: 17px;
+    color: #2D2D2D;
+    font-weight: normal;
+    padding: 0 5px;
+    background-color: #FFF;
+
+    &:hover {
+      background-color: #ECECEC;
+    }
+  }
 }
 </style>
