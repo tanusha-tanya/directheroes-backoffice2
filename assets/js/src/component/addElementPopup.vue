@@ -34,7 +34,7 @@ import messages from '../elements/messages';
 import { userInput } from '../elements/userInput';
 import addTriggerPopup from './addTriggerPopup'
 import addActionPopup from './addActionPopup'
-import addConditionPopup from './addActionPopup'
+import addConditionPopup from './addConditionPopup'
 
 export default {
   data() {
