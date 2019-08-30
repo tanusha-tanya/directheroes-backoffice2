@@ -92,20 +92,26 @@ export default {
         const linkElements = [];
 
         step.elements.filter(element => element.type === 'group' || element.type === 'rule' || element.type === 'linker').forEach(element => {
-          const matchElement = utils.getOnMatchElement(element);
+          const elementAction = (matchElement, suffix = '') => {
+            const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
+            const failTarget = matchElement.onFail && matchElement.onFail.target;
 
-          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-          const failTarget = matchElement.onFail && matchElement.onFail.target
+            linkElements.push(target || null);
 
-          linkElements.push(target || null);
+            if (matchElement !== 'linker' && failTarget) {
+              arrows.push({parent: `${element.id}-fail`, child: failTarget});
+              linkElements.push(failTarget)
+            }
 
-          if (matchElement !== 'linker' && failTarget) {
-            arrows.push({parent: `${element.id}-fail`, child: failTarget});
-            linkElements.push(failTarget)
-          }
+            if (target) {
+              arrows.push({parent: element.id + suffix, child: target});
+            }
+          };
 
-          if (target) {
-            arrows.push({parent: element.id, child: target});
+          if (element.displaySettings && element.displaySettings.type === 'followers') {
+            element.elements.forEach(elementAction);
+          } else {
+            elementAction(utils.getOnMatchElement(element));
           }
         })
 
@@ -191,22 +197,28 @@ export default {
       const userInputElement = step.elements.find(element => element.displaySettings.subType == "user-input")
 
       steps.some(stepItem => stepItem.elements.some( (element, index) => {
-        const matchElement = utils.getOnMatchElement(element);
+        const actionElement = (matchElement) => {
+          if (!matchElement) return;
 
-        if (!matchElement) return;
+          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
+          const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
 
-        const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-        const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
+          if ((target !== step.id) && (failTarget !== step.id)) return;
 
-        if ((target !== step.id) && (failTarget !== step.id)) return;
+          if (element.type == 'linker') {
+            stepItem.elements.splice(index, 1)
+          } else {
+            Vue.set(matchElement, failTarget ? 'onFail' : 'onMatch', undefined);
+          }
 
-        if (element.type == 'linker') {
-          stepItem.elements.splice(index, 1)
+          return true;
+        };
+
+        if (element.displaySettings && element.displaySettings.type === 'followers') {
+          element.elements.some(actionElement);
         } else {
-          Vue.set(matchElement, failTarget ? 'onFail' : 'onMatch', undefined);
+          return actionElement(utils.getOnMatchElement(element));
         }
-
-        return true;
       }))
 
       if (userInputElement) {

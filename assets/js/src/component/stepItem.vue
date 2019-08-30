@@ -53,10 +53,17 @@ export default {
       const { elements } = this.step;
 
       return elements.some(element => {
-        const matchElement = utils.getOnMatchElement(element);
-        const target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target))
+        const actionElement = (matchElement) => {
+          const target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target))
 
-        return target;
+          return target;
+        }
+
+        if (element.displaySettings && element.displaySettings.type === 'followers') {
+          return element.elements.some(actionElement);
+        } else {
+          return actionElement(utils.getOnMatchElement(element));
+        }
       })
     },
 

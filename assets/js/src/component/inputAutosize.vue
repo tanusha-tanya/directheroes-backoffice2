@@ -87,7 +87,7 @@ export default {
       z-index: -1;
       pointer-events: none;
       white-space: nowrap;
-      padding-right: 1px;
+      padding-right: 3px;
     }
   }
 </style>

@@ -3,33 +3,59 @@
     <template v-for="element in elements">
       <div class='condition-item' :key="element.id">
         <div class="condition-item-title">{{element.displaySettings.type}}</div>
+        <template v-if="element.displaySettings.type === 'timeout'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              <template v-if="element.displaySettings.type === 'timeout'">
-                IF,<br>
-                within: <timeout :element="element"></timeout><br>
-                the user:
-              </template>
-              <template v-else>
-                IF,<br>
-                followers count<br>
-                is <el-select class="hidden-select" v-model="getRule(element).condition.operand" size="mini" popper-class="small-dropdown">
-                    <el-option label="Less" value="lt"></el-option>
-                    <el-option label="More" value="gt"></el-option>
-                  </el-select> than <input-autosize v-model="getRule(element).condition.value" only-numbers></input-autosize>
-              </template>
+              IF,<br>
+              within: <timeout :element="element"></timeout><br>
+              the user:
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!hasOnMatch(element)"></add-step-popup>
+                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-step-popup>
               </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-step-popup>
+                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-step-popup>
               </div>
             </div>
           </div>
+        </template>
+        <template v-else>
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              IF,<br>
+              followers count<br>
+              is <el-select class="hidden-select" :value="getRule(element).condition.operand" size="mini" popper-class="small-dropdown" @change="setRulesOperand">
+                  <el-option label="Less" value="lt"></el-option>
+                  <el-option label="Greater" value="gt"></el-option>
+                </el-select> than
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
+                <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
+                <add-step-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-step-popup>
+                <div class="delete-condition-value" v-if="element.elements.length > 1 && !subElement.onMatch" @click="deleteFollowersElement(subElement)">
+                  <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                Else
+                <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
+              </div>
+              <div class="add-condition-value" @click="addFollowerCondition">
+                + Add value
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </template>
     <div class="add-condition-button">
@@ -70,6 +96,16 @@ export default {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
 
       return elementsPermissions.fromCondition.concat(messageTypes)
+    },
+
+    lastFollowersRule() {
+      const followerElement = this.elements.find(element => element.displaySettings.type === 'followers');
+
+      return followerElement.elements[followerElement.elements.length - 1]
+    },
+
+    followersElement() {
+      return this.elements.find(element => element.displaySettings.type === 'followers');
     }
   },
 
@@ -78,20 +114,20 @@ export default {
 
     },
 
+    addFollowerCondition() {
+      const { lastFollowersRule, followersElement } = this;
+      const newFollowerElement = JSON.parse(JSON.stringify(lastFollowersRule));
+
+      lastFollowersRule.onFail = { action: 'fallthrough' };
+
+      newFollowerElement.id = (new ObjectId).toString();
+      delete newFollowerElement.onMatch;
+
+      followersElement.elements.push(newFollowerElement);
+    },
+
     getRule(element) {
       return element.elements.find(element => element.type === 'rule')
-    },
-
-    hasOnMatch(element) {
-      const { getRule } = this;
-
-      return getRule(element).onMatch
-    },
-
-    hasOnFail(element) {
-      const { getRule } = this;
-
-      return getRule(element).onFail
     },
 
     createStep(condition, element, onFail) {
@@ -104,6 +140,7 @@ export default {
           }
         ]
       }
+      let matchElement;
 
       if (element.type === 'group') {
         element.elements.forEach(element => {
@@ -111,7 +148,11 @@ export default {
         })
       }
 
-      const matchElement = condition.elements.find(element => element.type === 'rule');
+      if (condition.type === 'rule') {
+        matchElement = condition;
+      } else {
+        matchElement = condition.elements.find(element => element.type === 'rule');
+      }
 
       Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
         action: 'goto',
@@ -119,6 +160,26 @@ export default {
       });
 
       this.$emit('add-step', step);
+    },
+
+    setRulesOperand(value) {
+      const { followersElement } = this;
+
+      if (!followersElement) return;
+
+      followersElement.elements.forEach(element => element.condition.operand = value);
+    },
+
+    deleteFollowersElement(element) {
+      const { lastFollowersRule, followersElement } = this;
+
+      if (lastFollowersRule === element) {
+        const newLastElement = followersElement.elements[followersElement.elements.length - 2];
+
+        newLastElement.onFail = lastFollowersRule.onFail;
+      }
+
+      followersElement.elements.splice(followersElement.elements.indexOf(element), 1);
     }
   }
 }
@@ -136,7 +197,8 @@ export default {
 
     .hidden-select {
       .el-input__inner {
-        width: 30px !important;
+        width: 42px !important;
+        text-align: center;
       }
     }
 
@@ -184,8 +246,34 @@ export default {
     }
 
     .condition-item-match {
-      color: #28C3A7;
       border-bottom: 1px dashed #D8D8D8;
+
+      input {
+        color: #28C3A7;
+      }
+
+      &:hover {
+        .delete-condition-value {
+          opacity: 1;
+        }
+      }
+    }
+
+    .add-condition-value {
+      cursor: pointer;
+      border-top: 1px dashed #D8D8D8;
+    }
+
+    .delete-condition-value {
+      position: absolute;
+      top: calc(50% - 6px);
+      left: 10px;
+      opacity: 0;
+
+      svg {
+        width: 10px;
+        height: 10px;
+      }
     }
 
     .condition-item-fail {
