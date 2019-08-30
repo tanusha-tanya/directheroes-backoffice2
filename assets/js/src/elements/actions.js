@@ -2,7 +2,7 @@ import { userInputZapier } from './userInput';
 
 const zapierAction = JSON.parse(JSON.stringify(userInputZapier));
 
-zapierAction.subType = 'action';
+zapierAction.displaySettings.subType = 'action';
 
 console.log(zapierAction);
 

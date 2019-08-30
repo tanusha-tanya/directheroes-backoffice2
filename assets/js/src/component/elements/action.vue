@@ -7,6 +7,9 @@
         <template v-if="['addCategory', 'removeCategory'].includes(action.body.action)">
           <keywords v-model="action.body.name"></keywords>
         </template>
+        <template v-else-if="action.body.action === 'webhook'">
+          <zapier :element="action"></zapier>
+        </template>
         <template v-else>
           <div class="unknown-action-wrapper">
             Unknown element
@@ -29,6 +32,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import keywords from '../keywords';
+import zapier from '../zapier';
 import addActionPopup from '../addActionPopup';
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
@@ -40,7 +44,8 @@ export default {
     return {
       actionTitles:{
         addCategory: 'Add tag',
-        removeCategory: 'Remove tag'
+        removeCategory: 'Remove tag',
+        webhook: 'Zapier',
       }
     }
   },
@@ -49,6 +54,7 @@ export default {
     addActionPopup,
     elementWarning,
     keywords,
+    zapier,
   },
 
   computed: {
@@ -109,6 +115,10 @@ export default {
         opacity: 1;
       }
     }
+  }
+
+  .user-webhook-action {
+    padding: 0;
   }
 
   .keywords {
