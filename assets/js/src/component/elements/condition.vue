@@ -25,8 +25,7 @@
         <template v-else>
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              IF,<br>
-              followers count<br>
+              Followers count<br>
               is <el-select class="hidden-select" :value="getRule(element).condition.operand" size="mini" popper-class="small-dropdown" @change="setRulesOperand">
                   <el-option label="Less" value="lt"></el-option>
                   <el-option label="Greater" value="gt"></el-option>
@@ -36,7 +35,7 @@
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
                 <add-step-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-step-popup>
-                <div class="delete-condition-value" v-if="element.elements.length > 1 && !subElement.onMatch" @click="deleteFollowersElement(subElement)">
+                <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteFollowersElement(subElement)">
                   <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
