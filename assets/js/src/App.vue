@@ -24,7 +24,7 @@
         <router-link class="side-bar-item" :to="{ name: 'book-help' }">
           <img :src="pdf"/><span class="side-bar-title">Documents</span>
         </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'easywebinar-join' }">
+        <router-link class="side-bar-item" :to="{ name: 'easywebinar-join' }" v-if="false">
           <img :src="easywebinar"/><span class="side-bar-title">Join the Webinar!</span>
         </router-link>
       </div>
