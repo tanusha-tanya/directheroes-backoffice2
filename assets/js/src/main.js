@@ -92,8 +92,8 @@ router.beforeEach((to, from, next) => {
 
   store.state.isfullSideBar = !['accountCampaign','accountBroadcast'].includes(to.name)
 
-  if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'dhPayments') {
-    next({name: 'dhPayments'})
+  if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'addonBuy') {
+    next({name: 'addonBuy'})
   } else {
     next()
   }
