@@ -65,7 +65,7 @@
       <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
       <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
-      <div class="challenge-notices">
+      <div class="challenge-notices" v-if="challenge">
         <div class="notice-item">
           <strong>1.</strong><span>Please open the Instagram app and click "it was me" button; refresh your news feed couple times if you don't see this message</span>
         </div>
