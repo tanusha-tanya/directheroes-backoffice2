@@ -43,9 +43,19 @@
       <stripe-payment :goal="plan.code || 'createPlanSubscription'" ref="stripePayment">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="confirm-button">
-            <div class="plane-info" v-if="plan.price">You will be charged <strong>${{plan.price}}</strong></div>
+            <div class="privacy-block">
+              <label>
+                <input type="checkbox" v-model="confirmPolicy">
+                <span></span>
+              </label>
+              <span>I have read and agree to the <a href="http://www.directheroes.com/privacy" target="_blank">Policy</a> and <a href="http://www.directheroes.com/terms" target="_blank">Terms of Service</a></span>
+            </div>
+            <div class="plane-info" v-if="plan.price">You will be charged <strong>${{plan.price}}</strong> and subscribed to <strong>{{plan.name}}</strong> plan</div>
             <div class="error">{{globalError}}</div>
-            <button :class="{loading: creating}" @click="createAccount(submitPayment, authorizeAmount)" :disabled="!canSendInfo || !allRegisterInfo || hasError || creating">
+            <button
+              :class="{loading: creating}"
+              @click="createAccount(submitPayment, authorizeAmount)"
+              :disabled="!canSendInfo || !allRegisterInfo || hasError || creating || !confirmPolicy">
               Join right now
             </button>
           </div>
@@ -73,6 +83,7 @@ export default {
       },
       creating: false,
       globalError: '',
+      confirmPolicy: false,
     }
   },
 
@@ -348,6 +359,45 @@ button {
     input {
       padding: 9px 15px;
     }
+  }
+}
+
+.privacy-block {
+  margin-bottom: 10px;
+  font-size: 18px;
+
+  label {
+    display: inline-block !important;
+  }
+
+  input {
+    width: auto;
+    opacity: 0;
+    position: absolute;
+
+    & + span {
+      border: 1px solid #d0d0d0;
+      border-radius: 3px;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      position: relative;
+    }
+
+    &:checked + span:before {
+      position: absolute;
+      font-weight: bold;
+      content: '✓';
+      top: -4px;
+      left: 0px;
+      color: #6A12CB;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: #6A12CB;
+    font-weight: bold;
   }
 }
 </style>
