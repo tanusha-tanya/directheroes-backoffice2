@@ -366,6 +366,10 @@ button {
   margin-bottom: 10px;
   font-size: 18px;
 
+  label {
+    display: inline-block !important;
+  }
+
   input {
     width: auto;
     opacity: 0;
