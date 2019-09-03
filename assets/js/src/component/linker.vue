@@ -78,6 +78,16 @@ export default {
       }
     }
 
+    .linker-action-type {
+      color: #F4B109;
+      background-color: rgba(#F4B109, .25);
+      border: 1px solid #F4B109;
+
+      &:after {
+        background-image: url(../assets/v5/actions.png);
+      }
+    }
+
     .linker-user-input-type {
       color: #717FFF;
       background-color: rgba(#717FFF, .25);
