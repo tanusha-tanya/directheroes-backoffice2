@@ -79,6 +79,10 @@ export default {
       }
     }
 
+    .el-select__input {
+      min-width: 30%;
+    }
+
     .el-input__inner {
       padding: 0;
       border: none;

@@ -4,8 +4,6 @@ const zapierAction = JSON.parse(JSON.stringify(userInputZapier));
 
 zapierAction.displaySettings.subType = 'action';
 
-console.log(zapierAction);
-
 export default [
   {
     title: 'Add tag',
