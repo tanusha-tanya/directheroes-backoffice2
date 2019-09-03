@@ -24,7 +24,8 @@ export let userInput = {
 
 export let userInputSubscriber = {
   displaySettings: {
-    subType: 'sub-input'
+    subType: 'sub-input',
+    type: 'subscriber'
   },
   type: 'action',
   body: {
@@ -42,7 +43,8 @@ export let userInputSubscriber = {
 
 export let userInputZapier = {
   displaySettings: {
-    subType: 'sub-input'
+    subType: 'sub-input',
+    type: 'zapier'
   },
   type: 'action',
   body: {

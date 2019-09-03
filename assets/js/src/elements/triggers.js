@@ -5,6 +5,7 @@ export default [
       type: 'group',
       displaySettings: {
         subType: 'trigger',
+        type: 'keywords'
       },
       elements: [
         {
@@ -30,7 +31,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'trigger'
+        subType: 'trigger',
+        type: 'mediaShare'
       },
       elements: [
         {
@@ -56,7 +58,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'trigger'
+        subType: 'trigger',
+        type: 'postShare'
       },
       elements: [
         {
@@ -93,7 +96,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'trigger'
+        subType: 'trigger',
+        type: 'storyShare'
       },
       elements: [
         {
@@ -119,7 +123,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'trigger'
+        subType: 'trigger',
+        type: 'storyMention'
       },
       elements: [
         {
@@ -156,7 +161,8 @@ export default [
     template: {
       type: 'group',
       displaySettings: {
-        subType: 'trigger'
+        subType: 'trigger',
+        type: 'adReply'
       },
       elements: [
         {
