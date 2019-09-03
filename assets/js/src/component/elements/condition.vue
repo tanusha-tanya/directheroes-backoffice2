@@ -45,12 +45,19 @@
                   </svg>
                 </div>
               </div>
-              <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                Else
-                <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
-              </div>
               <div class="add-condition-value" @click="addFollowerCondition">
                 + Add value
+              </div>
+            </div>
+          </div>
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Followers count is
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                {{ elseText }}
+                <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
               </div>
             </div>
           </div>
@@ -91,6 +98,14 @@ export default {
       return []
     },
 
+    elseText() {
+      const { lastFollowersRule, followersElement } = this;
+      const countMethod = lastFollowersRule.condition.operand === 'gt' ? Math.min : Math.max;
+      let countElement = followersElement.elements.reduce((accumulator, element) => countMethod(accumulator, element.condition.value), lastFollowersRule.condition.value) ;
+
+      return `${countElement} or ${ lastFollowersRule.condition.operand === 'gt' ? 'less' : 'greates' }`;
+    },
+
     availableList() {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
 
@@ -98,9 +113,9 @@ export default {
     },
 
     lastFollowersRule() {
-      const followerElement = this.elements.find(element => element.displaySettings.type === 'followers');
+      const { followersElement } = this;
 
-      return followerElement.elements[followerElement.elements.length - 1]
+      return followersElement.elements[followersElement.elements.length - 1]
     },
 
     followersElement() {
@@ -219,7 +234,15 @@ export default {
 
     .condition-item-controls {
       display: flex;
-      border-bottom: 1px solid #D8D8D8;
+      border-bottom: 1px dashed #D8D8D8;
+
+      &:last-child {
+        border-bottom-style: solid;
+
+        .condition-item-control {
+          padding: 13px;
+        }
+      }
     }
 
     .condition-item-control {
