@@ -8,6 +8,7 @@
     <template v-for="trigger in triggers">
       <div
         :class="{'trigger-item':true, 'trigger-disabled': availableList && !availableList.includes(triggerType(trigger))}"
+        v-if="availableList && availableList.includes(triggerType(trigger))"
         :key="trigger.title"
         @click="selectTrigger(trigger)">
           {{trigger.title}}
