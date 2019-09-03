@@ -7,7 +7,7 @@
   </template>
   <template v-for="action in actions">
     <div
-      :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(action.template.body.action)}"
+      :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
       :key="action.title"
       @click="selectAction(action)">
       {{action.title}}
@@ -31,12 +31,12 @@ export default {
 
   computed: {
     hasAvailableAction() {
-      const { availableList, actions } = this;
+      const { availableList, actions, actionType } = this;
 
       if (!availableList) return true;
 
       return actions.some(action => {
-        return availableList.includes(action.template.body.action)
+        return availableList.includes(actionType(action))
       })
     }
   },
@@ -45,6 +45,12 @@ export default {
     selectAction(action) {
       this.$emit('on-select', JSON.parse(JSON.stringify(action.template)));
       this.isShow = false;
+    },
+
+    actionType(element) {
+      const { template } = element;
+
+      return template.displaySettings.type || template.body.action;
     }
   }
 }

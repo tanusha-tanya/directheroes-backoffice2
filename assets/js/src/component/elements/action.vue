@@ -2,13 +2,21 @@
   <div class="action-items">
     <template v-for="action in elements">
       <div :class="[{'action-item': true}, elementClass(action.body.action)]" v-if="action.type !== 'linker'" :key="action.id">
-        <div class="action-item-title">{{ actionTitles[action.body.action] }}</div>
+        <div class="action-item-title">{{ actionTitles[action.displaySettings.type || action.body.action] }}</div>
         <element-warning :element="action"></element-warning>
         <template v-if="['addCategory', 'removeCategory'].includes(action.body.action)">
           <keywords v-model="action.body.name"></keywords>
         </template>
         <template v-else-if="action.body.action === 'webhook'">
           <zapier :element="action"></zapier>
+        </template>
+        <template v-else-if="action.displaySettings.type === 'subscription'">
+          <div class="subscription-action">
+            <el-select v-model="action.body.action" size="small" popper-class="subscription-dropdown">
+              <el-option value="subscribe" label="Subscribe"></el-option>
+              <el-option value="unsubscribe" label="Unsubscribe"></el-option>
+            </el-select>
+          </div>
         </template>
         <template v-else>
           <div class="unknown-action-wrapper">
@@ -46,6 +54,7 @@ export default {
         addCategory: 'Add tag',
         removeCategory: 'Remove tag',
         webhook: 'Zapier',
+        subscription: 'Subscription'
       }
     }
   },
@@ -160,6 +169,49 @@ export default {
 
     &:hover {
       color: #e74c49;
+    }
+  }
+
+  .subscription-action {
+    .el-select {
+      width: 100%;
+
+      .el-select__caret {
+        color: #2D2D2D;
+      }
+
+      .el-input__inner {
+        background-color: #ECECEC;
+        color: #2D2D2D;
+        border-color: #F4B109
+      }
+    }
+  }
+}
+
+.subscription-dropdown {
+  border: 1px solid #F4B109;
+  margin-top: -32px !important;
+  overflow: hidden;
+
+  .popper__arrow {
+    display: none;
+  }
+
+  .el-scrollbar__view {
+    padding: 0;
+  }
+
+  .el-select-dropdown__item, .el-select-dropdown__item.selected {
+    font-size: 13px;
+    line-height: 26px;
+    color: #2D2D2D;
+    padding-top: 4px;
+    font-weight: normal;
+    background-color: #FFF;
+
+    &:hover {
+      background-color: #ECECEC;
     }
   }
 }

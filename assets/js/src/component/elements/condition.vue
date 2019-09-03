@@ -283,7 +283,6 @@ export default {
 
     .add-condition-value {
       cursor: pointer;
-      border-top: 1px dashed #D8D8D8;
     }
 
     .delete-condition-value {
