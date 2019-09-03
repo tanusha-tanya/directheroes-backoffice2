@@ -37,8 +37,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Vue from 'vue';
 import keywords from '../keywords';
 import zapier from '../zapier';
 import addActionPopup from '../addActionPopup';
