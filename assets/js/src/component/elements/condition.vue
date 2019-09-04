@@ -103,7 +103,7 @@ export default {
       const countMethod = lastFollowersRule.condition.operand === 'gt' ? Math.min : Math.max;
       let countElement = followersElement.elements.reduce((accumulator, element) => countMethod(accumulator, element.condition.value), lastFollowersRule.condition.value) ;
 
-      return `${countElement} or ${ lastFollowersRule.condition.operand === 'gt' ? 'less' : 'greates' }`;
+      return `${countElement} or ${ lastFollowersRule.condition.operand === 'gt' ? 'less' : 'greater' }`;
     },
 
     availableList() {
