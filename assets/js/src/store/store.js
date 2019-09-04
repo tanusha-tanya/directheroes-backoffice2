@@ -14,24 +14,7 @@ Vue.use(VueX)
 
 export default new VueX.Store({
   state: {
-    dhAccount: null,
-    accounts: [],
-    scale: 1,
-    newPoint: null,
-    arrowConnectData: null,
-    arrows: [],
-    currentAccount: null,
-    currentAccountData: null,
-    firstLoad: false,
-    isfullSideBar: true,
-    serverKey: null,
-    clientKey: null,
-    nonce: null,
-    newAccount: {
-      accountState: 'add',
-      password: '',
-      isAdd: false
-    }
+
   },
 
   actions: {
