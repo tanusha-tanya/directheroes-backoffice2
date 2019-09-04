@@ -1,7 +1,7 @@
 <template>
   <div class="input-autosize">
     <div class="input-buffer" v-html="value" ref="buffer"></div>
-    <input type="text" :value="value" :style="{width}" @input="inputChange" ref="input">
+    <input :type="isNumbers ? 'number': 'text'" :value="value" :style="{width}" @input="inputChange" ref="input">
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
 
   methods: {
     inputChange(event) {
-      const value = this.isNumbers ? event.target.value.replace(/[^0-9]/g,'') : event.target.value;
+      const value = this.isNumbers ? parseFloat(event.target.value.replace(/[^0-9]/g,'')) : event.target.value;
 
       this.$emit('input', value);
     },
@@ -76,6 +76,13 @@ export default {
       border: none;
       border-radius: 0;
       padding: 0;
+
+      &[type=number] {
+        &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+          appearance: none;
+          margin: 0;
+        }
+      }
 
       &:focus {
         background-color: #B5C7F5;

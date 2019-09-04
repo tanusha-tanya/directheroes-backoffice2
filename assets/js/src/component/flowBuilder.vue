@@ -313,8 +313,8 @@ export default {
           return;
         }
 
-        entry.isActive = entry.isEnabled && !this.hasWarning;
-        entry.isIncomplete = this.hasWarning;
+        entry.isActive = entry.isEnabled && !Boolean(this.hasWarning);
+        entry.isIncomplete = Boolean(this.hasWarning);
       },
       deep: true
     },
