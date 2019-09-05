@@ -16,7 +16,8 @@ export default new Vuex.Store({
   state: {
     dhAccount: null,
     accounts: [],
-    firstLoad: false,
+    isFirstLoad: false,
+    currentAccount: null,
   },
   mutations: {
     set(state, { path, value }) {
@@ -34,10 +35,16 @@ export default new Vuex.Store({
 
       source[lastNode] = value;
     },
+
+    selectAccount(state, account) {
+      if (state.currentAccount === account) return;
+
+      state.currentAccount = account;
+    }
   },
   actions: {
     getAccounts({ state, commit }) {
-      commit('set', { path: 'firstLoad', value: true });
+      commit('set', { path: 'isFirstLoad', value: true });
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
@@ -46,9 +53,9 @@ export default new Vuex.Store({
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
-        commit('set', { path: 'firstLoad', value: false });
+        commit('set', { path: 'isFirstLoad', value: false });
       }).catch(() => {
-        commit('set', { path: 'firstLoad', value: false });
+        commit('set', { path: 'isFirstLoad', value: false });
       })
     },
   }

@@ -2,7 +2,7 @@
   "license": "proprietary",
   "private": true,
   "scripts": {
-    "serve": "encore dev-server --host directheroes.local --hot",
+    "serve": "encore dev-server --host directheroes.local --hot --inline",
     "dev-server": "encore dev-server",
     "dev": "encore dev",
     "watch": "encore dev --watch",

@@ -51,7 +51,16 @@
         Support
       </router-link>
     </div>
-    <div class="dh-content"></div>
+    <div class="dh-content" v-if="dhAccount">
+      <router-view ></router-view>
+    </div>
+    <loader v-else-if="isFirstLoad"></loader>
+    <div class="dh-init-error" v-else>
+      <span>
+        This page failed to load. <br />
+        Please reload it, or contact support if problem persists
+      </span>
+    </div>
   </div>
 </template>
 
@@ -65,6 +74,7 @@ import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
 import tutorials from './assets/tutorials.svg'
 import support from './assets/support.svg'
+import loader from './components/dh-loader'
 
 export default {
   components: {
@@ -77,6 +87,7 @@ export default {
     schedule,
     tutorials,
     support,
+    loader,
   },
 
   computed: {
@@ -96,6 +107,12 @@ export default {
       const { state } = this.$store;
 
       return state.isfullSideBar;
+    },
+
+    isFirstLoad() {
+      const { state } = this.$store;
+
+      return state.isFirstLoad;
     }
   },
 }
@@ -125,13 +142,13 @@ body {
     width: 242px;
     background-color: $sectionBG;
     height: 100%;
-    border-right: 1px solid #D8D8D8;
+    border-right: 1px solid $borderColor;
   }
 
   .dh-logo {
     width: 100%;
     display: block;
-    padding: 22px 35px 12px 35px;
+    padding: 20px 35px 11px 35px;
   }
 
   .dh-navigation-button {
@@ -162,6 +179,16 @@ body {
     flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  .dh-init-error {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 24px;
   }
 }
 </style>

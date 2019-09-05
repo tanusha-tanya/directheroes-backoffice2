@@ -18,15 +18,15 @@
       </div>
       <div class="download-buttons">
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=win`">
-          <img src="../assets/svg/windows.svg"/>
+          <windows/>
           Download for Windows
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=mac`">
-          <img src="../assets/svg/apple.svg"/>
+          <apple/>
           Download for Mac
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=linux`">
-          <img src="../assets/svg/ubuntu.svg"/>
+          <ubuntu/>
           Download for Linux
         </a>
       </div>
@@ -126,9 +126,12 @@
 </template>
 
 <script>
-import triangle from '../assets/triangle.svg'
+import triangle from '../assets/triangle.svg';
 import axios from 'axios';
-import sodium from 'libsodium-wrappers'
+import sodium from 'libsodium-wrappers';
+import windows from '../assets/svg/windows.svg';
+import ubuntu from '../assets/svg/ubuntu.svg';
+import apple from '../assets/svg/apple.svg';
 
 export default {
   data() {
@@ -148,6 +151,12 @@ export default {
       isResendCode: false,
       triangle
     }
+  },
+
+  components: {
+    windows,
+    ubuntu,
+    apple
   },
 
   props: ['isAddAccount', 'accountAuth'],
@@ -186,7 +195,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = true || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -348,22 +357,19 @@ export default {
       }
     },
 
-    // proxyStatus(value) {
-    //   clearInterval(this.checkingTimeout)
-
-    //   this.checkingTimeout = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
-    // }
   }
 }
 </script>
 <style lang="scss">
 .add-account-dialog {
   .el-dialog {
-    margin: 50px 0 0 auto !important;
-    height: calc(100% - 50px);
+    margin: 64px 0 0 auto !important;
+    height: calc(100% - 126px);
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;
+    box-shadow: none;
+    border-left: 1px solid $borderColor;
     // &.dialog-fade-enter-active {
     //   animation: none;
     // }
@@ -379,15 +385,14 @@ export default {
 
     .el-dialog__title {
       font-size: 20px;
-      color: #6A12CB;
-    }
+   }
 
     .el-dialog__header {
       margin-bottom: 24px;
     }
 
     .step {
-      color: #B6B6B6;
+      color: $textColor;
       font-size: 15px;
 
       &:not(:last-child) {
@@ -409,7 +414,8 @@ export default {
       width: 27px;
       flex-shrink: 0;
       margin-right: 8px;
-      border: 1px solid currentColor;
+      border: 1px solid $mainTextColor;
+      color: $mainTextColor;
       border-radius: 20px;
       display: flex;
       align-items: center;
@@ -418,7 +424,7 @@ export default {
 
     .challenge-notices {
       margin-top: 10px;
-      color: #2c3e50;
+      color: $textColor;
     }
 
     .notice-item {
@@ -465,7 +471,7 @@ export default {
         margin-bottom: 10px;
       }
 
-      img {
+      svg {
         margin-right: 9px;
         max-height: 16px;
       }
@@ -480,16 +486,16 @@ export default {
     .status-indicator {
       height: 27px;
       width: 27px;
-      background-color: #FF4D4D;
+      background-color: $failColor;
       border-radius: 20px;
       margin-right: 9px;
 
       &.success {
-        background-color: #44B0A9;
+        background-color: $successColor;
       }
 
       &.draft {
-        background-color: #A5A5A5;
+        background-color: rgba($borderColor, .5);;
       }
     }
 
@@ -531,7 +537,7 @@ export default {
 
     .error {
       margin-top: 10px;
-      color: #FF4D4D;
+      color: $failColor;
       text-align: center;
     }
 

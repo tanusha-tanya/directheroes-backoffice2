@@ -1,14 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import accounts from '../../js/src/routes/accounts.vue'
-import accountDetails from '../../js/src/routes/accountDetails.vue'
+import Accounts from './views/Accounts'
+import AccountDetails from './views/AccountDetails'
+import AccountDashboard from './views/AccountDashboard'
+
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
 // import campaignList from '../../js/src/routes/campaignList.vue'
 // import campaignBuilder from '../../js/src/routes/campaignBuilder.vue'
 // import accountThread from '../../js/src/routes/accountThread.vue'
-import accountDashboard from '../../js/src/routes/accountDashboard.vue'
+
 // import accountThreadMessages from '../../js/src/routes/accountThreadMessages.vue'
 // import accountThreadInfo from '../../js/src/routes/accountThreadInfo.vue'
 // import accountDH from '../../js/src/routes/accountDH.vue'
@@ -35,9 +37,9 @@ export default new Router({
     // },
     // { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
     // { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },
-    { path: '/:accountId', component: accountDetails,
+    { path: '/:accountId', component: AccountDetails,
       children: [
-        { name: 'accountHome', path: '', component: accountDashboard },
+        { name: 'accountHome', path: '', component: AccountDashboard },
         // { name: 'accountCampaignList', path: 'campaigns', component: campaignList },
         // { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
         // { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
@@ -47,7 +49,7 @@ export default new Router({
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },
-    { path: '/:isBuy?', name: 'accounts', component: accounts },
+    { path: '/:isBuy?', name: 'accounts', component: Accounts },
   ]
 });
 
