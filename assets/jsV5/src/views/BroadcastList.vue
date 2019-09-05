@@ -8,8 +8,8 @@
         <plus/><span>New broadcast</span>
       </div>
     </div>
-    <div class="dh-campaigns-list" v-if="broadcasts">
-      <div class="dh-campaign" v-for="campaign in broadcasts" :key="campaign.id">
+    <div class="dh-list" v-if="broadcasts">
+      <div class="dh-list-item" v-for="campaign in broadcasts" :key="campaign.id">
         <div class="dh-campaign-name">{{campaign.name}}</div>
         <div class="dh-campaign-actions" @click="deleteCampaign(campaign)">
         <ellipsis/>
@@ -55,6 +55,14 @@ export default {
 
 <style lang="scss">
 .dh-broadcast-view {
+  .dh-list-item {
+    &:hover {
+      .dh-campaign-name {
+        color: $elementActiveColor;
+      }
+    }
+  }
+
   .dh-campaign-name {
     flex-grow: 1;
   }

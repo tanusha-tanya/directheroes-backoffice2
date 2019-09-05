@@ -6,8 +6,8 @@
         <plus/><span>New campaign</span>
       </div>
     </div>
-    <div class="dh-campaigns-list" v-if="campaigns">
-      <div class="dh-campaign" v-for="campaign in campaigns" :key="campaign.id">
+    <div class="dh-list" v-if="campaigns">
+      <div class="dh-list-item" v-for="campaign in campaigns" :key="campaign.id">
         <star/>
         <div class="dh-campaign-info">
           <div class="dh-campaign-name">{{campaign.name}}</div>
@@ -71,9 +71,15 @@ export default {
     line-height: 22px;
   }
 
-  .dh-campaign {
+  .dh-list-item {
     & > svg {
       margin-right: 22px;
+    }
+
+    &:hover {
+      .dh-campaign-name {
+        color: $elementActiveColor;
+      }
     }
   }
 
