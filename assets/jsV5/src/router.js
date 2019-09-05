@@ -6,6 +6,7 @@ import AccountDetails from './views/AccountDetails'
 import AccountDashboard from './views/AccountDashboard'
 import CampaignList from './views/CampaignList'
 import BroadcastList from './views/BroadcastList'
+import Audience from './views/Audience'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -46,7 +47,7 @@ export default new Router({
         // { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         // { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: broadcastBuilder },
-        // { name: 'audience', path: 'audience', component: accountThread },
+        { name: 'audience', path: 'audience', component: Audience },
         // { name: 'accountThreadMessages', path: 'messages/:threadId/:subscribed?', component: accountThreadMessages },
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]

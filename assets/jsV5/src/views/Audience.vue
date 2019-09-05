@@ -1,0 +1,134 @@
+<template>
+  <div class="dh-view dh-audience-view">
+    <dh-header title="Audience"></dh-header>
+    <div class="dh-view-content">
+      <div class="dh-list" v-if="threads">
+        <div class="dh-list-item" v-for="thread in threads" :key="thread.id">
+          <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
+          <div class="dh-thread-data-item dh-thread-username">
+            <div class="dh-thread-data-item-main">User Full Name</div>
+            {{thread.contactProfile.username}}
+          </div>
+          <div class="dh-thread-data-item">
+            <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
+            Subscribed
+          </div>
+          <div class="dh-thread-data-item">
+            <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
+            Last Message
+          </div>
+          <div class="dh-thread-data-item">
+            <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
+            Campaigns
+          </div>
+          <div class="dh-spacer"></div>
+          <div class="dh-thread-controls">
+            <livechat/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <dh-footer></dh-footer>
+  </div>
+</template>
+
+<script>
+import dhHeader from '../components/dh-header'
+import dhFooter from '../components/dh-footer'
+import livechat from '../assets/livechat.svg'
+import axios from 'axios';
+import moment from 'moment';
+
+export default {
+  beforeRouteEnter(to, from, next) {
+    next(accountThread => {
+      accountThread.getAudience(to);
+    })
+  },
+
+  data() {
+    return {
+      threads: null,
+      status: 'audience',
+      paging: {
+        page: 1,
+        totalPageCount: 1
+      }
+    }
+  },
+
+  components: {
+    dhHeader,
+    dhFooter,
+    livechat
+  },
+
+  computed: {
+    account() {
+      return this.$store.state.currentAccount
+    },
+  },
+
+  methods: {
+    getAudience() {
+      const { account, status } = this;
+
+      if (!account) return;
+
+      this.threads = null;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+        method: 'post',
+        data: { paging: this.paging }
+      })
+      .then(({ data }) => {
+        const { threadList, paging } = data.response.body
+
+        this.threads = threadList;
+        this.paging = paging;
+      })
+    },
+
+    fromNowDate(date) {
+      return moment(new Date(date * 1000)).fromNow();
+    }
+  },
+
+  watch: {
+    '$store.state.accounts'() {
+      this.getAudience();
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.dh-audience-view {
+  .dh-thread-userpic {
+    width: 40px;
+    height: 40px;
+    background-color: rgba($borderColor, .5);
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+    flex-shrink: 0;
+  }
+
+  .dh-thread-data-item {
+    width: 17%;
+    flex-shrink: 0;
+  }
+
+  .dh-thread-username {
+    margin-left: 24px;
+    width: 25%;
+  }
+
+  .dh-thread-data-item-main {
+    font-size: 18px;
+    line-height: 22px;
+    color: $mainTextColor;
+  }
+}
+</style>

@@ -64,6 +64,10 @@
   color: $mainTextColor;
 }
 
+.dh-spacer {
+  flex-grow: 1;
+}
+
 strong {
   font-weight: 500;
 }

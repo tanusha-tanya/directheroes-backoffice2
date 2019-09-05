@@ -26,7 +26,7 @@
         </div>
         Live chat
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'audience', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <audience/>
         </div>
