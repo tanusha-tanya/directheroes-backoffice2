@@ -46,7 +46,7 @@ export default {
 
       if (!currentAccountData) return null;
 
-      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
+      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular');
 
       return limit ? campaigns.slice(0, limit) : campaigns;
     }
