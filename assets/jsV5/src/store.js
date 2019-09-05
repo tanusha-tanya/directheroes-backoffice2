@@ -18,6 +18,7 @@ export default new Vuex.Store({
     accounts: [],
     isFirstLoad: false,
     currentAccount: null,
+    currentAccountData: null,
   },
   mutations: {
     set(state, { path, value }) {

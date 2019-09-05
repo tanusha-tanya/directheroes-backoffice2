@@ -53,6 +53,12 @@ Vue.mixin({
   }
 });
 
+if (module.hot) {
+  module.hot.accept('./App', () => {
+    require('./App')
+  });
+}
+
 new Vue({
   router,
   store,

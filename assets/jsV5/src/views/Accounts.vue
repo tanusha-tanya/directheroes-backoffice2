@@ -3,7 +3,7 @@
     <dh-header title="Accounts"></dh-header>
     <div class="dh-view-content">
       <div class="dh-accounts-list">
-        <div class="dh-account-card">
+        <div class="dh-account-card" @click="addAccount">
           <div class="dh-account-userpic">
             <div class="dh-account-status">
               <status />
@@ -91,6 +91,18 @@ export default {
   },
 
   methods: {
+    addAccount() {
+      // const { isLimitReached} = this;
+
+      // if (isLimitReached) {
+      //   this.isExtraAccount = true;
+      //   return;
+      // }
+
+      this.accountToAuth = null;
+      this.isAddAccount = true;
+    },
+
     accountClick(account) {
       if (account.isLoggedIn) {
         this.$router.push({ name: 'accountHome', params: { accountId: account.id } })
@@ -189,10 +201,6 @@ export default {
     width: 100%;
     margin-top: 16px;
     line-height: 18px;
-
-    strong {
-      font-weight: 500;
-    }
   }
 
   .dh-account-add-info {

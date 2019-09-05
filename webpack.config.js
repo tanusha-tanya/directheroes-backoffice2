@@ -48,15 +48,6 @@ if (Encore.isProduction()) {
 
   config = Encore.getWebpackConfig();
 
-  const svgRule = config.module.rules.find(rule => rule.test.test('.svg'));
-
-  svgRule.test = /\.(png|jpg|jpeg|gif|ico|webp)$/
-
-  config.module.rules.push({
-    test: /\.svg$/,
-    loader: 'vue-svg-loader',
-  });
-
   if (config.devServer) {
     Object.assign(config.devServer, {
       contentBase: path.resolve(__dirname, './assets/jsV5'),
@@ -85,7 +76,16 @@ if (Encore.isProduction()) {
     })
   }
 
-  config.plugins.push(new webpack.HotModuleReplacementPlugin())
+  const svgRule = config.module.rules.find(rule => rule.test.test('.svg'));
+
+  svgRule.test = /\.(png|jpg|jpeg|gif|ico|webp)$/
+
+  config.module.rules.push({
+    test: /\.svg$/,
+    loader: 'vue-svg-loader',
+  });
+
+  // config.plugins.push(new webpack.HotModuleReplacementPlugin())
 }
 
 module.exports = config;
