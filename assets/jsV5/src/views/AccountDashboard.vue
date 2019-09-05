@@ -19,6 +19,8 @@
           </div>
         </div>
       </div>
+      <dh-campaigns title="Campaigns" :limit="5">
+      </dh-campaigns>
     </div>
     <dh-footer></dh-footer>
   </div>
@@ -27,11 +29,13 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhCampaigns from '../components/dh-campaigns'
 
 export default {
   components: {
     dhHeader,
     dhFooter,
+    dhCampaigns
   },
 
   computed: {
@@ -85,6 +89,10 @@ export default {
   .dh-dashboard-ig-account-data  span {
     font-weight: 300;
     margin-left: 15px;
+  }
+
+  .dh-campaigns {
+    margin-top: 46px;
   }
 }
 </style>

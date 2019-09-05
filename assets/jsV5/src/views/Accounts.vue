@@ -53,7 +53,7 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import addAccountDialog from '../../../js/src/component/addAccountDialog'
-import status from '../assets/status.svg'
+import status from '../assets/plus.svg'
 
 export default {
   data() {

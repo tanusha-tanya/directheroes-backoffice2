@@ -15,6 +15,60 @@
   }
 }
 
+.dh-new-item-button {
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  cursor: pointer;
+
+  svg {
+    margin-right: 6px;
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.dh-campaigns-list {
+  margin-top: 22px;
+}
+
+.dh-campaigns-controls {
+  display: flex;
+  justify-content: space-between;
+  color: $elementsColor;
+}
+
+.dh-campaign {
+  height: 80px;
+  width: 100%;
+  background-color: $sectionBG;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  color: $textColor;
+
+  &:not(:last-child) {
+    margin-bottom: 6px;
+  }
+
+  &:hover {
+    .dh-campaign-name {
+      color: $elementActiveColor;
+      cursor: pointer;
+    }
+  }
+}
+
+.dh-campaign-name {
+  font-size: 18px;
+  line-height: 22px;
+  color: $mainTextColor;
+}
+
 strong {
   font-weight: 500;
 }

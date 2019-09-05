@@ -4,10 +4,12 @@ import Router from 'vue-router'
 import Accounts from './views/Accounts'
 import AccountDetails from './views/AccountDetails'
 import AccountDashboard from './views/AccountDashboard'
+import CampaignList from './views/CampaignList'
+import BroadcastList from './views/BroadcastList'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
-// import campaignList from '../../js/src/routes/campaignList.vue'
+
 // import campaignBuilder from '../../js/src/routes/campaignBuilder.vue'
 // import accountThread from '../../js/src/routes/accountThread.vue'
 
@@ -40,9 +42,9 @@ export default new Router({
     { path: '/:accountId', component: AccountDetails,
       children: [
         { name: 'accountHome', path: '', component: AccountDashboard },
-        // { name: 'accountCampaignList', path: 'campaigns', component: campaignList },
+        { name: 'accountCampaignList', path: 'campaigns', component: CampaignList },
         // { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
-        // { name: 'accountBroadcastList', path: 'broadcasts', component: broadcastList },
+        { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         // { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: broadcastBuilder },
         // { name: 'audience', path: 'audience', component: accountThread },
         // { name: 'accountThreadMessages', path: 'messages/:threadId/:subscribed?', component: accountThreadMessages },
