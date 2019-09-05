@@ -76,16 +76,16 @@ if (Encore.isProduction()) {
     })
   }
 
-  const svgRule = config.module.rules.find(rule => rule.test.test('.svg'));
-
-  svgRule.test = /\.(png|jpg|jpeg|gif|ico|webp)$/
-
-  config.module.rules.push({
-    test: /\.svg$/,
-    loader: 'vue-svg-loader',
-  });
-
   // config.plugins.push(new webpack.HotModuleReplacementPlugin())
 }
+
+const svgRule = config.module.rules.find(rule => rule.test.test('.svg'));
+
+svgRule.test = /\.(png|jpg|jpeg|gif|ico|webp)$/
+
+config.module.rules.push({
+  test: /\.svg$/,
+  loader: 'vue-svg-loader',
+});
 
 module.exports = config;
