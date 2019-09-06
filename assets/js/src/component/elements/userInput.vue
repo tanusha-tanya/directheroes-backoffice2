@@ -1,7 +1,7 @@
 <template>
   <div class="user-input-items">
     <div class="user-input-select">
-      <el-select v-model="inputElement.condition.value" size="small" popper-class="user-input-dropdown">
+      <el-select v-model="inputElement.condition.value" size="small" popper-class="user-input-dropdown" @change="changeSubInput">
         <el-option v-for="inputType in inputList" :key="inputType.value" :value="inputType.value" :label="inputType.title"></el-option>
       </el-select>
     </div>
@@ -19,6 +19,7 @@
 
 <script>
 import elementsPermissions from '../../elements/permissions'
+import { userInputSubscriber, userInputZapier } from '../../elements/userInput'
 import addStepPopup from '../addStepPopup'
 import Vue from 'vue';
 import ObjectId from '../../utils/ObjectId';
@@ -26,7 +27,7 @@ import ObjectId from '../../utils/ObjectId';
 export default {
   data() {
     return {
-      inputList: [{value: '{{email}}', title: 'E-mail'}]
+      inputList: [{value: '{{email}}', title: 'E-mail'}, {value: '{{phone}}', title: 'Phone'}]
     }
   },
 
@@ -85,6 +86,30 @@ export default {
       });
 
       this.$emit('add-step', step);
+    },
+
+    changeSubInput(value) {
+      const { inputElement, elements } = this;
+      const { currentAccountData } = this.$store.state;
+      const { campaignId } = this.$route.params;
+      const campaign = currentAccountData.campaigns.find(campaign => campaign.id === campaignId)
+      const subInput = campaign.steps.find(step => step.id === inputElement.onMatch.target);
+      const action = subInput.elements.find(element => element.type === 'action');
+      let newElement = JSON.parse(JSON.stringify(userInputSubscriber));
+
+      value = /\{\{(\w*)\}\}/.exec(value)[1];
+
+      if (action.body.action === 'webhook') {
+        newElement = JSON.parse(JSON.stringify(userInputZapier));
+
+        newElement.body.data.field = value;
+      } else {
+        newElement.body.destination.field = value;
+      }
+
+      newElement.id = (new ObjectId).toString();
+
+      subInput.elements.splice(subInput.elements.indexOf(action), 1, newElement);
     }
   }
 }

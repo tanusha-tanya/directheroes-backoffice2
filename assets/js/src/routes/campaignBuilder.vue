@@ -107,7 +107,7 @@ export default {
 
       if (!currentAccountData) return;
 
-      return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      return currentAccountData.campaigns //.filter(campaign => !campaign.isArchived)
     },
 
     hasWarning() {

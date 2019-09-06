@@ -2,7 +2,7 @@
   <div class="user-sub-input">
     <div class="user-sub-input-select" :ref="linker && linker.id">
       <el-select :value="element.body.action" @change="changeAction" size="small" popper-class="user-sub-input-dropdown">
-        <el-option value="collect" label="Store Email"></el-option>
+        <el-option value="collect" :label="`Store ${ elementField }`"></el-option>
         <el-option value="webhook" label="Connect to Zapier"></el-option>
       </el-select>
       <add-step-popup
@@ -39,6 +39,12 @@ export default {
       return elements.find(element => element.type === 'action');
     },
 
+    elementField() {
+      const { element } = this;
+
+      return (element.body.data || element.body.destination).field
+    },
+
     linker() {
       const { elements } = this;
 
@@ -54,11 +60,14 @@ export default {
 
   methods: {
     changeAction(value) {
-      const { element, elements } = this;
-      let newElement = userInputSubscriber;
+      const { element, elements, elementField } = this;
+      let newElement = JSON.parse(JSON.stringify(userInputSubscriber));
 
       if (value === 'webhook') {
-        newElement = userInputZapier;
+        newElement = JSON.parse(JSON.stringify(userInputZapier));
+        newElement.body.data.field = elementField;
+      } else {
+        newElement.body.destination.field = elementField;
       }
 
       newElement.id = (new ObjectId).toString();
