@@ -7,10 +7,10 @@
     </div>
     <div class="user-input-matches">
       <div class="user-input-match" :ref="element.id">
-        Collect Email
+        Collect
       </div>
       <div class="user-input-fail" :ref="`${element.id}-fail`">
-        Doesn't Collect Email
+        Doesn't Collect
         <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-step-popup>
       </div>
     </div>
