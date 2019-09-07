@@ -20,7 +20,7 @@
         </div>
         Broadcsat
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <livechat/>
         </div>
@@ -142,6 +142,7 @@ body {
     width: 242px;
     background-color: $sectionBG;
     height: 100%;
+    flex-shrink: 0;
     border-right: 1px solid $borderColor;
   }
 

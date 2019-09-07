@@ -68,6 +68,23 @@
   flex-grow: 1;
 }
 
+.dh-info {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: $textColor;
+  font-size: 18px;
+  line-height: 22px;
+
+  svg {
+    margin-bottom: 36px;
+  }
+}
+
 strong {
   font-weight: 500;
 }

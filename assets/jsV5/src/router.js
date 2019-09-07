@@ -49,7 +49,7 @@ export default new Router({
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         // { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: broadcastBuilder },
         { name: 'audience', path: 'audience', component: Audience },
-        { name: 'livechat', path: 'livechat/:threadId?', component: accountThreadMessages },
+        { name: 'livechat', path: 'livechat/:threadId?', component: LiveChat },
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },

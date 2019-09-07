@@ -1,12 +1,86 @@
 <template>
-  <div class="thread-content-messages w800" >
-    <div class="container-area">
+  <div class="dh-live-chat">
+    <div class="dh-accounts">
+      <div class="dh-accounts-header">
+        Discussions
+        <task />
+      </div>
+      <div class="dh-accounts-list">
+        <router-link :to="{ name: 'livechat', params: { threadId: thread.id } }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
+          <div class="dh-account-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
+          <div>
+            <div class="dh-account-name">{{thread.contactProfile.username}}</div>
+            <div class="dh-account-last-message">Here is should be a last message Here is should be a last message Here is should be a last message Here is should be a last message Here is should be a last message</div>
+          </div>
+        </router-link>
+      </div>
+    </div>
+    <div class="dh-chat" v-if="$route.params.threadId">
+      <template v-if="threadMessages && threadMessages.length">
+        <div class="dh-messages">
+          <div class="dh-messages-header">
+            <ellipsis />
+          </div>
+          <div class="dh-messages-wrapper" ref="threadMessages">
+            <div class="dh-messages-list">
+              <thread-message
+              v-for="(message, index) in threadMessages"
+              :key="message.id"
+              :message="message"
+              :owner="account"
+              :prev-message="threadMessages[index - 1]"
+              :contact-profile="contactProfile"
+              ></thread-message>
+            </div>
+            <div class="dh-message-send">
+              <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage"></textarea>
+              <div class="dh-message-link">
+                <el-popover class="upload-message" v-if="media.length" placement="right">
+                  <div class="uploaded-files">
+                    <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
+                  </div>
+                  <div slot="reference">Attached {{media.length}} file(s)</div>
+                </el-popover>
+                <div class="upload-file">
+                  <dh-link/>
+                  <input type="file" @change="uploadFile"/>
+                </div>
+              </div>
+              <div class="dh-message-button">
+                <send />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dh-contact-profile" v-if="allThreads && allThreads.length">
+          <div class="dh-contact-profile-userpic" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
+          <div class="dh-contact-profile-names">
+            <div class="dh-contact-profile-fullname">
+              User Full Name
+            </div>
+            <div class="dh-contact-profile-name">
+              {{currentThread.contactProfile.username}}
+            </div>
+          </div>
+        </div>
+      </template>
+      <loader v-else/>
+    </div>
+    <div class="dh-info" v-else>
+      <nolivechat/>
+      <span>
+        Select one of the discussion to see<br>
+        new messages
+      </span>
+    </div>
+    <!-- <div class="dh-account-info"></div> -->
+    <!-- <div class="container-area">
       <div class="threades-info">
         <div class="threads-controls">
           <input placeholder="Search" v-model="filters.username_query" @keypress.enter="getAudience"/>
         </div>
         <div class="threads-list" >
-          <router-link :to="{ name: 'accountThreadMessages', params: { threadId: thread.id } }" class="list-item" v-for="thread in allThreads" :key="thread.id">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id } }" class="list-item" v-for="thread in allThreads" :key="thread.id">
             <div class="user-row">
               <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
               {{thread.contactProfile.username}}
@@ -33,11 +107,11 @@
         </div>
         <div class="thread-message-send">
           <el-popover class="upload-message" v-if="media.length" placement="right">
-              <div class="uploaded-files">
-                <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
-              </div>
-              <div slot="reference">Attached {{media.length}} file(s)</div>
-            </el-popover>
+            <div class="uploaded-files">
+              <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
+            </div>
+            <div slot="reference">Attached {{media.length}} file(s)</div>
+          </el-popover>
           <div class="upload-file">
             <input type="file" @change="uploadFile"/>
           </div>
@@ -57,30 +131,23 @@
           <div class="pre-loader"></div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
   import axios from 'axios'
   import { Popover } from "element-ui"
   import defaultAvatar from '../assets/ig-avatar.jpg'
+  import dhLink from '../../../jsV5/src/assets/link.svg'
+  import task from '../../../jsV5/src/assets/task.svg'
+  import send from '../../../jsV5/src/assets/send.svg'
+  import ellipsis from '../../../jsV5/src/assets/ellipsis.svg'
+  import nolivechat from '../../../jsV5/src/assets/nolivechat.svg'
   import threadMessage from '../component/threadMessage.vue'
   import moment from 'moment'
+  import loader from '../../../jsV5/src/components/dh-loader'
 
   export default {
-    beforeRouteUpdate(to, from, next) {
-      clearInterval(this.requestInterval)
-      this.source.cancel('Cancel on turn on other user');
-
-      this.lastMessage = {};
-      this.threadMessages = null;
-      this.contactProfile = null;
-
-      this.getUpdates(to.params.threadId);
-
-      next()
-    },
-
     data() {
       return {
         allThreads: [],
@@ -101,7 +168,13 @@
 
     components: {
       'el-popover': Popover,
-      threadMessage
+      threadMessage,
+      task,
+      nolivechat,
+      loader,
+      ellipsis,
+      dhLink,
+      send
     },
 
     computed: {
@@ -111,6 +184,13 @@
 
       account() {
         return this.$store.state.currentAccount;
+      },
+
+      currentThread() {
+        const { allThreads } = this;
+        const { threadId } = this.$route.params;
+
+        return allThreads.find(thread => thread.id == threadId);
       },
 
       subscribed() {
@@ -180,6 +260,8 @@
         this.source = CancelToken.source();
         threadId = threadId || this.$route.params.threadId
 
+        if (!threadId) return;
+
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
           params: {
@@ -236,11 +318,24 @@
           this.allThreads = threadList;
         })
       },
+
+      routeUpdate(to, from, next) {
+        clearInterval(this.requestInterval)
+        this.source.cancel('Cancel on turn on other user');
+
+        this.lastMessage = {};
+        this.threadMessages = null;
+        this.contactProfile = null;
+
+        this.getUpdates(to.params.threadId);
+
+        next()
+      }
     },
 
     created() {
-      this.getUpdates();
       this.getAudience();
+      this.getUpdates();
     },
 
     beforeDestroy() {
@@ -258,9 +353,16 @@
 
           this.requestInterval= setInterval(this.getUpdates, 2000);
 
+          if (!threadMessages) return;
+
           threadMessages.scrollTop = threadMessages.scrollHeight;
         })
-      }
+      },
+
+      '$store.state.currentAccount'() {
+        this.getAudience();
+        this.getUpdates();
+      },
     }
   }
 </script>
@@ -279,151 +381,180 @@
     }
   }
 
-  .thread-content-messages {
-    padding: 15px;
+  .dh-live-chat {
+    width: 100%;
+    background-color: $sectionBG;
+    border-radius: 4px;
+    display: flex;
+    flex-grow: 1;
+    max-height: calc(100vh - 173px);
 
-    .container-area {
-      height: 100%;
+    .dh-accounts {
+      border-right: 1px solid $secondBorderColor;
+      width: 262px;
+      flex-shrink: 0;
+      // height: 100%;
+    }
+
+    .dh-accounts-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      height: 58px;
+      border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-accounts-list {
+      max-height: calc(100% - 57px);
+      overflow: auto;
+    }
+
+    .dh-account {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      height: 88px;
+      padding: 20px;
+      border-bottom: 1px solid #F2F4F6;
+    }
+
+    .dh-account-userpic {
+      width: 35px;
+      height: 35px;
+      background-color: rgba($borderColor, .5);
+      border-radius: 50%;
+      background-position: center;
+      background-size: cover;
+      flex-shrink: 0;
+      margin-right: 16px;
+    }
+
+    .dh-account-name {
+      margin-bottom: 7px;
+    }
+
+    .dh-account-last-message {
+      max-height: 36px;
+      font-size: 12px;
+      line-height: 18px;
+      color: $textColor;
+      overflow: hidden;
+    }
+
+    .dh-chat {
+      width: 100%;
       display: flex;
     }
 
-    .threades-info{
-      width: 35%;
-      flex-shrink: 0;
-      // border-right: 1px solid #EEEEEE;
-    }
-
-    .threads-list{
-      height: calc(100% - 50px);
-      overflow: auto;
-      border-right: 1px solid #EEEEEE;
-    }
-
-    .list-item {
-      text-decoration: none;
-
-      &.router-link-active {
-         background-color: #6A12CB;
-         color: #fff;
-      }
-    }
-
-    .threads-controls {
-      padding: 5px 20px;
-      border-bottom: 1px solid #EEEEEE;
-    }
-
-    .instagram-chat {
-      // height: 100%;
+    .dh-messages {
+      height: 100%;
       flex-grow: 1;
     }
 
-    .loading-content {
-      height: calc(100% - 50px);
-    }
-
-    .content-panel {
-      display: flex;
-      padding: 12px 10px 13px;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 1px solid #EEEEEE;
-      color: #828282;
-    }
-
-    .avatar {
-      width: 25px;
-      height: 25px;
-      background-position: center;
-      background-size: contain;
-      border-radius: 50%;
-      overflow: hidden;
-      margin-right: 10px;
-    }
-
-    .thread-list-wrapper {
-      background-color: #fff;
-      margin: 0 auto;
-      width: 450px;
-      height: 100%;
-      max-height: calc(100% - 155px);
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 15px;
-    }
-
-    .thread-list {
+    .dh-messages-wrapper {
+      height: calc(100% - 58px);
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      min-height: 100%;
     }
 
-    .thread-message-send {
-      padding: 10px;
-      height: 90px;
-      background-color: #fff;
-      margin: 0 auto;
-      width: 450px;
+    .dh-messages-list {
+      overflow: auto;
+    }
+
+    .dh-message-send {
+      background-color: $secondBorderColor;
       display: flex;
-      position: relative;
-
-      .upload-message {
-        position: absolute;
-        bottom: 100%;
-        cursor: pointer;
-        background-color: #fff;
-        padding: 0 10px;
-      }
-
-      .upload-file {
-        width: 50px;
-        position: relative;
-        background: url(../assets/clip.svg) no-repeat center;
-        opacity: .4;
-        overflow: hidden;
-
-        &:hover {
-          cursor: pointer;
-          opacity: .6;
-        }
-
-        input {
-          cursor: pointer;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          opacity: 0;
-        }
-      }
+      align-items: center;
 
       textarea {
-        width: 100%;
+        appearance: none;
         resize: none;
-        border-color: #f1f1f1;
-        border-radius: 15px;
-        padding: 0 15px;
+        border: none;
+        background-color: transparent;
+        padding: 10px 19px 12px;
         outline: none;
-        line-height: 22px;
-        font-size: 16px;
-        height: 70px;
+        flex-grow: 1;
+        font: 14px/17px Rubik;
+      }
+    }
+
+    .dh-messages-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 20px;
+      height: 58px;
+      border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-message-button {
+      width: 30px;
+      margin-right: 19px;
+      margin-left: 10px;
+    }
+
+    .upload-message {
+      position: absolute;
+      bottom: 100%;
+      cursor: pointer;
+      background-color: #fff;
+      padding: 0 10px;
+    }
+
+    .upload-file {
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 20px;
+
+      &:hover {
+        cursor: pointer;
+        opacity: .6;
       }
 
-      img {
-        width: 22px;
-        margin-right: 5px;
+      input {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
       }
+    }
 
-      button {
-        padding: 12px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-      }
+    .dh-contact-profile {
+      width: 262px;
+      flex-shrink: 0;
+      border-left: 1px solid $secondBorderColor;
+    }
+
+    .dh-contact-profile-userpic {
+      width: 100%;
+      padding-bottom: 100%;
+      background-color: rgba($borderColor, .5);
+      background-position: center;
+      background-size: cover;
+      border-radius: 0 4px 0 0;
+    }
+
+    .dh-contact-profile-names {
+      padding: 22px;
+      border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-contact-profile-fullname {
+      font-size: 18px;
+      line-height: 22px;
+    }
+
+    .dh-contact-profile-name {
+      color: $textColor;
     }
   }
 </style>
-
 

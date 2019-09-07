@@ -4,19 +4,19 @@
       {{date(message.sentAt)}}
     </div>
     <div class="body">
-      <div class="avatar" v-if="!isMe" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
+      <div class="avatar" :style="{'background-image': `url(${avatarUrl})`}"></div>
       <div :class="{
         wrapper: true,
         'bot-message': message.botCampaign,
         'live-message': isMe && !message.botCampaign,
         'queue-message': isMe && !message.sentAt && message.toBeSentAt
         }" :title="message.sentAt && date(message.sentAt)">
-        <div class="type" :title="message.typeExtended" v-if="message.type">
+        <div class="type" :title="message.typeExtended" v-if="false && message.type">
           {{ message.type }}
           <router-link
             class="bot-campaign"
             :to="{ name: 'accountCampaign', params: { campaignId: message.botCampaign.id } }"
-            v-if="message.botCampaign"
+            v-if="false && message.botCampaign"
             >
             {{message.botCampaign.name}}
           </router-link>
@@ -29,8 +29,6 @@
 
       <div :class="{indicator: true, sent: message.isSeen}" v-if="isMe" :title="!message.sentAt && message.toBeSentAt && `Sending at ${ date(message.toBeSentAt)}`"
         >
-        <font-awesome-icon :icon="['fas', 'check-circle']" v-if="message.sentAt"/>
-        <font-awesome-icon :icon="['far', 'clock']" v-else-if="message.toBeSentAt"/>
       </div>
     </div>
   </div>
@@ -44,18 +42,23 @@ import image from '../assets/svg/image-placeholder.svg'
 export default {
   data() {
     return {
-      defaultAvatar,
       image,
     }
   },
 
-  props:['message', 'prevMessage', 'contactProfile'],
+  props:['message', 'prevMessage', 'contactProfile', 'owner'],
 
   computed: {
     isMe() {
       const { message, contactProfile } = this;
 
       return contactProfile.username !== message.senderUsername
+    },
+
+    avatarUrl() {
+      const { isMe, contactProfile, owner } = this;
+
+      return (isMe ? owner.profilePicUrl : contactProfile.profilePicUrl) || defaultAvatar;
     },
 
     isShowDate() {
@@ -103,11 +106,16 @@ export default {
   }
 
   .avatar {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     margin: 0 10px 5px 0;
     align-self: flex-end;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     flex-shrink: 0;
+    border-radius: 50%;
+    background-color: rgba(232, 236, 239, 0.5);
   }
 
   .body {
@@ -159,29 +167,20 @@ export default {
   }
 
   .wrapper {
-    padding: 15px;
-    border: 1px solid #DEDEDE;
-    border-radius: 25px;
-    margin-bottom: 10px;
+    padding: 9px 19px 4px;
+    border-radius: 18px 18px 18px 0;
+    background-color: $secondBorderColor;
+    // margin-right: 69px;
+    margin-bottom: 6px;
 
     &.bot-message {
-      border-color: #742BF9 !important;
+      background-color: #742BF9 !important;
+      color: #fff
     }
 
     &.live-message {
-      border-color: #2674f5 !important;
-
-      & + .sent {
-        color: #2674f5 !important;
-      }
-    }
-
-    &.queue-message {
-      border-color: #e84f45 !important;
-
-      & + .indicator {
-        color: #e84f45 !important;
-      }
+      background-color: #2674f5 !important;
+      color: #fff
     }
   }
 
@@ -196,8 +195,13 @@ export default {
     }
 
     .wrapper {
-      background-color: #EFEFEF;
-      border-color: #EFEFEF;
+      background-color: $secondBorderColor;
+      border-color: $secondBorderColor;
+      border-radius: 18px 18px 0 18px;
+    }
+
+    .avatar {
+      order: 1;
     }
   }
 }
