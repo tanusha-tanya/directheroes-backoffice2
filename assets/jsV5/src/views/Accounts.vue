@@ -104,12 +104,12 @@ export default {
     },
 
     accountClick(account) {
-      if (account.isLoggedIn) {
+      // if (account.isLoggedIn) {
         this.$router.push({ name: 'accountHome', params: { accountId: account.id } })
-      } else {
-        this.accountToAuth = account;
-        this.isAddAccount = true;
-      }
+      // } else {
+      //   this.accountToAuth = account;
+      //   this.isAddAccount = true;
+      // }
     },
 
     setAuthAccount(account) {
