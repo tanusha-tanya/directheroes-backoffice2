@@ -24,6 +24,11 @@
       @add-step="$emit('create-step', $event)"
       v-if="!hasOnMatch"
     ></add-step-popup>
+    <add-mid-step-popup
+      :available-list="availableList"
+      @add-step="addMidStep($event)"
+      v-else
+    ></add-mid-step-popup>
     <div
       class="rule-delete-button"
       @click="$emit('delete-trigger', element)"
@@ -42,7 +47,9 @@
 
 <script>
 import utils from '../../utils';
+import ObjectId from '../../utils/ObjectId';
 import addStepPopup from '../addStepPopup';
+import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
 import elementsPermissions from '../../elements/permissions'
@@ -63,6 +70,7 @@ export default {
     keywords,
     addStepPopup,
     elementWarning,
+    addMidStepPopup
   },
 
   computed: {
@@ -98,6 +106,31 @@ export default {
 
       return elements.find(element => element.type === 'rule')
     },
+  },
+
+  methods: {
+    addMidStep(element) {
+      const { hasOnMatch } = this;
+      const step = {
+        id: (new ObjectId).toString(),
+        elements: [
+          {
+            id: (new ObjectId).toString(),
+            ...element
+          }
+        ]
+      }
+
+      step.elements.push({
+        id: (new ObjectId).toString(),
+        type: 'linker',
+        target: hasOnMatch.target
+      })
+
+      hasOnMatch.target = step.id;
+
+      this.$emit('add-step', step);
+    }
   }
 };
 </script>

@@ -7,6 +7,7 @@
         :key="element.id"
         @delete-trigger="deleteRule"
         @create-step="createStep(element, $event)"
+        @add-step="$emit('add-step', $event)"
         :elements="elements"
         ></rule-item>
     </template>
@@ -119,7 +120,7 @@ export default {
     border-bottom: 1px solid #D8D8D8;
     color: #828282;
 
-    .add-step-button {
+    .add-step-button,  {
       position: absolute;
       right: -14px;
       top: calc(50% - 14px);
