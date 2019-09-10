@@ -6,6 +6,6 @@ export default {
   fromActionStep: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier'],
   fromCondition: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier'],
   fromUserInputFails: ['sendText', 'sendMedia', 'delay', 'followers'],
-  fromUserInput: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier'],
+  fromUserInput: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier', 'addCategory'],
   fromBroadcastFlow: ['sendText', 'sendMedia', 'followers'],
 }
