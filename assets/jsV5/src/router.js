@@ -8,6 +8,7 @@ import CampaignList from './views/CampaignList'
 import BroadcastList from './views/BroadcastList'
 import Audience from './views/Audience'
 import LiveChat from './views/LiveChat'
+import Settings from './views/Settings'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -32,13 +33,13 @@ export default new Router({
   routes:[
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
     // { path: '/videohelp', name: 'video-help', component: videoHelp },
-    // { path: '/settings', component: accountDH,
-    //   children: [
-    //     { name: 'dhProfile', path: '', component: accountDHProfile },
-    //     { name: 'dhPayments', path: 'payments', component: accountDHPayment },
-    //     { name: 'dhSubscriptions', path: 'subscriptions', component: accountDHSubscription },
-    //   ]
-    // },
+    { path: '/settings', name: 'settings', component: Settings,
+      // children: [
+      //   { name: 'dhProfile', path: '', component: accountDHProfile },
+      //   { name: 'dhPayments', path: 'payments', component: accountDHPayment },
+      //   { name: 'dhSubscriptions', path: 'subscriptions', component: accountDHSubscription },
+      // ]
+    },
     // { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
     // { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },
     { path: '/:accountId', component: AccountDetails,
