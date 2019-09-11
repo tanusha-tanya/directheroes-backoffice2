@@ -9,6 +9,7 @@
         @create-step="createStep(element, $event)"
         @add-step="$emit('add-step', $event)"
         :elements="elements"
+        v-if="element.displaySettings.subType !== 'settings'"
         ></rule-item>
     </template>
     <div class="add-rule-button">
