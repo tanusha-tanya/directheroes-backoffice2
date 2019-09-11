@@ -118,56 +118,6 @@ export default {
 
       getLinkElements(stepRows[0])
 
-      // steps.forEach((step, index) => {
-      //   if (!index) {
-      //     stepRows.push([step]);
-      //     levelIndex = 1;
-      //   } else {
-      //     stepRows.some((stepRow, rowIndex) => stepRow.some((stepRowItem, rowItemIndex) => {
-      //       if (stepRowItem !== step.id) return;
-
-      //       levelIndex = rowIndex + 1;
-      //       stepRows[rowIndex].splice(rowItemIndex, 1, step);
-
-      //       return true;
-      //     }))
-      //   }
-
-      //   const linkElements = [];
-
-      //   step.elements.filter(element => element.type === 'group' || element.type === 'rule' || element.type === 'linker').forEach(element => {
-      //     const elementAction = (matchElement, suffix = '') => {
-      //       const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-      //       const failTarget = matchElement.onFail && matchElement.onFail.target;
-
-      //       linkElements.push(target || null);
-
-      //       if (matchElement !== 'linker' && failTarget) {
-      //         arrows.push({parent: `${element.id}-fail`, child: failTarget});
-      //         linkElements.push(failTarget)
-      //       }
-
-      //       if (target) {
-      //         arrows.push({parent: element.id + suffix, child: target});
-      //       }
-      //     };
-
-      //     if (element.displaySettings && element.displaySettings.type === 'followers') {
-      //       element.elements.forEach(elementAction);
-      //     } else {
-      //       elementAction(utils.getOnMatchElement(element));
-      //     }
-      //   })
-
-      //   if (!linkElements.length) return;
-
-      //   if (!stepRows[levelIndex]) {
-      //     stepRows.push(linkElements)
-      //   } else {
-      //     stepRows[levelIndex].push(...linkElements)
-      //   }
-      // });
-
       this.arrows = arrows;
 
       return stepRows

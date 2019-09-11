@@ -14,10 +14,20 @@
               <div class="condition-item-match" :ref="element.id">
                 Reply
                 <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-step-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element)"
+                  v-else
+                ></add-mid-step-popup>
               </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
                 <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-step-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
+                  v-else
+                ></add-mid-step-popup>
               </div>
             </div>
           </div>
@@ -35,6 +45,11 @@
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
                 <add-step-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-step-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, subElement)"
+                  v-else
+                ></add-mid-step-popup>
                 <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteFollowersElement(subElement)">
                   <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -58,6 +73,11 @@
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ elseText }}
                 <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, lastFollowersRule, true)"
+                  v-else
+                ></add-mid-step-popup>
               </div>
             </div>
           </div>
@@ -77,6 +97,7 @@ import Vue from 'vue';
 import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
 import addStepPopup from '../addStepPopup';
+import addMidStepPopup from '../addMidStep';
 import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning';
@@ -90,7 +111,8 @@ export default {
     elementWarning,
     addStepPopup,
     timeout,
-    inputAutosize
+    inputAutosize,
+    addMidStepPopup
   },
 
   computed: {
@@ -194,6 +216,42 @@ export default {
       }
 
       followersElement.elements.splice(followersElement.elements.indexOf(element), 1);
+    },
+
+    addMidStep(element, condition, onFail) {
+      const step = {
+        id: (new ObjectId).toString(),
+        elements: [
+          {
+            id: (new ObjectId).toString(),
+            ...element
+          }
+        ]
+      }
+      let rule = condition;
+      let link;
+
+      console.log(condition, condition.type !== 'rule');
+
+      if (condition.type !== 'rule') {
+        rule = this.getRule(condition);
+      }
+
+      if (onFail) {
+        link = rule.onFail;
+      } else {
+        link = rule.onMatch;
+      }
+
+      step.elements.push({
+        id: (new ObjectId).toString(),
+        type: 'linker',
+        target: link.target
+      })
+
+      link.target = step.id;
+
+      this.$emit('add-step', step);
     }
   }
 }

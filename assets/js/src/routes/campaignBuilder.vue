@@ -20,14 +20,14 @@
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
         <div class="campaign-builder-settings">
-          <!-- <div class="campaign-builder-option">
-            <el-switch v-model="currentCampaign.settings.allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
-          </div> -->
-          <div class="campaign-builder-option" v-if="false && dhAccount.isViewedByAdmin">
-            <el-switch v-model="currentCampaign.settings.messageRequestOnly" :width="22"></el-switch> Trigger message request only
+          <div class="campaign-builder-option">
+            <el-switch v-model="allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
           </div>
-          <div class="campaign-builder-option" v-if="false && dhAccount.isViewedByAdmin">
-            <el-switch v-model="currentCampaign.settings.nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
+          <div class="campaign-builder-option">
+            <el-switch v-model="messageRequestOnly" :width="22"></el-switch> Trigger message request only
+          </div>
+          <div class="campaign-builder-option">
+            <el-switch v-model="nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
           </div>
           <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
             <img src="../assets/svg/trash.svg"/> Delete campaign
@@ -68,6 +68,7 @@
 </template>
 <script>
 import elementsPermissions from '../elements/permissions'
+import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../elements/settings'
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
@@ -107,7 +108,7 @@ export default {
 
       if (!currentAccountData) return;
 
-      return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      return currentAccountData.campaigns //.filter(campaign => !campaign.isArchived)
     },
 
     hasWarning() {
@@ -122,6 +123,98 @@ export default {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
       return elementsPermissions.fromFlow.concat(messageTypes);
+    },
+
+    settings() {
+      const { currentCampaign } = this;
+      const entryStep = currentCampaign.steps.find(step => step.displaySettings.isEntry);
+      let settings = entryStep.elements.find(element => element.displaySettings.subType === 'settings');
+
+      if (!settings) {
+        settings = {
+          type: 'group',
+          displaySettings: {
+            subType: 'settings'
+          },
+          elements: []
+        }
+
+        entryStep.elements.splice(0,0, settings);
+      }
+
+      return entryStep && settings;
+    },
+
+    allowReEnter: {
+      get() {
+        const { settings } = this;
+
+        return !Boolean(settings.elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered"))
+      },
+
+      set(value) {
+        const { elements } = this. settings;
+
+        if (!value) {
+          const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
+
+          newAllowReEnter.id = (new ObjectId).toString();
+
+          elements.push(newAllowReEnter);
+        } else {
+          const allowReEnter = elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered")
+
+          elements.splice(elements.indexOf(allowReEnter), 1)
+        }
+      }
+    },
+
+    messageRequestOnly: {
+      get() {
+        const { settings } = this;
+
+        return Boolean(settings.elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest"));
+      },
+
+      set(value) {
+        const { elements } = this. settings;
+
+        if (value) {
+          const newMessageRequestOnly = JSON.parse(JSON.stringify(messageRequestOnlyElement));
+
+          newMessageRequestOnly.id = (new ObjectId).toString();
+
+          elements.push(newMessageRequestOnly);
+        } else {
+          const messageRequestOnly = elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest")
+
+          elements.splice(elements.indexOf(messageRequestOnly), 1)
+        }
+      }
+    },
+
+    nonSubscribersOnly: {
+      get() {
+        const { settings } = this;
+
+        return Boolean(settings.elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed"));
+      },
+
+      set(value) {
+        const { elements } = this. settings;
+
+        if (value) {
+          const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
+
+          nonSubscribersOnly.id = (new ObjectId).toString();
+
+          elements.push(nonSubscribersOnly);
+        } else {
+          const nonSubscribersOnly = elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed")
+
+          elements.splice(elements.indexOf(nonSubscribersOnly), 1)
+        }
+      }
     }
   },
 

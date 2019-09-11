@@ -1,8 +1,10 @@
 const getOnMatchElement = (element) => {
-  const { type } = element;
+  const { type, displaySettings } = element;
   let matchElement = element;
 
   if (!['group', 'linker', 'rule'].includes(type)) return;
+
+  if (type === 'group' && !(displaySettings && displaySettings.subType === 'settings'))
 
   if (type === 'group') {
     matchElement = element.elements.find(element => element.type === 'rule');
