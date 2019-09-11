@@ -78,7 +78,7 @@ export default {
         row.forEach(stepRow => {
           if (!stepRow) return;
 
-          stepRow.elements.filter(element => element.type === 'group' || element.type === 'rule' || element.type === 'linker').forEach(element => {
+          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
             const elementAction = (matchElement, suffix = '') => {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
@@ -301,6 +301,15 @@ export default {
               this.findEntryStep();
             });
           };
+
+          if (this._isMounted) {
+            this.$nextTick(() => {
+              const { builderArea } = this.$refs;
+
+              builderArea.style.width = `${builderArea.scrollWidth}px`;
+              builderArea.style.height = `${builderArea.scrollHeight}px`
+            });
+          }
         }
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
