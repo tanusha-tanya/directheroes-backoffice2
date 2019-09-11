@@ -197,13 +197,13 @@ export default {
       get() {
         const { settings } = this;
 
-        return !Boolean(settings.elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed"));
+        return Boolean(settings.elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed"));
       },
 
       set(value) {
         const { elements } = this. settings;
 
-        if (!value) {
+        if (value) {
           const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
 
           nonSubscribersOnly.id = (new ObjectId).toString();
