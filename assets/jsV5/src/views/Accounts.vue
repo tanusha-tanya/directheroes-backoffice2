@@ -19,16 +19,17 @@
         </div>
         <div
           class="dh-account-card"
+          :class="{
+            'dh-account-card': true,
+            'dh-account-fail-status': !account.isLoggedIn,
+            'dh-account-success-status': account.isLoggedIn
+          }"
           @click="accountClick(account, $event)"
           v-for="account in accounts"
           :to="{ name: 'accountHome', params: { accountId: account.id }}"
           :key="account.id">
           <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
-            <div :class="{
-              'dh-account-status': true,
-              'dh-account-fail-status': !account.isLoggedIn,
-              'dh-account-success-status': account.isLoggedIn
-              }">
+            <div class="dh-account-status">
             </div>
           </div>
           <div class="dh-account-full-name">
@@ -40,6 +41,9 @@
           <div class="dh-account-follow-info">
             <span><strong>{{account.followerCount || 0}}</strong> followers</span>
             <span><strong>{{account.followingCount || 0}}</strong> following</span>
+          </div>
+          <div class="dh-account-connect-error" v-if="!account.isLoggedIn">
+            <span><warning /> Connect Instagram Account</span>
           </div>
         </div>
       </div>
@@ -54,6 +58,7 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import addAccountDialog from '../../../js/src/component/addAccountDialog'
 import status from '../assets/plus.svg'
+import warning from '../assets/warning.svg'
 
 export default {
   data() {
@@ -68,6 +73,7 @@ export default {
     dhFooter,
     addAccountDialog,
     status,
+    warning
   },
 
   computed: {
@@ -104,12 +110,12 @@ export default {
     },
 
     accountClick(account) {
-      // if (account.isLoggedIn) {
+      if (account.isLoggedIn) {
         this.$router.push({ name: 'accountHome', params: { accountId: account.id } })
-      // } else {
-      //   this.accountToAuth = account;
-      //   this.isAddAccount = true;
-      // }
+      } else {
+        this.accountToAuth = account;
+        this.isAddAccount = true;
+      }
     },
 
     setAuthAccount(account) {
@@ -131,6 +137,7 @@ export default {
     margin: 14px;
     width: 262px;
     height: 324px;
+    border-radius: 4px;
     background-color: $sectionBG;
     padding: 28px 32px;
     display: flex;
@@ -145,6 +152,37 @@ export default {
         color: $elementActiveColor;
       }
     }
+
+    &.dh-account-fail-status {
+      border: 1px solid $failColor;
+      box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
+
+      .dh-account-userpic {
+        border-color: $failColor;
+      }
+
+      .dh-account-status {
+        width: 14px;
+        height: 14px;
+        border: 4px solid $failColor;
+        bottom: 9px;
+        background-color: $sectionBG;
+      }
+    }
+
+    &.dh-account-success-status {
+      .dh-account-userpic {
+        border-color: $successColor;
+      }
+
+      .dh-account-status {
+        width: 14px;
+        height: 14px;
+        border: 4px solid $successColor;
+        bottom: 9px;
+        background-color: $sectionBG;
+      }
+    }
   }
 
   .dh-account-userpic {
@@ -155,31 +193,17 @@ export default {
     border-radius: 50%;
     background-position: center;
     background-size: cover;
+    border: 2px solid transparent;
   }
 
   .dh-account-status {
     color: $textColor;
     position: absolute;
     bottom: 0;
-    right: 10px;
-
-    &.dh-account-fail-status {
-      width: 14px;
-      height: 14px;
-      border: 4px solid $failColor;
-      border-radius: 50%;
-      bottom: 10px;
-      background-color: $sectionBG;
-    }
-
-    &.dh-account-success-status {
-      width: 14px;
-      height: 14px;
-      border: 4px solid $successColor;
-      border-radius: 50%;
-      bottom: 10px;
-      background-color: $sectionBG;
-    }
+    right: 8px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background-color: #fff;
   }
 
   .dh-account-full-name {
@@ -208,6 +232,14 @@ export default {
     line-height: 21px;
     text-align: center;
     margin-top: 37px;
+  }
+
+  .dh-account-connect-error {
+    color: $failColor;
+    white-space: nowrap;
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
   }
 }
 </style>
