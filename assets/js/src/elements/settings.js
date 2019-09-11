@@ -30,7 +30,7 @@ export let nonSubscribersOnlyElement = {
     entity: "contact",
     field: "subscribed",
     operand: "eq",
-    value: true
+    value: false
   },
   onMatch: {
     action: "fallthrough"
