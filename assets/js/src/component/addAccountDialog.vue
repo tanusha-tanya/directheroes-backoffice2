@@ -82,7 +82,7 @@
           <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
         </div>
       </div>
-      <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+      <button :class="{ 'dh-button': true, loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
       <div class="step">
@@ -100,7 +100,7 @@
           <el-radio v-model="selected2FAMethod" label="2">Backup code</el-radio>
         </div>
         <div class="step-verify">
-          <button @click="twoFAMethodChoose=false">Choose</button>
+          <button class="dh-button" @click="twoFAMethodChoose=false">Choose</button>
         </div>
       </div>
     </template>
@@ -117,8 +117,8 @@
         <input placeholder="Verification Code" v-model="code" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
-          <button :class="{ loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
-          <button v-if="selected2FAMethod != 2" :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+          <button :class="{ 'dh-button': true, loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
+          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
         </div>
       </div>
     </template>
@@ -362,6 +362,8 @@ export default {
 </script>
 <style lang="scss">
 .add-account-dialog {
+  background-color: transparent !important;
+
   .el-dialog {
     margin: 64px 0 0 auto !important;
     height: calc(100% - 126px);
@@ -370,17 +372,11 @@ export default {
     overflow: auto;
     box-shadow: none;
     border-left: 1px solid $borderColor;
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
-
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
 
     .el-dialog__header, .el-dialog__body {
       padding: 0;
       word-break: break-word !important;
+      background-color: transparent;
     }
 
     .el-dialog__title {

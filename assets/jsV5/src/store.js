@@ -59,5 +59,29 @@ export default new Vuex.Store({
         commit('set', { path: 'isFirstLoad', value: false });
       })
     },
+
+    addAccount({ state, commit }, params) {
+      const { accounts } = state;
+      const request = accountRequestHandler('post', params)
+
+      request.then(({ data }) => {
+        const { account } = data.response.body;
+
+        accounts.push(account);
+      });
+
+      return request
+    },
+
+    deleteAccount({ state, commit }, params) {
+      const { accounts } = state;
+      const request = accountRequestHandler('delete', params)
+
+      request.then(({ data }) => {
+        accounts.splice(accounts.indexOf(params),1)
+      })
+
+      return request
+    },
   }
 })

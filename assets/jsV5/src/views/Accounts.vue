@@ -29,6 +29,11 @@
           :to="{ name: 'accountHome', params: { accountId: account.id }}"
           :key="account.id">
           <el-popover placement="bottom" trigger="click"  v-if="dhAccount">
+            <div class="dh-options">
+              <div class="dh-option" @click="accountToDelete = account">
+                <trash /> Delete
+              </div>
+            </div>
             <div class="dh-account-options-icon" slot="reference" @click="blockEvent">
               <ellipsis />
             </div>
@@ -52,6 +57,12 @@
           </div>
         </div>
       </div>
+      <dh-confirm-dialog
+        v-model="isDeleteAccount"
+        title="Delete Instagram account"
+        message="Are you sure you want to delete account?"
+        @success="deleteAccount">
+      </dh-confirm-dialog>
     </div>
     <dh-footer></dh-footer>
     <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog>
@@ -61,26 +72,31 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhConfirmDialog from '../components/dh-confirm-dialog'
 import addAccountDialog from '../../../js/src/component/addAccountDialog'
 import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
+import trash from '../assets/trash.svg'
 
 export default {
   data() {
     return {
       accountToAuth: null,
       isAddAccount: false,
+      accountToDelete: false,
     }
   },
 
   components: {
     dhHeader,
     dhFooter,
+    dhConfirmDialog,
     addAccountDialog,
     status,
     warning,
-    ellipsis
+    ellipsis,
+    trash
   },
 
   computed: {
@@ -100,6 +116,17 @@ export default {
       const { dhAccount, accounts} = this;
 
       return accounts.length >= dhAccount.igAccountLimit;
+    },
+
+    isDeleteAccount: {
+      get() {
+        const { accountToDelete } = this;
+
+        return Boolean(accountToDelete)
+      },
+      set(value) {
+        this.accountToDelete = value;
+      }
     }
   },
 
@@ -128,6 +155,14 @@ export default {
     setAuthAccount(account) {
       this.accountToAuth = account;
     },
+
+    deleteAccount() {
+      const { accountToDelete } = this;
+
+      this.$store.dispatch('deleteAccount', accountToDelete).then(() => {
+        this.accountToDelete = false;
+      });
+    }
   }
 }
 </script>

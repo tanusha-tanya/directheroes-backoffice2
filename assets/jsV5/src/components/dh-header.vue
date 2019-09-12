@@ -25,10 +25,10 @@
             {{dhAccount.username}}
           </div>
         </div>
-        <div class="dh-account-popover-options">
-          <router-link :to="{ name: 'settings'}" class="dh-account-popover-option"><profile /> Your profile</router-link>
-          <router-link :to="{ name: 'settings'}" class="dh-account-popover-option"><gear /> Settings</router-link>
-          <a href="/logout" class="dh-account-popover-option"><signout /> Sign out</a>
+        <div class="dh-options">
+          <router-link :to="{ name: 'settings'}" class="dh-option"><profile /> Your profile</router-link>
+          <router-link :to="{ name: 'settings'}" class="dh-option"><gear /> Settings</router-link>
+          <a href="/logout" class="dh-option"><signout /> Sign out</a>
         </div>
         <div class="dh-header-account-icon" slot="reference">
           <profile />
@@ -106,14 +106,7 @@ export default {
 }
 
 div.dh-account-popover.el-popper {
-  margin-top: 17px;
-  padding: 0;
-  box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
-  border-radius: 4px;
-
   div.popper__arrow {
-    border-width: 15px;
-    top: -30px;
     border-bottom-color: #fff;
 
     &:after {
@@ -135,31 +128,6 @@ div.dh-account-popover.el-popper {
 
   .dh-account-popover-email {
     color: $textColor;
-  }
-
-  .dh-account-popover-options {
-    padding: 7px;
-  }
-
-  .dh-account-popover-option {
-    padding: 13px;
-    font-size: 12px;
-    line-height: 14px;
-    font-weight: 500;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    color: inherit;
-    text-decoration: none;
-
-    svg {
-      width: 100%;
-      max-width: 13px;
-      flex-shrink: 0;
-      color: $elementsColor;
-      margin-right: 6px;
-    }
   }
 }
 </style>
