@@ -28,7 +28,7 @@
           v-for="account in accounts"
           :to="{ name: 'accountHome', params: { accountId: account.id }}"
           :key="account.id">
-          <el-popover placement="bottom" trigger="click"  v-if="dhAccount">
+          <el-popover placement="bottom" trigger="click">
             <div class="dh-options">
               <div class="dh-option" @click="accountToDelete = account">
                 <trash /> Delete
