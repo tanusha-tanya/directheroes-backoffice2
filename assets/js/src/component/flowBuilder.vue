@@ -163,7 +163,7 @@ export default {
             const checkpoint = elements.find(element => element.type === 'checkpoint');
             const action = elements.find(element => element.type === 'action');
 
-            action.checkpointId = checkpoint.id;
+            action.body.checkpointId = checkpoint.id;
           }
           break;
         case 'condition':
