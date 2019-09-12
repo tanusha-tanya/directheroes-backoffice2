@@ -29,6 +29,10 @@
     width: 19px;
     height: 19px;
   }
+
+  &:hover {
+    color: $elementActiveColor;
+  }
 }
 
 .dh-list {

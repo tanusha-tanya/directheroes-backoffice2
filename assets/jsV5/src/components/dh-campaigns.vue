@@ -13,11 +13,24 @@
           <div class="dh-campaign-name">{{campaign.name}}</div>
           <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
         </div>
-        <div class="dh-campaign-actions" @click="deleteCampaign(campaign)">
-          <ellipsis/>
-        </div>
+        <el-popover placement="bottom" trigger="click">
+          <div class="dh-options">
+            <div class="dh-option" @click="campaignToDelete = campaign">
+              <trash /> Delete
+            </div>
+          </div>
+          <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
+            <ellipsis />
+          </div>
+        </el-popover>
       </div>
     </div>
+    <dh-confirm-dialog
+        v-model="isDeleteCampaign"
+        title="Delete campaign"
+        message="Are you sure you want to delete campaign?"
+        @success="deleteCampaign">
+      </dh-confirm-dialog>
   </div>
 </template>
 
@@ -25,15 +38,26 @@
 import moment from 'moment'
 import plus from '../assets/plus.svg'
 import star from '../assets/star.svg'
+import dhConfirmDialog from '../components/dh-confirm-dialog'
 import ellipsis from '../assets/ellipsis.svg'
+import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
 
 export default {
+  data() {
+    return {
+      campaignToDelete: false,
+
+    }
+  },
+
   components: {
     plus,
     star,
+    trash,
     calendar,
-    ellipsis
+    ellipsis,
+    dhConfirmDialog
   },
 
   props: ['title', 'limit'],
@@ -49,6 +73,17 @@ export default {
       campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular');
 
       return limit ? campaigns.slice(0, limit) : campaigns;
+    },
+
+    isDeleteCampaign: {
+      get() {
+        const { campaignToDelete } = this;
+
+        return Boolean(campaignToDelete)
+      },
+      set(value) {
+        this.campaignToDelete = value;
+      }
     }
   },
 
