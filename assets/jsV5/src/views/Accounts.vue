@@ -28,6 +28,11 @@
           v-for="account in accounts"
           :to="{ name: 'accountHome', params: { accountId: account.id }}"
           :key="account.id">
+          <el-popover placement="bottom" trigger="click"  v-if="dhAccount">
+            <div class="dh-account-options-icon" slot="reference" @click="blockEvent">
+              <ellipsis />
+            </div>
+          </el-popover>
           <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
             <div class="dh-account-status">
             </div>
@@ -59,6 +64,7 @@ import dhFooter from '../components/dh-footer'
 import addAccountDialog from '../../../js/src/component/addAccountDialog'
 import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
+import ellipsis from '../assets/ellipsis.svg'
 
 export default {
   data() {
@@ -73,7 +79,8 @@ export default {
     dhFooter,
     addAccountDialog,
     status,
-    warning
+    warning,
+    ellipsis
   },
 
   computed: {
@@ -183,6 +190,12 @@ export default {
         background-color: $sectionBG;
       }
     }
+  }
+
+  .dh-account-options-icon {
+    position: absolute;
+    right:21px;
+    top: 17px;
   }
 
   .dh-account-userpic {
