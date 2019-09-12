@@ -20,13 +20,13 @@
       <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
         <div class="campaign-builder-settings">
-          <div class="campaign-builder-option">
+          <div class="campaign-builder-option" v-if="hasSteps">
             <el-switch v-model="allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
           </div>
-          <div class="campaign-builder-option">
+          <div class="campaign-builder-option" v-if="hasSteps">
             <el-switch v-model="messageRequestOnly" :width="22"></el-switch> Trigger message request only
           </div>
-          <div class="campaign-builder-option">
+          <div class="campaign-builder-option" v-if="hasSteps">
             <el-switch v-model="nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
           </div>
           <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
@@ -81,6 +81,12 @@ export default {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
       return elementsPermissions.fromFlow.concat(messageTypes);
+    },
+
+    hasSteps() {
+      const { steps } = this.currentCampaign;
+
+      return steps && steps.length;
     },
 
     settings() {

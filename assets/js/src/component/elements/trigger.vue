@@ -86,7 +86,7 @@ export default {
           const checkpoint = rule.elements.find(element => element.type === 'checkpoint')
           const actionElement = element.elements.find(element => element.type === 'action')
 
-          actionElement.checkpointId = checkpoint.id
+          actionElement.body.checkpointId = checkpoint.id
         }
       }
 

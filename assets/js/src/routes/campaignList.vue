@@ -126,8 +126,7 @@ export default {
         isIncomplete: true,
         isArchived: false,
         name: newCampaignName,
-        steps: [
-        ],
+        steps: [],
       }
 
       currentAccountData.campaigns.push(newCampaign);
