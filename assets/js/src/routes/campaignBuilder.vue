@@ -1,6 +1,6 @@
 <template>
-  <div class="campaign-builder">
-    <div class="campaign-builder-controls">
+  <div class="campaign-builder" v-if="currentCampaign">
+    <!-- <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
       <div class="campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign" >
@@ -37,7 +37,7 @@
           <img src="../assets/svg/gear.svg"/>
         </div>
       </el-popover>
-    </div>
+    </div> -->
     <div class="campaign-first-step" v-if="currentCampaign && !currentCampaign.steps.length">
       <div class="campaign-flow-choose">
         <div class="campaign-choose-info">
@@ -57,13 +57,6 @@
       </div>
     </div>
     <flow-builder v-else :entry-item="currentCampaign" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
-    <confirm-dialog
-      v-model="isDeleteDialog"
-      title="Delete campaign"
-      message="Are you sure you want to delete campaign?"
-      @success="deleteCampaign"
-      >
-    </confirm-dialog>
   </div>
 </template>
 <script>
@@ -72,53 +65,18 @@ import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyEleme
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
-import confirmDialog from '../component/confirmDialog.vue'
 import addStepPopup from '../component/addStepPopup.vue'
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    next(accountCampaign => {
-      accountCampaign.setCurrentCampaign(to);
-    })
-  },
 
-  beforeRouteUpdate(to, from, next) {
-    this.currentCampaign = null;
-
-    this.setCurrentCampaign(to);
-    next();
-  },
-
-  data() {
-    return {
-      currentCampaign: null,
-      isDeleteDialog: false
-    }
-  },
+  props: ['currentCampaign', 'hasWarning'],
 
   components: {
     flowBuilder,
-    confirmDialog,
     addStepPopup
   },
 
   computed:{
-    campaigns() {
-      const { currentAccountData } = this.$store.state;
-
-      if (!currentAccountData) return;
-
-      return currentAccountData.campaigns //.filter(campaign => !campaign.isArchived)
-    },
-
-    hasWarning() {
-      const { currentCampaign } = this;
-
-      if (!currentCampaign) return;
-
-      return utils.hasCampaignWarning(currentCampaign);
-    },
-
     availableElements() {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
@@ -219,27 +177,6 @@ export default {
   },
 
   methods: {
-    setCurrentCampaign(route) {
-      let { campaignId } = route.params;
-      const { campaigns } = this;
-
-      if (!campaignId || !campaigns) return;
-
-      const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
-
-      if (currentCampaign) {
-        this.currentCampaign = currentCampaign;
-      }
-    },
-
-    deleteCampaign() {
-      const { currentAccount } = this.$store.state;
-
-      this.currentCampaign.isArchived = true;
-      this.isDeleteDialog = false;
-      this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } });
-    },
-
     addStep(element) {
       const step = {
         id: (new ObjectId).toString(),
@@ -264,21 +201,12 @@ export default {
       this.currentCampaign.steps.push(step);
     },
 
-    findWarningStep() {
-      const { hasWarning } = this;
+    findEntryStep(warningStepId) {
       const { flowBuilder } = this.$refs;
 
-      flowBuilder.findEntryStep(hasWarning.id);
+      flowBuilder.findEntryStep(warningStepId.id);
     }
   },
-
-  watch:{
-    '$store.state.currentAccountData'() {
-      if (this.currentCampaign) return;
-
-      this.setCurrentCampaign(this.$route);
-    }
-  }
 }
 </script>
 <style lang="scss">

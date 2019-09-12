@@ -271,6 +271,9 @@ export default {
       const flowBuilderRect = flowBuilder.getBoundingClientRect();
       const { x, y } = zoomTool.getTransform();
 
+      console.log(campaignCard);
+
+
       const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
       const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
 
@@ -353,7 +356,7 @@ export default {
     background-color: #fff;
     padding: 0 0 0 10px;
     z-index: 10;
-    top: 105px;
+    top: 70px;
     left: calc(50% - 10px);
     width: 230px;
     border: 2px solid #E8E8E8;

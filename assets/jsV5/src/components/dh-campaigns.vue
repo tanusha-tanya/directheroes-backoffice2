@@ -1,36 +1,62 @@
 <template>
-  <div class="dh-campaigns">
-    <div class="dh-campaigns-controls">
-      <div class="dh-campaigns-title">{{title}}</div>
-      <div class="dh-new-item-button">
-        <plus/><span>New campaign</span>
-      </div>
-    </div>
-    <div class="dh-list" v-if="campaigns">
-      <div class="dh-list-item" v-for="campaign in campaigns" :key="campaign.id">
-        <star/>
-        <div class="dh-campaign-info">
-          <div class="dh-campaign-name">{{campaign.name}}</div>
-          <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
+  <div class="dh-campaigns" >
+    <template v-if="currentAccountData">
+      <div class="dh-campaigns-controls">
+        <div class="dh-campaigns-title">{{title}}</div>
+        <div class="dh-new-item-button" @click="isAddCampaign = true">
+          <plus/><span>New campaign</span>
         </div>
-        <el-popover placement="bottom" trigger="click">
-          <div class="dh-options">
-            <div class="dh-option" @click="campaignToDelete = campaign">
-              <trash /> Delete
-            </div>
-          </div>
-          <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
-            <ellipsis />
-          </div>
-        </el-popover>
       </div>
-    </div>
-    <dh-confirm-dialog
+      <div class="dh-list" v-if="campaigns && campaigns.length">
+        <router-link :to="{ name: 'accountCampaign', params:{ campaignId: campaign.id }}" class="dh-list-item" v-for="campaign in campaigns" :key="campaign.id">
+          <star/>
+          <div class="dh-campaign-info">
+            <div class="dh-campaign-name">{{campaign.name}}</div>
+            <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
+          </div>
+          <el-popover placement="bottom" trigger="click">
+            <div class="dh-options">
+              <div class="dh-option" @click="campaignToDelete = campaign">
+                <trash /> Delete
+              </div>
+            </div>
+            <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
+              <ellipsis />
+            </div>
+          </el-popover>
+        </router-link>
+      </div>
+      <div class="dh-info" v-else>
+        <nocampaign/>
+        <span>
+          <strong>No campaigns found?</strong>
+          Try creating a new campaign from scratch or<br>
+          view one of our tutorials.
+        </span>
+      </div>
+      <dh-confirm-dialog
         v-model="isDeleteCampaign"
         title="Delete campaign"
         message="Are you sure you want to delete campaign?"
         @success="deleteCampaign">
       </dh-confirm-dialog>
+      <el-dialog
+        :visible.sync="isAddCampaign"
+        title="Create New Campaign"
+        custom-class="dh-campaign-add-dialog"
+        append-to-body
+        width="554px"
+        >
+        <div class="dh-campaign-add-input">
+          <input v-model="newCampaignName" placeholder="Enter Campaign name">
+        </div>
+        <template slot="footer">
+          <button class="dh-button" @click="createCampaign">Create</button>
+          <button class="dh-button dh-reset-button" @click="isAddCampaign = false">Close</button>
+        </template>
+      </el-dialog>
+    </template>
+    <loader v-else/>
   </div>
 </template>
 
@@ -39,15 +65,21 @@ import moment from 'moment'
 import plus from '../assets/plus.svg'
 import star from '../assets/star.svg'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
+import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
+import loader from './dh-loader'
+
+import ObjectId from '../../../js/src/utils/ObjectId'
+import utils from '../../../js/src/utils'
 
 export default {
   data() {
     return {
       campaignToDelete: false,
-
+      isAddCampaign: false,
+      newCampaignName: ''
     }
   },
 
@@ -57,22 +89,33 @@ export default {
     trash,
     calendar,
     ellipsis,
-    dhConfirmDialog
+    dhConfirmDialog,
+    loader,
+    nocampaign
   },
 
   props: ['title', 'limit'],
 
   computed: {
+    account() {
+      return this.$store.state.currentAccount
+    },
+
     campaigns() {
-      const { limit } = this;
-      const { currentAccountData } = this.$store.state;
+      const { limit, currentAccountData } = this;
       let campaigns = null;
 
       if (!currentAccountData) return null;
 
-      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular');
+      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
 
       return limit ? campaigns.slice(0, limit) : campaigns;
+    },
+
+    currentAccountData() {
+      const { currentAccountData } = this.$store.state;
+
+      return currentAccountData
     },
 
     isDeleteCampaign: {
@@ -92,8 +135,45 @@ export default {
       return moment(campaign.createdAt).format("DD MMM YYYY")
     },
 
-    deleteCampaign(campaign) {
-      campaign.isArchived = true;
+    deleteCampaign() {
+      const { campaignToDelete } = this;
+
+      campaignToDelete.isArchived = true;
+      this.campaignToDelete = false;
+    },
+
+    createCampaign() {
+      const { newCampaignName, $store } = this;
+      const { currentAccount, currentAccountData } = $store.state;
+
+      const connectStepId = (new ObjectId).toString();
+
+      const newCampaign = {
+        id: (new ObjectId).toString(),
+        igAccountId: currentAccount.id,
+        createdAt: Date.now(),
+        type: 'regular',
+        isEnabled: false,
+        isActive: false,
+        isIncomplete: true,
+        isArchived: false,
+        name: newCampaignName,
+        steps: [
+        ],
+      }
+
+      currentAccountData.campaigns.push(newCampaign);
+
+      this.isAddCampaign = false;
+      this.newCampaignName = '';
+
+      this.$router.push({ name: 'accountCampaign', params: { campaignId: newCampaign.id, accountId: currentAccount.id } })
+    },
+
+    hasWarning(campaign) {
+      if (!campaign) return;
+
+      return utils.hasCampaignWarning(campaign);
     },
   }
 }
@@ -101,6 +181,10 @@ export default {
 
 <style lang="scss">
 .dh-campaigns {
+  .dh-loader {
+    min-height: 50vh;
+  }
+
   .dh-campaigns-title {
     font-size: 18px;
     line-height: 22px;
@@ -122,6 +206,17 @@ export default {
     flex-grow: 1;
   }
 
+  .dh-info {
+    margin-top: 10px;
+
+    strong {
+      color: $mainTextColor;
+      font-weight: normal;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+
   .dh-campaign-date {
     display: flex;
     align-items: center;
@@ -134,6 +229,14 @@ export default {
 
   .dh-campaign-actions {
     cursor: pointer;
+  }
+}
+
+.dh-campaign-add-dialog {
+  .dh-campaign-add-input {
+    input {
+      width: 100%;
+    }
   }
 }
 </style>

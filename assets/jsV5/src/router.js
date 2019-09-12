@@ -5,6 +5,7 @@ import Accounts from './views/Accounts'
 import AccountDetails from './views/AccountDetails'
 import AccountDashboard from './views/AccountDashboard'
 import CampaignList from './views/CampaignList'
+import CampaignBuilder from './views/CampaignBuilder'
 import BroadcastList from './views/BroadcastList'
 import Audience from './views/Audience'
 import LiveChat from './views/LiveChat'
@@ -46,7 +47,7 @@ export default new Router({
       children: [
         { name: 'accountHome', path: '', component: AccountDashboard },
         { name: 'accountCampaignList', path: 'campaigns', component: CampaignList },
-        // { name: 'accountCampaign', path: 'campaigns/:campaignId', component: campaignBuilder },
+        { name: 'accountCampaign', path: 'campaigns/:campaignId', component: CampaignBuilder },
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         // { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: broadcastBuilder },
         { name: 'audience', path: 'audience', component: Audience },
