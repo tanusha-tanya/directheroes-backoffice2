@@ -18,7 +18,7 @@
         <div class="dh-navigation-button-ico">
           <broadcast/>
         </div>
-        Broadcsat
+        Broadcast
       </router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
@@ -32,7 +32,7 @@
         </div>
         Audience
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+      <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <schedule/>
         </div>
@@ -44,7 +44,7 @@
         </div>
         Tutorials
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+      <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <support/>
         </div>
@@ -163,7 +163,7 @@ body {
     letter-spacing: .3px;
     line-height: 17px;
 
-    &.router-link-exact-active {
+    &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
       font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;

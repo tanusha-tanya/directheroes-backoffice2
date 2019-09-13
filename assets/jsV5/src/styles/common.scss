@@ -171,11 +171,26 @@ div.el-dialog__wrapper {
   }
 }
 
+
+div.el-switch.is-checked .el-switch__core {
+  border-color: $elementActiveColor;
+  background-color: $elementActiveColor;
+}
+
+.el-slider__bar {
+  height: 6px;
+  background-color: #9E4CF9;
+}
+
+div.el-slider__button {
+  border-color: #9E4CF9;
+}
+
 strong {
   font-weight: 500;
 }
 
-input {
+input.dh-input {
   background-color: $sectionBG;
   border: 1px solid $borderColor;
   border-radius: 4px;

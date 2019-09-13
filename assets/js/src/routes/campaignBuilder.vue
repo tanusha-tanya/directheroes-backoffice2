@@ -17,7 +17,6 @@
           <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch>
         </template>
       </div>
-      <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
         <div class="campaign-builder-settings">
           <div class="campaign-builder-option" v-if="hasSteps">
@@ -88,98 +87,6 @@ export default {
 
       return steps && steps.length;
     },
-
-    settings() {
-      const { currentCampaign } = this;
-      const entryStep = currentCampaign.steps.find(step => step.displaySettings.isEntry);
-      let settings = entryStep.elements.find(element => element.displaySettings.subType === 'settings');
-
-      if (!settings) {
-        settings = {
-          type: 'group',
-          displaySettings: {
-            subType: 'settings'
-          },
-          elements: []
-        }
-
-        entryStep.elements.splice(0,0, settings);
-      }
-
-      return entryStep && settings;
-    },
-
-    allowReEnter: {
-      get() {
-        const { settings } = this;
-
-        return !Boolean(settings.elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered"))
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (!value) {
-          const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
-
-          newAllowReEnter.id = (new ObjectId).toString();
-
-          elements.push(newAllowReEnter);
-        } else {
-          const allowReEnter = elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered")
-
-          elements.splice(elements.indexOf(allowReEnter), 1)
-        }
-      }
-    },
-
-    messageRequestOnly: {
-      get() {
-        const { settings } = this;
-
-        return Boolean(settings.elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest"));
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (value) {
-          const newMessageRequestOnly = JSON.parse(JSON.stringify(messageRequestOnlyElement));
-
-          newMessageRequestOnly.id = (new ObjectId).toString();
-
-          elements.push(newMessageRequestOnly);
-        } else {
-          const messageRequestOnly = elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest")
-
-          elements.splice(elements.indexOf(messageRequestOnly), 1)
-        }
-      }
-    },
-
-    nonSubscribersOnly: {
-      get() {
-        const { settings } = this;
-
-        return !Boolean(settings.elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed"));
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (!value) {
-          const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
-
-          nonSubscribersOnly.id = (new ObjectId).toString();
-
-          elements.push(nonSubscribersOnly);
-        } else {
-          const nonSubscribersOnly = elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed")
-
-          elements.splice(elements.indexOf(nonSubscribersOnly), 1)
-        }
-      }
-    }
   },
 
   methods: {

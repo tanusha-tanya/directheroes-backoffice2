@@ -11,7 +11,17 @@
         <router-link :to="{ name: 'accountCampaign', params:{ campaignId: campaign.id }}" class="dh-list-item" v-for="campaign in campaigns" :key="campaign.id">
           <star/>
           <div class="dh-campaign-info">
-            <div class="dh-campaign-name">{{campaign.name}}</div>
+            <div class="dh-campaign-name">
+              <el-tooltip
+                class="campaign-warning"
+                effect="light"
+                content="The flow is incomplete, please fix all warnings before activating it"
+                v-if="hasWarning(campaign)"
+              >
+                <triangle/>
+              </el-tooltip>
+              {{campaign.name}}
+            </div>
             <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
           </div>
           <el-popover placement="bottom" trigger="click">
@@ -48,7 +58,7 @@
         width="554px"
         >
         <div class="dh-campaign-add-input">
-          <input v-model="newCampaignName" placeholder="Enter Campaign name">
+          <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
         </div>
         <template slot="footer">
           <button class="dh-button" @click="createCampaign">Create</button>
@@ -73,6 +83,7 @@ import loader from './dh-loader'
 
 import ObjectId from '../../../js/src/utils/ObjectId'
 import utils from '../../../js/src/utils'
+import triangle from '../../../js/src/assets/triangle.svg'
 
 export default {
   data() {
@@ -91,7 +102,8 @@ export default {
     ellipsis,
     dhConfirmDialog,
     loader,
-    nocampaign
+    nocampaign,
+    triangle
   },
 
   props: ['title', 'limit'],
@@ -214,6 +226,12 @@ export default {
       font-weight: normal;
       display: block;
       margin-bottom: 10px;
+    }
+  }
+
+  .dh-campaign-name {
+    svg {
+      width: 14px;
     }
   }
 

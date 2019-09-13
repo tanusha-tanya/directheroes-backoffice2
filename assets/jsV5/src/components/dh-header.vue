@@ -12,7 +12,7 @@
     <div class="dh-header-notifications">
       <bell />
     </div>
-    <div class="dh-header-settings">
+    <div class="dh-header-settings" v-if="false">
       <gear />
     </div>
     <div class="dh-header-account">

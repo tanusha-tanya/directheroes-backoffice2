@@ -1,5 +1,5 @@
 <template>
-<div :class="[{'step-item': true}, `step-${ stepType }-type`]" @mousedown="blockEvent">
+<div :class="[{'step-item': true}, `step-${ stepType }-type`]" @mousedown.stop="">
   <div class="step-item-header" :ref="stepType === 'action' && linker && linker.id">
     <span>
       {{flowName || step.name || '&nbsp;'}}

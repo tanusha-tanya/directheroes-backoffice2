@@ -62,8 +62,8 @@
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
-      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
+      <input class="dh-input" placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
+      <input class="dh-input" placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
       <div class="challenge-notices" v-if="challenge">
         <div class="notice-item">
@@ -114,7 +114,7 @@
             {{selected2FAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
           </div>
         </div>
-        <input placeholder="Verification Code" v-model="code" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
+        <input placeholder="Verification Code" v-model="code" class="dh-input" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
           <button :class="{ 'dh-button': true, loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
