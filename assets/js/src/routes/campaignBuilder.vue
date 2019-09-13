@@ -271,6 +271,7 @@ export default {
   position: relative;
   background-color: #fafafa;
   width: 100%;
+  height: 100%;
 
   .campaign-builder-controls {
     display: flex;
@@ -410,7 +411,7 @@ export default {
   }
 
   .flow-builder {
-    height: calc(100% - 50px);
+    height: 100%;
   }
 }
 

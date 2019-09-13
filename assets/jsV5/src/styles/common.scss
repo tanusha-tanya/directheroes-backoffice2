@@ -91,7 +91,7 @@
   }
 }
 
-div.el-popper.el-popover {
+div.el-popper.el-popover[x-placement^=bottom] {
   margin-top: 17px;
   padding: 0;
   box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);

@@ -271,11 +271,10 @@ export default {
       const flowBuilderRect = flowBuilder.getBoundingClientRect();
       const { x, y } = zoomTool.getTransform();
 
-      console.log(campaignCard);
-
-
       const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
       const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
+      console.log(positionX, positionY);
 
       zoomTool.moveTo(positionX, positionY)
     },

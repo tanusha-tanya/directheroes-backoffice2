@@ -96,7 +96,7 @@ export default {
 .dh-campaign-builder {
   .dh-view-content {
     padding: 0;
-    max-height: calc(100vh - 64px - 62px);
+    height: calc(100vh - 64px - 62px);
     overflow: hidden;
   }
 }

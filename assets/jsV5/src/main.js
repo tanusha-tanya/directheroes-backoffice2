@@ -39,6 +39,7 @@ Vue.mixin({
 
   methods: {
     blockEvent(event) {
+      event.preventDefault();
       event.stopPropagation();
       return false;
     }
