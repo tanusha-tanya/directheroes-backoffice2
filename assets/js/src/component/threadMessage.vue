@@ -108,7 +108,7 @@ export default {
   .avatar {
     width: 24px;
     height: 24px;
-    margin: 0 10px 5px 0;
+    margin: 0 10px 5px;
     align-self: flex-end;
     background-size: cover;
     background-position: center;

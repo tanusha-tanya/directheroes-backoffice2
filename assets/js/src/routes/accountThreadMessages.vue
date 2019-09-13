@@ -21,8 +21,8 @@
           <div class="dh-messages-header">
             <ellipsis />
           </div>
-          <div class="dh-messages-wrapper" ref="threadMessages">
-            <div class="dh-messages-list">
+          <div class="dh-messages-wrapper">
+            <div class="dh-messages-list" ref="threadMessages">
               <thread-message
               v-for="(message, index) in threadMessages"
               :key="message.id"
@@ -35,18 +35,18 @@
             <div class="dh-message-send">
               <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage"></textarea>
               <div class="dh-message-link">
-                <el-popover class="upload-message" v-if="media.length" placement="right">
+                <el-popover class="upload-message" v-if="media.length" placement="top">
                   <div class="uploaded-files">
-                    <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
+                    <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<close @click="deleteFile(index)"/></div>
                   </div>
                   <div slot="reference">Attached {{media.length}} file(s)</div>
                 </el-popover>
                 <div class="upload-file">
                   <dh-link/>
-                  <input type="file" @change="uploadFile"/>
+                  <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage"/>
                 </div>
               </div>
-              <div class="dh-message-button">
+              <div class="dh-message-button"  @click="sendMessage">
                 <send />
               </div>
             </div>
@@ -143,9 +143,12 @@
   import send from '../../../jsV5/src/assets/send.svg'
   import ellipsis from '../../../jsV5/src/assets/ellipsis.svg'
   import nolivechat from '../../../jsV5/src/assets/nolivechat.svg'
+  import ObjectId from '../utils/ObjectId';
   import threadMessage from '../component/threadMessage.vue'
   import moment from 'moment'
+  import close from '../assets/times.svg'
   import loader from '../../../jsV5/src/components/dh-loader'
+import { setTimeout } from 'timers';
 
   export default {
     data() {
@@ -174,7 +177,8 @@
       loader,
       ellipsis,
       dhLink,
-      send
+      send,
+      close
     },
 
     computed: {
@@ -213,7 +217,6 @@
       uploadFile(event) {
         const files = event.target.files;
         const formData = new FormData();
-        const { uuidv4 } = this.utils;
 
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
@@ -228,7 +231,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(({ data }) => {
-          this.media.push(Object.assign(data.response.body, { clientContext: uuidv4() }));
+          this.media.push(Object.assign(data.response.body, { clientContext: (new ObjectId).toString(), }));
         });
 
         event.preventDefault();
@@ -237,14 +240,15 @@
       sendMessage() {
         const { threadId } = this.$route.params;
         const { threadMessages } = this.$refs;
-        const { uuidv4 } = this.utils;
+
+        if (!this.messageText && !this.media.length) return;
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/live/${ threadId }/send`,
           method: 'post',
           data: {
             text: this.messageText,
-            clientContext: uuidv4(),
+            clientContext: (new ObjectId).toString(),
             medias: this.media
           }
         }).then(({ data }) => {
@@ -260,6 +264,7 @@
         this.source = CancelToken.source();
         threadId = threadId || this.$route.params.threadId
 
+
         if (!threadId) return;
 
         axios({
@@ -274,7 +279,6 @@
           if (!this.contactProfile) {
             this.contactProfile = body.thread.contactProfile;
           }
-
 
           if (!body.messageList.length) return;
 
@@ -353,10 +357,8 @@
 
           this.requestInterval= setInterval(this.getUpdates, 2000);
 
-          if (!threadMessages) return;
-
           threadMessages.scrollTop = threadMessages.scrollHeight;
-        })
+        });
       },
 
       '$store.state.currentAccount'() {
@@ -374,7 +376,7 @@
       justify-content: space-between;
       align-items: center;
 
-      img {
+      svg {
         width: 10px;
         height: 10px;
       }
@@ -407,7 +409,8 @@
 
     .dh-accounts-list {
       max-height: calc(100% - 57px);
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .dh-account {
@@ -467,6 +470,7 @@
       background-color: $secondBorderColor;
       display: flex;
       align-items: center;
+      position: relative;
 
       textarea {
         appearance: none;
@@ -499,11 +503,15 @@
       position: absolute;
       bottom: 100%;
       cursor: pointer;
-      background-color: #fff;
-      padding: 0 10px;
+      background-color: $secondBorderColor;
+      padding: 5px 10px;
+      left: 0;
+      width: 100%;
+      text-align: center;
     }
 
     .upload-file {
+      position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;

@@ -22,11 +22,12 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
-          <div class="dh-thread-controls">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }}" class="dh-thread-controls">
             <livechat/>
-          </div>
+          </router-link>
         </div>
       </div>
+      <loader v-else/>
     </div>
     <dh-footer></dh-footer>
   </div>
@@ -37,6 +38,7 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import livechat from '../assets/livechat.svg'
 import axios from 'axios';
+import loader from '../components/dh-loader'
 import moment from 'moment';
 
 export default {
@@ -60,7 +62,8 @@ export default {
   components: {
     dhHeader,
     dhFooter,
-    livechat
+    livechat,
+    loader
   },
 
   computed: {
@@ -105,6 +108,10 @@ export default {
 
 <style lang="scss">
 .dh-audience-view {
+  .dh-loader {
+    min-height: 50vh;
+  }
+
   .dh-thread-userpic {
     width: 40px;
     height: 40px;
@@ -118,6 +125,7 @@ export default {
   .dh-thread-data-item {
     width: 17%;
     flex-shrink: 0;
+    color: $textColor;
   }
 
   .dh-thread-username {
@@ -129,6 +137,10 @@ export default {
     font-size: 18px;
     line-height: 22px;
     color: $mainTextColor;
+  }
+
+  .dh-thread-controls {
+    color: inherit;
   }
 }
 </style>
