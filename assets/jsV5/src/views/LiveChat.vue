@@ -28,12 +28,6 @@ export default {
     oldLiveChat
   },
 
-  computed: {
-    created() {
-      console.log('oizdec');
-
-    }
-  }
 }
 </script>
 

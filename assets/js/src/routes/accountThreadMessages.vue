@@ -148,7 +148,6 @@
   import moment from 'moment'
   import close from '../assets/times.svg'
   import loader from '../../../jsV5/src/components/dh-loader'
-import { setTimeout } from 'timers';
 
   export default {
     data() {

@@ -38,7 +38,7 @@
         </div>
         Schedule
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+      <router-link class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">
           <tutorials/>
         </div>

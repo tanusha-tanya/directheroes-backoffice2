@@ -11,6 +11,7 @@ import BroadcastBuilder from './views/BroadcastBuilder'
 import Audience from './views/Audience'
 import LiveChat from './views/LiveChat'
 import Settings from './views/Settings'
+import Tutorials from './views/Tutorials'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -34,7 +35,7 @@ Vue.use(Router)
 export default new Router({
   routes:[
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
-    // { path: '/videohelp', name: 'video-help', component: videoHelp },
+    { path: '/tutorials', name: 'tutorials', component: Tutorials },
     { path: '/settings', name: 'settings', component: Settings,
       // children: [
       //   { name: 'dhProfile', path: '', component: accountDHProfile },
