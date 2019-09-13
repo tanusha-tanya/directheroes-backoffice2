@@ -3,12 +3,12 @@
   "dist/register.js": "http://directheroes.local:8080/dist/register.js",
   "dist/fonts/element-icons.woff": "http://directheroes.local:8080/dist/fonts/element-icons.535877f5.woff",
   "dist/fonts/element-icons.ttf": "http://directheroes.local:8080/dist/fonts/element-icons.732389de.ttf",
-  "dist/images/actions.png": "http://directheroes.local:8080/dist/images/actions.c60bf9e5.png",
   "dist/images/close.png": "http://directheroes.local:8080/dist/images/close.7a5bd7eb.png",
-  "dist/images/conditions.png": "http://directheroes.local:8080/dist/images/conditions.ef7a27d2.png",
   "dist/images/ig-avatar.jpg": "http://directheroes.local:8080/dist/images/ig-avatar.8323e88b.jpg",
   "dist/images/loader.gif": "http://directheroes.local:8080/dist/images/loader.e3b9a243.gif",
   "dist/images/logo.png": "http://directheroes.local:8080/dist/images/logo.4e1e98dc.png",
+  "dist/images/actions.png": "http://directheroes.local:8080/dist/images/actions.c60bf9e5.png",
+  "dist/images/conditions.png": "http://directheroes.local:8080/dist/images/conditions.ef7a27d2.png",
   "dist/images/messages.png": "http://directheroes.local:8080/dist/images/messages.177e2a63.png",
   "dist/images/triggers.png": "http://directheroes.local:8080/dist/images/triggers.7c4109c5.png"
 }
