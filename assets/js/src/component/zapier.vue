@@ -86,13 +86,51 @@ export default {
     height: 27px;
     font: 11px/27px 'Lato';
     padding: 0 10px;
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 15px;
+    outline: none;
+
+    &::placeholder {
+      color: #A9A9A9;
+      font: 11px/16px 'Lato';
+    }
   }
+
 
   button {
     margin-top: 7px;
     width: 100%;
     background-color: #51C99E;
     border-radius: 3px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 8px 26px;
+    color: #fff;
+    cursor: pointer;
+
+    &.loading {
+      color: transparent;
+      position: relative;
+
+      &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: calc(50% - 10px);
+        left: calc(50% - 10px);
+        width: 15px;
+        height: 15px;
+        border-radius: 100%;
+        border: 3px solid #FFF;
+        border-bottom-color: transparent;
+        animation: rotation  .8s infinite linear;
+      }
+    }
   }
 
   .status-message {

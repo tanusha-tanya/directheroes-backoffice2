@@ -99,13 +99,6 @@ export default {
         elements: []
       }
 
-      if (element.type === 'group' && element.displaySettings.subType === 'trigger') {
-        const { elements } = element;
-        const checkpoint = elements.find(element => element.type === 'checkpoint');
-
-        elements.splice(elements.indexOf(checkpoint), 1);
-      }
-
       step.elements.push( {
         id: (new ObjectId).toString(),
         ...element
