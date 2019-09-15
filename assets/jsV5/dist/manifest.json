@@ -14,5 +14,8 @@
   "dist/images/delayBtn.png": "http://directheroes.local:8080/dist/images/delayBtn.48e80036.png",
   "dist/images/image.png": "http://directheroes.local:8080/dist/images/image.709c04e1.png",
   "dist/images/text.png": "http://directheroes.local:8080/dist/images/text.0faf15b4.png",
-  "dist/images/userInputBtn.png": "http://directheroes.local:8080/dist/images/userInputBtn.601572af.png"
+  "dist/images/userInputBtn.png": "http://directheroes.local:8080/dist/images/userInputBtn.601572af.png",
+  "dist/fonts/abeatbyKaiRegular.ttf": "http://directheroes.local:8080/dist/fonts/abeatbyKaiRegular.1c778b3a.ttf",
+  "dist/fonts/abeatbyKaiRegular.woff": "http://directheroes.local:8080/dist/fonts/abeatbyKaiRegular.25e11a06.woff",
+  "dist/fonts/abeatbyKaiRegular.eot?": "http://directheroes.local:8080/dist/fonts/abeatbyKaiRegular.d3dd0104.eot"
 }

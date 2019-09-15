@@ -293,6 +293,13 @@ export default {
 
     this.initZoom();
     this.findEntryStep();
+
+    this.$nextTick(() => {
+      const { builderArea } = this.$refs;
+
+      builderArea.style.width = `${builderArea.scrollWidth}px`;
+      builderArea.style.height = `${builderArea.scrollHeight}px`
+    });
   },
 
   watch:{
