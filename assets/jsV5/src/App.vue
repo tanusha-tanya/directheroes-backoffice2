@@ -38,7 +38,7 @@
         </div>
         Schedule
       </router-link>
-      <router-link class="dh-navigation-button" :to="{ name: 'tutorials' }">
+      <router-link v-if="false" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">
           <tutorials/>
         </div>

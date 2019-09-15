@@ -12,6 +12,9 @@ import Audience from './views/Audience'
 import LiveChat from './views/LiveChat'
 import Settings from './views/Settings'
 import Tutorials from './views/Tutorials'
+import ProfileGeneral from './views/ProfileGeneral'
+import ProfileSecurity from './views/ProfileSecurity'
+import ProfileBilling from './views/ProfileBilling'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -36,12 +39,12 @@ export default new Router({
   routes:[
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
-    { path: '/settings', name: 'settings', component: Settings,
-      // children: [
-      //   { name: 'dhProfile', path: '', component: accountDHProfile },
-      //   { name: 'dhPayments', path: 'payments', component: accountDHPayment },
-      //   { name: 'dhSubscriptions', path: 'subscriptions', component: accountDHSubscription },
-      // ]
+    { path: '/settings', component: Settings,
+      children: [
+        { name: 'settings', path: '', component: ProfileGeneral },
+        { name: 'security', path: 'security', component: ProfileSecurity },
+        { name: 'billing', path: 'billing', component: ProfileBilling },
+      ]
     },
     // { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
     // { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },

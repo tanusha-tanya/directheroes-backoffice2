@@ -121,6 +121,8 @@ export default {
 
       campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
 
+      campaigns.reverse();
+
       return limit ? campaigns.slice(0, limit) : campaigns;
     },
 
