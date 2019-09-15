@@ -43,7 +43,7 @@ export default {
   computed: {
     stepType() {
       const { step } = this;
-      const firstElement = step.elements.find(element => element.type !== 'group' || element.displaySettings.subType !== 'settings');
+      const firstElement = step.elements.find(element => !['group', 'checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
       const { displaySettings } = firstElement;
 
       return (displaySettings && displaySettings.subType) || firstElement.type

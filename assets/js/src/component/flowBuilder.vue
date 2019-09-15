@@ -47,7 +47,8 @@ import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
 import Vue from 'vue';
-import utils from '../utils'
+import utils from '../utils';
+import ObjectId from '../utils/ObjectId';
 
 let zoomTimeout = null;
 
@@ -173,7 +174,13 @@ export default {
           step.name = 'Action'
           break;
         case 'trigger':
-          step.name = 'Trigger'
+          step.name = 'Trigger';
+
+          step.elements.splice(0,0, {
+            type: 'checkpoint',
+            id: (new ObjectId).toString()
+          })
+
           break;
         case 'user-input':
           step.name = 'User Input'
