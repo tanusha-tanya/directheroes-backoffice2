@@ -13,7 +13,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element)"
@@ -22,7 +22,7 @@
               </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element, true)"
@@ -44,7 +44,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                <add-step-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, subElement)"
@@ -72,7 +72,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ elseText }}
-                <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, lastFollowersRule, true)"
@@ -96,7 +96,7 @@
 import Vue from 'vue';
 import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
-import addStepPopup from '../addStepPopup';
+import addTagPopup from '../addTagPopup';
 import addMidStepPopup from '../addMidStep';
 import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
@@ -109,7 +109,7 @@ export default {
   components: {
     addConditionPopup,
     elementWarning,
-    addStepPopup,
+    addTagPopup,
     timeout,
     inputAutosize,
     addMidStepPopup
@@ -230,8 +230,6 @@ export default {
       }
       let rule = condition;
       let link;
-
-      console.log(condition, condition.type !== 'rule');
 
       if (condition.type !== 'rule') {
         rule = this.getRule(condition);

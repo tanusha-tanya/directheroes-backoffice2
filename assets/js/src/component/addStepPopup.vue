@@ -1,5 +1,5 @@
 <template>
-  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" trigger="click">
+  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" :trigger="triggerType || 'click'">
     <div class="add-step-button" slot="reference">
       <slot></slot>
     </div>
@@ -41,7 +41,7 @@ export default {
     }
   },
 
-  props:['availableList'],
+  props:['availableList', 'triggerType'],
 
   components: {
     addTriggerPopup,

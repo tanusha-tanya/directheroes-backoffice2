@@ -19,11 +19,11 @@
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>
-    <add-step-popup
+    <add-tag-popup
       :available-list="availableList"
       @add-step="$emit('create-step', $event)"
       v-if="!hasOnMatch"
-    ></add-step-popup>
+    ></add-tag-popup>
     <add-mid-step-popup
       :available-list="availableList"
       @add-step="addMidStep($event)"
@@ -48,7 +48,7 @@
 <script>
 import utils from '../../utils';
 import ObjectId from '../../utils/ObjectId';
-import addStepPopup from '../addStepPopup';
+import addTagPopup from '../addTagPopup';
 import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
@@ -68,7 +68,7 @@ export default {
 
   components: {
     keywords,
-    addStepPopup,
+    addTagPopup,
     elementWarning,
     addMidStepPopup
   },
