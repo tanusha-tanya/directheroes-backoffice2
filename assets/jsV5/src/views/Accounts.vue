@@ -26,7 +26,6 @@
           }"
           @click="accountClick(account, $event)"
           v-for="account in accounts"
-          :to="{ name: 'accountHome', params: { accountId: account.id }}"
           :key="account.id">
           <el-popover placement="bottom" trigger="click">
             <div class="dh-options">
@@ -132,12 +131,12 @@ export default {
 
   methods: {
     addAccount() {
-      // const { isLimitReached} = this;
+      const { isLimitReached} = this;
 
-      // if (isLimitReached) {
-      //   this.isExtraAccount = true;
-      //   return;
-      // }
+      if (isLimitReached) {
+        this.isExtraAccount = true;
+        return;
+      }
 
       this.accountToAuth = null;
       this.isAddAccount = true;
@@ -188,8 +187,11 @@ export default {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    transition: box-shadow .3s;
 
     &:hover {
+      box-shadow: 0 0 0 2px $elementActiveColor;
+
       .dh-account-full-name {
         color: $elementActiveColor;
       }
