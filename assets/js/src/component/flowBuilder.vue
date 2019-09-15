@@ -160,8 +160,7 @@ export default {
           step.name = 'New message'
 
           if (firstElementSettings.displaySettings.type === 'delay') {
-            const { elements } = firstElementSettings;
-            const checkpoint = elements.find(element => element.type === 'checkpoint');
+            const checkpoint = step.elements.find(element => element.type === 'checkpoint');
             const action = elements.find(element => element.type === 'action');
 
             action.body.checkpointId = checkpoint.id;

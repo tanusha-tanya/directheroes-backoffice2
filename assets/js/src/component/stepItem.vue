@@ -8,7 +8,7 @@
       <div class="step-delete-button" v-if="(!isEntry && !hasChilds && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="$emit('delete-step', step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
-      <add-tag-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-tag-popup>
+      <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
     </span>
   </div>
   <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="$emit('add-step', $event)"></component>
@@ -25,7 +25,7 @@ import userInput from './elements/userInput'
 import subInput from './elements/subInput'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
-import addTagPopup from './addTagPopup';
+import addStepPopup from './addStepPopup';
 
 export default {
   props: ['steps', 'step', 'flowName'],
@@ -35,7 +35,7 @@ export default {
     action,
     condition,
     trigger,
-    addTagPopup,
+    addStepPopup,
     userInput,
     subInput
   },

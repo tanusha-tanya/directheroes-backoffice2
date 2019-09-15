@@ -59,6 +59,7 @@ export default {
     },
 
     createStep(rule, element) {
+      const { elements } =  this;
       const step = {
         id: (new ObjectId).toString(),
         elements: [
@@ -75,7 +76,7 @@ export default {
         })
 
         if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
-          const checkpoint = rule.elements.find(element => element.type === 'checkpoint')
+          const checkpoint = elements.find(element => element.type === 'checkpoint')
           const actionElement = element.elements.find(element => element.type === 'action')
 
           actionElement.body.checkpointId = checkpoint.id
