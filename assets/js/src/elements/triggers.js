@@ -129,8 +129,8 @@ export default [
               condition: {
                 entity: 'post',
                 field: 'hashtag',
-                operand: 'eq',
-                value: ''
+                operand: 'contains',
+                value: []
               }
             }]
           },
