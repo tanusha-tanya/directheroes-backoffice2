@@ -65,6 +65,19 @@
     </div>
     <dh-footer></dh-footer>
     <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog>
+    <el-dialog
+      :visible.sync="isExtraAccount"
+      custom-class="extra-account"
+      @open="overleyClassToggle('extra-style')"
+      title="Need more accounts?"
+      :center="true"
+      >
+      <div class="info-text">Not Problem!  To add more accounts,  just purchase a new Instagram account subscription for only $97 per month.</div>
+      <div class="action-block">
+        <extra-account />
+        <router-link class="dh-button" :to="{ name: 'addonBuy', query: { code: extraAccountPlan } }" tag="button">Buy now!</router-link>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -77,6 +90,7 @@ import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
+import extraAccount from '../../../js/src/assets/svg/extra-account.svg'
 
 export default {
   data() {
@@ -84,6 +98,7 @@ export default {
       accountToAuth: null,
       isAddAccount: false,
       accountToDelete: false,
+      isExtraAccount: false,
     }
   },
 
@@ -95,7 +110,8 @@ export default {
     status,
     warning,
     ellipsis,
-    trash
+    trash,
+    extraAccount
   },
 
   computed: {
@@ -161,6 +177,12 @@ export default {
       this.$store.dispatch('deleteAccount', accountToDelete).then(() => {
         this.accountToDelete = false;
       });
+    },
+
+    overleyClassToggle(className) {
+      this.$nextTick(() => {
+        document.querySelector('.v-modal').classList.add(className);
+      })
     }
   }
 }
@@ -291,5 +313,45 @@ export default {
     display: flex;
     align-items: flex-end;
   }
+}
+
+.el-dialog.extra-account {
+  width: 331px;
+
+  .el-dialog__header {
+    padding: 14px 24px 0;
+  }
+
+  .el-dialog__title {
+    font-size: 24px;
+    display: block;
+    border-bottom: 1px solid #C1C1C1;
+    padding-bottom: 14px;
+    text-align: left;
+  }
+
+  .el-dialog__body {
+    padding: 14px 24px 26px;
+    word-break: normal;
+  }
+
+  .info-text {
+    margin-bottom: 20px;
+  }
+
+  .action-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .dh-button {
+      min-width: 145px;
+    }
+  }
+}
+
+.v-modal.extra-style {
+  opacity: 1 !important;
+  background: linear-gradient(237.78deg, rgba(34, 106, 247, 0.85) 8.65%, rgba(98, 45, 206, 0.85) 63.91%);
 }
 </style>
