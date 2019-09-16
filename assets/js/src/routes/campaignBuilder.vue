@@ -60,7 +60,6 @@
 </template>
 <script>
 import elementsPermissions from '../elements/permissions'
-import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../elements/settings'
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'

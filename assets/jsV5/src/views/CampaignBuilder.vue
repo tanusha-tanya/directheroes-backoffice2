@@ -49,7 +49,9 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import gear from '../assets/gear.svg'
 
+import ObjectId from '../../../js/src/utils/ObjectId'
 import OldCampaignBuilder from '../../../js/src/routes/campaignBuilder'
+import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../../../js/src/elements/settings'
 import utils from '../../../js/src/utils'
 import triangle from '../../../js/src/assets/triangle.svg'
 
@@ -105,7 +107,7 @@ export default {
       return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
     },
 
-        settings() {
+    settings() {
       const { currentCampaign } = this;
       const entryStep = currentCampaign.steps.find(step => step.displaySettings.isEntry);
       let settings = entryStep.elements.find(element => element.displaySettings.subType === 'settings');
