@@ -79,7 +79,7 @@ export default {
         row.forEach(stepRow => {
           if (!stepRow) return;
 
-          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
+          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || (element.type === 'linker' && !element.displaySettings)).forEach(element => {
             const elementAction = (matchElement, suffix = '') => {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
@@ -269,7 +269,7 @@ export default {
       zoomTool.smoothZoom(positionX, positionY, ration);
     },
 
-    findEntryStep(stepId) {
+    findEntryStep(stepId, animation) {
       const { zoomTool, entryItem } = this;
       const { flowBuilder } = this.$refs;
       const campaignCard = this.$refs[stepId || entryItem.steps[0].id][0];
@@ -279,6 +279,10 @@ export default {
 
       const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
       const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
+      if (animation) {
+        campaignCard.findAnimation = true;
+      }
 
       zoomTool.moveTo(positionX, positionY)
     },
