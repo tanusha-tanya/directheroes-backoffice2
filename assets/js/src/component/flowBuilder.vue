@@ -194,7 +194,7 @@ export default {
 
     deleteStep(step) {
       const { steps } = this.entryItem;
-      const userInputElement = step.elements.find(element => element.displaySettings.subType == "user-input")
+      const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
 
       steps.some(stepItem => stepItem.elements.some( (element, index) => {
         const actionElement = (matchElement) => {

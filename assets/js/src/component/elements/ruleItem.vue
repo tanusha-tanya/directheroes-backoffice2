@@ -13,11 +13,7 @@
       ></el-input>
     </template>
     <template v-else-if="ruleType == 'storyMention'">
-      <el-input
-        size="small"
-        placeholder="Please enter hashtags"
-        v-model="rule.onMatch.elements[0].condition.value"
-      ></el-input>
+      <keywords v-model="rule.onMatch.elements[0].condition.value"></keywords>
     </template>
     <add-tag-popup
       :available-list="availableList"

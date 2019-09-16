@@ -1,8 +1,8 @@
 <template>
   <div class="dh-view dh-settings-view">
-    <dh-header title="Addon buy"></dh-header>
+    <dh-header title="Affilate"></dh-header>
     <div class="dh-view-content">
-      <addon-buy></addon-buy>
+
     </div>
     <dh-footer></dh-footer>
   </div>
