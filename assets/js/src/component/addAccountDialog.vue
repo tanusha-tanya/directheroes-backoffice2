@@ -82,7 +82,7 @@
           <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
         </div>
       </div>
-      <button :class="{ 'dh-button': true, loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+      <button :class="{ 'dh-button': true, 'dh-loading': loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
       <div class="step">
@@ -117,8 +117,8 @@
         <input placeholder="Verification Code" v-model="code" class="dh-input" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
-          <button :class="{ 'dh-button': true, loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
-          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+          <button :class="{ 'dh-button': true, 'dh-loading': loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
+          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, resend: true, 'dh-loading': loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
         </div>
       </div>
     </template>
@@ -365,8 +365,8 @@ export default {
   background-color: transparent !important;
 
   .el-dialog {
-    margin: 64px 0 0 auto !important;
-    height: calc(100% - 126px);
+    margin: 0 0 0 auto !important;
+    height: 100%;
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;

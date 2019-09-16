@@ -1,6 +1,5 @@
 <template>
   <div class="buy-extra-account">
-
     <div class="container-area">
       <div class="container-header">
         Plans
@@ -24,9 +23,7 @@
       <div class="container-header">
         Payment
       </div>
-      <div class="loading-content" v-if="loading">
-        <div class="pre-loader"></div>
-      </div>
+      <loader v-if="loading"/>
       <div class="container-body" v-else>
         <div class="error-state" v-if="error">
           {{ error }}
@@ -36,13 +33,13 @@
             {{ cardInfo.brand }} *{{ cardInfo.last4 }}<br/>
             Expires on {{ cardInfo.exp_month }}/{{ cardInfo.exp_year }}
           </div>
-          <button @click="buyPlane" :class="{loading: purchasing}">Purchase</button>
+          <button class="dh-button" @click="buyPlane" :class="{loading: purchasing}">Purchase</button>
         </div>
         <div class="purchase-info" v-else>
           No card attached to service
         </div>
         <div class="payment-buttons">
-          <router-link class="primary" tag="button" :to="{ name: 'addonPayment' }">Edit payment method</router-link>
+          <router-link class="dh-button" tag="button" :to="{ name: 'addonPayment' }">Edit payment method</router-link>
         </div>
       </div>
     </div>
@@ -51,6 +48,7 @@
 
 <script>
 import axios from 'axios';
+import loader from '../../../jsV5/src/components/dh-loader';
 
 export default {
   data() {
@@ -62,6 +60,10 @@ export default {
       error: null,
       code: null,
     }
+  },
+
+  components: {
+    loader
   },
 
   methods: {
@@ -152,9 +154,9 @@ export default {
 
     .container-header {
       font-size: 20px;
-      border-bottom: 1px solid #C6C6C6;
+      border-bottom: 1px solid $secondBorderColor;
       padding-bottom: 21px;
-      font-weight: bold;
+      font-weight: 500;
       margin-bottom: 22px;
       color: #3C3C3C;
     }
@@ -172,7 +174,7 @@ export default {
 
       .plane-price {
         font-size: 24px;
-        font-weight: bold;
+        font-weight: 500;
       }
 
       strong {
@@ -190,27 +192,19 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding-bottom: 22px;
-      border-bottom: 1px solid #C6C6C6;
+      border-bottom: 1px solid $secondBorderColor;
       margin-bottom: 19px;
-
-      button {
-        background: #6A12CB;
-        border-radius: 100px;
-        line-height: 16px;
-        font-size: 16px;
-        padding: 14px 50px;
-      }
     }
 
     .purchased-state, .error-state {
       padding-bottom: 22px;
-      border-bottom: 1px solid #C6C6C6;
+      border-bottom: 1px solid $secondBorderColor;
       margin-bottom: 19px;
       line-height: 20px;
     }
 
     .error-state {
-      color: #ff0048;
+      color: $failColor;
     }
 
     .card-info {
@@ -221,16 +215,6 @@ export default {
     .payment-buttons {
       display: flex;
       justify-content: flex-end;
-    }
-
-    .primary {
-      padding: 2px 20px;
-      background-color: transparent;
-      border: 1px solid #838181;
-      border-radius: 100px;
-      font-size: 13px;
-      color: #838383;
-      font-weight: normal;
     }
   }
 </style>

@@ -15,6 +15,8 @@ import Tutorials from './views/Tutorials'
 import ProfileGeneral from './views/ProfileGeneral'
 import ProfileSecurity from './views/ProfileSecurity'
 import ProfileBilling from './views/ProfileBilling'
+import AddonBuy from './views/AddonBuy'
+import AddonPayment from './views/AddonPayment'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -46,8 +48,8 @@ export default new Router({
         { name: 'billing', path: 'billing', component: ProfileBilling },
       ]
     },
-    // { name: 'addonBuy', path: '/addon-buy', component: addonBuy },
-    // { name: 'addonPayment', path: '/addon-buy/payment', component: addonPayment },
+    { name: 'addonBuy', path: '/addon-buy', component: AddonBuy },
+    { name: 'addonPayment', path: '/addon-buy/payment', component: AddonPayment },
     { path: '/:accountId', component: AccountDetails,
       children: [
         { name: 'accountHome', path: '', component: AccountDashboard },
