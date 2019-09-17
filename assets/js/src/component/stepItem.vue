@@ -9,7 +9,7 @@
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
       <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
-      <div class="rewind-element" v-if="linker && linker.displaySettings" @click="goToStep">
+      <div class="existing-step-element" v-if="linker && linker.displaySettings" @click="goToStep">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
           viewBox="0 0 192.701 192.701" style="enable-background:new 0 0 192.701 192.701;" xml:space="preserve">
           <path d="M29.641,96.345l74.54-75.61c4.704-4.74,4.704-12.439,0-17.179c-4.704-4.74-12.319-4.74-17.011,0l-82.997,84.2
@@ -222,7 +222,7 @@ export default {
       box-shadow: 0 0 20px #9E4CF9;
     }
 
-    .rewind-element {
+    .existing-step-element {
       position: absolute;
       right: -14px;
       top: calc(50% - 14px);
