@@ -56,7 +56,7 @@
           <div class="dh-contact-profile-userpic" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
           <div class="dh-contact-profile-names">
             <div class="dh-contact-profile-fullname">
-              User Full Name
+              {{currentThread.contactProfile.fullName}}
             </div>
             <div class="dh-contact-profile-name">
               {{currentThread.contactProfile.username}}
@@ -463,6 +463,7 @@
 
     .dh-messages-list {
       overflow: auto;
+      flex-grow: 1;
     }
 
     .dh-message-send {
@@ -470,6 +471,7 @@
       display: flex;
       align-items: center;
       position: relative;
+      flex-shrink: 0;
 
       textarea {
         appearance: none;

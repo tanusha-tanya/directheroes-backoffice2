@@ -6,7 +6,7 @@
         <div class="dh-list-item" v-for="thread in threads" :key="thread.id">
           <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
           <div class="dh-thread-data-item dh-thread-username">
-            <div class="dh-thread-data-item-main">User Full Name</div>
+            <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
             {{thread.contactProfile.username}}
           </div>
           <div class="dh-thread-data-item">
