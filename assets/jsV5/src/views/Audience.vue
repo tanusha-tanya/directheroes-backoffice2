@@ -52,6 +52,11 @@ export default {
     return {
       threads: null,
       status: 'audience',
+      filters: {
+        subscribed: true,
+        usernameQuery: '',
+        campaignId: null,
+      },
       paging: {
         page: 1,
         totalPageCount: 1
@@ -74,7 +79,7 @@ export default {
 
   methods: {
     getAudience() {
-      const { account, status } = this;
+      const { account, status, paging, filters } = this;
 
       if (!account) return;
 
@@ -83,7 +88,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
         method: 'post',
-        data: { paging: this.paging }
+        data: { paging,  ...filters }
       })
       .then(({ data }) => {
         const { threadList, paging } = data.response.body
