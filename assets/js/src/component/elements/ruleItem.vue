@@ -1,6 +1,6 @@
 <template>
   <div class="rule-item" :ref="element.id">
-    <element-warning :element="rule"></element-warning>
+    <element-warning :element="rule" :is-entry="isEntry"></element-warning>
     <div class="rule-item-title">{{ ruleTitles[ruleType] }}</div>
     <template v-if="ruleType == 'list'">
       <keywords v-model="rule.condition.value"></keywords>

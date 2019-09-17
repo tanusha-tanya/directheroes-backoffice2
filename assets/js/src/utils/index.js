@@ -58,7 +58,7 @@ export default {
     }
   },
 
-  campaignElementValidate(element) {
+  campaignElementValidate(element, isEntry) {
     let warning = null;
 
     switch(element.type) {
@@ -83,6 +83,10 @@ export default {
 
         if (!matchElement || !matchElement.onMatch) {
           warning = 'Element has no target step'
+        }
+
+        if (element.condition.value === 'storyMention' && isEntry && !element.onMatch.elements[0].condition.value.length) {
+          warning = 'Please specify at least one hashtag'
         }
         break;
       // case 'sendImageAction':
@@ -133,9 +137,9 @@ export default {
   hasCampaignWarning(campaign) {
     const { campaignElementValidate } = this;
 
-    return campaign.steps.find(step => {
+    return campaign.steps.find((step, stepIndex) => {
       return step.elements.some(element => {
-        return campaignElementValidate(element);
+        return campaignElementValidate(element, Boolean(stepIndex));
       });
     });
   },

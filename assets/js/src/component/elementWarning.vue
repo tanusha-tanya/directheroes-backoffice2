@@ -14,13 +14,13 @@ export default {
 
   computed: {
     warning() {
-      const { element } = this;
+      const { element, isEntry } = this;
 
-      return utils.campaignElementValidate(element);
+      return utils.campaignElementValidate(element, isEntry);
     }
   },
 
-  props: ['element']
+  props: ['element', 'isEntry']
 }
 </script>
 
