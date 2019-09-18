@@ -99,7 +99,7 @@ export default {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
 
-      return elementsPermissions.fromActionStep.concat(messageTypes, ['timeout']);
+      return elementsPermissions.fromActionStep.concat(messageTypes);
     },
 
     isEntry() {
