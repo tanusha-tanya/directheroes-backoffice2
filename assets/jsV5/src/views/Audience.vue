@@ -28,6 +28,18 @@
         </div>
       </div>
       <loader v-else/>
+      <div class="dh-audience-thread-controls" v-if="threads && paging && paging.totalPageCount > 1">
+        <div class="dh-audience-thread-info">
+          Total subscribers: {{ paging.totalResultCount }}
+        </div>
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :current-page="paging.page"
+          :page-count="paging.totalPageCount"
+          @current-change="changePage"
+        ></el-pagination>
+      </div>
     </div>
     <dh-footer></dh-footer>
   </div>
@@ -100,7 +112,12 @@ export default {
 
     fromNowDate(date) {
       return moment(new Date(date * 1000)).fromNow();
-    }
+    },
+
+    changePage(page) {
+      this.paging.page = page;
+      this.getAudience();
+    },
   },
 
   watch: {
@@ -146,6 +163,12 @@ export default {
 
   .dh-thread-controls {
     color: inherit;
+  }
+
+  .dh-audience-thread-controls {
+    padding: 30px 0 10px;
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>

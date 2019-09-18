@@ -315,3 +315,15 @@ button.dh-button {
     }
   }
 }
+
+div.el-pagination {
+  &.is-background {
+    .btn-next, .btn-prev, .el-pager li:not(.active) {
+      background-color: transparent;
+    }
+
+    .el-pager li.active {
+      background-color: #9E4CF9 !important;
+    }
+  }
+}
