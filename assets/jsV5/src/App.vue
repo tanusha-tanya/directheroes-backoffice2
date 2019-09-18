@@ -38,6 +38,12 @@
         </div>
         Schedule
       </router-link>
+      <router-link v-if="false" :class="{'dh-navigation-button': true }" :to="{ name: 'affilate' }">
+        <div class="dh-navigation-button-ico">
+          <affilate/>
+        </div>
+        Affilate
+      </router-link>
       <router-link v-if="false" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">
           <tutorials/>
@@ -74,6 +80,7 @@ import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
 import tutorials from './assets/tutorials.svg'
 import support from './assets/support.svg'
+import affilate from './assets/affilate.svg'
 import loader from './components/dh-loader'
 
 export default {
@@ -88,6 +95,7 @@ export default {
     tutorials,
     support,
     loader,
+    affilate,
   },
 
   computed: {

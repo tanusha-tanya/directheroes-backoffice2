@@ -1,5 +1,5 @@
 <template>
-<div :class="[{'step-item': true, 'step-founded': findAnimation}, `step-${ stepType }-type`]" @mousedown.stop="" @transitionend="findAnimation = false">
+<div :class="[{'step-item': true, 'step-founded': findAnimation, 'step-to-bind': canConnectAsExist, 'step-not-bind': canConnectAsExist === false }, `step-${ stepType }-type`]" @mousedown.stop="" @transitionend="findAnimation = false">
   <div class="step-item-header" :ref="stepType === 'action' && linker && linker.id">
     <span>
       {{flowName || step.name || '&nbsp;'}}
@@ -9,18 +9,27 @@
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
       <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
-      <div class="existing-step-element" v-if="linker && linker.displaySettings" @click="goToStep">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-          viewBox="0 0 192.701 192.701" style="enable-background:new 0 0 192.701 192.701;" xml:space="preserve">
-          <path d="M29.641,96.345l74.54-75.61c4.704-4.74,4.704-12.439,0-17.179c-4.704-4.74-12.319-4.74-17.011,0l-82.997,84.2
-            c-4.511,4.559-4.535,12.608,0,17.191l83.009,84.2c4.692,4.74,12.319,4.74,17.011,0c4.704-4.74,4.704-12.439,0-17.179
-            L29.641,96.345z" fill="currentColor"/>
-          <path d="M113.853,96.345l74.54-75.61c4.704-4.74,4.704-12.439,0-17.179c-4.704-4.74-12.319-4.74-17.011,0l-82.997,84.2
-            c-4.511,4.559-4.535,12.608,0,17.191l82.997,84.2c4.704,4.74,12.319,4.74,17.011,0c4.704-4.74,4.704-12.439,0-17.179
-            L113.853,96.345z" fill="currentColor"/>
-        </svg>
-      </div>
+      <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
+        <div class="existing-step-element">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+            viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
+            <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
+              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
+              C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
+            <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
+              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
+              z" fill="currentColor"/>
+          </svg>
+        </div>
+      </existing-step-popup>
     </span>
+  </div>
+  <div class="existin-step-connector" v-if="canConnectAsExist" @click="bindAsExistStep">
+    <div>
+      Click<br>
+      to<br>
+      bind
+    </div>
   </div>
   <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="$emit('add-step', $event)"></component>
 </div>
@@ -37,6 +46,7 @@ import subInput from './elements/subInput'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
 import addStepPopup from './addStepPopup';
+import existingStepPopup from './existingStepPopup';
 
 export default {
   data() {
@@ -45,7 +55,7 @@ export default {
     }
   },
 
-  props: ['steps', 'step', 'flowName'],
+  props: ['steps', 'step', 'flowName', 'stepRowIndex'],
 
   components: {
     message,
@@ -54,7 +64,8 @@ export default {
     trigger,
     addStepPopup,
     userInput,
-    subInput
+    subInput,
+    existingStepPopup
   },
 
   computed: {
@@ -103,6 +114,13 @@ export default {
       return elements.find(element => element.type === 'linker');
     },
 
+    canConnectAsExist() {
+      const { stepRowIndex, $store } = this;
+      const { existConnection } = $store.state;
+
+      return existConnection && stepRowIndex > existConnection.stepRowIndex
+    },
+
     hasUserInputMatch() {
       const { steps } = this;
       const { elements } = this.step;
@@ -128,6 +146,22 @@ export default {
             ...element
           }
         ]
+      }
+
+      if (element.type === 'linker') {
+        this.$nextTick(() => {
+          const { $store, step, stepRowIndex } = this;
+
+          element.id = (new ObjectId).toString(),
+
+          $store.commit('set', { path: 'existConnection', value: {
+            step,
+            element,
+            stepRowIndex
+          } })
+        });
+
+        return;
       }
 
       if (element.type === 'group') {
@@ -157,6 +191,24 @@ export default {
       const { linker, $parent } = this;
 
       $parent.findEntryStep(linker.target, true)
+    },
+
+    bindAsExistStep() {
+      const { step, $store } = this;
+      const { existConnection } = $store.state;
+
+      console.log(step);
+
+      existConnection.element.target = step.id;
+      existConnection.step.elements.push(existConnection.element);
+
+      $store.commit('set', {path: 'existConnection', value: null })
+    },
+
+    removeLinker() {
+       const { linker, step } = this;
+
+      step.elements.splice(step.elements.indexOf(linker), 1);
     }
   }
 }
@@ -170,8 +222,37 @@ export default {
     margin: 30px 0;
     transition: box-shadow 1s;
 
+    .existin-step-connector {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border: 2px solid #6A12CB;
+      background-color: rgba(#fff, .6);
+      color: #6A12CB;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+
+      div {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        animation: scale-element 1s infinite;
+      }
+    }
+
     &:not(step-item) {
       flex-shrink: 0;
+    }
+
+    &.step-not-bind {
+      opacity: .3;
     }
 
     .step-item-header {
@@ -231,7 +312,7 @@ export default {
       border-radius: 50%;
       border: 1px solid #ccc;
       background-color: #fff;
-      padding: 7px;
+      padding: 6px 5px 6px 7px;
       color:#ccc;
 
       &:hover {

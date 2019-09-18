@@ -14,8 +14,7 @@
               <span><strong>{{ account.followingCount || 0 }}</strong> following</span>
             </div>
           </div>
-          <div class="dh-dashboard-ig-account-bio">
-            {{ account.bio }}
+          <div class="dh-dashboard-ig-account-bio" v-html="account.bio.replace(/\n/g, '<br>')">
           </div>
         </div>
       </div>

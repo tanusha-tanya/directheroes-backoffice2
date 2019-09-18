@@ -20,7 +20,7 @@
         </svg>
       </div>
     </div>
-    <div class="builder-area" ref="builderArea">
+    <div class="builder-area" ref="builderArea" @click="$store.commit('set', {path: 'existConnection', value: null })">
       <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
           <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
@@ -32,6 +32,7 @@
             @add-step="addStep"
             @delete-step="deleteStep"
             :key="rowItemIndex"
+            :step-row-index="rowIndex"
             :ref="stepRowItem.id"
             :steps="entryItem.steps"
             ></step-item>
@@ -196,7 +197,7 @@ export default {
       const { steps } = this.entryItem;
       const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
 
-      steps.some(stepItem => stepItem.elements.some( (element, index) => {
+      steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
         const actionElement = (matchElement) => {
           if (!matchElement) return;
 

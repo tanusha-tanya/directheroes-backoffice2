@@ -3,6 +3,12 @@
   100% { transform:rotate(360deg); }
 }
 
+@keyframes scale-element {
+  from {transform: scale(1)}
+  50% {transform: scale(1.5)}
+  to {transform: scale(1)}
+}
+
 .dh-disabled {
   opacity: .3;
   pointer-events: none;

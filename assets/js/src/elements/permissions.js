@@ -3,7 +3,7 @@ export default {
   fromTrigger: ['sendMedia', 'sendText', 'delay', 'addCategory', 'removeCategory', 'followers', 'zapier'],
   fromTriggerStep: [],
   fromMessageStep: ['sendText', 'sendMedia', 'delay', 'addCategory', 'timeout', 'user-input', 'followers', 'zapier'],
-  fromActionStep: ['sendText', 'sendMedia', 'delay', 'followers', 'addCategory'],
+  fromActionStep: ['sendText', 'sendMedia', 'delay', 'followers', 'addCategory', 'existingStep'],
   fromCondition: ['sendText', 'sendMedia', 'delay', 'followers', 'addCategory', 'zapier'],
   fromUserInputFails: ['sendText', 'sendMedia', 'delay', 'followers', 'addCategory'],
   fromUserInput: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier', 'addCategory', 'removeCategory'],
