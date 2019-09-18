@@ -168,12 +168,14 @@ export default {
           }
           break;
         case 'condition':
-          const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-          const action = firstElementSettings.elements.find(element => element.type === 'action');
-
-          action.body.checkpointId = checkpoint.id;
-
           step.name = 'Condition'
+
+          if (firstElementSettings.displaySettings.type === 'timeout') {
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
+
+            action.body.checkpointId = checkpoint.id;
+          }
 
           break;
         case 'action':
