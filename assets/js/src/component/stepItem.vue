@@ -31,7 +31,7 @@
       bind
     </div>
   </div>
-  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="$emit('add-step', $event)"></component>
+  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="addElementStep"></component>
 </div>
 </template>
 
@@ -99,7 +99,7 @@ export default {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
 
-      return elementsPermissions.fromActionStep.concat(messageTypes);
+      return elementsPermissions.fromActionStep.concat(messageTypes, ['timeout']);
     },
 
     isEntry() {
@@ -209,6 +209,10 @@ export default {
        const { linker, step } = this;
 
       step.elements.splice(step.elements.indexOf(linker), 1);
+    },
+
+    addElementStep(event, parentElement) {
+      this.$emit('add-step', event, parentElement);
     }
   }
 }

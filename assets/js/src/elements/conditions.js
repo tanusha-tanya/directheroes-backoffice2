@@ -16,6 +16,9 @@ export default [
           }
         },
         {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'time',

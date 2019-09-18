@@ -13,13 +13,10 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element)"
-                  v-else
-                ></add-mid-step-popup>
-              </div>
+                <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                  <div class="add-step-button"></div>
+                </add-trigger-popup>
+               </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
                 <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
@@ -96,6 +93,7 @@
 import Vue from 'vue';
 import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
+import addTriggerPopup from '../addTriggerPopup';
 import addTagPopup from '../addTagPopup';
 import addMidStepPopup from '../addMidStep';
 import timeout from '../timeout';
@@ -112,7 +110,8 @@ export default {
     addTagPopup,
     timeout,
     inputAutosize,
-    addMidStepPopup
+    addMidStepPopup,
+    addTriggerPopup
   },
 
   computed: {
@@ -195,7 +194,7 @@ export default {
         target: step.id
       });
 
-      this.$emit('add-step', step);
+      this.$emit('add-step', step, condition );
     },
 
     setRulesOperand(value) {
@@ -325,6 +324,17 @@ export default {
 
     .condition-item-match {
       border-bottom: 1px dashed #D8D8D8;
+
+      .el-popover__reference {
+        position: absolute;
+        display: block;
+        right: -14px;
+        top: calc(50% - 14px);
+
+        .add-step-button {
+          position: static;
+        }
+      }
 
       input {
         color: #28C3A7;

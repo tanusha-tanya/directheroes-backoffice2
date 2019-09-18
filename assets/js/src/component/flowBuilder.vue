@@ -152,7 +152,7 @@ export default {
   },
 
   methods: {
-    addStep(step) {
+    addStep(step, parentElement) {
       const { entryItem } = this;
       const firstElementSettings = step.elements[0];
 
@@ -161,14 +161,20 @@ export default {
           step.name = 'New message'
 
           if (firstElementSettings.displaySettings.type === 'delay') {
-            const checkpoint = step.elements.find(element => element.type === 'checkpoint');
-            const action = elements.find(element => element.type === 'action');
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
 
             action.body.checkpointId = checkpoint.id;
           }
           break;
         case 'condition':
+          const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+          const action = firstElementSettings.elements.find(element => element.type === 'action');
+
+          action.body.checkpointId = checkpoint.id;
+
           step.name = 'Condition'
+
           break;
         case 'action':
           step.name = 'Action'
@@ -176,10 +182,12 @@ export default {
         case 'trigger':
           step.name = 'Trigger';
 
-          step.elements.splice(0,0, {
-            type: 'checkpoint',
-            id: (new ObjectId).toString()
-          })
+          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+            step.elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
 
           break;
         case 'user-input':
@@ -206,10 +214,11 @@ export default {
 
           if ((target !== step.id) && (failTarget !== step.id)) return;
 
+
           if (element.type == 'linker') {
             stepItem.elements.splice(index, 1)
           } else {
-            Vue.set(matchElement, failTarget ? 'onFail' : 'onMatch', undefined);
+            Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
           }
 
           return true;
