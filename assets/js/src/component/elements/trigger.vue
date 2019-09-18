@@ -74,13 +74,6 @@ export default {
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
-
-        if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
-          const checkpoint = elements.find(element => element.type === 'checkpoint')
-          const actionElement = element.elements.find(element => element.type === 'action')
-
-          actionElement.body.checkpointId = checkpoint.id
-        }
       }
 
       const matchElement = utils.getOnMatchElement(rule);

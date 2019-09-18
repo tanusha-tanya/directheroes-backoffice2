@@ -53,10 +53,8 @@ import elementsPermissions from '../../elements/permissions'
 
 export default {
   data() {
-    const condition = this.isEntry ? [] : ['timeout'];
-
     return {
-      availableList: condition.concat(elementsPermissions.fromTrigger),
+      availableList: elementsPermissions.fromTrigger,
     }
   },
 
