@@ -213,9 +213,17 @@
     },
 
     methods: {
+      uuidv4: () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      },
+
       uploadFile(event) {
         const files = event.target.files;
         const formData = new FormData();
+        const { uuidv4 } = this;
 
         for (let i = 0; i < files.length; i++) {
           let file = files[i];
@@ -230,7 +238,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }).then(({ data }) => {
-          this.media.push(Object.assign(data.response.body, { clientContext: (new ObjectId).toString(), }));
+          this.media.push(Object.assign(data.response.body, { clientContext: uuidv4(), }));
         });
 
         event.preventDefault();
@@ -239,6 +247,7 @@
       sendMessage() {
         const { threadId } = this.$route.params;
         const { threadMessages } = this.$refs;
+        const { uuidv4 } = this;
 
         if (!this.messageText && !this.media.length) return;
 
@@ -247,7 +256,7 @@
           method: 'post',
           data: {
             text: this.messageText,
-            clientContext: (new ObjectId).toString(),
+            clientContext: uuidv4(),
             medias: this.media
           }
         }).then(({ data }) => {
