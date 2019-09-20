@@ -50,5 +50,26 @@ export default [
         },
       ]
     }
+  },
+  {
+    title: 'Is Verified',
+    template: {
+      type: "group",
+      displaySettings: {
+        subType: "condition",
+        type: "verified"
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "contact",
+            field: "verified",
+            operand: "eq",
+            value: true
+          },
+        }
+      ]
+    }
   }
 ]

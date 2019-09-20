@@ -2,7 +2,7 @@
   <div class="condition-items">
     <template v-for="element in elements">
       <div class='condition-item' :key="element.id">
-        <div class="condition-item-title">{{element.displaySettings.type}}</div>
+        <div class="condition-item-title">{{conditionTitle[element.displaySettings.type]}}</div>
         <template v-if="element.displaySettings.type === 'timeout'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -20,6 +20,33 @@
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
                 <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="element.displaySettings.type === 'verified'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Is verified?
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" :ref="element.id">
+                Yes
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element)"
+                  v-else
+                ></add-mid-step-popup>
+               </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                No
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element, true)"
@@ -102,6 +129,16 @@ import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
 
 export default {
+  data() {
+    return {
+      conditionTitle: {
+        timeout: 'Timeout',
+        folowwers: 'Followers',
+        verified: 'Is Verified'
+      }
+    }
+  },
+
   props: ['elements'],
 
   components: {

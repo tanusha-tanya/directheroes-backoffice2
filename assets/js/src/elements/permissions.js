@@ -1,6 +1,6 @@
 export default {
   fromFlow: [],
-  fromTrigger: ['sendMedia', 'sendText', 'delay', 'addCategory', 'removeCategory', 'followers', 'zapier'],
+  fromTrigger: ['sendMedia', 'sendText', 'delay', 'addCategory', 'removeCategory', 'followers', 'zapier', 'verified'],
   fromTriggerStep: [],
   fromMessageStep: ['sendText', 'sendMedia', 'delay', 'addCategory', 'timeout', 'user-input', 'followers', 'zapier'],
   fromActionStep: ['sendText', 'sendMedia', 'delay', 'followers', 'timeout', 'addCategory', 'existingStep'],
