@@ -112,9 +112,6 @@ export default {
         }
       })
       .then(({ data }) => {
-
-        console.log(data);
-
         this.payoutEmailChanged = false;
         this.referrerCodeChanged = false;
         this.saving = false;
