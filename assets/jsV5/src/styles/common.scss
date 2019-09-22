@@ -314,6 +314,22 @@ button.dh-button {
       animation: rotation  .8s infinite linear;
     }
   }
+
+  &.dh-small {
+    min-width: auto;
+    height: auto;
+    padding: 5px 15px;
+
+    &.dh-loading {
+      &:before {
+        width: 5px;
+        height: 5px;
+        border-radius: 5px;
+        top: calc(50% - 6px);
+        left: calc(50% - 6px);
+      }
+    }
+  }
 }
 
 div.el-pagination {

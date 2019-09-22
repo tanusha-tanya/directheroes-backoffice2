@@ -38,11 +38,11 @@
         </div>
         Schedule
       </router-link>
-      <router-link v-if="false" :class="{'dh-navigation-button': true }" :to="{ name: 'affilate' }">
+      <router-link :class="{'dh-navigation-button': true }" :to="{ name: 'affiliate' }">
         <div class="dh-navigation-button-ico">
           <affilate/>
         </div>
-        Affilate
+        Affiliate
       </router-link>
       <router-link v-if="false" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">

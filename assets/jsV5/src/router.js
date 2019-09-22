@@ -17,7 +17,7 @@ import ProfileSecurity from './views/ProfileSecurity'
 import ProfileBilling from './views/ProfileBilling'
 import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
-import Affilate from './views/Affilate'
+import Affiliate from './views/Affiliate'
 
 // import broadcastList from '../../js/src/routes/broadcastList.vue'
 // import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
@@ -41,7 +41,7 @@ Vue.use(Router)
 export default new Router({
   routes:[
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
-    { path: '/affilate', name: 'affilate', component: Affilate },
+    { path: '/affiliate', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
     { path: '/settings', component: Settings,
       children: [
