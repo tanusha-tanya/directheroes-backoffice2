@@ -85,7 +85,7 @@ export default {
           warning = 'Element has no target step'
         }
 
-        if (element.condition.value === 'storyMention' && isEntry && !element.onMatch.elements[0].condition.value.length) {
+        if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
           warning = 'Please specify at least one hashtag'
         }
         break;
