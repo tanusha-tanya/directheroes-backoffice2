@@ -11,7 +11,9 @@ Encore
   .addEntry('app', './assets/jsV5/src/main.js')
   .addEntry('register', './assets/jsV5/src/registration/registration.js')
   .enableVueLoader()
-  .enableSassLoader()
+  .enableSassLoader(options => {
+    options.data = '@import "./assets/jsV5/src/styles/variables.scss";';
+  })
   .enablePostCssLoader(options => {
     options.config = {
       path: './assets/jsV5'
@@ -44,7 +46,7 @@ if (Encore.isProduction()) {
     //     console.log(config);
     // });
 
-  config = Encore.getWebpackConfig()
+  config = Encore.getWebpackConfig();
 
   if (config.devServer) {
     Object.assign(config.devServer, {
@@ -74,7 +76,16 @@ if (Encore.isProduction()) {
     })
   }
 
-  config.plugins.push(new webpack.HotModuleReplacementPlugin())
+  // config.plugins.push(new webpack.HotModuleReplacementPlugin())
 }
+
+const svgRule = config.module.rules.find(rule => rule.test.test('.svg'));
+
+svgRule.test = /\.(png|jpg|jpeg|gif|ico|webp)$/
+
+config.module.rules.push({
+  test: /\.svg$/,
+  loader: 'vue-svg-loader',
+});
 
 module.exports = config;

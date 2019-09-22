@@ -1,6 +1,6 @@
 <template>
   <div class="rule-item" :ref="element.id">
-    <element-warning :element="rule"></element-warning>
+    <element-warning :element="rule" :is-entry="isEntry"></element-warning>
     <div class="rule-item-title">{{ ruleTitles[ruleType] }}</div>
     <template v-if="ruleType == 'list'">
       <keywords v-model="rule.condition.value"></keywords>
@@ -13,17 +13,13 @@
       ></el-input>
     </template>
     <template v-else-if="ruleType == 'storyMention'">
-      <el-input
-        size="small"
-        placeholder="Please enter hashtags"
-        v-model="rule.onMatch.elements[0].condition.value"
-      ></el-input>
+      <keywords v-model="rule.onMatch.elements[0].condition.value"></keywords>
     </template>
-    <add-step-popup
+    <add-tag-popup
       :available-list="availableList"
       @add-step="$emit('create-step', $event)"
       v-if="!hasOnMatch"
-    ></add-step-popup>
+    ></add-tag-popup>
     <add-mid-step-popup
       :available-list="availableList"
       @add-step="addMidStep($event)"
@@ -32,7 +28,7 @@
     <div
       class="rule-delete-button"
       @click="$emit('delete-trigger', element)"
-      v-if="elements.length > 1 && !hasOnMatch"
+      v-if="elements.length > (isEntry ? 1 : 2) && !hasOnMatch"
     >
       <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -48,7 +44,7 @@
 <script>
 import utils from '../../utils';
 import ObjectId from '../../utils/ObjectId';
-import addStepPopup from '../addStepPopup';
+import addTagPopup from '../addTagPopup';
 import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
@@ -57,10 +53,8 @@ import elementsPermissions from '../../elements/permissions'
 
 export default {
   data() {
-    const condition = this.isEntry ? [] : ['timeout'];
-
     return {
-      availableList: condition.concat(elementsPermissions.fromTrigger),
+      availableList: elementsPermissions.fromTrigger,
     }
   },
 
@@ -68,7 +62,7 @@ export default {
 
   components: {
     keywords,
-    addStepPopup,
+    addTagPopup,
     elementWarning,
     addMidStepPopup
   },

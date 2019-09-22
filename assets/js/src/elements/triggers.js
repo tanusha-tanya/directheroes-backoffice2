@@ -9,9 +9,6 @@ export default [
       },
       elements: [
         {
-          type: 'checkpoint'
-        },
-        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -36,9 +33,6 @@ export default [
       },
       elements: [
         {
-          type: 'checkpoint'
-        },
-        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -62,9 +56,6 @@ export default [
         type: 'postShare'
       },
       elements: [
-        {
-          type: 'checkpoint'
-        },
         {
           type: 'rule',
           condition: {
@@ -101,9 +92,6 @@ export default [
       },
       elements: [
         {
-          type: 'checkpoint'
-        },
-        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -128,9 +116,6 @@ export default [
       },
       elements: [
         {
-          type: 'checkpoint'
-        },
-        {
           type: 'rule',
           condition: {
             entity: 'message',
@@ -144,8 +129,8 @@ export default [
               condition: {
                 entity: 'post',
                 field: 'hashtag',
-                operand: 'eq',
-                value: ''
+                operand: 'contains',
+                value: []
               }
             }]
           },
@@ -165,9 +150,6 @@ export default [
         type: 'adReply'
       },
       elements: [
-        {
-          type: 'checkpoint'
-        },
         {
           type: 'rule',
           condition: {

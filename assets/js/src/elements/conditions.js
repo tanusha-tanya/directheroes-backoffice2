@@ -16,6 +16,9 @@ export default [
           }
         },
         {
+          type: 'checkpoint'
+        },
+        {
           type: 'rule',
           condition: {
             entity: 'time',
@@ -45,6 +48,27 @@ export default [
             value: 5000
           }
         },
+      ]
+    }
+  },
+  {
+    title: 'Is Verified',
+    template: {
+      type: "group",
+      displaySettings: {
+        subType: "condition",
+        type: "verified"
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "contact",
+            field: "verified",
+            operand: "eq",
+            value: true
+          },
+        }
       ]
     }
   }

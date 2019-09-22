@@ -1,6 +1,6 @@
 <template>
-  <div class="campaign-builder">
-    <div class="campaign-builder-controls">
+  <div class="campaign-builder" v-if="currentCampaign">
+    <!-- <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
       <div class="campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign" >
@@ -17,7 +17,6 @@
           <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch>
         </template>
       </div>
-      <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
         <div class="campaign-builder-settings">
           <div class="campaign-builder-option" v-if="hasSteps">
@@ -37,7 +36,7 @@
           <img src="../assets/svg/gear.svg"/>
         </div>
       </el-popover>
-    </div>
+    </div> -->
     <div class="campaign-first-step" v-if="currentCampaign && !currentCampaign.steps.length">
       <div class="campaign-flow-choose">
         <div class="campaign-choose-info">
@@ -57,68 +56,25 @@
       </div>
     </div>
     <flow-builder v-else :entry-item="currentCampaign" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
-    <confirm-dialog
-      v-model="isDeleteDialog"
-      title="Delete campaign"
-      message="Are you sure you want to delete campaign?"
-      @success="deleteCampaign"
-      >
-    </confirm-dialog>
   </div>
 </template>
 <script>
 import elementsPermissions from '../elements/permissions'
-import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../elements/settings'
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
-import confirmDialog from '../component/confirmDialog.vue'
 import addStepPopup from '../component/addStepPopup.vue'
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    next(accountCampaign => {
-      accountCampaign.setCurrentCampaign(to);
-    })
-  },
 
-  beforeRouteUpdate(to, from, next) {
-    this.currentCampaign = null;
-
-    this.setCurrentCampaign(to);
-    next();
-  },
-
-  data() {
-    return {
-      currentCampaign: null,
-      isDeleteDialog: false
-    }
-  },
+  props: ['currentCampaign', 'hasWarning'],
 
   components: {
     flowBuilder,
-    confirmDialog,
     addStepPopup
   },
 
   computed:{
-    campaigns() {
-      const { currentAccountData } = this.$store.state;
-
-      if (!currentAccountData) return;
-
-      return currentAccountData.campaigns //.filter(campaign => !campaign.isArchived)
-    },
-
-    hasWarning() {
-      const { currentCampaign } = this;
-
-      if (!currentCampaign) return;
-
-      return utils.hasCampaignWarning(currentCampaign);
-    },
-
     availableElements() {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
@@ -130,122 +86,9 @@ export default {
 
       return steps && steps.length;
     },
-
-    settings() {
-      const { currentCampaign } = this;
-      const entryStep = currentCampaign.steps.find(step => step.displaySettings.isEntry);
-      let settings = entryStep.elements.find(element => element.displaySettings.subType === 'settings');
-
-      if (!settings) {
-        settings = {
-          type: 'group',
-          displaySettings: {
-            subType: 'settings'
-          },
-          elements: []
-        }
-
-        entryStep.elements.splice(0,0, settings);
-      }
-
-      return entryStep && settings;
-    },
-
-    allowReEnter: {
-      get() {
-        const { settings } = this;
-
-        return !Boolean(settings.elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered"))
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (!value) {
-          const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
-
-          newAllowReEnter.id = (new ObjectId).toString();
-
-          elements.push(newAllowReEnter);
-        } else {
-          const allowReEnter = elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered")
-
-          elements.splice(elements.indexOf(allowReEnter), 1)
-        }
-      }
-    },
-
-    messageRequestOnly: {
-      get() {
-        const { settings } = this;
-
-        return Boolean(settings.elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest"));
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (value) {
-          const newMessageRequestOnly = JSON.parse(JSON.stringify(messageRequestOnlyElement));
-
-          newMessageRequestOnly.id = (new ObjectId).toString();
-
-          elements.push(newMessageRequestOnly);
-        } else {
-          const messageRequestOnly = elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest")
-
-          elements.splice(elements.indexOf(messageRequestOnly), 1)
-        }
-      }
-    },
-
-    nonSubscribersOnly: {
-      get() {
-        const { settings } = this;
-
-        return Boolean(settings.elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed"));
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (value) {
-          const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
-
-          nonSubscribersOnly.id = (new ObjectId).toString();
-
-          elements.push(nonSubscribersOnly);
-        } else {
-          const nonSubscribersOnly = elements.find(element => element.condition.entity === "contact" && element.condition.field === "subscribed")
-
-          elements.splice(elements.indexOf(nonSubscribersOnly), 1)
-        }
-      }
-    }
   },
 
   methods: {
-    setCurrentCampaign(route) {
-      let { campaignId } = route.params;
-      const { campaigns } = this;
-
-      if (!campaignId || !campaigns) return;
-
-      const currentCampaign = campaigns.find(campaign => campaign.id == campaignId);
-
-      if (currentCampaign) {
-        this.currentCampaign = currentCampaign;
-      }
-    },
-
-    deleteCampaign() {
-      const { currentAccount } = this.$store.state;
-
-      this.currentCampaign.isArchived = true;
-      this.isDeleteDialog = false;
-      this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } });
-    },
-
     addStep(element) {
       const step = {
         id: (new ObjectId).toString(),
@@ -253,13 +96,6 @@ export default {
           isEntry: true
         },
         elements: []
-      }
-
-      if (element.type === 'group' && element.displaySettings.subType === 'trigger') {
-        const { elements } = element;
-        const checkpoint = elements.find(element => element.type === 'checkpoint');
-
-        elements.splice(elements.indexOf(checkpoint), 1);
       }
 
       step.elements.push( {
@@ -270,21 +106,12 @@ export default {
       this.currentCampaign.steps.push(step);
     },
 
-    findWarningStep() {
-      const { hasWarning } = this;
+    findEntryStep(warningStepId) {
       const { flowBuilder } = this.$refs;
 
-      flowBuilder.findEntryStep(hasWarning.id);
+      flowBuilder.findEntryStep(warningStepId.id);
     }
   },
-
-  watch:{
-    '$store.state.currentAccountData'() {
-      if (this.currentCampaign) return;
-
-      this.setCurrentCampaign(this.$route);
-    }
-  }
 }
 </script>
 <style lang="scss">
@@ -343,6 +170,7 @@ export default {
   position: relative;
   background-color: #fafafa;
   width: 100%;
+  height: 100%;
 
   .campaign-builder-controls {
     display: flex;
@@ -482,7 +310,7 @@ export default {
   }
 
   .flow-builder {
-    height: calc(100% - 50px);
+    height: 100%;
   }
 }
 

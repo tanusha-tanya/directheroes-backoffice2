@@ -18,15 +18,15 @@
       </div>
       <div class="download-buttons">
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=win`">
-          <img src="../assets/svg/windows.svg"/>
+          <windows/>
           Download for Windows
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=mac`">
-          <img src="../assets/svg/apple.svg"/>
+          <apple/>
           Download for Mac
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=linux`">
-          <img src="../assets/svg/ubuntu.svg"/>
+          <ubuntu/>
           Download for Linux
         </a>
       </div>
@@ -62,8 +62,8 @@
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
-      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
+      <input class="dh-input" placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
+      <input class="dh-input" placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
       <div class="error" v-if="error && !twoFactor">{{ error }}</div>
       <div class="challenge-notices" v-if="challenge">
         <div class="notice-item">
@@ -82,7 +82,7 @@
           <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
         </div>
       </div>
-      <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+      <button :class="{ 'dh-button': true, 'dh-loading': loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
       <div class="step">
@@ -100,7 +100,7 @@
           <el-radio v-model="selected2FAMethod" label="2">Backup code</el-radio>
         </div>
         <div class="step-verify">
-          <button @click="twoFAMethodChoose=false">Choose</button>
+          <button class="dh-button" @click="twoFAMethodChoose=false">Choose</button>
         </div>
       </div>
     </template>
@@ -114,11 +114,11 @@
             {{selected2FAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
           </div>
         </div>
-        <input placeholder="Verification Code" v-model="code" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
+        <input placeholder="Verification Code" v-model="code" class="dh-input" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
-          <button :class="{ loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
-          <button v-if="selected2FAMethod != 2" :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+          <button :class="{ 'dh-button': true, 'dh-loading': loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
+          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, resend: true, 'dh-loading': loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
         </div>
       </div>
     </template>
@@ -126,9 +126,12 @@
 </template>
 
 <script>
-import triangle from '../assets/triangle.svg'
+import triangle from '../assets/triangle.svg';
 import axios from 'axios';
-import sodium from 'libsodium-wrappers'
+import sodium from 'libsodium-wrappers';
+import windows from '../assets/svg/windows.svg';
+import ubuntu from '../assets/svg/ubuntu.svg';
+import apple from '../assets/svg/apple.svg';
 
 export default {
   data() {
@@ -148,6 +151,12 @@ export default {
       isResendCode: false,
       triangle
     }
+  },
+
+  components: {
+    windows,
+    ubuntu,
+    apple
   },
 
   props: ['isAddAccount', 'accountAuth'],
@@ -348,46 +357,38 @@ export default {
       }
     },
 
-    // proxyStatus(value) {
-    //   clearInterval(this.checkingTimeout)
-
-    //   this.checkingTimeout = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
-    // }
   }
 }
 </script>
 <style lang="scss">
 .add-account-dialog {
+  background-color: transparent !important;
+
   .el-dialog {
-    margin: 50px 0 0 auto !important;
-    height: calc(100% - 50px);
+    margin: 0 0 0 auto !important;
+    height: 100%;
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
-
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
+    box-shadow: none;
+    border-left: 1px solid $borderColor;
 
     .el-dialog__header, .el-dialog__body {
       padding: 0;
       word-break: break-word !important;
+      background-color: transparent;
     }
 
     .el-dialog__title {
       font-size: 20px;
-      color: #6A12CB;
-    }
+   }
 
     .el-dialog__header {
       margin-bottom: 24px;
     }
 
     .step {
-      color: #B6B6B6;
+      color: $textColor;
       font-size: 15px;
 
       &:not(:last-child) {
@@ -409,7 +410,8 @@ export default {
       width: 27px;
       flex-shrink: 0;
       margin-right: 8px;
-      border: 1px solid currentColor;
+      border: 1px solid $mainTextColor;
+      color: $mainTextColor;
       border-radius: 20px;
       display: flex;
       align-items: center;
@@ -418,7 +420,7 @@ export default {
 
     .challenge-notices {
       margin-top: 10px;
-      color: #2c3e50;
+      color: $textColor;
     }
 
     .notice-item {
@@ -465,7 +467,7 @@ export default {
         margin-bottom: 10px;
       }
 
-      img {
+      svg {
         margin-right: 9px;
         max-height: 16px;
       }
@@ -480,16 +482,16 @@ export default {
     .status-indicator {
       height: 27px;
       width: 27px;
-      background-color: #FF4D4D;
+      background-color: $failColor;
       border-radius: 20px;
       margin-right: 9px;
 
       &.success {
-        background-color: #44B0A9;
+        background-color: $successColor;
       }
 
       &.draft {
-        background-color: #A5A5A5;
+        background-color: rgba($borderColor, .5);;
       }
     }
 
@@ -520,18 +522,12 @@ export default {
 
     input {
       margin-top: 10px;
-      border-radius: 2px;
       width: 100%;
-
-      &::placeholder {
-        text-align: center;
-        font-style: italic;
-      }
     }
 
     .error {
       margin-top: 10px;
-      color: #FF4D4D;
+      color: $failColor;
       text-align: center;
     }
 

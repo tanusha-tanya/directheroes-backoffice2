@@ -22,7 +22,7 @@ export default {
 
     linkerType() {
       const { linkerChild } = this;
-      const firstElement = linkerChild.elements[0];
+      const firstElement = linkerChild.elements.find(element => !['checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
 
       return (firstElement.type === 'group' && firstElement.displaySettings.subType) || firstElement.type
     },
@@ -37,6 +37,8 @@ export default {
           return 'Action'
         case 'user-input':
           return 'User Input'
+        case 'condition':
+          return 'Condition'
       }
     },
   }
@@ -95,6 +97,16 @@ export default {
 
       &:after {
         background-image: url(../assets/svgV5/userInput.svg);
+      }
+    }
+
+    .linker-condition-type {
+      color: #FF9B71;
+      background-color: rgba(#FF9B71, .25);
+      border: 1px solid #FF9B71;
+
+      &:after {
+        background-image: url(../assets/v5/conditions.png);
       }
     }
   }

@@ -9,7 +9,7 @@
         @create-step="createStep(element, $event)"
         @add-step="$emit('add-step', $event)"
         :elements="elements"
-        v-if="element.displaySettings.subType !== 'settings'"
+        v-if="element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings')"
         ></rule-item>
     </template>
     <div class="add-rule-button">
@@ -48,14 +48,7 @@ export default {
 
   methods: {
     addTrigger(element) {
-      const { elements, isEntry } = this;
-
-      if (isEntry) {
-        const { elements } = element;
-        const checkpoint = elements.find(element => element.type === 'checkpoint');
-
-        elements.splice(elements.indexOf(checkpoint), 1);
-      }
+      const { elements } = this;
 
       element.elements.forEach(element => element.id = (new ObjectId).toString())
 
@@ -66,6 +59,7 @@ export default {
     },
 
     createStep(rule, element) {
+      const { elements } =  this;
       const step = {
         id: (new ObjectId).toString(),
         elements: [
@@ -80,14 +74,6 @@ export default {
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
-
-
-        if (element.displaySettings.type == 'timeout' && rule.type === 'group') {
-          const checkpoint = rule.elements.find(element => element.type === 'checkpoint')
-          const actionElement = element.elements.find(element => element.type === 'action')
-
-          actionElement.body.checkpointId = checkpoint.id
-        }
       }
 
       const matchElement = utils.getOnMatchElement(rule);

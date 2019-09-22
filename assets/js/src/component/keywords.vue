@@ -102,6 +102,8 @@ export default {
       padding: 2px 10px 3px;
       height: auto;
       line-height: 14px;
+      white-space: normal;
+      word-break: break-word;
     }
 
     .el-tag__close {

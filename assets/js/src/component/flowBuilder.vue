@@ -9,7 +9,7 @@
       >
       </el-slider>
       <div class="go-to-position" @click="findEntryStep()">
-        <svg x="0px" y="0px" fill="#409EFF" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
+        <svg x="0px" y="0px" fill="#9E4CF9" viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
           <path d="M192,136c-30.872,0-56,25.12-56,56s25.128,56,56,56s56-25.12,56-56S222.872,136,192,136z M192,216
             c-13.232,0-24-10.768-24-24s10.768-24,24-24s24,10.768,24,24S205.232,216,192,216z"/>
           <path d="M368,176h-32.944C327.648,109.368,274.632,56.352,208,48.944V16c0-8.832-7.168-16-16-16c-8.832,0-16,7.168-16,16v32.944
@@ -20,7 +20,7 @@
         </svg>
       </div>
     </div>
-    <div class="builder-area" ref="builderArea">
+    <div class="builder-area" ref="builderArea" @click="$store.commit('set', {path: 'existConnection', value: null })">
       <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
           <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
@@ -32,6 +32,7 @@
             @add-step="addStep"
             @delete-step="deleteStep"
             :key="rowItemIndex"
+            :step-row-index="rowIndex"
             :ref="stepRowItem.id"
             :steps="entryItem.steps"
             ></step-item>
@@ -47,7 +48,8 @@ import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
 import Vue from 'vue';
-import utils from '../utils'
+import utils from '../utils';
+import ObjectId from '../utils/ObjectId';
 
 let zoomTimeout = null;
 
@@ -78,7 +80,7 @@ export default {
         row.forEach(stepRow => {
           if (!stepRow) return;
 
-          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
+          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || (element.type === 'linker' && !element.displaySettings)).forEach(element => {
             const elementAction = (matchElement, suffix = '') => {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
@@ -150,7 +152,7 @@ export default {
   },
 
   methods: {
-    addStep(step) {
+    addStep(step, parentElement) {
       const { entryItem } = this;
       const firstElementSettings = step.elements[0];
 
@@ -159,21 +161,36 @@ export default {
           step.name = 'New message'
 
           if (firstElementSettings.displaySettings.type === 'delay') {
-            const { elements } = firstElementSettings;
-            const checkpoint = elements.find(element => element.type === 'checkpoint');
-            const action = elements.find(element => element.type === 'action');
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
 
             action.body.checkpointId = checkpoint.id;
           }
           break;
         case 'condition':
           step.name = 'Condition'
+
+          if (firstElementSettings.displaySettings.type === 'timeout') {
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
+
+            action.body.checkpointId = checkpoint.id;
+          }
+
           break;
         case 'action':
           step.name = 'Action'
           break;
         case 'trigger':
-          step.name = 'Trigger'
+          step.name = 'Trigger';
+
+          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+            step.elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
+
           break;
         case 'user-input':
           step.name = 'User Input'
@@ -188,9 +205,9 @@ export default {
 
     deleteStep(step) {
       const { steps } = this.entryItem;
-      const userInputElement = step.elements.find(element => element.displaySettings.subType == "user-input")
+      const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
 
-      steps.some(stepItem => stepItem.elements.some( (element, index) => {
+      steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
         const actionElement = (matchElement) => {
           if (!matchElement) return;
 
@@ -199,10 +216,11 @@ export default {
 
           if ((target !== step.id) && (failTarget !== step.id)) return;
 
+
           if (element.type == 'linker') {
             stepItem.elements.splice(index, 1)
           } else {
-            Vue.set(matchElement, failTarget ? 'onFail' : 'onMatch', undefined);
+            Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
           }
 
           return true;
@@ -263,7 +281,7 @@ export default {
       zoomTool.smoothZoom(positionX, positionY, ration);
     },
 
-    findEntryStep(stepId) {
+    findEntryStep(stepId, animation) {
       const { zoomTool, entryItem } = this;
       const { flowBuilder } = this.$refs;
       const campaignCard = this.$refs[stepId || entryItem.steps[0].id][0];
@@ -273,6 +291,10 @@ export default {
 
       const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
       const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+
+      if (animation) {
+        campaignCard.findAnimation = true;
+      }
 
       zoomTool.moveTo(positionX, positionY)
     },
@@ -286,6 +308,13 @@ export default {
 
     this.initZoom();
     this.findEntryStep();
+
+    this.$nextTick(() => {
+      const { builderArea } = this.$refs;
+
+      builderArea.style.width = `${builderArea.scrollWidth}px`;
+      builderArea.style.height = `${builderArea.scrollHeight}px`
+    });
   },
 
   watch:{
@@ -362,7 +391,7 @@ export default {
     background-color: #fff;
     padding: 0 0 0 10px;
     z-index: 10;
-    top: 105px;
+    top: 70px;
     left: calc(50% - 10px);
     width: 230px;
     border: 2px solid #E8E8E8;

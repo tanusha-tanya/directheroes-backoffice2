@@ -11,7 +11,7 @@
       </div>
       <div class="user-input-fail" :ref="`${element.id}-fail`">
         Doesn't Collect
-        <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-step-popup>
+        <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-tag-popup>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@
 <script>
 import elementsPermissions from '../../elements/permissions'
 import { userInputSubscriber, userInputZapier } from '../../elements/userInput'
-import addStepPopup from '../addStepPopup'
+import addTagPopup from '../addTagPopup'
 import Vue from 'vue';
 import ObjectId from '../../utils/ObjectId';
 
@@ -34,7 +34,7 @@ export default {
   props: ['elements'],
 
   components: {
-    addStepPopup
+    addTagPopup
   },
 
   computed: {

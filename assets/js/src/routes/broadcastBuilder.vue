@@ -1,6 +1,6 @@
 <template>
   <div class="broadcast-builder">
-    <div class="broadcast-builder-controls">
+    <!-- <div class="broadcast-builder-controls">
       <span>Broadcast Builder</span>
       <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
       <div class="info" v-if="currentBroadcast && isComplete">
@@ -17,7 +17,7 @@
       <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
         <img src="../assets/svg/gear.svg"/>
       </div>
-    </div>
+    </div> -->
     <div class="broadcast-first-step" v-if="currentBroadcast && !currentBroadcast.steps.length">
       <div class="broadcast-flow-choose">
         <div class="broadcast-choose-info">
@@ -57,15 +57,6 @@
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
           <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="currentBroadcast.settings.categoryList"></check-box-branch>
-          <!-- <el-checkbox
-            v-for="subscriber in account.subscriberCategoryList"
-            :key="subscriber.id"
-            :checked="isCheckedSubscriber(subscriber.id)"
-            :disabled="isStarted || notStarted"
-            @change="checkSubscriber(subscriber, $event)"
-            >
-            {{ subscriber.name }}
-          </el-checkbox> -->
         </div>
         <div class="broadcast-chart">
           <el-progress type="circle" :percentage="messagesInfo.sentPercent" :stroke-width="12" color="#64c6cc"></el-progress>
@@ -110,22 +101,9 @@ import moment from 'moment'
 let countTimeout = null;
 
 export default {
-   beforeRouteEnter(to, from, next) {
-    next(accountBroadcast => {
-      accountBroadcast.setCurrentBroadcast(to);
-    })
-  },
-
-  beforeRouteUpdate(to, from, next) {
-    this.currentBroadcast = null;
-
-    this.setCurrentBroadcast(to);
-    next();
-  },
 
   data() {
     return {
-      currentBroadcast: null,
       isSettings: false,
       timeToStart: null,
       broadcastTimeout: null,
@@ -139,6 +117,8 @@ export default {
     }
   },
 
+  props: ['currentBroadcast'],
+
   components: {
     flowBuilder,
     checkBoxBranch,
@@ -149,16 +129,6 @@ export default {
     account() {
       return this.$store.state.currentAccount;
     },
-
-    broadcasts() {
-      const { currentAccountData } = this.$store.state;
-
-      if (!currentAccountData) return [];
-
-      return currentAccountData.campaigns.filter(campaign => campaign.type === "broadcast")
-      // return currentAccountData.campaigns.filter(campaign => campaign.type === "broadcast" && !campaign.isArchived)
-    },
-
 
     startAt: {
       get() {
@@ -172,12 +142,13 @@ export default {
         Vue.set(settings, 'startAt', moment(value).utc().format());
         settings.startTimeSetAt = moment().utc().format();
 
-        // this.updateBroadcastStatus();
+        this.updateBroadcastStatus();
       }
     },
 
     isComplete() {
       const { currentBroadcast } = this
+
       return currentBroadcast.status.statusText == 'completed'
     },
 
@@ -318,17 +289,6 @@ export default {
       })
     },
 
-    setCurrentBroadcast(route) {
-      const { campaignId } = route.params;
-      const { broadcasts } = this;
-      const currentBroadcast = broadcasts.find(broadcast => broadcast.id == campaignId);
-
-      if (currentBroadcast) {
-        this.currentBroadcast = currentBroadcast;
-        // this.updateBroadcastStatus();
-      }
-    },
-
     setNowDate() {
       const { currentBroadcast } = this;
 
@@ -341,26 +301,26 @@ export default {
       const diff = moment(new Date(startAt)).diff();
       let timeout = 60 * 1000;
 
-      clearTimeout(this.broadcastTimeout)
+      // clearTimeout(this.broadcastTimeout)
 
       this.timeToStart = (!startAt || moment().diff(new Date(startAt)) > 0) ? null : `${moment().from(new Date(startAt), true)} to start`
 
-      if ((diff > 60 * 60 * 1000) || isStarted || notStarted) return;
+      // if ((diff > 60 * 60 * 1000) || isStarted || notStarted) return;
 
-      if (diff < 60 * 1000 && diff > 0) {
-        timeout = 1000;
-      } else if (!this.timeToStart) {
-        this.$store.dispatch('saveCampaign', this.currentBroadcast)
-        .then(({ data }) => {
-          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 10 * 1000)
-        })
-        .catch(() => {
-          this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 30 * 1000)
-        });
-        return;
-      }
+      // if (diff < 60 * 1000 && diff > 0) {
+      //   timeout = 1000;
+      // } else if (!this.timeToStart) {
+      //   this.$store.dispatch('saveCampaign', this.currentBroadcast)
+      //   .then(({ data }) => {
+      //     this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 10 * 1000)
+      //   })
+      //   .catch(() => {
+      //     this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), 30 * 1000)
+      //   });
+      //   return;
+      // }
 
-      this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
+      // this.broadcastTimeout = setTimeout(this.updateBroadcastStatus.bind(this), timeout)
     },
 
     addStep(element) {
@@ -395,12 +355,6 @@ export default {
   },
 
   watch:{
-    '$store.state.currentAccountData'() {
-      if (this.currentBroadcast) return;
-
-      this.setCurrentBroadcast(this.$route);
-    },
-
     'currentBroadcast.settings.categoryList'() {
       this.inGetCount = true;
 
@@ -409,6 +363,12 @@ export default {
       countTimeout = setTimeout(() => {
         this.getTotalSubscribers();
       }, 2000);
+    },
+
+    'currentBroadcast'(broadcast) {
+      if (!broadcast) return;
+
+      this.updateBroadcastStatus()
     }
   }
 }
@@ -419,6 +379,11 @@ export default {
   position: relative;
   background-color: #fafafa;
   width: 100%;
+  height: 100%;
+
+  .flow-builder {
+    height: 100%;
+  }
 
   .broadcast-esimating {
     animation: blink 1.5s linear infinite;
@@ -431,7 +396,7 @@ export default {
 
   .broadcast-settings {
     position: absolute;
-    top: 50px;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;

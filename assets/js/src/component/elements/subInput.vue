@@ -5,11 +5,11 @@
         <el-option value="collect" :label="`Store ${ elementField }`"></el-option>
         <el-option value="webhook" label="Connect to Zapier"></el-option>
       </el-select>
-      <add-step-popup
+      <add-tag-popup
         :available-list="availableList"
         @add-step="createStep"
         v-if="!linker"
-      ></add-step-popup>
+      ></add-tag-popup>
     </div>
     <zapier :element="element" v-if="element.body.action === 'webhook'"></zapier>
   </div>
@@ -19,14 +19,14 @@
 import ObjectId from '../../utils/ObjectId';
 import Vue from 'vue'
 import axios from 'axios'
-import addStepPopup from '../addStepPopup';
+import addTagPopup from '../addTagPopup';
 import zapier from '../zapier';
 import elementsPermissions from '../../elements/permissions'
 import { userInputSubscriber, userInputZapier } from '../../elements/userInput';
 
 export default {
   components: {
-    addStepPopup,
+    addTagPopup,
     zapier
   },
 

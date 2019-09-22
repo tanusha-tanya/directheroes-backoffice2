@@ -2,7 +2,7 @@
   <div class="condition-items">
     <template v-for="element in elements">
       <div class='condition-item' :key="element.id">
-        <div class="condition-item-title">{{element.displaySettings.type}}</div>
+        <div class="condition-item-title">{{conditionTitle[element.displaySettings.type]}}</div>
         <template v-if="element.displaySettings.type === 'timeout'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -13,16 +13,40 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-step-popup>
+                <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                  <div class="add-step-button"></div>
+                </add-trigger-popup>
+               </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                NO Reply
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="element.displaySettings.type === 'verified'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Is verified?
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" :ref="element.id">
+                Yes
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element)"
                   v-else
                 ></add-mid-step-popup>
-              </div>
+               </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                NO Reply
-                <add-step-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-step-popup>
+                No
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element, true)"
@@ -44,7 +68,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                <add-step-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, subElement)"
@@ -72,7 +96,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ elseText }}
-                <add-step-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-step-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, lastFollowersRule, true)"
@@ -96,7 +120,8 @@
 import Vue from 'vue';
 import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
-import addStepPopup from '../addStepPopup';
+import addTriggerPopup from '../addTriggerPopup';
+import addTagPopup from '../addTagPopup';
 import addMidStepPopup from '../addMidStep';
 import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
@@ -104,15 +129,26 @@ import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
 
 export default {
+  data() {
+    return {
+      conditionTitle: {
+        timeout: 'Timeout',
+        folowwers: 'Followers',
+        verified: 'Is Verified'
+      }
+    }
+  },
+
   props: ['elements'],
 
   components: {
     addConditionPopup,
     elementWarning,
-    addStepPopup,
+    addTagPopup,
     timeout,
     inputAutosize,
-    addMidStepPopup
+    addMidStepPopup,
+    addTriggerPopup
   },
 
   computed: {
@@ -195,7 +231,7 @@ export default {
         target: step.id
       });
 
-      this.$emit('add-step', step);
+      this.$emit('add-step', step, condition );
     },
 
     setRulesOperand(value) {
@@ -230,8 +266,6 @@ export default {
       }
       let rule = condition;
       let link;
-
-      console.log(condition, condition.type !== 'rule');
 
       if (condition.type !== 'rule') {
         rule = this.getRule(condition);
@@ -327,6 +361,17 @@ export default {
 
     .condition-item-match {
       border-bottom: 1px dashed #D8D8D8;
+
+      .el-popover__reference {
+        position: absolute;
+        display: block;
+        right: -14px;
+        top: calc(50% - 14px);
+
+        .add-step-button {
+          position: static;
+        }
+      }
 
       input {
         color: #28C3A7;

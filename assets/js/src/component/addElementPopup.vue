@@ -131,25 +131,25 @@ export default {
 
       &.element-sendText-type {
         &:before {
-          background-image: url(../assets/svgV5/text.svg);
+          background-image: url(../assets/svgV5/text.png);
         }
       }
 
       &.element-sendMedia-type {
         &:before {
-          background-image: url(../assets/svgV5/image.svg);
+          background-image: url(../assets/svgV5/image.png);
         }
       }
 
       &.element-delay-type {
         &:before {
-          background-image: url(../assets/svgV5/delayBtn.svg);
+          background-image: url(../assets/svgV5/delayBtn.png);
         }
       }
 
       &.element-user-input-type {
         &:before {
-          background-image: url(../assets/svgV5/userInputBtn.svg);
+          background-image: url(../assets/svgV5/userInputBtn.png);
         }
       }
     }
