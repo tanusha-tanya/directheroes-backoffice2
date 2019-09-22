@@ -122,7 +122,19 @@ export default {
     },
 
     copyRefLink() {
+      const { referrerCode } = this.affiliateInfo.settings
+      const referralLink = `${dh.apiUrl}/check-out/?ref=${referrerCode}`
+      const input = document.createElement('input');
 
+      input.setAttribute('value', referralLink);
+      input.style.position = 'absolute'
+      input.style.opacity = 0;
+      input.style.pointerEvents = 'none';
+      document.body.appendChild(input);
+      input.focus();
+      input.select();
+      document.execCommand('copy')
+      document.body.removeChild(input)
     }
   },
 
