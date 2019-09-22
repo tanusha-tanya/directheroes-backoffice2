@@ -5,12 +5,12 @@
       <div class="dh-affiliate" v-if="affiliateInfo">
         <div class="dh-affiliate-row dh-affiliate-info">
           <div class="dh-affiliate-column">
-            <div>We will send affiliate payments to:</div>
+            <div>We will send affiliate payouts via Paypal to:</div>
             <div>
-              <input type="text" class="dh-input" v-model="affiliateInfo.settings.payoutEmail" @input="payoutEmailChanged = true"/>
+              <input type="text" class="dh-input" placeholder="Enter Paypal Email" v-model="affiliateInfo.settings.payoutEmail" @input="payoutEmailChanged = true"/>
               <button v-if="payoutEmailChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
             </div>
-            <div>Payments are made on the first of every month.</div>
+            <div>Payouts will be made on the first of each month.</div>
           </div>
           <div class="dh-affiliate-column">
             <div>Your referral link:</div>
