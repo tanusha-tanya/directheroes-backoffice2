@@ -239,6 +239,7 @@ export default {
 
     if (referrer && referrer[1]) {
       document.cookie += 'referrer='+referrer[1]+';'
+      console.log(document.cookie);
     }
 
     if (stripePk) {
