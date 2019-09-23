@@ -237,6 +237,8 @@ export default {
     const { stripePk } = dh;
     const referrer = /ref=(\w*)/.exec(location.search);
 
+    console.log(referrer);
+
     if (referrer && referrer[1]) {
       document.cookie += 'referrer='+referrer[1]+';'
     }
