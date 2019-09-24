@@ -315,6 +315,7 @@ export default {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
+    text-align: center;
   }
 }
 
