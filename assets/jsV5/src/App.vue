@@ -44,7 +44,7 @@
         </div>
         Affiliate
       </router-link>
-      <router-link v-if="false" class="dh-navigation-button" :to="{ name: 'tutorials' }">
+      <router-link v-if="hasTutorialAccess" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">
           <tutorials/>
         </div>
@@ -111,7 +111,7 @@ export default {
       return state.accounts.length;
     },
 
-    isfullSideBar() {
+    isFullSideBar() {
       const { state } = this.$store;
 
       return state.isfullSideBar;
@@ -121,7 +121,15 @@ export default {
       const { state } = this.$store;
 
       return state.isFirstLoad;
+    },
+
+    hasTutorialAccess() {
+      const accessList = ['kalum@adoku.ca']
+      const { dhAccount } = this;
+
+      return dhAccount && accessList.includes(dhAccount.username);
     }
+
   },
 }
 </script>
