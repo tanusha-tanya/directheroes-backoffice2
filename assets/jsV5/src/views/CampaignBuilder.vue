@@ -113,12 +113,18 @@ export default {
       let settings = entryStep.elements.find(element => element.displaySettings.subType === 'settings');
 
       if (!settings) {
+        const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
+        const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
+
+        nonSubscribersOnly.id = (new ObjectId).toString();
+        newAllowReEnter.id = (new ObjectId).toString();
+
         settings = {
           type: 'group',
           displaySettings: {
             subType: 'settings'
           },
-          elements: []
+          elements: [newAllowReEnter, nonSubscribersOnly]
         }
 
         entryStep.elements.splice(0,0, settings);
