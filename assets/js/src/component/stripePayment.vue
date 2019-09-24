@@ -238,7 +238,7 @@ export default {
     const referrer = /ref=(\w*)/.exec(location.search);
 
     if (referrer && referrer[1]) {
-      document.cookie = 'referrer='+referrer[1]
+      document.cookie = 'referrer=' + referrer[1] + '; path=/'
     }
 
     if (stripePk) {
