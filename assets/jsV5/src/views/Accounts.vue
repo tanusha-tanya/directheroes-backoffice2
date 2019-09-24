@@ -52,7 +52,10 @@
             <span><strong>{{account.followingCount || 0}}</strong> following</span>
           </div>
           <div class="dh-account-connect-error" v-if="!account.isLoggedIn">
-            <span><warning /> Connect Instagram Account</span>
+            <span>
+              Click Here To Reconnect<br/>
+              <warning />Instagram Account<warning />
+            </span>
           </div>
         </div>
       </div>
