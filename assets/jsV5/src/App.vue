@@ -1,7 +1,7 @@
 <template>
   <div class="dh-application">
     <div class="dh-navigation">
-      <router-link class="dh-logo" :to="{ name: 'accounts'}"><dh-logo/></router-link>
+      <router-link class="dh-logo" :to="{ name: 'accounts'}"></router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <dashboard/>
@@ -156,6 +156,11 @@ body {
 
   .dh-logo {
     width: 100%;
+    height: 64px;
+    background-image: url(./assets/logo.png);
+    background-position: center;
+    background-size: 70%;
+    background-repeat: no-repeat;
     display: block;
     padding: 20px 35px 11px 35px;
   }
