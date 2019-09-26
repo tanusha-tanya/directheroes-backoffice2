@@ -60,8 +60,8 @@
             </div>
           </div>
         </div>
-        <div class="dh-contact-profile" v-if="allThreads && allThreads.length">
-          <div class="dh-contact-profile-userpic" v-if="currentThread" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
+        <div class="dh-contact-profile" v-if="currentThread">
+          <div class="dh-contact-profile-userpic" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
           <div class="dh-contact-profile-names">
             <div class="dh-contact-profile-fullname">
               {{currentThread.contactProfile.fullName}}

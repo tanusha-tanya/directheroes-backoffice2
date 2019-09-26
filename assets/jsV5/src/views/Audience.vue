@@ -46,7 +46,7 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id, subscribed: subscribedText }, query: {p: paging.page, q: filters.usernameQuery, st: 'ignored' }}" class="dh-thread-controls">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id, subscribed: subscribedText }, query: {p: paging.page, q: filters.usernameQuery }}" class="dh-thread-controls">
             <livechat/>
           </router-link>
         </div>
@@ -123,6 +123,9 @@ export default {
           break;
         case null:
           return 'all'
+          break;
+        case 'ignored':
+          return 'ignored'
           break;
       }
     }
