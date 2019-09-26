@@ -20,6 +20,8 @@
               >
                 <triangle/>
               </el-tooltip>
+              <div v-else :class="{'dh-campaign-active-indicator':true, 'dh-campaign-active': campaign.isActive}">
+              </div>
               {{campaign.name}}
             </div>
             <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
@@ -215,6 +217,19 @@ export default {
       }
     }
   }
+
+ .dh-campaign-active-indicator {
+   width: 7px;
+   height: 7px;
+   border-radius: 7px;
+   background-color: $elementsColor;
+   display: inline-block;
+   vertical-align: middle;
+
+   &.dh-campaign-active {
+     background-color: $successColor
+   }
+ }
 
   .dh-campaign-info {
     flex-grow: 1;

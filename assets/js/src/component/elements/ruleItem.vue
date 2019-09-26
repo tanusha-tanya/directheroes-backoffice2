@@ -28,7 +28,7 @@
     <div
       class="rule-delete-button"
       @click="$emit('delete-trigger', element)"
-      v-if="elements.length > (isEntry ? 1 : 2) && !hasOnMatch"
+      v-if="elements.length > (isEntry ? 2 : 1) && !hasOnMatch"
     >
       <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
         <path
