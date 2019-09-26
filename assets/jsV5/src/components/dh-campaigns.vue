@@ -227,7 +227,7 @@ export default {
    vertical-align: middle;
 
    &.dh-campaign-active {
-     background-color: $successColor
+     background-color: $successColor;
    }
  }
 
