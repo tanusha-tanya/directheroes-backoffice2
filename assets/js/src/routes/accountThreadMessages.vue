@@ -223,6 +223,9 @@
           case 'unsubscribed':
             return false
             break
+          case 'ignored':
+            return 'ignored'
+            break
           default:
             return true
         }
