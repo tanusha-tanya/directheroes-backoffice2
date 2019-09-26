@@ -40,7 +40,7 @@
       </router-link>
       <router-link :class="{'dh-navigation-button': true }" :to="{ name: 'affiliate' }">
         <div class="dh-navigation-button-ico">
-          <affilate/>
+          <affiliate/>
         </div>
         Affiliate
       </router-link>
@@ -80,7 +80,7 @@ import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
 import tutorials from './assets/tutorials.svg'
 import support from './assets/support.svg'
-import affilate from './assets/affilate.svg'
+import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
 
 export default {
@@ -95,7 +95,7 @@ export default {
     tutorials,
     support,
     loader,
-    affilate,
+    affiliate,
   },
 
   computed: {

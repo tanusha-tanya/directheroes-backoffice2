@@ -1,12 +1,20 @@
 <template>
   <div class="dh-live-chat">
     <div class="dh-accounts">
-      <div class="dh-accounts-header">
-        Discussions
+      <div class="dh-accounts-tabs">
+        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': status !== 'ignored'}">Discussions</router-link>
+        <div class="dh-divider"></div>
+        <router-link :to="{ name: 'livechat', query: {st: 'ignored'} }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': status === 'ignored'}">Regular</router-link>
         <task />
       </div>
+      <div class="dh-accounts-header">
+        <div class="dh-search-input">
+          <search />
+          <input type="text" class="dh-input" placeholder="Type to search"  v-model="filters.username_query" @keypress.enter="getAudience">
+        </div>
+      </div>
       <div class="dh-accounts-list">
-        <router-link :to="{ name: 'livechat', params: { threadId: thread.id } }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
+        <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: $route.query }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
           <div class="dh-account-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
           <div>
             <div class="dh-account-name">{{thread.contactProfile.username}}</div>
@@ -140,6 +148,7 @@
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import dhLink from '../../../jsV5/src/assets/link.svg'
   import task from '../../../jsV5/src/assets/task.svg'
+  import search from '../../../jsV5/src/assets/search.svg'
   import send from '../../../jsV5/src/assets/send.svg'
   import ellipsis from '../../../jsV5/src/assets/ellipsis.svg'
   import nolivechat from '../../../jsV5/src/assets/nolivechat.svg'
@@ -151,20 +160,27 @@
 
   export default {
     data() {
+      const { query } = this.$route;
+
       return {
         allThreads: [],
         threadMessages: null,
         contactProfile: null,
         ownProfile: null,
         messageText: '',
+        status: query.st || 'audience',
         defaultAvatar,
         requestInterval: null,
         lastMessage: {},
         media: [],
         source: null,
         filters: {
-          username_query: ''
+          username_query: query.q || ''
         },
+        paging: {
+          page: query.p || 1,
+          totalPageCount: 1
+        }
       }
     },
 
@@ -177,7 +193,8 @@
       ellipsis,
       dhLink,
       send,
-      close
+      close,
+      search
     },
 
     computed: {
@@ -313,16 +330,16 @@
       },
 
       getAudience() {
-        const { account, subscribed, filters } = this;
+        const { account, subscribed, filters, status, paging } = this;
 
         if (!account) return;
 
         this.allThreads = null;
 
         axios({
-          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
           method: 'post',
-          data: { ...filters, subscribed },
+          data: { ...filters, subscribed, paging },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
@@ -332,6 +349,9 @@
       },
 
       routeUpdate(to, from, next) {
+        const { query } = to;
+
+
         clearInterval(this.requestInterval)
         this.source.cancel('Cancel on turn on other user');
 
@@ -339,7 +359,17 @@
         this.threadMessages = null;
         this.contactProfile = null;
 
-        this.getUpdates(to.params.threadId);
+        this.status = query.st || 'audience'
+        this.filters.usernameQuery = query.q || ''
+        this.paging.page = query.p ||
+
+        console.log(to, from);
+
+        if (to.params.threadId) {
+          this.getUpdates(to.params.threadId);
+        } else {
+          this.getAudience()
+        }
 
         next()
       }
@@ -416,9 +446,14 @@
     }
 
     .dh-accounts-list {
-      max-height: calc(100% - 57px);
+      max-height: calc(100% - 116px);
       overflow-x: hidden;
       overflow-y: auto;
+    }
+
+    .dh-divider {
+      border-right: 1px solid rgba($textColor, .5);
+      height: 36px;
     }
 
     .dh-account {
@@ -572,6 +607,23 @@
 
     .dh-contact-profile-name {
       color: $textColor;
+    }
+
+    .dh-accounts-tabs {
+      display: flex;
+      justify-content: space-around;
+      height: 58px;
+      align-items: center;
+      border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-accounts-tab {
+      padding: 10px;
+      cursor: pointer;
+
+      &.dh-accounts-tab-active {
+        color: $elementActiveColor;
+      }
     }
   }
 </style>
