@@ -46,7 +46,7 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, st: 'ignored' }}" class="dh-thread-controls">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id, subscribed: subscribedText }, query: {p: paging.page, q: filters.usernameQuery, st: 'ignored' }}" class="dh-thread-controls">
             <livechat/>
           </router-link>
         </div>
@@ -113,6 +113,19 @@ export default {
     account() {
       return this.$store.state.currentAccount
     },
+
+    subscribedText() {
+      const { subscribed } = this.filters;
+
+      switch(subscribed) {
+        case false:
+          return 'unsubscribed'
+          break;
+        case null:
+          return 'all'
+          break;
+      }
+    }
   },
 
   methods: {

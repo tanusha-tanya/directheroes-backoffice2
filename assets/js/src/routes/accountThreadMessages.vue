@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="dh-contact-profile" v-if="allThreads && allThreads.length">
-          <div class="dh-contact-profile-userpic" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
+          <div class="dh-contact-profile-userpic" v-if="currentThread" :style="{'background-image': `url(${ currentThread.contactProfile.profilePicUrl })`}"></div>
           <div class="dh-contact-profile-names">
             <div class="dh-contact-profile-fullname">
               {{currentThread.contactProfile.fullName}}
@@ -330,16 +330,17 @@
       },
 
       getAudience() {
-        const { account, subscribed, filters, status, paging } = this;
+        const { query } = this.$route;
+        const { account, subscribed, filters, paging } = this;
 
         if (!account) return;
 
         this.allThreads = null;
 
         axios({
-          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
           method: 'post',
-          data: { ...filters, subscribed, paging },
+          data: { ...filters, subscribed: subscribed, paging },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
@@ -358,12 +359,8 @@
         this.lastMessage = {};
         this.threadMessages = null;
         this.contactProfile = null;
-
-        this.status = query.st || 'audience'
         this.filters.usernameQuery = query.q || ''
-        this.paging.page = query.p ||
-
-        console.log(to, from);
+        this.paging.page = query.p || 1
 
         if (to.params.threadId) {
           this.getUpdates(to.params.threadId);
