@@ -2,9 +2,9 @@
   <div class="dh-live-chat">
     <div class="dh-accounts">
       <div class="dh-accounts-tabs">
-        <router-link :to="{ name: 'livechat', params: { subscribed: null } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed == null}">Discussions</router-link>
+        <router-link :to="{ name: 'livechat', params: { subscribed: 'all' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed == true}">Discussions</router-link>
         <div class="dh-divider"></div>
-        <router-link :to="{ name: 'livechat', params: { subscribed: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed !== null}">Regular</router-link>
+        <router-link :to="{ name: 'livechat', params: { subscribed: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed !== true}">Regular</router-link>
         <task />
       </div>
       <div class="dh-accounts-header">
