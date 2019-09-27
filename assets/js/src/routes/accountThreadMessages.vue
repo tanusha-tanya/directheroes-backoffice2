@@ -341,9 +341,9 @@
         this.allThreads = null;
 
         axios({
-          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
           method: 'post',
-          data: { ...filters, subscribed, paging, status },
+          data: { ...filters, subscribed, paging },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
