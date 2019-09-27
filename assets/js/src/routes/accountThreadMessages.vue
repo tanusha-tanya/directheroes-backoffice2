@@ -2,9 +2,9 @@
   <div class="dh-live-chat">
     <div class="dh-accounts">
       <div class="dh-accounts-tabs">
-        <router-link :to="{ name: 'livechat', params: { subscribed: 'all' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed == true}">Discussions</router-link>
+        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed !== 'ignored'}">Discussions</router-link>
         <div class="dh-divider"></div>
-        <router-link :to="{ name: 'livechat', params: { subscribed: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed !== true}">Regular</router-link>
+        <router-link :to="{ name: 'livechat', params: { subscribed: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed === 'ignored'}">Regular</router-link>
         <task />
       </div>
       <div class="dh-accounts-header">
@@ -334,7 +334,7 @@
 
       getAudience() {
         const { query } = this.$route;
-        const { account, subscribed, filters, paging } = this;
+        const { account, subscribed, status, filters, paging } = this;
 
         if (!account) return;
 
@@ -343,7 +343,7 @@
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
           method: 'post',
-          data: { ...filters, subscribed: subscribed, paging },
+          data: { ...filters, subscribed, paging, status },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
