@@ -85,5 +85,19 @@ export default new Vuex.Store({
 
       return request
     },
+
+    saveAccount({ state, commit }, params) {
+        const request = accountRequestHandler('post', params)
+
+        request.then(({ data }) => {
+              const { account } = data.response.body;
+              const { accounts } = state;
+              const currentAccount = accounts.find(accountItem => accountItem.id == account.id)
+
+          accounts.splice(accounts.indexOf(currentAccount), 1, account);
+        });
+
+        return request;
+    },
   }
 })
