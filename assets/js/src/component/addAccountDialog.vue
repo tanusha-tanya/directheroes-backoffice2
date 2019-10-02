@@ -122,6 +122,21 @@
         </div>
       </div>
     </template>
+    <template v-else-if="webChallengeCodeRequired">
+      <div class="step">
+        <div class="step-info">
+          <div class="step-number">
+            4
+          </div>
+          <div class="step-description">
+            You should receive challenge code to your email or via sms
+          </div>
+        </div>
+        <input placeholder="Challenge Code" v-model="webDirect.challengeCode" @input="error = null" :disabled="loading">
+        <div class="error" v-if="error">{{ error }}</div>
+        <button :class="{ loading: loading}" @click="actionAccount">Send challenge code</button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -142,7 +157,14 @@ export default {
       account: {
         login: '',
         password: '',
+        isLoggedIn: false,
+        isPasswordValid: false
       },
+      webDirect: {
+        username: '',
+        challengeCode: ''
+      },
+      webChallengeCodeRequired: false,
       error: null,
       loading: false,
       code: '',
@@ -243,34 +265,34 @@ export default {
       this.loading = true;
       this.error = null;
 
-      if (accountAuth) {
-        accountAuth.password = cryptedPassword;
+      if (!account.isLoggedIn || !account.isPasswordValid) {
+        if (accountAuth) {
+          accountAuth.password = cryptedPassword;
 
-        if (accountAuth.twoFactor) {
-          accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
-        }
-
-        request = $store.dispatch('saveAccount', accountAuth)
-      } else {
-        request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
-      }
-
-      request
-        .then(({ data }) => {
-          const { accountError } = this;
-          const { account } = data.response.body;
-          const error = accountError(account);
-          this.loading = false;
-
-          this.$emit('set-auth-account', account)
-
-          if (error) {
-            this.error = error;
-          } else if (account.isLoggedIn && account.isPasswordValid) {
-            this.$emit('close-dialog', false);
+          if (accountAuth.twoFactor) {
+            accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
           }
 
-        }).catch( ({ response }) => {
+          request = $store.dispatch('saveAccount', accountAuth)
+        } else {
+          request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
+        }
+
+        request
+          .then(({ data }) => {
+            const { accountError } = this;
+            const { account } = data.response.body;
+            const error = accountError(account);
+
+            this.$emit('set-auth-account', account)
+
+            if (error) {
+              this.loading = false;
+              this.error = error;
+            } else {
+              this.webDirectLogin(account)
+            }
+          }).catch( ({ response }) => {
           this.loading = false;
 
           if (response) {
@@ -287,8 +309,46 @@ export default {
             this.error = "Server connection problem, try again"
           }
         })
+      } else {
+        this.webDirectLogin(account)
+      }
+    },
 
-      return request;
+    webDirectLogin(account) {
+      const { $store } = this;
+      let webDirectRequest;
+
+      if (account.isLoggedIn && account.isPasswordValid) {
+        this.webDirect.username = account.login;
+        webDirectRequest = $store.dispatch('webDirectLogin', this.webDirect)
+        webDirectRequest
+          .then(({ data }) => {
+            if (data.request.success === true) {
+              this.loading = false;
+              this.$emit('close-dialog', false);
+            }
+          }).catch( ({ response }) => {
+          this.loading = false;
+          this.webChallengeCodeRequired = false;
+
+          if (response) {
+            const { data } = response;
+
+            if (data.request) {
+              if (data.request.statusCode === 'web.input_challenge' || data.request.statusCode === 'web.incorrect_challenge') {
+                this.webChallengeCodeRequired = true;
+              }
+
+              this.error = data.request.statusMessage
+            } else {
+              this.error = "Server connection problem, try again"
+            }
+          } else {
+            this.loading = true;
+            this.webDirectLogin(account)
+          }
+        })
+      }
     },
 
     checkTFCode() {
