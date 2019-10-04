@@ -337,12 +337,8 @@
 
       getAudience(beforeQuery) {
         const { query } = this.$route;
-<<<<<<< HEAD
-        const { account, subscribed, status, filters, paging } = this;
-=======
         const subscribed = this.subscribed(beforeQuery)
         const { account, filters, paging } = this;
->>>>>>> Fix live chat
 
         if (!account) return;
 
