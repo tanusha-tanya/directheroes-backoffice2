@@ -338,7 +338,7 @@
       getAudience(beforeQuery) {
         const { query } = this.$route;
         const subscribed = this.subscribed(beforeQuery)
-        const { account, filters, paging } = this;
+        const { account, status, filters, paging } = this;
 
         if (!account) return;
 
