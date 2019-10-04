@@ -2,9 +2,9 @@
   <div class="dh-live-chat">
     <div class="dh-accounts">
       <div class="dh-accounts-tabs">
-        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed !== 'ignored'}">Discussions</router-link>
+        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub !== 'ignored'}">Discussions</router-link>
         <div class="dh-divider"></div>
-        <router-link :to="{ name: 'livechat', params: { subscribed: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': subscribed === 'ignored'}">Regular</router-link>
+        <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'ignored'}">Regular</router-link>
         <task />
       </div>
       <div class="dh-accounts-header">
@@ -175,7 +175,7 @@
         media: [],
         source: null,
         filters: {
-          username_query: query.q || ''
+          usernameQuery: query.q || ''
         },
         paging: {
           page: query.p || 1,
@@ -210,13 +210,25 @@
         const { allThreads } = this;
         const { threadId } = this.$route.params;
 
+        if (!allThreads) return;
+
         return allThreads.find(thread => thread.id == threadId);
       },
 
-      subscribed() {
-        const { subscribed } = this.$route.params;
+    },
 
-        switch(subscribed) {
+    methods: {
+      uuidv4: () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      },
+
+      subscribed(query) {
+        const sub = query ? query.sub : this.$route.query.sub;
+
+        switch(sub) {
           case 'all':
             return null
             break
@@ -229,15 +241,6 @@
           default:
             return true
         }
-      }
-    },
-
-    methods: {
-      uuidv4: () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
       },
 
       uploadFile(event) {
@@ -332,9 +335,14 @@
         this.media.splice(fileIndex, 1);
       },
 
-      getAudience() {
+      getAudience(beforeQuery) {
         const { query } = this.$route;
+<<<<<<< HEAD
         const { account, subscribed, status, filters, paging } = this;
+=======
+        const subscribed = this.subscribed(beforeQuery)
+        const { account, filters, paging } = this;
+>>>>>>> Fix live chat
 
         if (!account) return;
 
@@ -355,7 +363,6 @@
       routeUpdate(to, from, next) {
         const { query } = to;
 
-
         clearInterval(this.requestInterval)
         this.source.cancel('Cancel on turn on other user');
 
@@ -368,7 +375,7 @@
         if (to.params.threadId) {
           this.getUpdates(to.params.threadId);
         } else {
-          this.getAudience()
+          this.getAudience(query)
         }
 
         next()
