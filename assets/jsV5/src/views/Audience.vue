@@ -46,7 +46,7 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id, subscribed: subscribedText }, query: {p: paging.page, q: filters.usernameQuery, st: status }}" class="dh-thread-controls">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" class="dh-thread-controls">
             <livechat/>
           </router-link>
         </div>
