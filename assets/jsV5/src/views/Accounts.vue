@@ -300,6 +300,7 @@ export default {
     width: 100%;
     margin-top: 16px;
     line-height: 18px;
+    text-align: center;
   }
 
   .dh-account-add-info {
