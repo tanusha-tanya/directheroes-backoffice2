@@ -155,8 +155,11 @@ export default {
       // this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
     },
 
-    deleteCampaign(campaign) {
-      campaign.isArchived = true;
+    deleteCampaign() {
+      const { broadcastToDelete } = this;
+
+      broadcastToDelete.isArchived = true;
+      this.broadcastToDelete = false;
     },
   }
 }

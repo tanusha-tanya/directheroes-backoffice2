@@ -125,7 +125,7 @@ export default {
 
       campaigns.reverse();
 
-      return limit ? campaigns.slice(0, limit) : campaigns;
+      return limit ? campaigns.sort((a, b) => b.isActive - a.isActive).slice(0, limit) : campaigns;
     },
 
     currentAccountData() {

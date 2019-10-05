@@ -99,5 +99,16 @@ export default new Vuex.Store({
 
         return request;
     },
+
+    webDirectLogin({ state, commit }, params) {
+      const request = axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/web_direct/login`,
+        method: 'POST',
+        data: params,
+        timeout: 30000
+      })
+
+      return request;
+    },
   }
 })
