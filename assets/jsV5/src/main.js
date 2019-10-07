@@ -2,11 +2,12 @@ import './elementui';
 
 import Vue from 'vue'
 import App from './App.vue'
-import { Message } from 'element-ui'
+import { Message, Notification } from 'element-ui'
 import router from './router'
 import store from './store'
 
 Vue.prototype.$message = Message;
+Vue.prototype.$notify = Notification;
 
 router.beforeEach((to, from, next) => {
   const { dhAccount } = store.state;

@@ -30,6 +30,7 @@ import 'element-ui/lib/theme-chalk/tag.css';
 import 'element-ui/lib/theme-chalk/dialog.css';
 import 'element-ui/lib/theme-chalk/popover.css';
 import 'element-ui/lib/theme-chalk/message.css';
+import 'element-ui/lib/theme-chalk/notification.css';
 import 'element-ui/lib/theme-chalk/pagination.css';
 import 'element-ui/lib/theme-chalk/tooltip.css';
 import 'element-ui/lib/theme-chalk/checkbox.css';

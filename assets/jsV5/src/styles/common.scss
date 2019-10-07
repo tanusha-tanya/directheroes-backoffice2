@@ -395,3 +395,16 @@ div.el-pagination {
     }
   }
 }
+
+.dh-global-error {
+  background-color: $failColor;
+
+  .el-notification__content {
+    color: #fff !important;
+    font-weight: bold;
+  }
+
+  .el-icon-error {
+    color: #fff;
+  }
+}

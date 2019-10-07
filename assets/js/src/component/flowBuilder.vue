@@ -1,5 +1,5 @@
 <template>
-  <div class="flow-builder" v-if="entryItem" ref="flowBuilder">
+  <div :class="{'flow-builder': true, 'flow-disabled': globalError}" v-if="entryItem" ref="flowBuilder">
     <div class="zoom-element" @mousedown="blockEvent">
       <el-slider
         v-model="scale"
@@ -127,6 +127,12 @@ export default {
 
     builder() {
       return this
+    },
+
+    globalError() {
+      const { globalError } = this.$store.state;
+
+      return globalError
     },
 
     scale: {
@@ -362,6 +368,11 @@ export default {
   overflow: hidden;
   outline: none;
   font-family: 'Lato';
+
+  &.flow-disabled {
+    opacity: .3;
+    pointer-events: none;
+  }
 
   .builder-area {
     display: flex;

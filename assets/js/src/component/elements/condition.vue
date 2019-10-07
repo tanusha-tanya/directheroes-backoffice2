@@ -108,7 +108,7 @@
         </template>
       </div>
     </template>
-    <div class="add-condition-button">
+    <div class="add-condition-button" v-if="false">
       <add-condition-popup @on-select="addCondition" :available-list="availableConditionList">
         <span>+ Add condition item</span>
       </add-condition-popup>

@@ -21,6 +21,7 @@ export default new Vuex.Store({
     currentAccountData: null,
     loading: false,
     existConnection: null,
+    globalError: false,
   },
   mutations: {
     set(state, { path, value }) {
