@@ -107,7 +107,6 @@ export default {
         this.$notify({
           message: 'Failed to save your changes,\n please reload the page',
           duration: 0,
-          type: 'error',
           showClose: false,
           offset: 70,
           customClass: 'dh-global-error'
