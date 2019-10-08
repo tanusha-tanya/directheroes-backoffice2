@@ -7,7 +7,7 @@
     append-to-body
     :show-close="false"
     >
-    <div class="step">
+    <div class="step" v-if="!noProxyTool">
       <div class="step-info">
         <div class="step-number">
           1
@@ -31,7 +31,7 @@
         </a>
       </div>
     </div>
-    <div class="step">
+    <div class="step" v-if="!noProxyTool">
       <div class="step-info">
         <div class="step-number">
           2
@@ -56,7 +56,7 @@
     <div :class="{step: true, disabled: twoFactor || !proxyStatus}">
       <div class="step-info">
         <div class="step-number">
-          3
+          {{noProxyTool ? 1 : 3}}
         </div>
         <div class="step-description">
           Enter Instagram credentials.
@@ -91,7 +91,7 @@
       <div class="step">
         <div class="step-info">
           <div class="step-number">
-            4
+            {{noProxyTool ? 2 : 4}}
           </div>
           <div class="step-description">
             {{selected2FAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
@@ -101,7 +101,7 @@
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
           <button :class="{ 'dh-button': true, 'dh-loading': loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
-          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, resend: true, 'dh-loading': loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, 'dh-reset-button': true, 'dh-loading': loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
         </div>
       </div>
     </template>
@@ -109,7 +109,7 @@
       <div class="step" style="margin-bottom:64px;">
         <div class="step-info">
           <div class="step-number">
-            4
+            {{noProxyTool ? 2 : 4}}
           </div>
           <div class="step-description">
             Instagram requires additional verification for this connection
@@ -122,7 +122,7 @@
       <div class="step" style="margin-bottom:64px;">
         <div class="step-info">
           <div class="step-number">
-            4
+            {{noProxyTool ? 2 : 4}}
           </div>
           <div class="step-description">
             Please check your email or sms for your most recent 6-digit Instagram verification code and enter it below
@@ -193,6 +193,12 @@ export default {
       return dh;
     },
 
+    noProxyTool() {
+      const { challenge } = this;
+
+      return challenge || this.dhAccount.features.loginWithoutProxyTool;
+    },
+
     twoFactor() {
       const { accountAuth } = this;
 
@@ -233,10 +239,12 @@ export default {
         return 'Your password seems to be invalid'
       } else if (account.igChallenge) {
         return 'Instagram rejected the log in attempt'
-      } else if (account.twoFactor && accountAuth.twoFactor.verificationCode) {
+      } else if (account.twoFactor && account.twoFactor.verificationCode) {
         delete account.twoFactor.verificationCode;
 
         return 'The code was rejected by Instagram. Please try again, or contact support if problem persists.'
+      } else if (account.twoFactor){
+        return ''
       } else if (!account.isLoggedIn) {
         return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
       }
@@ -289,7 +297,8 @@ export default {
               this.loading = false;
               this.$emit('close-dialog', false);
             }
-          }).catch( ({ response }) => {
+          }).catch( (error) => {
+            const { response } = error;
             this.loading = false;
 
             if (response) {
@@ -450,7 +459,7 @@ export default {
 
   watch: {
     isAddAccount(value) {
-      const { accountAuth, proxyStatus, accountError } = this;
+      const { accountAuth, proxyStatus, accountError, noProxyTool } = this;
 
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
@@ -460,14 +469,19 @@ export default {
           delete accountAuth.twoFactor.verificationCode;
         }
 
-        this.error = accountError();
+        this.error = accountError(accountAuth);
 
-        this.checkConnection();
+        if (!noProxyTool) {
+          this.checkConnection();
+        } else {
+          this.proxyStatus = true;
+        }
       } else {
         this.error = null;
         this.code = '';
         this.twoFAMethodChoose = true;
         this.selected2FAMethod = null;
+        this.challengeCodeSended =  false;
 
         clearTimeout(this.checkingTimeout)
       }
@@ -621,18 +635,11 @@ export default {
 
     .step-verify {
       display: flex;
+      justify-content: space-between;
 
-      .resend {
-        background-color: transparent;
-        color: #000;
-
-        &.loading {
-          color: transparent;
-
-          &::before {
-            border-color: #000 #000 transparent;
-          }
-        }
+      .dh-button {
+        max-width: 100px;
+        min-width: 100px;
       }
     }
 
