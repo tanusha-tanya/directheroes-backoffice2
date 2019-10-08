@@ -106,7 +106,7 @@
       </div>
     </template>
     <template v-else-if="challenge && !challengeCodeSended">
-      <div class="step">
+      <div class="step" style="margin-bottom:64px;">
         <div class="step-info">
           <div class="step-number">
             4
@@ -119,7 +119,7 @@
       </div>
     </template>
     <template v-else-if="challenge">
-      <div class="step">
+      <div class="step" style="margin-bottom:64px;">
         <div class="step-info">
           <div class="step-number">
             4
@@ -213,7 +213,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = dh.noProxy || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -349,8 +349,10 @@ export default {
           account
         }
       }).then(({ data }) => {
+        const { accounts } = this.$store.state;
         const { request } = data;
         const { account } = data.response.body;
+        const currentAccount = accounts.find(accountItem => accountItem.id == account.id)
 
         this.loading = false;
 
@@ -359,7 +361,8 @@ export default {
           return;
         }
 
-        this.$emit('set-auth-account', account);
+        accounts.splice(accounts.indexOf(currentAccount), 1, account);
+
         this.$emit('close-dialog', false);
       }).catch((error) => {
         this.error = "Server connection problem, try again"
