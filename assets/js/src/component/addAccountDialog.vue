@@ -213,7 +213,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = true || data.response.body.isProxyRunning
+        this.proxyStatus = data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
