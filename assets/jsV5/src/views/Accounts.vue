@@ -269,6 +269,7 @@ export default {
     background-position: center;
     background-size: cover;
     border: 2px solid transparent;
+    flex-shrink: 0;
   }
 
   .dh-account-status {
