@@ -3,7 +3,7 @@
     :visible.sync="addAcountState"
     class="add-account-dialog"
     title="Add new Instagram Account"
-    width="321px"
+    width="353px"
     append-to-body
     :show-close="false"
     >
@@ -64,25 +64,8 @@
       </div>
       <input class="dh-input" placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
       <input class="dh-input" placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
-      <div class="error" v-if="error && !twoFactor">{{ error }}</div>
-      <div class="challenge-notices" v-if="challenge">
-        <div class="notice-item">
-          <strong>1.</strong><span>Please open the Instagram app and click "it was me" button; refresh your news feed couple times if you don't see this message</span>
-        </div>
-        <div class="notice-item">
-          <strong>2.</strong><span>Make sure you are following those requirements:</span>
-          <div class="notice-list-item">you are not using VPN on your computer</div>
-          <div class="notice-list-item">you have the Instagram account you are looking to connect in Instagram app on your phone</div>
-          <div class="notice-list-item">the IP address of your computer and your phone is the same, you can check it by visiting <a href="https://www.myip.com/">www.myip.com</a>  on both devices</div>
-        </div>
-        <div class="notice-item">
-          <strong>3.</strong><span>If any of above requirements is not met, then please correct it and try again</span>
-        </div>
-        <div class="notice-item">
-          <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
-        </div>
-      </div>
-      <button :class="{ 'dh-button': true, 'dh-loading': loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+      <div class="error" v-if="error && !twoFactor && !challenge" >{{ error }}</div>
+      <button :class="{ 'dh-button': true, 'dh-loading': loading && !twoFactor && !challenge}" :disabled="loading || !account.login || !account.password || challenge || twoFactor" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
       <div class="step">
@@ -122,19 +105,32 @@
         </div>
       </div>
     </template>
-    <template v-else-if="webChallengeCodeRequired">
+    <template v-else-if="challenge && !challengeCodeSended">
       <div class="step">
         <div class="step-info">
           <div class="step-number">
             4
           </div>
           <div class="step-description">
-            You should receive challenge code to your email or via sms
+            Instagram requires additional verification for this connection
           </div>
         </div>
-        <input placeholder="Challenge Code" v-model="webDirect.challengeCode" @input="error = null" :disabled="loading">
+        <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="requestChallengeCode">Request verification code</button>
+      </div>
+    </template>
+    <template v-else-if="challenge">
+      <div class="step">
+        <div class="step-info">
+          <div class="step-number">
+            4
+          </div>
+          <div class="step-description">
+            Please check your email or sms for your most recent 6-digit Instagram verification code and enter it below
+          </div>
+        </div>
+        <input class="dh-input" placeholder="Verification code" v-model="webDirect.challengeCode" @input="error = null" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
-        <button :class="{ loading: loading}" @click="actionAccount">Send challenge code</button>
+        <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="verifyChallengeCode">Verify Instagram connection</button>
       </div>
     </template>
   </el-dialog>
@@ -164,7 +160,7 @@ export default {
         username: '',
         challengeCode: ''
       },
-      webChallengeCodeRequired: false,
+      challengeCodeSended: false,
       error: null,
       loading: false,
       code: '',
@@ -217,7 +213,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = true || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -290,66 +286,123 @@ export default {
               this.loading = false;
               this.error = error;
             } else {
-              this.webDirectLogin(account)
-            }
-          }).catch( ({ response }) => {
-          this.loading = false;
-
-          if (response) {
-            const { data } = response;
-
-            if (data.request) {
-              this.error = data.request.statusMessage
-            } else if (data.error) {
-              this.error = data.error
-            } else {
-              this.error = "Server connection problem, try again"
-            }
-          } else {
-            this.error = "Server connection problem, try again"
-          }
-        })
-      } else {
-        this.webDirectLogin(account)
-      }
-    },
-
-    webDirectLogin(account) {
-      const { $store } = this;
-      let webDirectRequest;
-
-      if (account.isLoggedIn && account.isPasswordValid) {
-        this.webDirect.username = account.login;
-        webDirectRequest = $store.dispatch('webDirectLogin', this.webDirect)
-        webDirectRequest
-          .then(({ data }) => {
-            if (data.request.success === true) {
               this.loading = false;
               this.$emit('close-dialog', false);
             }
           }).catch( ({ response }) => {
-          this.loading = false;
-          this.webChallengeCodeRequired = false;
+            this.loading = false;
 
-          if (response) {
-            const { data } = response;
+            if (response) {
+              const { data } = response;
 
-            if (data.request) {
-              if (data.request.statusCode === 'web.input_challenge' || data.request.statusCode === 'web.incorrect_challenge') {
-                this.webChallengeCodeRequired = true;
+              if (data.request) {
+                this.error = data.request.statusMessage
+              } else if (data.error) {
+                this.error = data.error
+              } else {
+                this.error = "Server connection problem, try again"
               }
-
-              this.error = data.request.statusMessage
             } else {
               this.error = "Server connection problem, try again"
             }
-          } else {
-            this.loading = true;
-            this.webDirectLogin(account)
-          }
-        })
+          })
+      } else {
+        this.loading = false;
+        this.$emit('close-dialog', false);
       }
     },
+
+    requestChallengeCode() {
+      const { accountAuth } = this;
+      const account = JSON.parse(JSON.stringify(accountAuth))
+
+      this.error = null;
+      this.loading = true;
+
+      account.igChallenge.sendMethod = 1;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/challenge/send`,
+        method: 'post',
+        data: {
+          account
+        }
+      }).then(({ data }) => {
+        this.loading = false;
+        this.challengeCodeSended = true;
+      })
+    },
+
+    verifyChallengeCode() {
+      const { accountAuth, webDirect } = this;
+      const account = JSON.parse(JSON.stringify(accountAuth))
+
+      this.loading = true;
+      this.error = null;
+
+      account.igChallenge.answer = webDirect.challengeCode;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/challenge/check`,
+        method: 'post',
+        data: {
+          account
+        }
+      }).then(({ data }) => {
+        const { request } = data;
+        const { account } = data.response.body;
+
+        this.loading = false;
+
+        if (!request.success) {
+          this.error = request.statusMessage
+          return;
+        }
+
+        this.$emit('set-auth-account', account);
+        this.$emit('close-dialog', false);
+      }).catch((error) => {
+        this.error = "Server connection problem, try again"
+        this.loading = false;
+      })
+    },
+
+    // webDirectLogin(account) {
+    //   const { $store } = this;
+    //   let webDirectRequest;
+
+    //   if (account.isLoggedIn && account.isPasswordValid) {
+    //     this.webDirect.username = account.login;
+    //     webDirectRequest = $store.dispatch('webDirectLogin', this.webDirect)
+    //     webDirectRequest
+    //       .then(({ data }) => {
+    //         if (data.request.success === true) {
+    //           this.loading = false;
+    //           this.$emit('close-dialog', false);
+    //         }
+    //       }).catch( ({ response }) => {
+    //       this.loading = false;
+    //       this.webChallengeCodeRequired = false;
+
+    //       if (response) {
+    //         const { data } = response;
+
+    //         if (data.request) {
+    //           if (data.request.statusCode === 'web.input_challenge' || data.request.statusCode === 'web.incorrect_challenge') {
+    //             this.webChallengeCodeRequired = true;
+    //           }
+
+    //           this.error = data.request.statusMessage
+    //         } else {
+    //           this.error = "Server connection problem, try again"
+    //         }
+    //       } else {
+    //         this.loading = true;
+    //         this.webDirectLogin(account)
+    //       }
+    //     })
+    //   }
+    // },
 
     checkTFCode() {
       const { accountAuth, code, actionAccount } = this;
