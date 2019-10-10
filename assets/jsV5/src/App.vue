@@ -50,6 +50,12 @@
         </div>
         Tutorials
       </router-link>
+       <router-link class="dh-navigation-button" :to="{ name: 'trainings' }">
+        <div class="dh-navigation-button-ico">
+          <training/>
+        </div>
+        Trainings
+      </router-link>
       <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <support/>
@@ -79,6 +85,7 @@ import livechat from './assets/livechat.svg'
 import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
 import tutorials from './assets/tutorials.svg'
+import training from './assets/training.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
@@ -96,6 +103,7 @@ export default {
     support,
     loader,
     affiliate,
+    training,
   },
 
   computed: {
