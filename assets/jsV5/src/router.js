@@ -12,6 +12,7 @@ import Audience from './views/Audience'
 import LiveChat from './views/LiveChat'
 import Settings from './views/Settings'
 import Tutorials from './views/Tutorials'
+import Trainings from './views/Trainings'
 import ProfileGeneral from './views/ProfileGeneral'
 import ProfileSecurity from './views/ProfileSecurity'
 import ProfileBilling from './views/ProfileBilling'
@@ -43,6 +44,7 @@ export default new Router({
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
     { path: '/affiliate', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
+    { path: '/trainings', name: 'trainings', component: Trainings },
     { path: '/settings', component: Settings,
       children: [
         { name: 'settings', path: '', component: ProfileGeneral },
