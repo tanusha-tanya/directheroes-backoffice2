@@ -118,11 +118,11 @@
         <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="requestChallengeCode">Request verification code</button>
       </div>
     </template>
-    <template v-else-if="challenge">
+    <template v-if="challenge">
       <div class="step" style="margin-bottom:64px;">
         <div class="step-info">
           <div class="step-number">
-            {{noProxyTool ? 2 : 4}}
+            {{noProxyTool ? 3 : 5}}
           </div>
           <div class="step-description">
             {{challengeCodeMessage}}
@@ -216,6 +216,8 @@ export default {
     challenge() {
       const { accountAuth } = this;
 
+      delete accountAuth.igErrorMessage;
+
       return accountAuth && accountAuth.igChallenge
     },
   },
@@ -246,7 +248,7 @@ export default {
       } else if (!account.isPasswordValid) {
         return 'Your password seems to be invalid'
       } else if (account.igChallenge) {
-        return 'Instagram rejected the log in attempt'
+        // return 'Instagram rejected the log in attempt'
       } else if (account.twoFactor && account.twoFactor.verificationCode) {
         delete account.twoFactor.verificationCode;
 
