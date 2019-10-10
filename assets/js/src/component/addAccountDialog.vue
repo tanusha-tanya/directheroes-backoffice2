@@ -125,7 +125,7 @@
             {{noProxyTool ? 2 : 4}}
           </div>
           <div class="step-description">
-            Please check your email or sms for your most recent 6-digit Instagram verification code and enter it below
+            {{challengeCodeMessage}}
           </div>
         </div>
         <input class="dh-input" placeholder="Verification code" v-model="webDirect.challengeCode" @input="error = null" :disabled="loading">
@@ -203,6 +203,14 @@ export default {
       const { accountAuth } = this;
 
       return accountAuth && accountAuth.twoFactor
+    },
+
+    challengeCodeMessage() {
+      const { email, phone_number } = this.accountAuth.igChallenge.sendCodeVariants;
+
+      if (!email && !phone_number) return 'Please check your email or sms for your most recent 6-digit Instagram verification code and enter it below'
+
+      return `Please check your ${ email ? 'email ('+email+')'  : '' }${ email && phone_number ? ' or '  : '' }${ phone_number ? 'sms ('+phone_number+')'  : '' } for your most recent 6-digit Instagram verification code and enter it below`
     },
 
     challenge() {
@@ -285,10 +293,15 @@ export default {
         request
           .then(({ data }) => {
             const { accountError } = this;
+            const { request } = data;
             const { account } = data.response.body;
             const error = accountError(account);
 
-            this.$emit('set-auth-account', account)
+            this.$emit('set-auth-account', account);
+
+            if (!request.success && request.statusCode === 'account.challenge.it_was_me.action') {
+              error = 'Please open Instagram on your phone, and verify connection by clicking "It was me" button'
+            }
 
             if (error) {
               this.loading = false;
@@ -374,6 +387,8 @@ export default {
 
         this.$emit('close-dialog', false);
       }).catch((error) => {
+        console.dir(error);
+
         this.error = "Server connection problem, try again"
         this.loading = false;
       })
