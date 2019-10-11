@@ -31,6 +31,9 @@
               <div class="dh-option" @click="campaignToDelete = campaign">
                 <trash /> Delete
               </div>
+              <div class="dh-option" @click="prepareToRename(campaign)">
+                Rename
+              </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
               <ellipsis />
@@ -67,6 +70,21 @@
           <button class="dh-button dh-reset-button" @click="isAddCampaign = false">Close</button>
         </template>
       </el-dialog>
+      <el-dialog
+        :visible.sync="isRenameCampaign"
+        title="Rename Campaign"
+        custom-class="dh-campaign-add-dialog"
+        append-to-body
+        width="554px"
+        >
+        <div class="dh-campaign-add-input">
+          <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
+        </div>
+        <template slot="footer">
+          <button class="dh-button" @click="renameCampaign">Rename</button>
+          <button class="dh-button dh-reset-button" @click="campaignToRename = null">Close</button>
+        </template>
+      </el-dialog>
     </template>
     <loader v-else/>
   </div>
@@ -90,9 +108,10 @@ import triangle from '../../../js/src/assets/triangle.svg'
 export default {
   data() {
     return {
-      campaignToDelete: false,
+      campaignToRename: null,
+      campaignToDelete: null,
       isAddCampaign: false,
-      newCampaignName: ''
+      newCampaignName: '',
     }
   },
 
@@ -143,6 +162,17 @@ export default {
       set(value) {
         this.campaignToDelete = value;
       }
+    },
+
+    isRenameCampaign: {
+      get() {
+        const { campaignToRename } = this;
+
+        return Boolean(campaignToRename)
+      },
+      set(value) {
+        this.campaignToRename = value;
+      }
     }
   },
 
@@ -184,6 +214,19 @@ export default {
       this.newCampaignName = '';
 
       this.$router.push({ name: 'accountCampaign', params: { campaignId: newCampaign.id, accountId: currentAccount.id } })
+    },
+
+    prepareToRename(campaign) {
+      this.newCampaignName = campaign.name;
+      this.campaignToRename = campaign;
+    },
+
+    renameCampaign() {
+      const { newCampaignName, campaignToRename } = this;
+
+      campaignToRename.name = newCampaignName;
+
+      this.campaignToRename = null;
     },
 
     hasWarning(campaign) {
