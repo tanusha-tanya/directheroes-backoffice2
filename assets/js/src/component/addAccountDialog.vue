@@ -216,7 +216,9 @@ export default {
     challenge() {
       const { accountAuth } = this;
 
-      delete accountAuth.igErrorMessage;
+      if (accountAuth) {
+        delete accountAuth.igErrorMessage;
+      }
 
       return accountAuth && accountAuth.igChallenge
     },
