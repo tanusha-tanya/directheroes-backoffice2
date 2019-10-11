@@ -26,6 +26,19 @@
             </div>
             <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
           </div>
+          <div class="dh-campaign-toggle" @click.prevent="">
+            <template v-if="campaign.isEnabled">
+              <el-switch :value="campaign.isEnabled" @change="campaignToDeactivate = campaign"></el-switch>
+            </template>
+            <template v-else>
+              <el-tooltip
+                effect="light"
+                content="Please reopen campaign to reactivate this flow"
+                >
+                <el-switch :value="campaign.isEnabled"></el-switch>
+              </el-tooltip>
+            </template>
+          </div>
           <el-popover placement="bottom" trigger="click">
             <div class="dh-options">
               <div class="dh-option" @click="campaignToDelete = campaign">
@@ -85,6 +98,7 @@
           <button class="dh-button dh-reset-button" @click="campaignToRename = null">Close</button>
         </template>
       </el-dialog>
+      <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="campaignToDeactivate" :campaign-name="campaignToDeactivate.name" @success="deactivateCampaign"></dh-deactivate-dialog>
     </template>
     <loader v-else/>
   </div>
@@ -95,6 +109,7 @@ import moment from 'moment'
 import plus from '../assets/plus.svg'
 import star from '../assets/star.svg'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
+import dhDeactivateDialog from '../components/dh-deactivate-dialog'
 import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
@@ -110,6 +125,7 @@ export default {
     return {
       campaignToRename: null,
       campaignToDelete: null,
+      campaignToDeactivate: null,
       isAddCampaign: false,
       newCampaignName: '',
     }
@@ -122,6 +138,7 @@ export default {
     calendar,
     ellipsis,
     dhConfirmDialog,
+    dhDeactivateDialog,
     loader,
     nocampaign,
     triangle
@@ -172,6 +189,17 @@ export default {
       },
       set(value) {
         this.campaignToRename = value;
+      }
+    },
+
+    isDeactivateCampaign: {
+      get() {
+        const { campaignToDeactivate } = this;
+
+        return Boolean(campaignToDeactivate)
+      },
+      set(value) {
+        this.campaignToDeactivate = value;
       }
     }
   },
@@ -234,6 +262,11 @@ export default {
 
       return utils.hasCampaignWarning(campaign);
     },
+
+    deactivateCampaign() {
+      this.campaignToDeactivate.isEnabled = false;
+      this.isDeactivateCampaign = false;
+    }
   }
 }
 </script>
@@ -250,6 +283,8 @@ export default {
   }
 
   .dh-list-item {
+    align-items: center;
+
     & > svg {
       margin-right: 22px;
     }
@@ -259,6 +294,13 @@ export default {
         color: $elementActiveColor;
       }
     }
+  }
+
+  .dh-campaign-toggle {
+    margin-right: 20px;
+    // .el-switch {
+    //   pointer-events: none;
+    // }
   }
 
  .dh-campaign-active-indicator {
@@ -307,6 +349,7 @@ export default {
 
   .dh-campaign-actions {
     cursor: pointer;
+    margin-top: -5px;
   }
 }
 
