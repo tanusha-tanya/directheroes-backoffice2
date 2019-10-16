@@ -15,26 +15,45 @@
               </el-tooltip>
             </template>
             <template v-else>
-              <el-switch v-model="currentCampaign.isEnabled" ></el-switch>
+              <div class="dh-campaign-activate-button" @click="toggleActivation">
+                <el-switch v-model="currentCampaign.isEnabled" ></el-switch>
+              </div>
             </template>
           </div>
-          <el-popover placement="bottom" trigger="hover" v-if="currentCampaign" popper-class="dh-campaign-settings">
-            <div class="dh-options">
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="allowReEnter" ></el-switch> Allow Re-entering campaign
-              </div>
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="messageRequestOnly" ></el-switch> Trigger message request only
-              </div>
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="nonSubscribersOnly" ></el-switch> Non-subscribers only
-              </div>
-            </div>
-            <div class="dh-campaign-gear" slot="reference">
-              <gear/>
-            </div>
-          </el-popover>
+          <div class="dh-campaign-gear" v-if="currentCampaign" @click="previewSettings">
+            <info/>
+          </div>
         </div>
+        <el-dialog
+          :visible.sync="isActivateCampaign"
+          title="Campaign activation settings"
+          custom-class="dh-campaign-activate-dialog"
+          append-to-body
+          width="554px"
+          >
+          <div class="dh-campaign-settings">
+            <div class="dh-options">
+              <div class="dh-option">
+                <span>Allow Re-entering campaign</span>
+                <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
+              </div>
+              <div class="dh-option">
+                <span>Trigger message request only</span>
+                <el-switch v-model="activateOptions.messageRequestOnly" :disabled="isPreview"></el-switch>
+              </div>
+              <div class="dh-option">
+                <span>Non-subscribers only</span>
+                <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
+              </div>
+            </div>
+          </div>
+          <template slot="footer">
+            <button v-if="false" class="dh-button" @click="createCampaign">Create</button>
+            <button class="dh-button" v-if="isPreview" @click="isActivateCampaign = false">Close</button>
+            <button class="dh-button" v-else @click="activateCampaign">Activate Campaign</button>
+          </template>
+        </el-dialog>
+        <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="currentCampaign" :campaign-name="currentCampaign.name" @success="deactivateCampaign"></dh-deactivate-dialog>
       </div>
     </dh-header>
     <div class="dh-view-content">
@@ -47,7 +66,8 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
-import gear from '../assets/gear.svg'
+import dhDeactivateDialog from '../components/dh-deactivate-dialog'
+import info from '../assets/info.svg'
 
 import ObjectId from '../../../js/src/utils/ObjectId'
 import OldCampaignBuilder from '../../../js/src/routes/campaignBuilder'
@@ -69,18 +89,26 @@ export default {
     next();
   },
 
-
   data() {
     return {
       currentCampaign: null,
+      isActivateCampaign: false,
+      isDeactivateCampaign: false,
+      isPreview: false,
+      activateOptions: {
+        allowReEnter: false,
+        nonSubscribersOnly: false,
+        messageRequestOnly: false,
+      }
     }
   },
 
   components: {
     dhHeader,
     dhFooter,
+    dhDeactivateDialog,
     OldCampaignBuilder,
-    gear,
+    info,
     triangle
   },
 
@@ -225,6 +253,39 @@ export default {
       const { oldBuilder } = this.$refs;
 
       oldBuilder.findEntryStep(hasWarning.id);
+    },
+
+    activateCampaign() {
+      const { currentCampaign, activateOptions } = this;
+
+      this.allowReEnter = activateOptions.allowReEnter;
+      this.nonSubscribersOnly = activateOptions.nonSubscribersOnly;
+
+      currentCampaign.isEnabled = true;
+
+      this.isActivateCampaign = false;
+    },
+
+    toggleActivation() {
+      const { currentCampaign } = this;
+
+      this.isPreview = false;
+
+      if (currentCampaign.isEnabled) {
+        this.isDeactivateCampaign = true;
+      } else {
+        this.isActivateCampaign = true;
+      }
+    },
+
+    deactivateCampaign() {
+      this.currentCampaign.isEnabled = false;
+      this.isDeactivateCampaign = false;
+    },
+
+    previewSettings() {
+      this.isPreview = true;
+      this.isActivateCampaign = true;
     }
   },
 
@@ -233,6 +294,16 @@ export default {
       if (this.currentCampaign) return;
 
       this.setCurrentCampaign(this.$route);
+    },
+
+    isActivateCampaign(value) {
+      const { allowReEnter, nonSubscribersOnly, messageRequestOnly, activateOptions } = this;
+
+      if (!value) return
+
+      activateOptions.allowReEnter = allowReEnter;
+      activateOptions.nonSubscribersOnly = nonSubscribersOnly;
+      activateOptions.messageRequestOnly = messageRequestOnly;
     }
   }
 };
@@ -278,11 +349,37 @@ export default {
     display: flex;
     align-items: center;
   }
+
+  .dh-campaign-control {
+    display: flex;
+    align-items: center;
+  }
+
+  .dh-campaign-activate-button {
+    .el-switch {
+      pointer-events: none;
+    }
+  }
 }
 
 .dh-campaign-settings {
   .el-switch{
     margin-right: 10px;
+  }
+}
+
+.el-dialog.dh-campaign-activate-dialog {
+  .dh-option {
+    padding: 0;
+    margin-bottom: 10px;
+
+    span {
+      width: 70%;
+    }
+  }
+
+  .el-dialog__footer {
+    justify-content: flex-end;
   }
 }
 </style>

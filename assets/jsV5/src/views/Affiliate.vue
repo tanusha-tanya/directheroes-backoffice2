@@ -16,7 +16,7 @@
             <div>Your referral link:</div>
             <div class="dh-affiliate-link">
               {{dh.apiUrl}}/check-out/?ref=
-              <input type="text" class="dh-input" @input="referrerCodeChanged = true" v-model="affiliateInfo.settings.referrerCode"/>
+              <input type="text" class="dh-input" @input="referralClean" v-model="affiliateInfo.settings.referrerCode"/>
               <button v-if="referrerCodeChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
               <button v-else class="dh-button dh-small dh-link-button" @click="copyRefLink">
                 <dh-link/>
@@ -132,6 +132,16 @@ export default {
       input.select();
       document.execCommand('copy')
       document.body.removeChild(input)
+    },
+
+    referralClean(event) {
+      const { settings } = this.affiliateInfo;
+      this.referrerCodeChanged = true;
+
+
+      settings.referrerCode = settings.referrerCode.replace(/[^A-z0-9._]*/g, '')
+      // console.log(event.target.value.replace(/[^0-9]*/g, ''));
+      // event.target.value = event.target.value.replace(/[^0-9]*/g, '')
     }
   },
 

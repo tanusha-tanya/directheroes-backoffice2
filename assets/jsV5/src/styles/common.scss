@@ -169,6 +169,7 @@ div.el-dialog__wrapper {
   .el-dialog__body {
     background-color: $mainBGColor;
     padding: 28px 31px 22px 24px;
+    word-break: break-word;
   }
 
   .el-dialog__header {
@@ -288,6 +289,15 @@ button.dh-button {
 
     &:hover {
       color: $elementActiveColor;
+    }
+  }
+
+  &.dh-danger-button {
+    border-color: $failColor;
+    background-color: $failColor;
+
+    &:hover {
+      background-color: #e8498c;
     }
   }
 

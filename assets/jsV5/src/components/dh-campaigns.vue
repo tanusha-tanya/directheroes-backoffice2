@@ -26,10 +26,26 @@
             </div>
             <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
           </div>
+          <div class="dh-campaign-toggle" @click.prevent="">
+            <template v-if="campaign.isEnabled">
+              <el-switch :value="campaign.isEnabled" @change="campaignToDeactivate = campaign"></el-switch>
+            </template>
+            <template v-else>
+              <el-tooltip
+                effect="light"
+                content="Please reopen campaign to reactivate this flow"
+                >
+                <el-switch :value="campaign.isEnabled"></el-switch>
+              </el-tooltip>
+            </template>
+          </div>
           <el-popover placement="bottom" trigger="click">
             <div class="dh-options">
               <div class="dh-option" @click="campaignToDelete = campaign">
                 <trash /> Delete
+              </div>
+              <div class="dh-option" @click="prepareToRename(campaign)">
+                <task /> Rename
               </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
@@ -67,6 +83,22 @@
           <button class="dh-button dh-reset-button" @click="isAddCampaign = false">Close</button>
         </template>
       </el-dialog>
+      <el-dialog
+        :visible.sync="isRenameCampaign"
+        title="Rename Campaign"
+        custom-class="dh-campaign-add-dialog"
+        append-to-body
+        width="554px"
+        >
+        <div class="dh-campaign-add-input">
+          <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
+        </div>
+        <template slot="footer">
+          <button class="dh-button" @click="renameCampaign">Rename</button>
+          <button class="dh-button dh-reset-button" @click="campaignToRename = null">Close</button>
+        </template>
+      </el-dialog>
+      <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="campaignToDeactivate" :campaign-name="campaignToDeactivate.name" @success="deactivateCampaign"></dh-deactivate-dialog>
     </template>
     <loader v-else/>
   </div>
@@ -77,9 +109,11 @@ import moment from 'moment'
 import plus from '../assets/plus.svg'
 import star from '../assets/star.svg'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
+import dhDeactivateDialog from '../components/dh-deactivate-dialog'
 import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
+import task from '../assets/task.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
 
@@ -90,9 +124,11 @@ import triangle from '../../../js/src/assets/triangle.svg'
 export default {
   data() {
     return {
-      campaignToDelete: false,
+      campaignToRename: null,
+      campaignToDelete: null,
+      campaignToDeactivate: null,
       isAddCampaign: false,
-      newCampaignName: ''
+      newCampaignName: '',
     }
   },
 
@@ -103,9 +139,11 @@ export default {
     calendar,
     ellipsis,
     dhConfirmDialog,
+    dhDeactivateDialog,
     loader,
     nocampaign,
-    triangle
+    triangle,
+    task
   },
 
   props: ['title', 'limit'],
@@ -142,6 +180,28 @@ export default {
       },
       set(value) {
         this.campaignToDelete = value;
+      }
+    },
+
+    isRenameCampaign: {
+      get() {
+        const { campaignToRename } = this;
+
+        return Boolean(campaignToRename)
+      },
+      set(value) {
+        this.campaignToRename = value;
+      }
+    },
+
+    isDeactivateCampaign: {
+      get() {
+        const { campaignToDeactivate } = this;
+
+        return Boolean(campaignToDeactivate)
+      },
+      set(value) {
+        this.campaignToDeactivate = value;
       }
     }
   },
@@ -186,11 +246,29 @@ export default {
       this.$router.push({ name: 'accountCampaign', params: { campaignId: newCampaign.id, accountId: currentAccount.id } })
     },
 
+    prepareToRename(campaign) {
+      this.newCampaignName = campaign.name;
+      this.campaignToRename = campaign;
+    },
+
+    renameCampaign() {
+      const { newCampaignName, campaignToRename } = this;
+
+      campaignToRename.name = newCampaignName;
+
+      this.campaignToRename = null;
+    },
+
     hasWarning(campaign) {
       if (!campaign) return;
 
       return utils.hasCampaignWarning(campaign);
     },
+
+    deactivateCampaign() {
+      this.campaignToDeactivate.isEnabled = false;
+      this.isDeactivateCampaign = false;
+    }
   }
 }
 </script>
@@ -207,6 +285,8 @@ export default {
   }
 
   .dh-list-item {
+    align-items: center;
+
     & > svg {
       margin-right: 22px;
     }
@@ -216,6 +296,13 @@ export default {
         color: $elementActiveColor;
       }
     }
+  }
+
+  .dh-campaign-toggle {
+    margin-right: 20px;
+    // .el-switch {
+    //   pointer-events: none;
+    // }
   }
 
  .dh-campaign-active-indicator {
@@ -264,6 +351,7 @@ export default {
 
   .dh-campaign-actions {
     cursor: pointer;
+    margin-top: -5px;
   }
 }
 
