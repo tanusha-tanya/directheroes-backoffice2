@@ -20,22 +20,9 @@
               </div>
             </template>
           </div>
-          <el-popover placement="bottom" trigger="hover" v-if="currentCampaign" popper-class="dh-campaign-settings">
-            <div class="dh-options">
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="allowReEnter" ></el-switch> Allow Re-entering campaign
-              </div>
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="messageRequestOnly" ></el-switch> Trigger message request only
-              </div>
-              <div class="dh-option" v-if="hasSteps">
-                <el-switch v-model="nonSubscribersOnly" ></el-switch> Non-subscribers only
-              </div>
-            </div>
-            <div class="dh-campaign-gear" slot="reference">
-              <gear/>
-            </div>
-          </el-popover>
+          <div class="dh-campaign-gear" v-if="currentCampaign" @click="previewSettings">
+            <info/>
+          </div>
         </div>
         <el-dialog
           :visible.sync="isActivateCampaign"
@@ -46,19 +33,24 @@
           >
           <div class="dh-campaign-settings">
             <div class="dh-options">
-              <div class="dh-option" >
+              <div class="dh-option">
                 <span>Allow Re-entering campaign</span>
-                <el-switch v-model="activateOptions.allowReEnter" ></el-switch>
+                <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
+              </div>
+              <div class="dh-option">
+                <span>Trigger message request only</span>
+                <el-switch v-model="activateOptions.messageRequestOnly" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
                 <span>Non-subscribers only</span>
-                <el-switch v-model="activateOptions.nonSubscribersOnly" ></el-switch>
+                <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
             </div>
           </div>
           <template slot="footer">
             <button v-if="false" class="dh-button" @click="createCampaign">Create</button>
-            <button class="dh-button" @click="activateCampaign">Activate Campaign</button>
+            <button class="dh-button" v-if="isPreview" @click="isActivateCampaign = false">Close</button>
+            <button class="dh-button" v-else @click="activateCampaign">Activate Campaign</button>
           </template>
         </el-dialog>
         <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="currentCampaign" :campaign-name="currentCampaign.name" @success="deactivateCampaign"></dh-deactivate-dialog>
@@ -75,7 +67,7 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhDeactivateDialog from '../components/dh-deactivate-dialog'
-import gear from '../assets/gear.svg'
+import info from '../assets/info.svg'
 
 import ObjectId from '../../../js/src/utils/ObjectId'
 import OldCampaignBuilder from '../../../js/src/routes/campaignBuilder'
@@ -102,9 +94,11 @@ export default {
       currentCampaign: null,
       isActivateCampaign: false,
       isDeactivateCampaign: false,
+      isPreview: false,
       activateOptions: {
         allowReEnter: false,
         nonSubscribersOnly: false,
+        messageRequestOnly: false,
       }
     }
   },
@@ -114,7 +108,7 @@ export default {
     dhFooter,
     dhDeactivateDialog,
     OldCampaignBuilder,
-    gear,
+    info,
     triangle
   },
 
@@ -275,6 +269,8 @@ export default {
     toggleActivation() {
       const { currentCampaign } = this;
 
+      this.isPreview = false;
+
       if (currentCampaign.isEnabled) {
         this.isDeactivateCampaign = true;
       } else {
@@ -285,6 +281,11 @@ export default {
     deactivateCampaign() {
       this.currentCampaign.isEnabled = false;
       this.isDeactivateCampaign = false;
+    },
+
+    previewSettings() {
+      this.isPreview = true;
+      this.isActivateCampaign = true;
     }
   },
 
@@ -296,12 +297,13 @@ export default {
     },
 
     isActivateCampaign(value) {
-      const { allowReEnter, nonSubscribersOnly, activateOptions } = this;
+      const { allowReEnter, nonSubscribersOnly, messageRequestOnly, activateOptions } = this;
 
       if (!value) return
 
       activateOptions.allowReEnter = allowReEnter;
       activateOptions.nonSubscribersOnly = nonSubscribersOnly;
+      activateOptions.messageRequestOnly = messageRequestOnly;
     }
   }
 };

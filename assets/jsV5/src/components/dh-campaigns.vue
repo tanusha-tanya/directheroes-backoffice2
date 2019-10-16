@@ -45,7 +45,7 @@
                 <trash /> Delete
               </div>
               <div class="dh-option" @click="prepareToRename(campaign)">
-                Rename
+                <task /> Rename
               </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
@@ -113,6 +113,7 @@ import dhDeactivateDialog from '../components/dh-deactivate-dialog'
 import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
+import task from '../assets/task.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
 
@@ -141,7 +142,8 @@ export default {
     dhDeactivateDialog,
     loader,
     nocampaign,
-    triangle
+    triangle,
+    task
   },
 
   props: ['title', 'limit'],
