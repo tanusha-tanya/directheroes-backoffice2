@@ -13,7 +13,7 @@
     <div class="dh-deactivate-body">
       By deactivating your campaign, contacts could end up not finishing the flow.<br><br>
       If this campaign gets re-activated through the campaign builder page. contacts will continue from where they finished off.<br><br>
-      Note: If a contact enters a new campaign While this one is still deactivated, the contacts will no longer continue through this fow if reactivated.
+      Note: If a contact enters a new campaign while this one is still deactivated, the contacts will no longer continue through this flow if reactivated.
     </div>
     <template slot="footer">
       <button class="dh-button dh-danger-button" @click="$emit('success')">Deactivate campaign</button>
