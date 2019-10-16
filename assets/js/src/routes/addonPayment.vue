@@ -8,8 +8,8 @@
         <stripe-payment goal="updateExistingSubscriptions" :return-url="$router.resolve({name: 'accountBuy'}).href">
           <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
             <div class="extra-account-buttons">
-              <button :class="{ loading: sendRequest }" :disabled="!canSendInfo" @click="extraAccountPay(submitPayment, authorizeAmount)">Set payment info</button>
-              <a @click="$router.go(-1)">Cancel</a>
+              <button :class="{'dh-button': true, 'dh-loading': sendRequest }" :disabled="!canSendInfo" @click="extraAccountPay(submitPayment, authorizeAmount)">Set payment info</button>
+              <button class="dh-button dh-reset-button" @click="$router.go(-1)">Cancel</button>
             </div>
           </template>
         </stripe-payment>
@@ -17,7 +17,7 @@
     </div>
   </div>
 </template><script>
-import stripePayment from '../component/stripePayment.vue'
+import stripePayment from '../component/stripePaymentV5.vue'
 import axios from "axios"
 
 export default {
@@ -49,18 +49,17 @@ export default {
 
 <style lang="scss">
 .extra-account-payment {
-  padding: 20px;
-  height: calc(100% - 50px);
-  display: flex;
-  align-items: center;
+  background-color: $sectionBG;
+  border-radius: 4px;
 
   .extra-account-header {
     background: #F7F7F7;
     border-bottom: 1px solid #DBDBDB;
     border-radius: 10px 10px 0 0;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 22px;
     padding: 27px 34px;
+    width: 100%;
   }
 
   .extra-account-stripe {
@@ -76,15 +75,7 @@ export default {
     border-top: 1px solid #DBDBDB;
     padding: 25px 0;
     display: flex;
-    justify-content: flex-end;
-
-    button {
-      background: #6A12CB;
-      border-radius: 100px;
-      line-height: 16px;
-      font-size: 16px;
-      padding: 14px 50px;
-    }
+    justify-content: space-between;
 
     a {
       line-height: 16px;

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,900&display=swap');
+
 @keyframes rotation {
   0% { transform:rotate(0deg); }
   100% { transform:rotate(360deg); }
@@ -50,7 +52,7 @@ input {
 
   &::placeholder {
     color: #A9A9A9;
-    font-size: 15px;
+    font: 11px/16px 'Lato';
   }
 }
 

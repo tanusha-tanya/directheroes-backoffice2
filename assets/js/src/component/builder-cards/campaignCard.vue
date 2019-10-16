@@ -1,62 +1,63 @@
 <template>
-    <builder-card :scale="scale" class="campaign-card" :settings="campaignStep.displaySettings" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+    <builder-card :scale="scale" class="campaign-card" :settings="campaignStep.displaySettings">
       <template slot="header">{{ campaign.name }}</template>
       <template slot="header-controls">
         <builder-card-dialogs :step="campaign" :short="true"></builder-card-dialogs>
       </template>
       <template slot="body">
-        <message-condition-multiple :element="campaignData" :triggers="triggersList" :tag="tag"></message-condition-multiple>
+        <rules-container :elements="campaignStep.elements" :tag="tag"></rules-container>
+        <!-- <message-condition-multiple :element="campaignData" :triggers="triggersList" :tag="tag"></message-condition-multiple> -->
       </template>
     </builder-card>
 </template>
 <script>
-import EventBus from '../../utils/event-bus.js'
-import builderCard from "./builderCard.vue";
-import messageConditionMultiple from "../elements/messageConditionMultiple.vue";
+// import EventBus from '../../utils/event-bus.js'
+import builderCard from "./builderCard";
+import rulesContainer from "../rules/rulesContainer";
 import builderCardDialogs from '../builderCardDialogs'
 
 export default {
   computed: {
     campaignStep() {
-      return this.campaign.steps.find(step => step.type == 'campaignEntry')
+      return this.campaign.steps[0]
     },
 
-    campaignData() {
-      return this.campaignStep.elements.find(element => element.type === 'messageConditionMultiple')
-    },
+    // ruleElements() {
+    //   return this.campaignStep.elements.filter(element => element.type === 'rule')
+    // },
 
-    triggersList() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
+    // triggersList() {
+    //   const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
 
-      return messageTypes;
-    }
+    //   return messageTypes;
+    // }
   },
 
   components: {
     builderCard,
-    messageConditionMultiple,
+    rulesContainer,
     builderCardDialogs
   },
 
   props: ['campaign', 'tag', 'scale'],
 
-  methods: {
-    handleMouseDown(position) {
-      const cardDetails = {}
-      cardDetails.x = position.x
-      cardDetails.y = position.y
-      cardDetails.id = this.campaignStep.id
-      EventBus.$emit('builderCard:mousedown', cardDetails)
-    },
+  // methods: {
+  //   handleMouseDown(position) {
+  //     const cardDetails = {}
+  //     cardDetails.x = position.x
+  //     cardDetails.y = position.y
+  //     cardDetails.id = this.campaignStep.id
+  //     EventBus.$emit('builderCard:mousedown', cardDetails)
+  //   },
 
-    handleMouseUp(position) {
-      const cardDetails = {}
-      cardDetails.x = position.positionX
-      cardDetails.y = position.positionY
-      cardDetails.id = this.campaignStep.id
-      EventBus.$emit('builderCard:mouseup', cardDetails)
-    }
-  }
+  //   handleMouseUp(position) {
+  //     const cardDetails = {}
+  //     cardDetails.x = position.positionX
+  //     cardDetails.y = position.positionY
+  //     cardDetails.id = this.campaignStep.id
+  //     EventBus.$emit('builderCard:mouseup', cardDetails)
+  //   }
+  // }
 
 }
 </script>

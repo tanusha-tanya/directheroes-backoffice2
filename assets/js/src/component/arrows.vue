@@ -1,12 +1,11 @@
 <template>
   <svg class="arrows" width="100%" height="100%">
     <template v-for="path in pathes" v-if="path && path.line">
-      <path :d="path.line"  fill="none" stroke="#DDDDDD" stroke-width="2"></path>
-      <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 8}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" fill="#E7E7E7"/>
+      <circle :cx="path.begin.x" :cy="path.begin.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
+      <path :d="path.line"  fill="none" :stroke="path.color" stroke-width="1"></path>
+      <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 12}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" :fill="path.color"/>
+      <circle :cx="path.arrow.x" :cy="path.arrow.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
     </template>
-    <!-- <circle cx="10" cy="10" r="5" fill="#FAFAFA" stroke="#DDDDDD" stroke-width="2"/>
-    <circle cx="726" cy="180" r="5"          fill="#FAFAFA" stroke="#DDDDDD" />
-    <path   d="M 726 180 C 276 87 270 10 0 0" fill="none" stroke="#DDDDDD"/> -->
   </svg>
 </template>
 <script>
@@ -28,6 +27,7 @@ export default {
 
       this.pathes = this.arrows.map(arrow => {
         const isToPoint = arrow.child == 'toPoint';
+        let color = '#B2B2B2';
         let parent = getElement(arrow.parent);
         let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
 
@@ -36,8 +36,30 @@ export default {
         parent = parent[0] || parent;
         child = child[0] || child;
 
+        const firstElement = child.step.elements[0];
+
+        switch((firstElement.displaySettings && firstElement.displaySettings.subType) || firstElement.type) {
+          case 'message':
+            color = '#B2B2B2'
+          break;
+          case 'action':
+            color = '#F4B109'
+          break;
+          case 'trigger':
+            color = '#5CA6A6'
+          break;
+          case 'condition':
+            color = '#FF9B71'
+          break;
+          case 'user-input':
+            color = '#717FFF'
+          case 'sub-input':
+            color = '#717FFF'
+          break;
+        }
+
         const startRect = (parent instanceof HTMLElement ? parent : parent.$el).getBoundingClientRect();
-        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).getBoundingClientRect();
+        const endRect = isToPoint ? child : (child instanceof HTMLElement ? child : child.$el).querySelector('.step-item-header').getBoundingClientRect();
         const isOnTop = startRect.top + startRect.height < endRect.top;
         const isOnBottom = startRect.top > endRect.top + endRect.height;
         const isOnRight = startRect.left + startRect.width < endRect.left + endRect.width;
@@ -47,7 +69,7 @@ export default {
 
         if(!isOnTop && !isOnBottom && !isOnRightFull && !isOnLeftFull) return;
 
-        const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width + 7) - areaRect.left) / scale
+        const startX = (((isOnLeft && startRect.left) || startRect.left + startRect.width) - areaRect.left) / scale
 
         const startY =  ((startRect.top + 0.5 * startRect.height - 3) - areaRect.top) / scale
 
@@ -58,7 +80,7 @@ export default {
         const deltaX = (endX - startX) * .5
         const deltaY = (endY - startY) * .5
 
-        let path = `M${ startX } ${ startY } `
+        let path = `M${ startX + 4 } ${ startY } `
 
         if (!isOnLeftFull && !isOnRightFull) {
           path += `Q${ endX + deltaX } ${ startY } ${ endX + deltaX } ${ endY - deltaY }`
@@ -70,19 +92,18 @@ export default {
 
         let angle = (((isOnRight && !isOnLeft && !isOnRightFull) || isOnLeftFull ) && 180) || 0;
 
-        console.log({
-          x: endX,
-          y: endY,
-          angle
-        });
-
         return {
           line: path || '',
+          begin: {
+            x: startX,
+            y: startY,
+          },
           arrow: {
             x: endX,
             y: endY,
             angle
-          }
+          },
+          color
         }
       })
     }, 0),
@@ -109,34 +130,35 @@ export default {
     this.recalcPathes()
   },
 
-  watch: {
-    '$store.state.newPoint'(newValue) {
+  // watch: {
+  //   '$store.state.newPoint'(newValue) {
 
-      if (newValue) {
-        this.recalcPathes()
-      } else {
-        const { arrows } = this.$store.state;
-        const connectArrow = arrows.find(arrow => arrow.child === 'toPoint')
+  //     if (newValue) {
+  //       this.recalcPathes()
+  //     } else {
+  //       const { arrows } = this.$store.state;
+  //       const connectArrow = arrows.find(arrow => arrow.child === 'toPoint')
 
-        if (connectArrow) {
-          arrows.splice(arrows.indexOf(connectArrow), 1);
-        }
+  //       if (connectArrow) {
+  //         arrows.splice(arrows.indexOf(connectArrow), 1);
+  //       }
 
-        this.recalcPathes()
-      }
-    },
+  //       this.recalcPathes()
+  //     }
+  //   },
 
-    '$store.state.arrowConnectData'(value) {
-      if (value) return;
+  //   '$store.state.arrowConnectData'(value) {
+  //     if (value) return;
 
-      this.recalcPathes()
-    },
-  }
+  //     this.recalcPathes()
+  //   },
+  // }
 }
 </script>
 <style lang="scss">
   .arrows {
     position: absolute;
+    height: 100%;
     left: 0;
     right: 0;
     z-index: 1;

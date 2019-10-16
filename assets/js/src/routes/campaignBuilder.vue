@@ -1,8 +1,8 @@
 <template>
-  <div class="campaign-builder">
-    <div class="campaign-builder-controls">
+  <div class="campaign-builder" v-if="currentCampaign">
+    <!-- <div class="campaign-builder-controls">
       <span>Campaign Builder</span>
-      <div class="campaign-warning" v-if="currentCampaign && hasWarning"><img src="../assets/triangle.svg">This flow is incomplete</div>
+      <div class="campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><img src="../assets/triangle.svg">This flow is incomplete</div>
       <div class="campaign-builder-control" v-if="currentCampaign" >
         Activate
         <template v-if="hasWarning">
@@ -17,17 +17,16 @@
           <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch>
         </template>
       </div>
-      <div class="campaign-builder-divider" v-if="currentCampaign"></div>
       <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
         <div class="campaign-builder-settings">
-          <div class="campaign-builder-option">
-            <el-switch v-model="currentCampaign.settings.allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
+          <div class="campaign-builder-option" v-if="hasSteps">
+            <el-switch v-model="allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
           </div>
-          <div class="campaign-builder-option" v-if="dhAccount.isViewedByAdmin">
-            <el-switch v-model="currentCampaign.settings.messageRequestOnly" :width="22"></el-switch> Trigger message request only
+          <div class="campaign-builder-option" v-if="hasSteps">
+            <el-switch v-model="messageRequestOnly" :width="22"></el-switch> Trigger message request only
           </div>
-          <div class="campaign-builder-option" v-if="dhAccount.isViewedByAdmin">
-            <el-switch v-model="currentCampaign.settings.nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
+          <div class="campaign-builder-option" v-if="hasSteps">
+            <el-switch v-model="nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
           </div>
           <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
             <img src="../assets/svg/trash.svg"/> Delete campaign
@@ -37,112 +36,82 @@
           <img src="../assets/svg/gear.svg"/>
         </div>
       </el-popover>
+    </div> -->
+    <div class="campaign-first-step" v-if="currentCampaign && !currentCampaign.steps.length">
+      <div class="campaign-flow-choose">
+        <div class="campaign-choose-info">
+          Create
+        </div>
+        <div class="campaign-choose-buttons">
+          <div class="campaign-choose-button">
+            <add-step-popup @add-step="addStep" :available-list="availableElements">
+              <span>New flow</span>
+            </add-step-popup>
+          </div>
+          <!-- <div class="campaign-choose-button">Clone flow</div> -->
+        </div>
+        <div class="campaign-choose-info">
+          You can also create a block by double clicking on the canvas
+        </div>
+      </div>
     </div>
-    <flow-builder entry-type="campaignEntry" :current-entry-item="currentCampaign" :has-warning="hasWarning"></flow-builder>
-    <confirm-dialog
-      v-model="isDeleteDialog"
-      title="Delete campaign"
-      message="Are you sure you want to delete campaign?"
-      @success="deleteCampaign"
-      >
-    </confirm-dialog>
+    <flow-builder v-else :entry-item="currentCampaign" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
   </div>
 </template>
 <script>
+import elementsPermissions from '../elements/permissions'
 import ObjectId from '../utils/ObjectId'
 import utils from '../utils'
 import flowBuilder from '../component/flowBuilder.vue'
-import confirmDialog from '../component/confirmDialog.vue'
+import addStepPopup from '../component/addStepPopup.vue'
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    next(accountCampaign => {
-      accountCampaign.setCurrentCampaign(to);
-    })
-  },
 
-  beforeRouteUpdate(to, from, next) {
-    this.currentCampaign = null;
-
-    this.setCurrentCampaign(to);
-    next();
-  },
-
-  data() {
-    return {
-      currentCampaign: null,
-      isDeleteDialog: false
-    }
-  },
+  props: ['currentCampaign', 'hasWarning'],
 
   components: {
     flowBuilder,
-    confirmDialog
+    addStepPopup
   },
 
   computed:{
-    campaigns() {
-      return this.$store.state.currentAccount.campaignList
+    availableElements() {
+      const { messageTypes } = this.dhAccount.flowBuilderSettings.growthTools;
+
+      return elementsPermissions.fromFlow.concat(messageTypes);
     },
 
-    hasWarning() {
-      const { currentCampaign } = this;
+    hasSteps() {
+      const { steps } = this.currentCampaign;
 
-      if (!currentCampaign) return;
-
-      return utils.hasCampaignWarning(currentCampaign);
-    }
+      return steps && steps.length;
+    },
   },
 
   methods: {
-    setCurrentCampaign(route) {
-      let { campaignId } = route.params;
-      const { campaignList } = this.$store.state.currentAccount;
+    addStep(element) {
+      const step = {
+        id: (new ObjectId).toString(),
+        displaySettings: {
+          isEntry: true
+        },
+        elements: []
+      }
 
-      if (!campaignId) return;
-
-      const currentCampaign = campaignList.find(campaign => campaign.id == campaignId);
-
-      currentCampaign.steps.forEach(step => {
-        if (step.displaySettings) return;
-
-        Object.assign(step, {
-          displaySettings: {
-            positionX: null,
-            positionY: null,
-            collapsed: false
-          }
-        })
+      step.elements.push( {
+        id: (new ObjectId).toString(),
+        ...element
       })
 
-      if (currentCampaign) {
-        this.currentCampaign = currentCampaign;
-      } else {
-        this.$store.dispatch('getCampaignTemplates', { campaign:currentCampaign })
-          .then(({ data }) => {
-            this.currentCampaign = data.campaign;
-          });
-      }
+      this.currentCampaign.steps.push(step);
     },
 
-    deleteCampaign() {
-      this.$store.dispatch('deleteCampaign', this.currentCampaign)
-        .then(({ data }) => {
-          const { currentAccount } = this.$store.state;
-          const { campaignList } = currentAccount;
+    findEntryStep(warningStepId) {
+      const { flowBuilder } = this.$refs;
 
-          this.$router.replace({ name: 'accountCampaignList', params: { accountId: currentAccount.id } })
-        })
-    },
-  },
-
-  watch:{
-    '$store.state.accounts'() {
-      if (this.currentCampaign) return;
-
-      this.setCurrentCampaign(this.$route);
+      flowBuilder.findEntryStep(warningStepId.id);
     }
-  }
+  },
 }
 </script>
 <style lang="scss">
@@ -199,6 +168,9 @@ export default {
 .campaign-builder {
   flex-grow: 1;
   position: relative;
+  background-color: #fafafa;
+  width: 100%;
+  height: 100%;
 
   .campaign-builder-controls {
     display: flex;
@@ -206,6 +178,7 @@ export default {
     align-items: center;
     background-color: #fff;
     color: #A9A9A9;
+    box-shadow: 0 2px 14px rgba(0,0,0,.1);
 
     span {
       font-size: 24px;
@@ -218,6 +191,7 @@ export default {
       margin-right: 10%;
       display: flex;
       align-items: center;
+      cursor: pointer;
 
       img {
         margin-right: 5px;
@@ -295,8 +269,48 @@ export default {
     }
   }
 
-  .flow-builder {
+  .campaign-first-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: calc(100% - 50px);
+
+    .campaign-choose-buttons {
+      background-color: #fff;
+      border: 1px dashed #979797;
+      padding: 0 10px;
+      border-radius: 5px;
+    }
+
+    .campaign-choose-button {
+      padding: 20px 90px;
+      font-weight: bold;
+      color: #979797;
+      cursor: pointer;
+      text-align: center;
+
+      &:hover {
+        color: #6A12CB;;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px dashed #979797;
+      }
+    }
+
+    .campaign-choose-info {
+      color: #979797;
+      font-size: 11px;
+      line-height: 25px;
+
+      &.small {
+        font-size: 9px;
+      }
+    }
+  }
+
+  .flow-builder {
+    height: 100%;
   }
 }
 
@@ -349,5 +363,10 @@ export default {
       }
     }
   }
+}
+
+.add-disabled-popup > * {
+  opacity: .3;
+  pointer-events: none;
 }
 </style>

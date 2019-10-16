@@ -13,7 +13,7 @@
       <div class="reach-row">Reach</div>
       <div class="status-row">Status</div>
     </div>
-    <router-link class="list-item" :to="{name: 'accountBroadcast', params:{ broadcastId:broadcast.id }}" v-for="broadcast in account.broadcastList" :key="broadcast.id">
+    <router-link class="list-item" :to="{name: 'accountBroadcast', params:{ campaignId:broadcast.id }}" v-for="broadcast in broadcasts" :key="broadcast.id">
       <div class="broadcast-row">
         <el-tooltip
           class="broadcast-warning" effect="light"
@@ -56,6 +56,7 @@
 <script>
 import moment from 'moment'
 import utils from '../utils'
+import ObjectId from '../utils/ObjectId'
 
 export default {
   data() {
@@ -68,51 +69,70 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount
+    },
+
+    broadcasts() {
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return [];
+
+      return currentAccountData.campaigns.filter(campaign => campaign.type === "broadcast")
+      // return currentAccountData.campaigns.filter(campaign => campaign.steps[0].type === "broadcastEntry" && !campaign.isArchived)
     }
   },
 
   methods: {
     createBroadcast() {
-      const { currentAccount } = this.$store.state;
+      const { newBroadcastName, $store } = this;
+      const { currentAccount, currentAccountData } = $store.state;
 
-      this.$store.dispatch('createBroadcast', {
-        name: this.newBroadcastName
-      }).then(({ data }) => {
-        const { campaign } = data;
+      const newBroadcast = {
+        id: (new ObjectId).toString(),
+        name: newBroadcastName,
+        igAccountId: currentAccount.id,
+        createdAt: Date.now(),
+        type: 'broadcast',
+        isEnabled: true,
+        isActive: false,
+        isIncomplete: true,
+        isArchived: false,
+        settings: {
+          categoryList: []
+        },
+        status: {
+          statusText: 'draft'
+        },
+        steps: [],
+      }
 
-        this.isAddBroadcast = false;
-        this.newBroadcastName = '';
+      currentAccountData.campaigns.push(newBroadcast);
 
-        this.$router.push({ name: 'accountBroadcast', params: { broadcastId: campaign.id, accountId: currentAccount.id } })
-      })
-    },
+      this.isAddBroadcast = false;
+      this.newBroadcastName = '';
+
+      this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
+     },
 
     broadcastSchedule(broadcast) {
-      const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const { settings } = broadcastEntry;
+      const { settings } = broadcast;
       const startAt = moment((settings.startAt && settings.startAt * 1000) || null).format('DD MMM YYYY hh:mm')
 
       return startAt == 'Invalid date' ? '-' : startAt;
     },
 
     broadcastCompleteAt(broadcast) {
-      const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-      const { status } = broadcastEntry;
+      const { status } = broadcast;
       const completedAt = moment((status.completedAt && status.completedAt * 1000) || null).format('DD MMM YYYY hh:mm')
 
       return completedAt == 'Invalid date' ? '-' : completedAt;
     },
 
     broadcastReach(broadcast) {
-      const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-
-      return broadcastEntry.status.reach || '-';
+      return broadcast.status.reach || '-';
     },
 
     broadcastStatus(broadcast) {
-      const broadcastEntry = broadcast.steps.find(step => step.type == 'broadcastEntry')
-
-      return !broadcast.isActive ? 'Incomplete' : broadcastEntry.status.statusText;
+      return !broadcast.isActive ? 'Incomplete' : broadcast.status.statusText;
     },
 
     hasWarning(broadcast) {

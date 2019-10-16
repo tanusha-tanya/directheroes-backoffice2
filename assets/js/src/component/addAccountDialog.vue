@@ -3,11 +3,11 @@
     :visible.sync="addAcountState"
     class="add-account-dialog"
     title="Add new Instagram Account"
-    width="321px"
+    width="353px"
     append-to-body
     :show-close="false"
     >
-    <div class="step">
+    <div class="step" v-if="!noProxyTool">
       <div class="step-info">
         <div class="step-number">
           1
@@ -18,20 +18,20 @@
       </div>
       <div class="download-buttons">
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=win`">
-          <img src="../assets/svg/windows.svg"/>
+          <windows/>
           Download for Windows
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=mac`">
-          <img src="../assets/svg/apple.svg"/>
+          <apple/>
           Download for Mac
         </a>
         <a :href="`${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/download?os=linux`">
-          <img src="../assets/svg/ubuntu.svg"/>
+          <ubuntu/>
           Download for Linux
         </a>
       </div>
     </div>
-    <div class="step">
+    <div class="step" v-if="!noProxyTool">
       <div class="step-info">
         <div class="step-number">
           2
@@ -56,33 +56,16 @@
     <div :class="{step: true, disabled: twoFactor || !proxyStatus}">
       <div class="step-info">
         <div class="step-number">
-          3
+          {{noProxyTool ? 1 : 3}}
         </div>
         <div class="step-description">
           Enter Instagram credentials.
         </div>
       </div>
-      <input placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
-      <input placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
-      <div class="error" v-if="error && !twoFactor">{{ error }}</div>
-      <div class="challenge-notices" v-if="challenge">
-        <div class="notice-item">
-          <strong>1.</strong><span>Please open the Instagram app and click "it was me" button; refresh your news feed couple times if you don't see this message</span>
-        </div>
-        <div class="notice-item">
-          <strong>2.</strong><span>Make sure you are following those requirements:</span>
-          <div class="notice-list-item">you are not using VPN on your computer</div>
-          <div class="notice-list-item">you have the Instagram account you are looking to connect in Instagram app on your phone</div>
-          <div class="notice-list-item">the IP address of your computer and your phone is the same, you can check it by visiting <a href="https://www.myip.com/">www.myip.com</a>  on both devices</div>
-        </div>
-        <div class="notice-item">
-          <strong>3.</strong><span>If any of above requirements is not met, then please correct it and try again</span>
-        </div>
-        <div class="notice-item">
-          <strong>4.</strong><span>If all the requirements are met, then please try connecting again, but this time choose "Mobile Network" method in the <strong>Proxy Tool</strong></span>
-        </div>
-      </div>
-      <button :class="{ loading: loading && !twoFactor }" :disabled="loading || !account.login || !account.password" @click="actionAccount">Connect Account</button>
+      <input class="dh-input" placeholder="Instagram Username" v-model="account.login" :disabled="accountAuth" @input="error = null" autocomplete="new-password">
+      <input class="dh-input" placeholder="Instagram Password" v-model="account.password" type="password" @input="error = null" autocomplete="new-password">
+      <div class="error" v-if="error && !twoFactor && !challenge" >{{ error }}</div>
+      <button :class="{ 'dh-button': true, 'dh-loading': loading && !twoFactor && !challenge}" :disabled="loading || !account.login || !account.password || challenge || twoFactor" @click="actionAccount">Connect Account</button>
     </div>
     <template v-if="twoFactor && twoFAMethodChoose">
       <div class="step">
@@ -100,7 +83,7 @@
           <el-radio v-model="selected2FAMethod" label="2">Backup code</el-radio>
         </div>
         <div class="step-verify">
-          <button @click="twoFAMethodChoose=false">Choose</button>
+          <button class="dh-button" @click="twoFAMethodChoose=false">Choose</button>
         </div>
       </div>
     </template>
@@ -108,27 +91,58 @@
       <div class="step">
         <div class="step-info">
           <div class="step-number">
-            4
+            {{noProxyTool ? 2 : 4}}
           </div>
           <div class="step-description">
             {{selected2FAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
           </div>
         </div>
-        <input placeholder="Verification Code" v-model="code" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
+        <input placeholder="Verification Code" v-model="code" class="dh-input" @input="error = null" :maxlength="selected2FAMethod == 2 ? 8 : 6" :disabled="loading">
         <div class="error" v-if="error">{{ error }}</div>
         <div class="step-verify">
-          <button :class="{ loading: loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
-          <button v-if="selected2FAMethod != 2" :class="{ resend: true, loading: loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
+          <button :class="{ 'dh-button': true, 'dh-loading': loading && !isResendCode }" :disabled="selected2FAMethod == 2 ? code.length < 8 : code.length < 6 || loading" @click="checkTFCode">Verify</button>
+          <button v-if="selected2FAMethod != 2" :class="{ 'dh-button': true, 'dh-reset-button': true, 'dh-loading': loading && isResendCode }" :disabled="loading" @click="resendTFCode">Re-send</button>
         </div>
+      </div>
+    </template>
+    <template v-else-if="challenge && !challengeCodeSended">
+      <div class="step" style="margin-bottom:64px;">
+        <div class="step-info">
+          <div class="step-number">
+            {{noProxyTool ? 2 : 4}}
+          </div>
+          <div class="step-description">
+            Instagram requires additional verification for this connection
+          </div>
+        </div>
+        <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="requestChallengeCode">Request verification code</button>
+      </div>
+    </template>
+    <template v-if="challenge">
+      <div class="step" style="margin-bottom:64px;">
+        <div class="step-info">
+          <div class="step-number">
+            {{noProxyTool ? 3 : 5}}
+          </div>
+          <div class="step-description">
+            {{challengeCodeMessage}}
+          </div>
+        </div>
+        <input class="dh-input" placeholder="Verification code" v-model="webDirect.challengeCode" @input="error = null" :disabled="loading">
+        <div class="error" v-if="error">{{ error }}</div>
+        <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="verifyChallengeCode">Verify Instagram connection</button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script>
-import triangle from '../assets/triangle.svg'
+import triangle from '../assets/triangle.svg';
 import axios from 'axios';
-import sodium from 'libsodium-wrappers'
+import sodium from 'libsodium-wrappers';
+import windows from '../assets/svg/windows.svg';
+import ubuntu from '../assets/svg/ubuntu.svg';
+import apple from '../assets/svg/apple.svg';
 
 export default {
   data() {
@@ -139,7 +153,14 @@ export default {
       account: {
         login: '',
         password: '',
+        isLoggedIn: false,
+        isPasswordValid: false
       },
+      webDirect: {
+        username: '',
+        challengeCode: ''
+      },
+      challengeCodeSended: false,
       error: null,
       loading: false,
       code: '',
@@ -148,6 +169,12 @@ export default {
       isResendCode: false,
       triangle
     }
+  },
+
+  components: {
+    windows,
+    ubuntu,
+    apple
   },
 
   props: ['isAddAccount', 'accountAuth'],
@@ -166,14 +193,32 @@ export default {
       return dh;
     },
 
+    noProxyTool() {
+      const { challenge } = this;
+
+      return challenge || this.dhAccount.features.loginWithoutProxyTool;
+    },
+
     twoFactor() {
       const { accountAuth } = this;
 
       return accountAuth && accountAuth.twoFactor
     },
 
+    challengeCodeMessage() {
+      const { email, phone_number } = this.accountAuth.igChallenge.sendCodeVariants;
+
+      if (!email && !phone_number) return 'Please check your email or sms for your most recent 6-digit Instagram verification code and enter it below'
+
+      return `Please check your ${ email ? 'email ('+email+')'  : '' }${ email && phone_number ? ' or '  : '' }${ phone_number ? 'sms ('+phone_number+')'  : '' } for your most recent 6-digit Instagram verification code and enter it below`
+    },
+
     challenge() {
       const { accountAuth } = this;
+
+      if (accountAuth) {
+        delete accountAuth.igErrorMessage;
+      }
 
       return accountAuth && accountAuth.igChallenge
     },
@@ -186,7 +231,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/app/proxy-status`
       }).then(({ data }) => {
-        this.proxyStatus = data.response.body.isProxyRunning
+        this.proxyStatus = dh.noProxy || data.response.body.isProxyRunning
         this.oldVersion = data.response.body.isAppOutdated
 
         this.checkingTimeout = setTimeout(this.checkConnection.bind(this), this.proxyStatus ? 60000 : 2000)
@@ -205,11 +250,13 @@ export default {
       } else if (!account.isPasswordValid) {
         return 'Your password seems to be invalid'
       } else if (account.igChallenge) {
-        return 'Instagram rejected the log in attempt'
-      } else if (account.twoFactor && accountAuth.twoFactor.verificationCode) {
+        // return 'Instagram rejected the log in attempt'
+      } else if (account.twoFactor && account.twoFactor.verificationCode) {
         delete account.twoFactor.verificationCode;
 
         return 'The code was rejected by Instagram. Please try again, or contact support if problem persists.'
+      } else if (account.twoFactor){
+        return ''
       } else if (!account.isLoggedIn) {
         return 'Your account is logged out. Please start proxy tool, and then re-connect the account.'
       }
@@ -234,53 +281,159 @@ export default {
       this.loading = true;
       this.error = null;
 
-      if (accountAuth) {
-        accountAuth.password = cryptedPassword;
+      if (!account.isLoggedIn || !account.isPasswordValid) {
+        if (accountAuth) {
+          accountAuth.password = cryptedPassword;
 
-        if (accountAuth.twoFactor) {
-          accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
-        }
-
-        request = $store.dispatch('saveAccount', accountAuth)
-      } else {
-        request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
-      }
-
-      request
-        .then(({ data }) => {
-          const { accountError } = this;
-          const { account } = data.response.body;
-          const error = accountError(account);
-          this.loading = false;
-
-          this.$emit('set-auth-account', account)
-
-          if (error) {
-            this.error = error;
-          } else if (account.isLoggedIn && account.isPasswordValid) {
-            this.$emit('close-dialog', false);
+          if (accountAuth.twoFactor) {
+            accountAuth.twoFactor.twoFactorMethod = selected2FAMethod;
           }
 
-        }).catch( ({ response }) => {
-          this.loading = false;
+          request = $store.dispatch('saveAccount', accountAuth)
+        } else {
+          request = $store.dispatch('addAccount', { ...account, password: cryptedPassword })
+        }
 
-          if (response) {
-            const { data } = response;
+        request
+          .then(({ data }) => {
+            const { accountError } = this;
+            const { request } = data;
+            const { account } = data.response.body;
+            const error = accountError(account);
 
-            if (data.request) {
-              this.error = data.request.statusMessage
-            } else if (data.error) {
-              this.error = data.error
+            this.$emit('set-auth-account', account);
+
+            if (!request.success && request.statusCode === 'account.challenge.it_was_me.action') {
+              error = 'Please open Instagram on your phone, and verify connection by clicking "It was me" button'
+            }
+
+            if (error) {
+              this.loading = false;
+              this.error = error;
+            } else {
+              this.loading = false;
+              this.$emit('close-dialog', false);
+            }
+          }).catch( (error) => {
+            const { response } = error;
+            this.loading = false;
+
+            if (response) {
+              const { data } = response;
+
+              if (data.request) {
+                this.error = data.request.statusMessage
+              } else if (data.error) {
+                this.error = data.error
+              } else {
+                this.error = "Server connection problem, try again"
+              }
             } else {
               this.error = "Server connection problem, try again"
             }
-          } else {
-            this.error = "Server connection problem, try again"
-          }
-        })
-
-      return request;
+          })
+      } else {
+        this.loading = false;
+        this.$emit('close-dialog', false);
+      }
     },
+
+    requestChallengeCode() {
+      const { accountAuth } = this;
+      const account = JSON.parse(JSON.stringify(accountAuth))
+
+      this.error = null;
+      this.loading = true;
+
+      account.igChallenge.sendMethod = 1;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/challenge/send`,
+        method: 'post',
+        data: {
+          account
+        }
+      }).then(({ data }) => {
+        this.loading = false;
+        this.challengeCodeSended = true;
+      })
+    },
+
+    verifyChallengeCode() {
+      const { accountAuth, webDirect } = this;
+      const account = JSON.parse(JSON.stringify(accountAuth))
+
+      this.loading = true;
+      this.error = null;
+
+      account.igChallenge.answer = webDirect.challengeCode;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/challenge/check`,
+        method: 'post',
+        data: {
+          account
+        }
+      }).then(({ data }) => {
+        const { accounts } = this.$store.state;
+        const { request } = data;
+        const { account } = data.response.body;
+        const currentAccount = accounts.find(accountItem => accountItem.id == account.id)
+
+        this.loading = false;
+
+        if (!request.success) {
+          this.error = request.statusMessage
+          return;
+        }
+
+        accounts.splice(accounts.indexOf(currentAccount), 1, account);
+
+        this.$emit('close-dialog', false);
+      }).catch((error) => {
+        console.dir(error);
+
+        this.error = "Server connection problem, try again"
+        this.loading = false;
+      })
+    },
+
+    // webDirectLogin(account) {
+    //   const { $store } = this;
+    //   let webDirectRequest;
+
+    //   if (account.isLoggedIn && account.isPasswordValid) {
+    //     this.webDirect.username = account.login;
+    //     webDirectRequest = $store.dispatch('webDirectLogin', this.webDirect)
+    //     webDirectRequest
+    //       .then(({ data }) => {
+    //         if (data.request.success === true) {
+    //           this.loading = false;
+    //           this.$emit('close-dialog', false);
+    //         }
+    //       }).catch( ({ response }) => {
+    //       this.loading = false;
+    //       this.webChallengeCodeRequired = false;
+
+    //       if (response) {
+    //         const { data } = response;
+
+    //         if (data.request) {
+    //           if (data.request.statusCode === 'web.input_challenge' || data.request.statusCode === 'web.incorrect_challenge') {
+    //             this.webChallengeCodeRequired = true;
+    //           }
+
+    //           this.error = data.request.statusMessage
+    //         } else {
+    //           this.error = "Server connection problem, try again"
+    //         }
+    //       } else {
+    //         this.loading = true;
+    //         this.webDirectLogin(account)
+    //       }
+    //     })
+    //   }
+    // },
 
     checkTFCode() {
       const { accountAuth, code, actionAccount } = this;
@@ -325,7 +478,7 @@ export default {
 
   watch: {
     isAddAccount(value) {
-      const { accountAuth, proxyStatus, accountError } = this;
+      const { accountAuth, proxyStatus, accountError, noProxyTool } = this;
 
       if (value) {
         this.account.login = (accountAuth && accountAuth.login) || '';
@@ -335,59 +488,56 @@ export default {
           delete accountAuth.twoFactor.verificationCode;
         }
 
-        this.error = accountError();
+        this.error = accountError(accountAuth);
 
-        this.checkConnection();
+        if (!noProxyTool) {
+          this.checkConnection();
+        } else {
+          this.proxyStatus = true;
+        }
       } else {
         this.error = null;
         this.code = '';
         this.twoFAMethodChoose = true;
         this.selected2FAMethod = null;
+        this.challengeCodeSended =  false;
 
         clearTimeout(this.checkingTimeout)
       }
     },
 
-    // proxyStatus(value) {
-    //   clearInterval(this.checkingTimeout)
-
-    //   this.checkingTimeout = setInterval(this.checkConnection.bind(this), value ? 60000 : 2000)
-    // }
   }
 }
 </script>
 <style lang="scss">
 .add-account-dialog {
+  background-color: transparent !important;
+
   .el-dialog {
-    margin: 50px 0 0 auto !important;
-    height: calc(100% - 50px);
+    margin: 0 0 0 auto !important;
+    height: 100%;
     border-radius: 0;
     padding: 31px 39px;
     overflow: auto;
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
-
-    // &.dialog-fade-enter-active {
-    //   animation: none;
-    // }
+    box-shadow: none;
+    border-left: 1px solid $borderColor;
 
     .el-dialog__header, .el-dialog__body {
       padding: 0;
       word-break: break-word !important;
+      background-color: transparent;
     }
 
     .el-dialog__title {
       font-size: 20px;
-      color: #6A12CB;
-    }
+   }
 
     .el-dialog__header {
       margin-bottom: 24px;
     }
 
     .step {
-      color: #B6B6B6;
+      color: $textColor;
       font-size: 15px;
 
       &:not(:last-child) {
@@ -409,7 +559,8 @@ export default {
       width: 27px;
       flex-shrink: 0;
       margin-right: 8px;
-      border: 1px solid currentColor;
+      border: 1px solid $mainTextColor;
+      color: $mainTextColor;
       border-radius: 20px;
       display: flex;
       align-items: center;
@@ -418,7 +569,7 @@ export default {
 
     .challenge-notices {
       margin-top: 10px;
-      color: #2c3e50;
+      color: $textColor;
     }
 
     .notice-item {
@@ -465,7 +616,7 @@ export default {
         margin-bottom: 10px;
       }
 
-      img {
+      svg {
         margin-right: 9px;
         max-height: 16px;
       }
@@ -480,16 +631,16 @@ export default {
     .status-indicator {
       height: 27px;
       width: 27px;
-      background-color: #FF4D4D;
+      background-color: $failColor;
       border-radius: 20px;
       margin-right: 9px;
 
       &.success {
-        background-color: #44B0A9;
+        background-color: $successColor;
       }
 
       &.draft {
-        background-color: #A5A5A5;
+        background-color: rgba($borderColor, .5);;
       }
     }
 
@@ -503,35 +654,22 @@ export default {
 
     .step-verify {
       display: flex;
+      justify-content: space-between;
 
-      .resend {
-        background-color: transparent;
-        color: #000;
-
-        &.loading {
-          color: transparent;
-
-          &::before {
-            border-color: #000 #000 transparent;
-          }
-        }
+      .dh-button {
+        max-width: 100px;
+        min-width: 100px;
       }
     }
 
     input {
       margin-top: 10px;
-      border-radius: 2px;
       width: 100%;
-
-      &::placeholder {
-        text-align: center;
-        font-style: italic;
-      }
     }
 
     .error {
       margin-top: 10px;
-      color: #FF4D4D;
+      color: $failColor;
       text-align: center;
     }
 

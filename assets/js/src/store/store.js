@@ -14,23 +14,7 @@ Vue.use(VueX)
 
 export default new VueX.Store({
   state: {
-    dhAccount: null,
-    accounts: [],
-    scale: 1,
-    newPoint: null,
-    arrowConnectData: null,
-    arrows: [],
-    currentAccount: null,
-    firstLoad: false,
-    isfullSideBar: true,
-    serverKey: null,
-    clientKey: null,
-    nonce: null,
-    newAccount: {
-      accountState: 'add',
-      password: '',
-      isAdd: false
-    }
+
   },
 
   actions: {
@@ -41,6 +25,11 @@ export default new VueX.Store({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
+
+        // if (process.env.NODE_ENV === 'development') {
+        //   console.log('IsDev');
+
+        // }
 
         // dhAccount.igAccountLimit = 2;
         // console.log(accountList);

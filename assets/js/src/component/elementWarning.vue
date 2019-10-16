@@ -1,29 +1,33 @@
 <template>
   <el-tooltip class="element-warning" effect="light" :content="warning" v-if="warning">
-    <img src="../assets/triangle.svg">
+    <triangle />
   </el-tooltip>
 </template>
 <script>
 import utils from '../utils'
+import triangle from '../assets/triangle.svg'
 
 export default {
+  components: {
+    triangle
+  },
 
   computed: {
     warning() {
-      const { element } = this;
+      const { element, isEntry } = this;
 
-      return utils.campaignElementValidate(element);
+      return utils.campaignElementValidate(element, isEntry);
     }
   },
 
-  props: ['element']
+  props: ['element', 'isEntry']
 }
 </script>
 
 <style lang="scss">
 .element-warning {
   flex-shrink: 0;
-  width: 20px
+  width: 14px
 }
 </style>
 
