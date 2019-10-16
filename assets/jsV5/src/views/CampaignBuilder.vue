@@ -38,10 +38,6 @@
                 <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
-                <span>Trigger message request only <dh-question-mark v-if="false"></dh-question-mark></span>
-                <el-switch v-model="activateOptions.messageRequestOnly" :disabled="isPreview"></el-switch>
-              </div>
-              <div class="dh-option">
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
@@ -99,7 +95,6 @@ export default {
       activateOptions: {
         allowReEnter: false,
         nonSubscribersOnly: false,
-        messageRequestOnly: false,
       },
       helpTriggerText: {
         allowReEnter: {
@@ -110,9 +105,6 @@ export default {
           title: 'Help: Non-Subscribers only Settings',
           message: 'The "Non-subscribers only" setting gives you the ability to ONLY allow<br> new contacts into your list.<br><br> Existing contacts from additional campaigns would not have the ability<br> to enter a campaign that had "Non-subscribers on" setting turned on'
         },
-        messageRequestOnly: {
-
-        }
       }
     }
   },
@@ -196,30 +188,6 @@ export default {
           const allowReEnter = elements.find(element => element.condition.entity === "campaign" && element.condition.field === "entered")
 
           elements.splice(elements.indexOf(allowReEnter), 1)
-        }
-      }
-    },
-
-    messageRequestOnly: {
-      get() {
-        const { settings } = this;
-
-        return Boolean(settings.elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest"));
-      },
-
-      set(value) {
-        const { elements } = this. settings;
-
-        if (value) {
-          const newMessageRequestOnly = JSON.parse(JSON.stringify(messageRequestOnlyElement));
-
-          newMessageRequestOnly.id = (new ObjectId).toString();
-
-          elements.push(newMessageRequestOnly);
-        } else {
-          const messageRequestOnly = elements.find(element => element.condition.entity === "message" && element.condition.field === "isRequest")
-
-          elements.splice(elements.indexOf(messageRequestOnly), 1)
         }
       }
     },
@@ -312,13 +280,12 @@ export default {
     },
 
     isActivateCampaign(value) {
-      const { allowReEnter, nonSubscribersOnly, messageRequestOnly, activateOptions } = this;
+      const { allowReEnter, nonSubscribersOnly, activateOptions } = this;
 
       if (!value) return
 
       activateOptions.allowReEnter = allowReEnter;
       activateOptions.nonSubscribersOnly = nonSubscribersOnly;
-      activateOptions.messageRequestOnly = messageRequestOnly;
     }
   }
 };
