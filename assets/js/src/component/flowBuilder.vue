@@ -352,7 +352,7 @@ export default {
         }
 
         entry.isActive = entry.isEnabled && !Boolean(this.hasWarning);
-        entry.isIncomplete = Boolean(this.hasWarning);
+        entry.isIncomplete = !Boolean(this.hasWarning);
       },
       deep: true
     },

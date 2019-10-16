@@ -11,12 +11,12 @@
                 effect="light"
                 content="Please clear all warnings first"
                 >
-                <el-switch v-model="currentCampaign.isEnabled" :disabled="true"></el-switch>
+                <el-switch v-model="currentCampaign.isActive" :disabled="true"></el-switch>
               </el-tooltip>
             </template>
             <template v-else>
               <div class="dh-campaign-activate-button" @click="toggleActivation">
-                <el-switch v-model="currentCampaign.isEnabled" ></el-switch>
+                <el-switch v-model="currentCampaign.isActive" ></el-switch>
               </div>
             </template>
           </div>
@@ -202,6 +202,9 @@ export default {
       set(value) {
         const { elements } = this. settings;
 
+        console.log(elements, value);
+
+
         if (value) {
           const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
 
@@ -242,7 +245,9 @@ export default {
       const { currentCampaign, activateOptions } = this;
 
       this.allowReEnter = activateOptions.allowReEnter;
-      this.nonSubscribersOnly = activateOptions.nonSubscribersOnly;
+      this.$nextTick(() => {
+        this.nonSubscribersOnly = activateOptions.nonSubscribersOnly;
+      })
 
       currentCampaign.isEnabled = true;
 
@@ -254,7 +259,7 @@ export default {
 
       this.isPreview = false;
 
-      if (currentCampaign.isEnabled) {
+      if (currentCampaign.isActive) {
         this.isDeactivateCampaign = true;
       } else {
         this.isActivateCampaign = true;
@@ -282,7 +287,7 @@ export default {
     isActivateCampaign(value) {
       const { allowReEnter, nonSubscribersOnly, activateOptions } = this;
 
-      if (!value) return
+      if (!value) return;
 
       activateOptions.allowReEnter = allowReEnter;
       activateOptions.nonSubscribersOnly = nonSubscribersOnly;

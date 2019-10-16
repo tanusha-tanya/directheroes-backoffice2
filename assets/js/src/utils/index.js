@@ -18,6 +18,83 @@ const getOnMatchElement = (element) => {
 
   return matchElement;
 }
+const campaignElementValidate = (element, isEntry) => {
+  let warning = null;
+
+  switch(element.type) {
+    case 'action':
+      const { action, text, mediaId } = element.body;
+
+      switch (action) {
+        case 'sendMedia':
+          if (!mediaId) {
+            warning = 'Image not uploaded'
+          }
+          break;
+        case 'sendText':
+          if (!text) {
+            warning = 'Enter text'
+          }
+          break;
+      }
+      break;
+    case 'rule':
+      const matchElement = getOnMatchElement(element);
+
+      if (!matchElement || !matchElement.onMatch) {
+        warning = 'Element has no target step'
+      }
+
+      if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
+        warning = 'Please specify at least one hashtag'
+      }
+      break;
+    case 'group':
+      warning = element.elements.some(elementItem => campaignElementValidate(elementItem))
+    // case 'sendImageAction':
+    //   if (!element.value) {
+    //     warning = 'Image not uploaded'
+    //   }
+    // break;
+    // case 'sendTextAction':
+    //   if (!element.value.text) {
+    //     warning = 'Enter text'
+    //   }
+    // break;
+    // case 'regular':
+    //   if (!element.elements.length) {
+    //     warning = 'Please add at least one element'
+    //   }
+    // break;
+    // case 'callWebhookAction':
+    //   if (!element.value.url) {
+    //     warning = 'Please enter hook url'
+    //   } else if (!element.value.status) {
+    //     warning = 'Please verify hook url'
+    //   } else if (element.value.status == 'fail') {
+    //     warning = 'Please enter correct hook url'
+    //   }
+    // break;
+    // case "any":
+    //   if (emptyMoreOne) {
+    //     warning = 'There can only be one empty element in a list'
+    //   } else if (!onMatch) {
+    //     warning = 'List element has no target step'
+    //   }
+    // break;
+    // case 'adReply':
+    // case 'storyShare':
+    // case 'storyMention':
+    // case 'postShare':
+    // case 'mediaShare':
+    //   if (!onMatch) {
+    //     warning = 'Element has no target step'
+    //   }
+    // break;
+  }
+
+  return warning
+}
 
 export default {
   types: {
@@ -58,91 +135,19 @@ export default {
     }
   },
 
-  campaignElementValidate(element, isEntry) {
-    let warning = null;
-
-    switch(element.type) {
-      case 'action':
-        const { action, text, mediaId } = element.body;
-
-        switch (action) {
-          case 'sendMedia':
-            if (!mediaId) {
-              warning = 'Image not uploaded'
-            }
-            break;
-          case 'sendText':
-            if (!text) {
-              warning = 'Enter text'
-            }
-            break;
-        }
-        break;
-      case 'rule':
-        const matchElement = getOnMatchElement(element);
-
-        if (!matchElement || !matchElement.onMatch) {
-          warning = 'Element has no target step'
-        }
-
-        if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
-          warning = 'Please specify at least one hashtag'
-        }
-        break;
-      // case 'sendImageAction':
-      //   if (!element.value) {
-      //     warning = 'Image not uploaded'
-      //   }
-      // break;
-      // case 'sendTextAction':
-      //   if (!element.value.text) {
-      //     warning = 'Enter text'
-      //   }
-      // break;
-      // case 'regular':
-      //   if (!element.elements.length) {
-      //     warning = 'Please add at least one element'
-      //   }
-      // break;
-      // case 'callWebhookAction':
-      //   if (!element.value.url) {
-      //     warning = 'Please enter hook url'
-      //   } else if (!element.value.status) {
-      //     warning = 'Please verify hook url'
-      //   } else if (element.value.status == 'fail') {
-      //     warning = 'Please enter correct hook url'
-      //   }
-      // break;
-      // case "any":
-      //   if (emptyMoreOne) {
-      //     warning = 'There can only be one empty element in a list'
-      //   } else if (!onMatch) {
-      //     warning = 'List element has no target step'
-      //   }
-      // break;
-      // case 'adReply':
-      // case 'storyShare':
-      // case 'storyMention':
-      // case 'postShare':
-      // case 'mediaShare':
-      //   if (!onMatch) {
-      //     warning = 'Element has no target step'
-      //   }
-      // break;
-    }
-
-    return warning
-  },
-
   hasCampaignWarning(campaign) {
     const { campaignElementValidate } = this;
 
     return campaign.steps.find((step, stepIndex) => {
       return step.elements.some(element => {
+        // console.log(element, campaignElementValidate(element, Boolean(stepIndex)));
+
         return campaignElementValidate(element, Boolean(stepIndex));
       });
     });
   },
+
+  campaignElementValidate,
 
   getOnMatchElement
 }
