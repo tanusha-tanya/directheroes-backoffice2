@@ -138,7 +138,6 @@ export default {
       const { settings } = this.affiliateInfo;
       this.referrerCodeChanged = true;
 
-
       settings.referrerCode = settings.referrerCode.replace(/[^A-z0-9._]*/g, '')
       // console.log(event.target.value.replace(/[^0-9]*/g, ''));
       // event.target.value = event.target.value.replace(/[^0-9]*/g, '')

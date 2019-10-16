@@ -34,15 +34,15 @@
           <div class="dh-campaign-settings">
             <div class="dh-options">
               <div class="dh-option">
-                <span>Allow Re-entering campaign</span>
+                <span>Allow Re-entering campaign <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message"></dh-question-mark></span>
                 <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
-                <span>Trigger message request only</span>
+                <span>Trigger message request only <dh-question-mark v-if="false"></dh-question-mark></span>
                 <el-switch v-model="activateOptions.messageRequestOnly" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
-                <span>Non-subscribers only</span>
+                <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
             </div>
@@ -66,6 +66,7 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhQuestionMark from '../components/dh-question-mark'
 import dhDeactivateDialog from '../components/dh-deactivate-dialog'
 import info from '../assets/info.svg'
 
@@ -99,6 +100,19 @@ export default {
         allowReEnter: false,
         nonSubscribersOnly: false,
         messageRequestOnly: false,
+      },
+      helpTriggerText: {
+        allowReEnter: {
+          title: 'Help: Allow Re-Entering Campaigin Settings',
+          message: 'The "Allow Re-entering campaign setting" gives you and your<br>contacts/subscribers the ability to re-enter this exact campaign.<br> If for some reason they trigger the growth tool entry step again,<br> the campaign will restart for them at the beginning.<br><br> Note: If they re-trigger the entry step, mid campaign, it will force the contact to start again.<br><br> ••USED UNIQUE ENTRY TRIGGERS TO AVOID ANY CONFUSION••',
+        },
+        nonSubscribersOnly: {
+          title: 'Help: Non-Subscribers only Settings',
+          message: 'The "Non-subscribers only" setting gives you the ability to ONLY allow<br> new contacts into your list.<br><br> Existing contacts from additional campaigns would not have the ability<br> to enter a campaign that had "Non-subscribers on" setting turned on'
+        },
+        messageRequestOnly: {
+
+        }
       }
     }
   },
@@ -106,6 +120,7 @@ export default {
   components: {
     dhHeader,
     dhFooter,
+    dhQuestionMark,
     dhDeactivateDialog,
     OldCampaignBuilder,
     info,
