@@ -23,7 +23,7 @@
         </div>
         <div class="text" v-html="(message.text || '').replace(/\n/ig, '<br/>')"></div>
         <a class="post" v-if="message.previewUrl" :href="message.previewUrl" target="_blank">
-          <div class="picture" :style="{'background-image': `url(${ message.previewUrl }), url(${ image })`}"></div>
+          <div class="picture" :style="{'background-image': `url(${ message.previewUrl })`}"></div>
         </a>
       </div>
 
@@ -37,7 +37,7 @@
 <script>
 import defaultAvatar from '../assets/ig-avatar.jpg'
 import moment from 'moment'
-import image from '../assets/svg/image-placeholder.svg'
+// import image from '../assets/svg/image-placeholder.svg'
 
 export default {
   data() {
@@ -77,6 +77,11 @@ export default {
     date(date) {
       return (new Date(date * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})
     }
+  },
+
+  created() {
+    console.log(this.message.previewUrl);
+
   }
 }
 </script>
