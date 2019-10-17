@@ -118,7 +118,7 @@ export default {
       const { stepRowIndex, $store } = this;
       const { existConnection } = $store.state;
 
-      return true || existConnection && stepRowIndex > existConnection.stepRowIndex
+      return existConnection //&& stepRowIndex > existConnection.stepRowIndex
     },
 
     hasUserInputMatch() {
