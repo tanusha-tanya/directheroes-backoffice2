@@ -71,5 +71,50 @@ export default [
         }
       ]
     }
-  }
+  },
+  {
+    title: 'Is Majority Member',
+    template: {
+      type: "group",
+      displaySettings: {
+        subType: "condition",
+        type: "topCategory"
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "subscriber",
+            field: "categories",
+            operand: "contains",
+            value: {
+              entity: "runtime",
+              field: "topCategory"
+            }
+          },
+        }
+      ]
+    }
+  },
+  {
+    title: 'Top N people',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'topReply'
+      },
+      elements: [
+        {
+          type: 'rule',
+          condition: {
+            entity: 'subscriber',
+            field: 'categories',
+            operand: 'lt',
+            value: 1
+          }
+        },
+      ]
+    }
+  },
 ]

@@ -56,6 +56,79 @@
             </div>
           </div>
         </template>
+        <template v-else-if="element.displaySettings.type === 'topCategory'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Is Majority Member?
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" :ref="element.id">
+                Yes
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element)"
+                  v-else
+                ></add-mid-step-popup>
+               </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                No
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="element.displaySettings.type === 'topReply'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Is among N people
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
+                <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, subElement)"
+                  v-else
+                ></add-mid-step-popup>
+                <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteTopReplyElement(subElement)">
+                  <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="add-condition-value" @click="addTopReplyCondition">
+                + Add value
+              </div>
+            </div>
+          </div>
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Among people greater then
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                {{ lastTopReplyRule.condition.value }}
+                <add-tag-popup :available-list="availableList" @add-step="createStep(lastTopReplyRule, $event, true)" v-if="!lastTopReplyRule.onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, lastTopReplyRule, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
         <template v-else>
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -133,8 +206,10 @@ export default {
     return {
       conditionTitle: {
         timeout: 'Timeout',
-        folowwers: 'Followers',
-        verified: 'Is Verified'
+        followers: 'Followers',
+        verified: 'Is Verified',
+        topCategory: 'Is Majority Member',
+        topReply: 'Top N people'
       }
     }
   },
@@ -178,12 +253,34 @@ export default {
 
     followersElement() {
       return this.elements.find(element => element.displaySettings.type === 'followers');
-    }
+    },
+
+    topReplyElement() {
+      return this.elements.find(element => element.displaySettings.type === 'topReply');
+    },
+
+    lastTopReplyRule() {
+      const { topReplyElement } = this;
+
+      return topReplyElement.elements[topReplyElement.elements.length - 1]
+    },
   },
 
   methods: {
     addCondition() {
 
+    },
+
+    addTopReplyCondition() {
+      const { lastTopReplyRule, topReplyElement } = this;
+      const newTopReplyElement = JSON.parse(JSON.stringify(lastTopReplyRule));
+
+      lastTopReplyRule.onFail = { action: 'fallthrough' };
+
+      newTopReplyElement.id = (new ObjectId).toString();
+      delete newTopReplyElement.onMatch;
+
+      topReplyElement.elements.push(newTopReplyElement);
     },
 
     addFollowerCondition() {
@@ -252,6 +349,18 @@ export default {
       }
 
       followersElement.elements.splice(followersElement.elements.indexOf(element), 1);
+    },
+
+    deleteTopReplyElement(element) {
+      const { lastTopReplyRule, topReplyElement } = this;
+
+      if (lastTopReplyRule === element) {
+        const newLastElement = topReplyElement.elements[topReplyElement.elements.length - 2];
+
+        newLastElement.onFail = lastTopReplyRule.onFail;
+      }
+
+      topReplyElement.elements.splice(topReplyElement.elements.indexOf(element), 1);
     },
 
     addMidStep(element, condition, onFail) {
