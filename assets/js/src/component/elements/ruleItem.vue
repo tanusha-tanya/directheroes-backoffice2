@@ -12,7 +12,7 @@
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>
-    <template v-else-if="ruleType == 'storyMention'">
+    <template v-else-if="['storyMention', 'storyShare'].includes(ruleType)">
       <keywords v-model="rule.onMatch.elements[0].condition.value"></keywords>
     </template>
     <add-tag-popup
