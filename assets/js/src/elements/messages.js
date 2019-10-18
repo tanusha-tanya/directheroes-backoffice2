@@ -1,8 +1,6 @@
 import conditions from './conditions';
 import { userInput } from './userInput'
 
-console.log(userInput);
-
 let timeout = conditions.find(condition => condition.title === 'Timeout');
 
 if (timeout) {
