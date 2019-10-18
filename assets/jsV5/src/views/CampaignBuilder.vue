@@ -290,7 +290,10 @@ export default {
       if (!value) return;
 
       activateOptions.allowReEnter = allowReEnter;
-      activateOptions.nonSubscribersOnly = nonSubscribersOnly;
+
+      setTimeout(() => {
+        activateOptions.nonSubscribersOnly = nonSubscribersOnly;
+      }, 100)
     }
   }
 };
