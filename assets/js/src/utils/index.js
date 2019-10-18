@@ -52,7 +52,9 @@ const campaignElementValidate = (element, isEntry) => {
       }
       break;
     case 'group':
-      warning = element.elements.some(elementItem => campaignElementValidate(elementItem))
+      element.elements.some(elementItem => {
+        return warning = campaignElementValidate(elementItem);
+      })
     // case 'sendImageAction':
     //   if (!element.value) {
     //     warning = 'Image not uploaded'
