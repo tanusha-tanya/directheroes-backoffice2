@@ -166,7 +166,7 @@ export default {
         case 'message':
           step.name = 'New message'
 
-          if (firstElementSettings.displaySettings.type === 'delay') {
+          if (['delay', 'delayTill'].includes(firstElementSettings.displaySettings.type)) {
             const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
             const action = firstElementSettings.elements.find(element => element.type === 'action');
 

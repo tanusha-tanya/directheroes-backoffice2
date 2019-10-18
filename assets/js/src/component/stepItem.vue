@@ -169,7 +169,7 @@ export default {
           element.id = (new ObjectId).toString()
         })
 
-        if (element.displaySettings.type === 'delay') {
+        if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
           const { elements } = element;
           const checkpoint = elements.find(element => element.type === 'checkpoint');
           const action = elements.find(element => element.type === 'action');
@@ -196,8 +196,6 @@ export default {
     bindAsExistStep() {
       const { step, $store } = this;
       const { existConnection } = $store.state;
-
-      console.log(step);
 
       existConnection.element.target = step.id;
       existConnection.step.elements.push(existConnection.element);

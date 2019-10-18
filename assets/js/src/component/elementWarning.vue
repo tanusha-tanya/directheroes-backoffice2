@@ -16,6 +16,9 @@ export default {
     warning() {
       const { element, isEntry } = this;
 
+      console.log(utils.campaignElementValidate(element, isEntry));
+
+
       return utils.campaignElementValidate(element, isEntry);
     }
   },
