@@ -50,11 +50,14 @@ const campaignElementValidate = (element, isEntry) => {
       if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
         warning = 'Please specify at least one hashtag'
       }
+
       break;
-    case 'group':
-      element.elements.some(elementItem => {
-        return warning = campaignElementValidate(elementItem);
-      })
+    // case 'group':
+    //   element.elements.some(elementItem => {
+    //     // console.log(campaignElementValidate(elementItem), elementItem);
+
+    //     return warning = campaignElementValidate(elementItem);
+    //   })
     // case 'sendImageAction':
     //   if (!element.value) {
     //     warning = 'Image not uploaded'
