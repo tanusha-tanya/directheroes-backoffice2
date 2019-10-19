@@ -125,6 +125,8 @@ export default {
 
       if (!currentCampaign) return;
 
+      console.log(utils.hasCampaignWarning(currentCampaign));
+
       return utils.hasCampaignWarning(currentCampaign);
     },
 
@@ -245,9 +247,10 @@ export default {
       const { currentCampaign, activateOptions } = this;
 
       this.allowReEnter = activateOptions.allowReEnter;
-      this.$nextTick(() => {
+
+      setTimeout(() => {
         this.nonSubscribersOnly = activateOptions.nonSubscribersOnly;
-      })
+      }, 100)
 
       currentCampaign.isEnabled = true;
 
@@ -290,10 +293,7 @@ export default {
       if (!value) return;
 
       activateOptions.allowReEnter = allowReEnter;
-
-      setTimeout(() => {
-        activateOptions.nonSubscribersOnly = nonSubscribersOnly;
-      }, 100)
+      activateOptions.nonSubscribersOnly = nonSubscribersOnly;
     }
   }
 };
