@@ -10,8 +10,6 @@ const getOnMatchElement = (element) => {
     matchElement = element.elements.find(element => element.type === 'rule');
   }
 
-  // console.log(matchElement);
-
   if (matchElement.condition && ['postShare', 'storyMention', 'storyShare'].includes(matchElement.condition.value) &&  matchElement.onMatch && matchElement.onMatch.elements) {
     return matchElement.onMatch.elements[0];
   } else if (['linker', 'rule'].includes(type)) {
@@ -52,12 +50,14 @@ const campaignElementValidate = (element, isEntry) => {
       }
 
       break;
-    // case 'group':
-    //   element.elements.some(elementItem => {
-    //     // console.log(campaignElementValidate(elementItem), elementItem);
+    case 'group':
+      if (element.displaySettings.subType === 'trigger') {
+        element.elements.some(elementItem => {
+          warning = campaignElementValidate(elementItem);
 
-    //     return warning = campaignElementValidate(elementItem);
-    //   })
+          return warning;
+        })
+    }
     // case 'sendImageAction':
     //   if (!element.value) {
     //     warning = 'Image not uploaded'
@@ -148,7 +148,6 @@ export default {
     return campaign.steps.find((step, stepIndex) => {
       return step.elements.some(element => {
         // console.log(element, campaignElementValidate(element, Boolean(stepIndex)));
-
         return campaignElementValidate(element, Boolean(stepIndex));
       });
     });

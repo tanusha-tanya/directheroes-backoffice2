@@ -302,7 +302,7 @@ export default {
         campaignCard.findAnimation = true;
       }
 
-      zoomTool.moveTo(positionX, positionY)
+      zoomTool.moveTo(positionX, positionY);
     },
   },
 

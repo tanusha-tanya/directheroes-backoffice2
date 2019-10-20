@@ -125,8 +125,6 @@ export default {
 
       if (!currentCampaign) return;
 
-      console.log(utils.hasCampaignWarning(currentCampaign));
-
       return utils.hasCampaignWarning(currentCampaign);
     },
 
@@ -203,9 +201,6 @@ export default {
 
       set(value) {
         const { elements } = this. settings;
-
-        console.log(elements, value);
-
 
         if (value) {
           const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
@@ -328,6 +323,7 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 5px;
+    cursor: pointer;
 
     svg {
       margin-right: 5px;
