@@ -83,31 +83,33 @@
             </div>
           </div>
         </template>
-        <template v-else-if="element.displaySettings.type === 'topReply'">
+        <template v-else-if="element.displaySettings.type === 'scarcity'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Is among N people
             </div>
             <div class="condition-item-matches">
-              <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
-                <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, subElement)"
-                  v-else
-                ></add-mid-step-popup>
-                <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteTopReplyElement(subElement)">
-                  <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
-                      fill="currentColor"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
+              <template v-for="(subElement, index) in element.elements">
+                <div class="condition-item-match" v-if="subElement.type === 'rule'" :ref="element.id + index" :key="subElement.id" >
+                  <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
+                  <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
+                  <add-mid-step-popup
+                    :available-list="availableList"
+                    @add-step="addMidStep($event, subElement)"
+                    v-else
+                  ></add-mid-step-popup>
+                  <div class="delete-condition-value" v-if="element.elements.length > 2" @click="deleteScarcityElement(subElement)">
+                    <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-              <div class="add-condition-value" @click="addTopReplyCondition">
+              </template>
+              <div class="add-condition-value" @click="addScarcityCondition">
                 + Add value
               </div>
             </div>
@@ -118,11 +120,11 @@
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                {{ lastTopReplyRule.condition.value }}
-                <add-tag-popup :available-list="availableList" @add-step="createStep(lastTopReplyRule, $event, true)" v-if="!lastTopReplyRule.onFail"></add-tag-popup>
+                {{ lastScarcityRule.condition.value }}
+                <add-tag-popup :available-list="availableList" @add-step="createStep(lastScarcityRule, $event, true)" v-if="!lastScarcityRule.onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
-                  @add-step="addMidStep($event, lastTopReplyRule, true)"
+                  @add-step="addMidStep($event, lastScarcityRule, true)"
                   v-else
                 ></add-mid-step-popup>
               </div>
@@ -209,7 +211,7 @@ export default {
         followers: 'Followers',
         verified: 'Is Verified',
         topCategory: 'Is Majority Member',
-        topReply: 'Top N people'
+        scarcity: 'Scarcity'
       }
     }
   },
@@ -255,14 +257,14 @@ export default {
       return this.elements.find(element => element.displaySettings.type === 'followers');
     },
 
-    topReplyElement() {
-      return this.elements.find(element => element.displaySettings.type === 'topReply');
+    scarcityElement() {
+      return this.elements.find(element => element.displaySettings.type === 'scarcity');
     },
 
-    lastTopReplyRule() {
-      const { topReplyElement } = this;
+    lastScarcityRule() {
+      const { scarcityElement } = this;
 
-      return topReplyElement.elements[topReplyElement.elements.length - 1]
+      return scarcityElement.elements[scarcityElement.elements.length - 1]
     },
   },
 
@@ -271,16 +273,16 @@ export default {
 
     },
 
-    addTopReplyCondition() {
-      const { lastTopReplyRule, topReplyElement } = this;
-      const newTopReplyElement = JSON.parse(JSON.stringify(lastTopReplyRule));
+    addScarcityCondition() {
+      const { lastScarcityRule, scarcityElement } = this;
+      const newScarcityElement = JSON.parse(JSON.stringify(lastScarcityRule));
 
-      lastTopReplyRule.onFail = { action: 'fallthrough' };
+      lastScarcityRule.onFail = { action: 'fallthrough' };
 
-      newTopReplyElement.id = (new ObjectId).toString();
-      delete newTopReplyElement.onMatch;
+      newScarcityElement.id = (new ObjectId).toString();
+      delete newScarcityElement.onMatch;
 
-      topReplyElement.elements.push(newTopReplyElement);
+      scarcityElement.elements.push(newScarcityElement);
     },
 
     addFollowerCondition() {
@@ -351,16 +353,16 @@ export default {
       followersElement.elements.splice(followersElement.elements.indexOf(element), 1);
     },
 
-    deleteTopReplyElement(element) {
-      const { lastTopReplyRule, topReplyElement } = this;
+    deleteScarcityElement(element) {
+      const { lastScarcityRule, scarcityElement } = this;
 
-      if (lastTopReplyRule === element) {
-        const newLastElement = topReplyElement.elements[topReplyElement.elements.length - 2];
+      if (lastScarcityRule === element) {
+        const newLastElement = scarcityElement.elements[scarcityElement.elements.length - 2];
 
-        newLastElement.onFail = lastTopReplyRule.onFail;
+        newLastElement.onFail = lastScarcityRule.onFail;
       }
 
-      topReplyElement.elements.splice(topReplyElement.elements.indexOf(element), 1);
+      scarcityElement.elements.splice(scarcityElement.elements.indexOf(element), 1);
     },
 
     addMidStep(element, condition, onFail) {

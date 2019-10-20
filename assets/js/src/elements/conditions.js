@@ -97,20 +97,26 @@ export default [
     }
   },
   {
-    title: 'Top N people',
+    title: 'Scarcity',
     template: {
       type: 'group',
       displaySettings: {
         subType: 'condition',
-        type: 'topReply'
+        type: 'scarcity'
       },
       elements: [
         {
+          type: "action",
+          body: {
+            action: "incrementRuntimeField"
+          }
+        },
+        {
           type: 'rule',
           condition: {
-            entity: 'subscriber',
-            field: 'categories',
-            operand: 'lt',
+            entity: 'runtimeField',
+            // field: 'categories',
+            operand: 'lte',
             value: 1
           }
         },

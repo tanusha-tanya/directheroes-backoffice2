@@ -181,6 +181,11 @@ export default {
             const action = firstElementSettings.elements.find(element => element.type === 'action');
 
             action.body.checkpointId = checkpoint.id;
+          } else if (firstElementSettings.displaySettings.type === 'scarcity') {
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
+            const rule = firstElementSettings.elements.find(element => element.type === 'rule');
+
+            rule.condition.field = action.id;
           }
 
           break;
