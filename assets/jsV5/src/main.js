@@ -2,18 +2,19 @@ import './elementui';
 
 import Vue from 'vue'
 import App from './App.vue'
-import { Message } from 'element-ui'
+import { Message, Notification } from 'element-ui'
 import router from './router'
 import store from './store'
 
 Vue.prototype.$message = Message;
+Vue.prototype.$notify = Notification;
 
 router.beforeEach((to, from, next) => {
   const { dhAccount } = store.state;
 
   store.state.isfullSideBar = !['accountCampaign','accountBroadcast'].includes(to.name)
 
-  if (dhAccount && !dhAccount.subscription.isActive && to.name !== 'addonBuy') {
+  if (dhAccount && !dhAccount.subscription.isActive && !['addonBuy', 'addonPayment'].includes(to.name)) {
     next({name: 'addonBuy'})
   } else {
     next()

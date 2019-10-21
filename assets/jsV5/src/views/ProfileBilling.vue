@@ -55,7 +55,7 @@
           </label>
         </div>
       </div>
-      <stripe-payment v-else goal="createPlanSubscription" :return-url="$router.resolve({name: 'dhPayments'}).href">
+      <stripe-payment v-else goal="updateExistingSubscriptions" :return-url="$router.resolve({name: 'dhPayments'}).href">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="dh-settings-form-buttons">
             <button :class="{ 'dh-button': true, 'dh-loading': paymentRequest }" :disabled="!canSendInfo" @click="setPayInfo(submitPayment, authorizeAmount)">Save payment info</button>

@@ -33,7 +33,7 @@
             {{ cardInfo.brand }} *{{ cardInfo.last4 }}<br/>
             Expires on {{ cardInfo.exp_month }}/{{ cardInfo.exp_year }}
           </div>
-          <button class="dh-button" @click="buyPlane" :class="{loading: purchasing}">Purchase</button>
+          <button @click="buyPlane" :class="{'dh-button': true, 'dh-loading': purchasing}" :disabled="purchasing">Purchase</button>
         </div>
         <div class="purchase-info" v-else>
           No card attached to service
@@ -97,7 +97,8 @@ export default {
           this.error = error.message;
         }
       }).catch(error => {
-        this.error = 'Server connection problem, try again'
+        this.error = 'Server connection problem, try again';
+        this.purchasing = false;
       })
     }
   },

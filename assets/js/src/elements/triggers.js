@@ -99,6 +99,17 @@ export default [
             operand: 'eq',
             value: 'storyShare'
           },
+          onMatch: {
+            action: 'chain',
+            elements: [{
+              condition: {
+                entity: 'message',
+                field: 'text',
+                operand: 'contains',
+                value: []
+              }
+            }]
+          },
           onFail: {
             action: 'fallthrough',
           },

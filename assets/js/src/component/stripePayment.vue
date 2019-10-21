@@ -235,6 +235,11 @@ export default {
   created() {
     const { initAddCard } = this;
     const { stripePk } = dh;
+    const referrer = /ref=(\S*)/.exec(location.search);
+
+    if (referrer && referrer[1]) {
+      document.cookie = 'referrer=' + referrer[1] + '; path=/'
+    }
 
     if (stripePk) {
       this.publicKey = stripePk;

@@ -1,7 +1,7 @@
 <template>
   <div class="dh-application">
     <div class="dh-navigation">
-      <router-link class="dh-logo" :to="{ name: 'accounts'}"><dh-logo/></router-link>
+      <router-link class="dh-logo" :to="{ name: 'accounts'}"></router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <dashboard/>
@@ -40,15 +40,21 @@
       </router-link>
       <router-link :class="{'dh-navigation-button': true }" :to="{ name: 'affiliate' }">
         <div class="dh-navigation-button-ico">
-          <affilate/>
+          <affiliate/>
         </div>
         Affiliate
       </router-link>
-      <router-link v-if="false" class="dh-navigation-button" :to="{ name: 'tutorials' }">
+      <router-link v-if="hasTutorialAccess" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">
           <tutorials/>
         </div>
         Tutorials
+      </router-link>
+       <router-link class="dh-navigation-button" :to="{ name: 'trainings' }">
+        <div class="dh-navigation-button-ico">
+          <training/>
+        </div>
+        Trainings
       </router-link>
       <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
@@ -79,8 +85,9 @@ import livechat from './assets/livechat.svg'
 import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
 import tutorials from './assets/tutorials.svg'
+import training from './assets/training.svg'
 import support from './assets/support.svg'
-import affilate from './assets/affilate.svg'
+import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
 
 export default {
@@ -95,7 +102,8 @@ export default {
     tutorials,
     support,
     loader,
-    affilate,
+    affiliate,
+    training,
   },
 
   computed: {
@@ -111,7 +119,7 @@ export default {
       return state.accounts.length;
     },
 
-    isfullSideBar() {
+    isFullSideBar() {
       const { state } = this.$store;
 
       return state.isfullSideBar;
@@ -121,7 +129,15 @@ export default {
       const { state } = this.$store;
 
       return state.isFirstLoad;
+    },
+
+    hasTutorialAccess() {
+      const accessList = ['kalum@adoku.ca']
+      const { dhAccount } = this;
+
+      return dhAccount && accessList.includes(dhAccount.username);
     }
+
   },
 }
 </script>
@@ -140,6 +156,11 @@ body {
   * {
     box-sizing: border-box;
   }
+
+  .zEWidget-launcher {
+    right: 160px !important;
+    bottom: -5px !important;
+  }
 }
 
 .dh-application {
@@ -156,6 +177,11 @@ body {
 
   .dh-logo {
     width: 100%;
+    height: 64px;
+    background-image: url(./assets/logo.png);
+    background-position: center;
+    background-size: 70%;
+    background-repeat: no-repeat;
     display: block;
     padding: 20px 35px 11px 35px;
   }

@@ -5,18 +5,18 @@
       <div class="dh-affiliate" v-if="affiliateInfo">
         <div class="dh-affiliate-row dh-affiliate-info">
           <div class="dh-affiliate-column">
-            <div>We will send affiliate payments to:</div>
+            <div>We will send affiliate payouts via Paypal to:</div>
             <div>
-              <input type="text" class="dh-input" v-model="affiliateInfo.settings.payoutEmail" @input="payoutEmailChanged = true"/>
+              <input type="text" class="dh-input" placeholder="Enter Paypal Email" v-model="affiliateInfo.settings.payoutEmail" @input="payoutEmailChanged = true"/>
               <button v-if="payoutEmailChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
             </div>
-            <div>Payments are made on the first of every month.</div>
+            <div>Payouts will be made on the first of each month.</div>
           </div>
           <div class="dh-affiliate-column">
             <div>Your referral link:</div>
             <div class="dh-affiliate-link">
               {{dh.apiUrl}}/check-out/?ref=
-              <input type="text" class="dh-input" @input="referrerCodeChanged = true" v-model="affiliateInfo.settings.referrerCode"/>
+              <input type="text" class="dh-input" @input="referralClean" v-model="affiliateInfo.settings.referrerCode"/>
               <button v-if="referrerCodeChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
               <button v-else class="dh-button dh-small dh-link-button" @click="copyRefLink">
                 <dh-link/>
@@ -112,9 +112,6 @@ export default {
         }
       })
       .then(({ data }) => {
-
-        console.log(data);
-
         this.payoutEmailChanged = false;
         this.referrerCodeChanged = false;
         this.saving = false;
@@ -135,6 +132,15 @@ export default {
       input.select();
       document.execCommand('copy')
       document.body.removeChild(input)
+    },
+
+    referralClean(event) {
+      const { settings } = this.affiliateInfo;
+      this.referrerCodeChanged = true;
+
+      settings.referrerCode = settings.referrerCode.replace(/[^A-z0-9._]*/g, '')
+      // console.log(event.target.value.replace(/[^0-9]*/g, ''));
+      // event.target.value = event.target.value.replace(/[^0-9]*/g, '')
     }
   },
 

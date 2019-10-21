@@ -52,7 +52,10 @@
             <span><strong>{{account.followingCount || 0}}</strong> following</span>
           </div>
           <div class="dh-account-connect-error" v-if="!account.isLoggedIn">
-            <span><warning /> Connect Instagram Account</span>
+            <span>
+              Click Here To Reconnect<br/>
+              <warning />Instagram Account<warning />
+            </span>
           </div>
         </div>
       </div>
@@ -266,6 +269,7 @@ export default {
     background-position: center;
     background-size: cover;
     border: 2px solid transparent;
+    flex-shrink: 0;
   }
 
   .dh-account-status {
@@ -297,6 +301,7 @@ export default {
     width: 100%;
     margin-top: 16px;
     line-height: 18px;
+    text-align: center;
   }
 
   .dh-account-add-info {
@@ -312,6 +317,7 @@ export default {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
+    text-align: center;
   }
 }
 
