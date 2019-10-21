@@ -156,7 +156,7 @@ export default {
 
             if (error) return;
 
-            window.location.href = 'https://www.launch.directheroes.com/thank-you';
+            window.location.href = 'https://' + window.location.hostname + '/register/check-email';
           });
         }).catch((error) => {
           this.globalError = 'It didn\'t work, please try again';
