@@ -97,7 +97,7 @@ export default {
               }
             };
 
-            if (element.displaySettings && ['followers', 'topReply'].includes(element.displaySettings.type)) {
+            if (element.displaySettings && ['followers', 'scarcity'].includes(element.displaySettings.type)) {
               element.elements.forEach(elementAction);
             } else {
               elementAction(utils.getOnMatchElement(element));

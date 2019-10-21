@@ -418,3 +418,107 @@ div.el-pagination {
     color: #fff;
   }
 }
+
+label.el-radio {
+  .el-radio__label {
+    color: $textColor;
+  }
+
+  .el-radio__input {
+
+    &.is-checked {
+      .el-radio__inner {
+        border-color: $elementActiveColor;
+        background: $elementActiveColor;
+      }
+
+      &+.el-radio__label {
+        color: $mainTextColor;
+      }
+    }
+  }
+
+  .el-radio__inner {
+    width: 20px;
+    height: 20px;
+
+    &::after {
+      width: 8px;
+      height: 8px;
+    }
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
+  }
+}
+
+div.el-date-editor {
+  &.el-input--prefix .el-input__inner {
+    font-weight: 700;
+  }
+  .el-input__prefix {
+    left: auto;
+    right: 5px;
+    color: $elementActiveColor;
+  }
+}
+
+div.el-picker-panel {
+  .el-date-picker__header {
+    background-color: $mainBGColor;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .el-date-table {
+    td.today span {
+      color: $elementActiveColor !important;
+    }
+
+    td.current:not(.disabled) span {
+      color:#FFF !important;
+      background-color: $elementActiveColor;
+      border-radius: 0;
+    }
+
+    td.available{
+      &:not(.current):hover span{
+        color: $elementActiveColor !important;
+      }
+
+      span {
+        color: $mainTextColor;
+      }
+    }
+
+    th {
+      color: $elementsColor;
+      border: none;
+    }
+  }
+
+  .el-button--text {
+    color: $elementActiveColor;
+  }
+
+  .el-picker-panel__footer {
+    .el-button:last-child{
+      background-color: $elementActiveColor;
+      border-color: $elementActiveColor;
+      color: #FFF;
+      font-weight: bold;
+    }
+  }
+
+  .el-input.is-active .el-input__inner, .el-input__inner:focus {
+    border-color: $elementActiveColor;
+    outline: 0;
+  }
+
+  .el-time-panel {
+    .el-time-panel__btn.confirm {
+      color: $elementActiveColor;
+    }
+  }
+}
