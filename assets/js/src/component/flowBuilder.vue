@@ -200,6 +200,14 @@ export default {
           break;
         case 'user-input':
           step.name = 'User Input'
+
+          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+            step.elements[0].elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
+
           break;
         case 'sub-input':
           step.name = 'Collect'

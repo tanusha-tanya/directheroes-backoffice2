@@ -7,9 +7,9 @@ export let userInput = {
       type: 'user-input'
     },
     elements: [
-      {
-        type: 'checkpoint'
-      },
+      // {
+      //   type: 'checkpoint'
+      // },
       {
         type: 'rule',
         condition: {
