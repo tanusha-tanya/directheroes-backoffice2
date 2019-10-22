@@ -8,7 +8,7 @@
             <div>We will send affiliate payouts via Paypal to:</div>
             <div>
               <input type="text" class="dh-input" placeholder="Enter Paypal Email" v-model="affiliateInfo.settings.payoutEmail" @input="payoutEmailChanged = true"/>
-              <button v-if="payoutEmailChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
+              <button v-if="payoutEmailChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" :disabled="!affiliateInfo.settings.payoutEmail" @click="saveAffiliateInfo">Save</button>
             </div>
             <div>Payouts will be made on the first of each month.</div>
           </div>
@@ -17,7 +17,7 @@
             <div class="dh-affiliate-link">
               {{dh.apiUrl}}/check-out/?ref=
               <input type="text" class="dh-input" @input="referralClean" v-model="affiliateInfo.settings.referrerCode"/>
-              <button v-if="referrerCodeChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" @click="saveAffiliateInfo">Save</button>
+              <button v-if="referrerCodeChanged" :class="{'dh-button':true, 'dh-small':true, 'dh-loading':saving}" :disabled="!affiliateInfo.settings.referrerCode" @click="saveAffiliateInfo">Save</button>
               <button v-else class="dh-button dh-small dh-link-button" @click="copyRefLink">
                 <dh-link/>
               </button>
@@ -138,7 +138,7 @@ export default {
       const { settings } = this.affiliateInfo;
       this.referrerCodeChanged = true;
 
-      settings.referrerCode = settings.referrerCode.replace(/[^A-z0-9._]*/g, '')
+      settings.referrerCode = settings.referrerCode.replace(/[^A-Za-z0-9._]*/g, '')
       // console.log(event.target.value.replace(/[^0-9]*/g, ''));
       // event.target.value = event.target.value.replace(/[^0-9]*/g, '')
     }
