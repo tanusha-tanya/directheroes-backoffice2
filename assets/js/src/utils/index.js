@@ -146,7 +146,7 @@ export default {
     const { campaignElementValidate } = this;
 
     return campaign.steps.find((step, stepIndex) => {
-      return step.elements.some(element => campaignElementValidate(element, step.displaySettings.isEntry))
+      return step.elements.some(element => campaignElementValidate(element, !Boolean(stepIndex)))
     });
   },
 
