@@ -41,7 +41,7 @@
             <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
             Last Message
           </div>
-          <div class="dh-thread-data-item">
+          <div class="dh-thread-data-item" v-if="thread.campaignList.length">
             <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
             Campaigns
           </div>
