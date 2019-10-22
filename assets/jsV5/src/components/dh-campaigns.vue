@@ -27,15 +27,15 @@
             <div class="dh-campaign-date"><calendar/>{{formatedCampaignDate(campaign)}}</div>
           </div>
           <div class="dh-campaign-toggle" @click.prevent="">
-            <template v-if="campaign.isEnabled">
-              <el-switch :value="campaign.isEnabled" @change="campaignToDeactivate = campaign"></el-switch>
+            <template v-if="campaign.isActive">
+              <el-switch :value="campaign.isActive" @change="campaignToDeactivate = campaign"></el-switch>
             </template>
             <template v-else>
               <el-tooltip
                 effect="light"
                 content="Please reopen campaign to reactivate this flow"
                 >
-                <el-switch :value="campaign.isEnabled"></el-switch>
+                <el-switch :value="campaign.isActive"></el-switch>
               </el-tooltip>
             </template>
           </div>
@@ -94,7 +94,7 @@
           <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
         </div>
         <template slot="footer">
-          <button class="dh-button" @click="renameCampaign">Rename</button>
+          <button class="dh-button" :disabled="!newCampaignName" @click="renameCampaign">Rename</button>
           <button class="dh-button dh-reset-button" @click="campaignToRename = null">Close</button>
         </template>
       </el-dialog>
@@ -267,6 +267,7 @@ export default {
 
     deactivateCampaign() {
       this.campaignToDeactivate.isEnabled = false;
+      this.campaignToDeactivate.isActive = false;
       this.isDeactivateCampaign = false;
     }
   }

@@ -10,8 +10,6 @@ const getOnMatchElement = (element) => {
     matchElement = element.elements.find(element => element.type === 'rule');
   }
 
-  // console.log(matchElement);
-
   if (matchElement.condition && ['postShare', 'storyMention', 'storyShare'].includes(matchElement.condition.value) &&  matchElement.onMatch && matchElement.onMatch.elements) {
     return matchElement.onMatch.elements[0];
   } else if (['linker', 'rule'].includes(type)) {
@@ -50,9 +48,16 @@ const campaignElementValidate = (element, isEntry) => {
       if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
         warning = 'Please specify at least one hashtag'
       }
+
       break;
     case 'group':
-      warning = element.elements.some(elementItem => campaignElementValidate(elementItem))
+      if (element.displaySettings.subType === 'trigger') {
+        element.elements.some(elementItem => {
+          warning = campaignElementValidate(elementItem, isEntry);
+
+          return warning;
+        })
+    }
     // case 'sendImageAction':
     //   if (!element.value) {
     //     warning = 'Image not uploaded'
@@ -141,11 +146,7 @@ export default {
     const { campaignElementValidate } = this;
 
     return campaign.steps.find((step, stepIndex) => {
-      return step.elements.some(element => {
-        // console.log(element, campaignElementValidate(element, Boolean(stepIndex)));
-
-        return campaignElementValidate(element, Boolean(stepIndex));
-      });
+      return step.elements.some(element => campaignElementValidate(element, !Boolean(stepIndex)))
     });
   },
 

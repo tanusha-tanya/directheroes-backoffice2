@@ -310,7 +310,7 @@ export default {
         campaignCard.findAnimation = true;
       }
 
-      zoomTool.moveTo(positionX, positionY)
+      zoomTool.moveTo(positionX, positionY);
     },
   },
 
@@ -360,7 +360,7 @@ export default {
         }
 
         entry.isActive = entry.isEnabled && !Boolean(this.hasWarning);
-        entry.isIncomplete = !Boolean(this.hasWarning);
+        entry.isIncomplete = Boolean(this.hasWarning);
       },
       deep: true
     },

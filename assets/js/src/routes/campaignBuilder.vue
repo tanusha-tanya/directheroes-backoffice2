@@ -109,7 +109,7 @@ export default {
     findEntryStep(warningStepId) {
       const { flowBuilder } = this.$refs;
 
-      flowBuilder.findEntryStep(warningStepId.id);
+      flowBuilder.findEntryStep(warningStepId);
     }
   },
 }
