@@ -35,6 +35,7 @@ export default {
 .dh-live-chat-view {
   .dh-view-content {
     display: flex;
+    padding: 0;
   }
 }
 </style>

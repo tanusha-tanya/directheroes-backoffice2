@@ -2,23 +2,69 @@
   <div class="dh-live-chat">
     <div class="dh-accounts">
       <div class="dh-accounts-tabs">
-        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub !== 'ignored'}">Discussions</router-link>
+        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub !== 'ignored'}">Campaigns</router-link>
         <div class="dh-divider"></div>
-        <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'ignored'}">Regular</router-link>
-        <task />
+        <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'ignored'}">Inbox</router-link>
       </div>
       <div class="dh-accounts-header">
         <div class="dh-search-input">
           <search />
           <input type="text" class="dh-input" placeholder="Type to search"  v-model="filters.username_query" @keypress.enter="getAudience">
+          <el-popover placement="bottom" trigger="click" popper-class="dh-search-filter-popover" :width="300">
+            <div class="dh-options" v-if="account">
+              <div class="dh-search-input-campaigns">
+                <div class="dh-select">
+                  <div class="dh-select-title">Favorite</div>
+                  <el-select v-model="filters.favoured" size="small" popper-class="dh-select-popper">
+                    <el-option label="All" :value="null"></el-option>
+                    <el-option label="Favorite" :value="true"></el-option>
+                    <el-option label="Not Favorite" :value="false"></el-option>
+                  </el-select>
+                </div>
+                <div class="dh-select">
+                  <div class="dh-select-title">Verified</div>
+                  <el-select v-model="filters.verified" size="small" popper-class="dh-select-popper">
+                    <el-option label="All" :value="null"></el-option>
+                    <el-option label="Verified" :value="true"></el-option>
+                    <el-option label="Not Verified" :value="false"></el-option>
+                  </el-select>
+                </div>
+                <div class="dh-option"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
+                <div class="dh-search-input-campaigns-list" v-if="isCategoryFilters">
+                  <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="filters.categories"></check-box-branch>
+                </div>
+                <div class="dh-option">Follower count</div>
+                <div class="dh-option dh-sub-option">
+                  <div><span>Greater then</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
+                </div>
+                <div class="dh-option dh-sub-option">
+                  <div><span>Less then</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
+                </div>
+                <div class="dh-option">Following count</div>
+                <div class="dh-option dh-sub-option">
+                  <div><span>Greater then</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
+                </div>
+                <div class="dh-option dh-sub-option">
+                  <div><span>Less then</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
+                </div>
+              </div>
+            </div>
+            <div class="dh-search-filter" slot="reference">
+              <search-filter />
+            </div>
+          </el-popover>
         </div>
       </div>
       <div class="dh-accounts-list">
         <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: $route.query }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
+          <div class="dh-account-favorite" @click.prevent="toggleFavorite(thread)">
+            <star-filled v-if="thread.isFavourite"/>
+            <star v-else />
+          </div>
           <div class="dh-account-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
           <div>
             <div class="dh-account-name">{{thread.contactProfile.username}}</div>
-            <div class="dh-account-last-message">Here is should be a last message Here is should be a last message Here is should be a last message Here is should be a last message Here is should be a last message</div>
+            <div class="dh-account-last-message">{{thread.lastMessage.text || thread.lastMessage.type}}</div>
           </div>
         </router-link>
       </div>
@@ -37,6 +83,7 @@
               :message="message"
               :owner="account"
               :prev-message="threadMessages[index - 1]"
+              :next-message="threadMessages[index + 1]"
               :contact-profile="contactProfile"
               ></thread-message>
             </div>
@@ -54,7 +101,7 @@
                   <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage"/>
                 </div>
               </div>
-              <div class="dh-message-button"  @click="sendMessage">
+              <div class="dh-message-button" @click="sendMessage">
                 <send />
               </div>
             </div>
@@ -70,6 +117,18 @@
               {{currentThread.contactProfile.username}}
             </div>
           </div>
+          <div class="dh-contact-profile-controls">
+            <div :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
+              <times />
+              Unsubscribe
+            </div>
+            <div class="dh-divider"></div>
+            <div class="dh-contact-profile-control dh-contact-profile-favorite" @click="toggleFavorite(currentThread)">
+              <star-filled v-if="currentThread.isFavourite"/>
+              <star v-else />
+              Favorite
+            </div>
+          </div>
         </div>
       </template>
       <loader v-else/>
@@ -81,74 +140,21 @@
         new messages
       </span>
     </div>
-    <!-- <div class="dh-account-info"></div> -->
-    <!-- <div class="container-area">
-      <div class="threades-info">
-        <div class="threads-controls">
-          <input placeholder="Search" v-model="filters.username_query" @keypress.enter="getAudience"/>
-        </div>
-        <div class="threads-list" >
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id } }" class="list-item" v-for="thread in allThreads" :key="thread.id">
-            <div class="user-row">
-              <div class="user-avatar" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
-              {{thread.contactProfile.username}}
-            </div>
-          </router-link>
-        </div>
-      </div>
-      <div class="instagram-chat" v-if="threadMessages && threadMessages.length">
-        <div class="content-panel">
-          <div class="avatar" :style="{'background-image': `${ contactProfile.profilePicUrl ? 'url(' + contactProfile.profilePicUrl + '), ' : ''}url(${ defaultAvatar })`}"></div>
-          <strong>{{ contactProfile.username }}</strong>
-        </div>
-        <div class="thread-list-wrapper scroller" ref="threadMessages" >
-          <div class="thread-list">
-            <thread-message
-              v-for="(message, index) in threadMessages"
-              :key="message.id"
-              :message="message"
-              :owner="account.login"
-              :prev-message="threadMessages[index - 1]"
-              :contact-profile="contactProfile"
-              ></thread-message>
-          </div>
-        </div>
-        <div class="thread-message-send">
-          <el-popover class="upload-message" v-if="media.length" placement="right">
-            <div class="uploaded-files">
-              <div class="file-item" v-for="(file, index) in media" :key="file.id">{{file.name}}<img src="../assets/times.svg" @click="deleteFile(index)"/></div>
-            </div>
-            <div slot="reference">Attached {{media.length}} file(s)</div>
-          </el-popover>
-          <div class="upload-file">
-            <input type="file" @change="uploadFile"/>
-          </div>
-          <textarea class="scroller" row="3" v-model="messageText" placeholder="Write a message..." @keyup.ctrl.enter="sendMessage"></textarea>
-          <button @click="sendMessage">
-            <img src="../assets/send-white.svg"/>
-            Send
-          </button>
-        </div>
-      </div>
-      <div class="instagram-chat" v-else>
-        <div class="content-panel">
-          <div class="avatar" :style="{'background-image': `url(${ defaultAvatar })`}"></div>
-          <strong>Loading user messages</strong>
-        </div>
-        <div class="loading-content">
-          <div class="pre-loader"></div>
-        </div>
-      </div>
-    </div> -->
+
   </div>
 </template>
 <script>
+  import Vue from 'vue'
   import axios from 'axios'
   import { Popover } from "element-ui"
   import defaultAvatar from '../assets/ig-avatar.jpg'
+  import times from '../assets/times.svg'
   import dhLink from '../../../jsV5/src/assets/link.svg'
   import task from '../../../jsV5/src/assets/task.svg'
   import search from '../../../jsV5/src/assets/search.svg'
+  import star from '../../../jsV5/src/assets/star.svg'
+  import searchFilter from '../../../jsV5/src/assets/filter.svg'
+  import starFilled from '../../../jsV5/src/assets/star-filled.svg'
   import send from '../../../jsV5/src/assets/send.svg'
   import ellipsis from '../../../jsV5/src/assets/ellipsis.svg'
   import nolivechat from '../../../jsV5/src/assets/nolivechat.svg'
@@ -157,6 +163,7 @@
   import moment from 'moment'
   import close from '../assets/times.svg'
   import loader from '../../../jsV5/src/components/dh-loader'
+  import checkBoxBranch from '../component/checkBoxBranch.vue'
 
   export default {
     data() {
@@ -174,13 +181,27 @@
         lastMessage: {},
         media: [],
         source: null,
+        isCategoryFilters: false,
         filters: {
-          usernameQuery: query.q || ''
+          usernameQuery: query.q || '',
+          includeLastMessage: true,
+          categories: [],
+          favoured: null,
+          verified: null,
+          followerCount: {
+            gte: null,
+            lte: null
+          },
+          followingCount: {
+            gte:null,
+            lte:null
+          }
         },
         paging: {
           page: query.p || 1,
           totalPageCount: 1
-        }
+        },
+        applyFilterTimeout: null,
       }
     },
 
@@ -194,7 +215,12 @@
       dhLink,
       send,
       close,
-      search
+      search,
+      star,
+      starFilled,
+      times,
+      searchFilter,
+      checkBoxBranch
     },
 
     computed: {
@@ -215,6 +241,62 @@
         return allThreads.find(thread => thread.id == threadId);
       },
 
+      campaigns() {
+        const { currentAccountData } = this.$store.state;
+
+        if (!currentAccountData) return [];
+
+        return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      },
+
+      subscriberMainCategory() {
+        const { subscriberCategoryList } = this.account;
+        const { campaigns } = this;
+
+        const subscriberMainCategories = []
+
+        subscriberCategoryList.forEach((item, index) => {
+          if (item.isCampaignMainCategory) {
+            const mainCategory = subscriberMainCategories.find(category => category.mdbCampaignId == item.mdbCampaignId);
+
+            if (!mainCategory) {
+              subscriberMainCategories.push(JSON.parse(JSON.stringify(item)));
+            } else if (!mainCategory.isCampaignMainCategory) {
+              subscriberMainCategories.splice(subscriberMainCategories.indexOf(mainCategory), 1, JSON.parse(JSON.stringify(item)));
+            }
+
+            return;
+          } else if (item.mdbCampaignId) {
+            let mainCategory = subscriberMainCategories.find(category => category.mdbCampaignId == item.mdbCampaignId);
+
+            if (!mainCategory) {
+              const parentCampaign = campaigns.find(campaign => campaign.id == item.mdbCampaignId);
+
+              mainCategory = { name: parentCampaign.name, mdbCampaignId: parentCampaign.id }
+
+              subscriberMainCategories.push(mainCategory);
+            }
+
+            mainCategory.list = mainCategory.list || [];
+
+            mainCategory.list.push(item)
+          } else {
+            let mainCategory = subscriberMainCategories.find(category => !category.mdbCampaignId);
+
+            if (!mainCategory) {
+              mainCategory = { name: 'Manual' }
+
+              subscriberMainCategories.push(mainCategory);
+            }
+
+            mainCategory.list = mainCategory.list || [];
+
+            mainCategory.list.push(item);
+          }
+        })
+
+        return subscriberMainCategories
+      },
     },
 
     methods: {
@@ -338,7 +420,7 @@
       getAudience(beforeQuery) {
         const { query } = this.$route;
         const subscribed = this.subscribed(beforeQuery)
-        const { account, status, filters, paging } = this;
+        const { account, status, filters , paging } = this;
 
         if (!account) return;
 
@@ -347,7 +429,7 @@
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
           method: 'post',
-          data: { ...filters, subscribed, paging },
+          data: { ...filters, categories: filters.categories.map(category => category.id), subscribed, paging },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
@@ -375,6 +457,25 @@
         }
 
         next()
+      },
+
+      toggleFavorite(thread) {
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/${ thread.id }/update`,
+          method: 'post',
+          data: { favourite : !thread.isFavourite }
+        }).then(({ data })=> {
+          Vue.set(thread, 'isFavourite', !thread.isFavourite)
+        })
+      },
+
+      unsubscribe(thread) {
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ this.accountId }/subscriber/${ thread.subscriberId }/unsubscribe`,
+          method: 'patch',
+        }).then(({ data })=> {
+          thread.isSubscribed = false
+        })
       }
     },
 
@@ -406,6 +507,32 @@
         this.getAudience();
         this.getUpdates();
       },
+
+      isCategoryFilters(newValue) {
+        const { categories } = this.filters;
+
+        if (newValue) return;
+
+        categories.splice(0, categories.length);
+      },
+
+      filters: {
+        handler(filters) {
+          const { followerCount, followingCount } = filters;
+          const { getAudience } = this;
+
+          clearTimeout(this.applyFilterTimeout);
+
+          followerCount.gte = followerCount.gte || null;
+          followerCount.lte = followerCount.lte || null;
+
+          followingCount.gte = followingCount.gte || null;
+          followingCount.lte = followingCount.lte || null;
+
+          this.applyFilterTimeout = setTimeout(getAudience, 2500)
+        },
+        deep:true
+      }
     }
   }
 </script>
@@ -430,7 +557,15 @@
     border-radius: 4px;
     display: flex;
     flex-grow: 1;
-    max-height: calc(100vh - 173px);
+    max-height: calc(100vh - 127px);
+
+    .dh-search-input {
+      width: 100%;
+
+      input {
+        flex-grow: 1;
+      }
+    }
 
     .dh-accounts {
       border-right: 1px solid $secondBorderColor;
@@ -465,8 +600,26 @@
       text-decoration: none;
       color: inherit;
       height: 88px;
-      padding: 20px;
+      padding: 20px 20px 20px 10px;
       border-bottom: 1px solid #F2F4F6;
+
+      .dh-account-favorite {
+        margin-right: 10px;
+        color: $elementsColor;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      &.router-link-exact-active {
+        border-left: 2px solid $elementActiveColor;
+
+        .dh-account-favorite {
+          margin-left: -2px;
+        }
+      }
     }
 
     .dh-account-userpic {
@@ -587,6 +740,8 @@
       width: 262px;
       flex-shrink: 0;
       border-left: 1px solid $secondBorderColor;
+      display: flex;
+      flex-direction: column;
     }
 
     .dh-contact-profile-userpic {
@@ -601,6 +756,7 @@
     .dh-contact-profile-names {
       padding: 22px;
       border-bottom: 1px solid $secondBorderColor;
+      flex-grow: 1;
     }
 
     .dh-contact-profile-fullname {
@@ -610,6 +766,28 @@
 
     .dh-contact-profile-name {
       color: $textColor;
+    }
+
+    .dh-contact-profile-controls {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      color: $elementsColor;
+    }
+
+    .dh-contact-profile-control {
+      display: flex;
+      height: 58px;
+      justify-content: center;
+      width: 50%;
+      align-items: center;
+      cursor: pointer;
+
+      svg {
+        margin-right: 5px;
+        width: 18px;
+        height: 18px;
+      }
     }
 
     .dh-accounts-tabs {
@@ -622,11 +800,66 @@
 
     .dh-accounts-tab {
       padding: 10px;
+      width: 50%;
+      text-align: center;
       cursor: pointer;
 
       &.dh-accounts-tab-active {
         color: $elementActiveColor;
       }
+    }
+  }
+
+  .dh-search-filter-popover {
+    .dh-option {
+      padding: 4px 13px;
+      .el-checkbox {
+        margin-right: 10px;
+
+        .el-checkbox__label {
+          font-size: 12px;
+          line-height: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .dh-sub-option {
+      padding-left: 20px;
+      font-size: 10px;
+
+      span {
+        width: 100px;
+        flex-shrink: 0;
+        display: inline-block;
+      }
+
+      .dh-input {
+        padding: 4px;
+        width: 50%;
+      }
+    }
+
+    .dh-select {
+      padding: 0 13px;
+      // .dh-select-title {
+      //   color: #606266;
+      // }
+
+      .dh-select-title {
+        width: 30%;
+      }
+
+      .el-select {
+        width: 50%;
+      }
+    }
+
+    .dh-search-input-campaigns-list {
+      max-height: 150px;
+      overflow-y: auto;
+      overflow-x: none;
+      margin: 0 20px;
     }
   }
 </style>
