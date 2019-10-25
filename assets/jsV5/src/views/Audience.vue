@@ -41,7 +41,7 @@
             <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
             Last Message
           </div>
-          <div class="dh-thread-data-item">
+          <div class="dh-thread-data-item" v-if="thread.campaignList.length">
             <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
             Campaigns
           </div>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <loader v-else/>
-      <div class="dh-audience-thread-controls" v-if="threads && paging && paging.totalPageCount > 1">
+      <div class="dh-audience-thread-controls" v-if="threads">
         <div class="dh-audience-thread-info">
           Total subscribers: {{ paging.totalResultCount }}
         </div>
@@ -62,6 +62,7 @@
           :current-page="paging.page"
           :page-count="paging.totalPageCount"
           @current-change="changePage"
+          v-if="threads && paging && paging.totalPageCount > 1"
         ></el-pagination>
       </div>
     </div>
