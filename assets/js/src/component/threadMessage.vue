@@ -1,7 +1,8 @@
 <template>
-  <div :class="{'thread-list-item': true,  'account-message': isMe, 'last-group-message': isLastGroupMessage}">
+  <div :class="{'thread-list-item': true,  'account-message': isMe, 'last-group-message': isLastGroupMessage , 'not-sended': !message.id }">
     <div class="body">
-      <div class="avatar" :style="{'background-image': `url(${avatarUrl})`}"></div>
+      <div class="avatar" :style="{'background-image': `url(${avatarUrl})`}" v-if="message.id"></div>
+      <div class="avatar empty" v-else></div>
       <div :class="{
         wrapper: true,
         'bot-message': message.botCampaign,
@@ -28,6 +29,9 @@
     </div>
     <div class="date" v-if="isShowDate">
       {{date(message.sentAt)}}
+    </div>
+    <div class="error" v-if="message.error" @click="$emit('retry-send', message)">
+      Error send, Click here to retry.
     </div>
   </div>
 </template>
@@ -72,7 +76,7 @@ export default {
     isLastGroupMessage() {
       const { message, nextMessage } = this;
 
-      return !nextMessage || nextMessage.senderUsername !== message.senderUsername
+      return !nextMessage || !nextMessage.id || nextMessage.senderUsername !== message.senderUsername
     }
   },
 
@@ -124,8 +128,11 @@ export default {
     background-repeat: no-repeat;
     flex-shrink: 0;
     border-radius: 50%;
-    opacity: 0;
     background-color: rgba(232, 236, 239, 0.5);
+
+    &:not(.empty) {
+       opacity: 0;
+    }
   }
 
   .body {
@@ -214,6 +221,11 @@ export default {
 
     .date {
       text-align: right;
+    }
+
+    .error {
+      text-align: right;
+      cursor: pointer;
     }
   }
 

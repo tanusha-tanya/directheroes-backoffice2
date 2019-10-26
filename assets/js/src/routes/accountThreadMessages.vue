@@ -85,6 +85,7 @@
               :prev-message="threadMessages[index - 1]"
               :next-message="threadMessages[index + 1]"
               :contact-profile="contactProfile"
+              @retry-send="retrySend"
               ></thread-message>
             </div>
             <div class="dh-message-send">
@@ -101,7 +102,7 @@
                   <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage"/>
                 </div>
               </div>
-              <div class="dh-message-button" @click="sendMessage">
+              <div class="dh-message-button" @click="sendMessage()">
                 <send />
               </div>
             </div>
@@ -177,7 +178,7 @@
         messageText: '',
         status: query.st || 'audience',
         defaultAvatar,
-        requestInterval: null,
+        requestTimeout: null,
         lastMessage: {},
         media: [],
         source: null,
@@ -297,6 +298,12 @@
 
         return subscriberMainCategories
       },
+
+      reverseThreadMessages() {
+        const { threadMessages } = this;
+
+        return threadMessages.slice(0).reverse()
+      }
     },
 
     methods: {
@@ -349,26 +356,83 @@
         event.preventDefault();
       },
 
-      sendMessage() {
+      sendMessage(retryMessage) {
         const { threadId } = this.$route.params;
-        const { threadMessages } = this.$refs;
-        const { uuidv4 } = this;
+        const { uuidv4, threadMessages, account } = this;
+        const textUUID = uuidv4();
+        const messageData = retryMessage || {
+          text: this.messageText,
+          clientContext: textUUID,
+          medias: this.media
+        }
 
-        if (!this.messageText && !this.media.length) return;
+        if (!this.messageText && !this.media.length && !retryMessage) return;
+
+        if (!retryMessage) {
+          this.media.forEach(media => {
+            threadMessages.push({
+              clientContext: media.clientContext,
+              senderUsername: account.login,
+              previewUrl: media.previewUrl,
+              media
+            })
+          })
+
+          if (this.messageText) {
+            threadMessages.push({
+              clientContext: textUUID,
+              senderUsername: account.login,
+              text: this.messageText
+            })
+          }
+        }
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/live/${ threadId }/send`,
           method: 'post',
-          data: {
-            text: this.messageText,
-            clientContext: uuidv4(),
-            medias: this.media
-          }
+          data: messageData
         }).then(({ data }) => {
+          this.media.splice(0, this.media.length)
+        }).catch(error => {
+          const { reverseThreadMessages } = this;
+          const clientContexts = retryMessage  ? (retryMessage.text ? [retryMessage.clientContext] : []) : [textUUID];
+
+          if (retryMessage && retryMessage.medias) {
+            clientContexts.push(retryMessage.medias[0].clientContext)
+          } else {
+            this.media.forEach(media => clientContexts.push(media.clientContext));
+          }
+
+          clientContexts.forEach(context => {
+            const message = reverseThreadMessages.find(message => message.clientContext === context);
+
+            if (!message) return;
+
+            Vue.set(message, 'error',  true)
+          })
+
           this.media.splice(0, this.media.length)
         })
 
         this.messageText = '';
+      },
+
+      retrySend(message) {
+        const { sendMessage } = this;
+        if (message.text) {
+          sendMessage({
+            text: message.text,
+            clientContext: message.clientContext,
+          })
+        } else if (message.previewUrl) {
+          sendMessage({
+            text: '',
+            medias: [message.media],
+            clientContext: message.clientContext,
+          })
+        }
+
+        message.error = false;
       },
 
       getUpdates(threadId) {
@@ -376,7 +440,6 @@
 
         this.source = CancelToken.source();
         threadId = threadId || this.$route.params.threadId
-
 
         if (!threadId) return;
 
@@ -393,19 +456,29 @@
             this.contactProfile = body.thread.contactProfile;
           }
 
-          if (!body.messageList.length) return;
-
-          clearInterval(this.requestInterval);
+          if (!body.messageList.length) {
+            this.requestTimeout= setTimeout(this.getUpdates, 2000);
+            return
+          };
 
           if (!this.threadMessages) {
             this.threadMessages = [];
           }
 
-          const onlyNewMessages = body.messageList.filter(newMessage => {
-            return !this.threadMessages.find(message => (newMessage.id && (newMessage.id === message.id))
+          let onlyNewMessages = body.messageList.filter(newMessage => {
+            return !this.threadMessages.find((message, index) => {
+              if (!message.id && message.clientContext === newMessage.clientContext) {
+                this.threadMessages.splice(index, 1, newMessage);
+
+                return false;
+              }
+
+              return (newMessage.id && (newMessage.id === message.id))
               || (newMessage.botMessageId && (newMessage.botMessageId === message.botMessageId))
-              || newMessage.text === message.text)
+              || newMessage.text === message.text
+            })
           })
+
 
           if (!onlyNewMessages.length) return
 
@@ -441,7 +514,6 @@
       routeUpdate(to, from, next) {
         const { query } = to;
 
-        clearInterval(this.requestInterval)
         this.source.cancel('Cancel on turn on other user');
 
         this.lastMessage = {};
@@ -479,25 +551,26 @@
       }
     },
 
-    created() {
-      this.getAudience();
-      this.getUpdates();
-    },
+    // created() {
+    //   this.getAudience();
+    //   this.getUpdates();
+    // },
 
     beforeDestroy() {
-      clearInterval(this.requestInterval)
+      clearTimeout(this.requestTimeout)
     },
 
     watch: {
       threadMessages(value) {
         this.$nextTick(() => {
+          const { reverseThreadMessages } = this;
           const { threadMessages } = this.$refs;
 
           if (!value) return;
 
-          this.lastMessage = this.threadMessages[this.threadMessages.length - 1] || {};
+          this.lastMessage = reverseThreadMessages.find(message => message.igItemId) || {};
 
-          this.requestInterval= setInterval(this.getUpdates, 2000);
+          this.requestTimeout= setTimeout(this.getUpdates, 2000);
 
           threadMessages.scrollTop = threadMessages.scrollHeight;
         });
@@ -561,6 +634,10 @@
 
     .dh-search-input {
       width: 100%;
+
+      svg {
+        flex-shrink: 0;
+      }
 
       input {
         flex-grow: 1;
