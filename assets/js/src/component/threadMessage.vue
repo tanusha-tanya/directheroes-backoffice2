@@ -70,7 +70,7 @@ export default {
 
       if (!nextMessage) return true;
 
-      return nextMessage.senderUsername !== message.senderUsername || (prevMessage && moment(message.sentAt * 1000).diff(prevMessage.sentAt * 1000, 'minutes') > 15);
+      return nextMessage.senderUsername !== message.senderUsername || ( moment(nextMessage.sentAt * 1000).diff(message.sentAt * 1000, 'minutes') > 15);
     },
 
     isLastGroupMessage() {

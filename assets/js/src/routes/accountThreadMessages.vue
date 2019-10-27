@@ -469,12 +469,10 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
-              console.log(message.id, message.clientContext, newMessage.clientContext);
-
               if (!message.id && message.clientContext === newMessage.clientContext) {
                 this.threadMessages.splice(index, 1, newMessage);
 
-                return false;
+                return true;
               }
 
               return (newMessage.id && (newMessage.id === message.id))
