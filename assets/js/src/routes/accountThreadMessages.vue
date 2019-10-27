@@ -302,6 +302,8 @@
       reverseThreadMessages() {
         const { threadMessages } = this;
 
+        if (!threadMessages) return;
+
         return threadMessages.slice(0).reverse()
       }
     },
@@ -467,6 +469,8 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
+              console.log(message.id, message.clientContext, newMessage.clientContext);
+
               if (!message.id && message.clientContext === newMessage.clientContext) {
                 this.threadMessages.splice(index, 1, newMessage);
 
@@ -502,7 +506,15 @@
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
           method: 'post',
-          data: { ...filters, categories: filters.categories.map(category => category.id), subscribed, paging },
+          // data: { ...filters, subscribed, paging },
+          data: {
+            ...filters,
+            categories: filters.categories.map(category => category.id),
+            followerCount: (filters.followerCount.lte || filters.followerCount.gte) && filters.followerCount,
+            followingCount: (filters.followingCount.lte || filters.followingCount.gte) && filters.followingCount,
+            subscribed,
+            paging
+          },
         })
         .then(({ data }) => {
           const { threadList } = data.response.body
@@ -551,10 +563,10 @@
       }
     },
 
-    // created() {
-    //   this.getAudience();
-    //   this.getUpdates();
-    // },
+    created() {
+      this.getAudience();
+      this.getUpdates();
+    },
 
     beforeDestroy() {
       clearTimeout(this.requestTimeout)
