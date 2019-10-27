@@ -562,6 +562,8 @@
     },
 
     created() {
+      if (this.threadMessages && this.$store.state.currentAccount) return;
+
       this.getAudience();
       this.getUpdates();
     },
@@ -573,12 +575,22 @@
     watch: {
       threadMessages(value) {
         this.$nextTick(() => {
-          const { reverseThreadMessages } = this;
+          const { threadId } = this.$route.params
+          const { reverseThreadMessages,  } = this;
           const { threadMessages } = this.$refs;
 
           if (!value) return;
 
           this.lastMessage = reverseThreadMessages.find(message => message.igItemId) || {};
+
+
+          if (this.allThreads) {
+            const thread = this.allThreads.find(thread => thread.id == threadId);
+
+            if (thread) {
+              thread.lastMessage = reverseThreadMessages[0];
+            }
+          }
 
           this.requestTimeout= setTimeout(this.getUpdates, 2000);
 
@@ -587,6 +599,8 @@
       },
 
       '$store.state.currentAccount'() {
+        if (this.threadMessages) return;
+
         this.getAudience();
         this.getUpdates();
       },
