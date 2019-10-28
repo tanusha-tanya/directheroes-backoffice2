@@ -67,7 +67,7 @@
       </dh-confirm-dialog>
     </div>
     <dh-footer></dh-footer>
-    <dh-connection-wwizzard v-model="isAddAccount" :account-auth="accountToAuth"></dh-connection-wwizzard>
+    <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount"></dh-connection-wizzard>
     <!-- <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog> -->
     <el-dialog
       :visible.sync="isExtraAccount"
@@ -174,6 +174,15 @@ export default {
     },
 
     setAuthAccount(account) {
+      const { accounts } = this;
+      const authAccount = accounts.find(accountItem => accountItem.id === account.id);
+
+      if (!authAccount) {
+        accounts.push(accounts)
+      } else {
+        accounts.splice(accounts.indexOf(authAccount), 1, account)
+      }
+
       this.accountToAuth = account;
     },
 
