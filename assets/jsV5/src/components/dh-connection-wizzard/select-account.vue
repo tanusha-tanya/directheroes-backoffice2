@@ -3,7 +3,6 @@
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="text" v-model="login" placeholder="Enter Instagram login"/>
-        <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding" @click="findAccount">Find</button>
       </div>
       <div class="dh-select-account-founded" v-if="foundAccount" @click="selectAccount()">
         <div class="dh-select-account-userpic" :style="{ 'background-image': `url(${ foundAccount.profilePicUrl })` }">
@@ -25,6 +24,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding" @click="findAccount">Find</button>
     </div>
   </div>
 </template>
@@ -57,6 +57,7 @@ export default {
       }).then(({ data }) => {
         const { request, response } = data;
         const { account } = response.body;
+
         this.finding = false;
 
         if (!request.success) {
@@ -66,9 +67,16 @@ export default {
 
         this.foundAccount = account;
       }).catch(error => {
-        const { statusMessage } = error.response.data.request;
+        const { request } = error.response.data;
 
-        this.error = statusMessage;
+        if (request) {
+          const { statusMessage } = request;
+
+          this.error = statusMessage;
+        } else {
+          this.error = "Server connection problem, try again";
+        }
+
         this.finding = false;
       })
     },

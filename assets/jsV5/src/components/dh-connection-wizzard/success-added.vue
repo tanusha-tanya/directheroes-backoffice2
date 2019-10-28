@@ -2,7 +2,7 @@
   <div class="dh-wizzard-step dh-success-added">
     <div class="dh-wizzard-step-body">
       <div class="dh-wizzard-success" >
-        Account successfuly added
+        Account successfuly logged
       </div>
     </div>
     <div class="el-dialog__footer">

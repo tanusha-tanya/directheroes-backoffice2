@@ -290,6 +290,11 @@ button.dh-button {
     &:hover {
       color: $elementActiveColor;
     }
+
+    &.dh-loading:before {
+      border-color: $elementActiveColor;
+      border-bottom-color: transparent;
+    }
   }
 
   &.dh-danger-button {

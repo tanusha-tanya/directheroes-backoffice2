@@ -4,13 +4,21 @@
     width="554px"
     append-to-body
     :title="title"
+    :destroy-on-close="true"
     class="dh-wizzard-dialog"
   >
-    <component :is="wizzardState" @set-account="setAccount" :account="account" @close-wizzard="isShow = false"></component>
+    <component
+      :is="wizzardState"
+      :account="account"
+      @set-account="setAccount"
+      @close-wizzard="isShow = false"
+      @re-login="reloginAccount"
+      ></component>
   </el-dialog>
 </template>
 
 <script>
+import axios from 'axios'
 import selectAccount from './dh-connection-wizzard/select-account'
 import enterPassword from './dh-connection-wizzard/enter-password'
 import successAdded from './dh-connection-wizzard/success-added'
@@ -66,7 +74,7 @@ export default {
       get() {
         const { accountAuth, accountData } = this;
 
-        return accountAuth || accountData;
+        return JSON.parse(JSON.stringify(accountAuth || accountData));
       },
 
       set(value) {
@@ -78,6 +86,26 @@ export default {
   methods: {
     setAccount(account) {
       this.account = account;
+    },
+
+    reloginAccount(callback) {
+      const { account } = this;
+      const request = axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/relogin`,
+        method: 'post',
+        data: {
+          accountId: account.id
+        }
+      })
+
+      request.then(({ data }) => {
+        const { request, response } = data;
+        const { account } = response.body;
+
+        this.$emit('set-account', account);
+      })
+
+      callback(request)
     }
   }
 }

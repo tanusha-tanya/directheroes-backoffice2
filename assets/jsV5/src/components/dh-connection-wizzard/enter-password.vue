@@ -2,14 +2,14 @@
   <div class="dh-wizzard-step dh-enter-password">
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
-        <input class="dh-input" type="text" v-model="password" placeholder="Enter password"/>
-        <button :class="{'dh-button': true, 'dh-loading': connecting}" :disabled="!password || connecting" @click="setPassword">Connect</button>
+        <input class="dh-input" type="password" v-model="password" placeholder="Enter password"/>
       </div>
       <div class="dh-wizzard-error" v-if="error">
         {{error}}
       </div>
     </div>
     <div class="el-dialog__footer">
+      <button :class="{'dh-button': true, 'dh-loading': connecting}" :disabled="!password || connecting" @click="setPassword">Connect</button>
     </div>
   </div>
 </template>
@@ -57,9 +57,16 @@ export default {
 
         this.$emit('set-account', account);
       }).catch(error => {
-        const { statusMessage } = error.response.data.request;
+        const { request } = error.response.data;
 
-        this.error = statusMessage;
+        if (request) {
+          const { statusMessage } = request;
+
+          this.error = statusMessage;
+        } else {
+          this.error = "Server connection problem, try again";
+        }
+
         this.connecting = false;
       })
     }

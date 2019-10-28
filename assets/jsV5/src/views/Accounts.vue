@@ -178,7 +178,7 @@ export default {
       const authAccount = accounts.find(accountItem => accountItem.id === account.id);
 
       if (!authAccount) {
-        accounts.push(accounts)
+        accounts.push(account)
       } else {
         accounts.splice(accounts.indexOf(authAccount), 1, account)
       }
