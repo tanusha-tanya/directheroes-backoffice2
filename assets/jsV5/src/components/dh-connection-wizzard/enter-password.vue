@@ -2,7 +2,7 @@
   <div class="dh-wizzard-step dh-enter-password">
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
-        <input class="dh-input" type="password" v-model="password" placeholder="Enter password"/>
+        <input class="dh-input" type="password" @input="error = null" v-model="password" placeholder="Enter password"/>
       </div>
       <div class="dh-wizzard-error" v-if="error">
         {{error}}

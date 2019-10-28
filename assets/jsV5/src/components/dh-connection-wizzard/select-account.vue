@@ -2,9 +2,9 @@
   <div class="dh-wizzard-step dh-select-account">
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
-        <input class="dh-input" type="text" v-model="login" placeholder="Enter Instagram login"/>
+        <input class="dh-input" type="text" v-model="login" @input="error = null" placeholder="Enter Instagram login" :disabled="finding" @keypress.enter="findAccount"/>
       </div>
-      <div class="dh-select-account-founded" v-if="foundAccount" @click="selectAccount()">
+      <div :class="{'dh-select-account-founded': true, 'dh-select-account-claiming': claiming}" v-if="foundAccount" @click="selectAccount()">
         <div class="dh-select-account-userpic" :style="{ 'background-image': `url(${ foundAccount.profilePicUrl })` }">
         </div>
         <div class="dh-select-account-info">
@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
-      <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding" @click="findAccount">Find</button>
+      <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding || claiming" @click="findAccount">Find</button>
     </div>
   </div>
 </template>
@@ -38,6 +38,7 @@ export default {
       finding: false,
       foundAccount: null,
       error: null,
+      claiming: false,
     }
   },
 
@@ -84,6 +85,8 @@ export default {
     selectAccount() {
       const { username } = this.foundAccount;
 
+      this.claiming = true;
+
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/claim_ownership`,
         params: {
@@ -92,6 +95,8 @@ export default {
         }
       }).then(({ data }) => {
         const { account_info } = data.response.body;
+
+        this.claiming = false;
 
         this.$emit('set-account', account_info);
       })
@@ -132,6 +137,37 @@ export default {
 
     strong {
       color: #303133;
+    }
+
+    &.dh-select-account-claiming {
+      pointer-events: none;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        display: block;
+        background-color: rgba(#fff, .8);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 4px;
+      }
+
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: calc(50% - 23px);
+        left: calc(50% - 23px);
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        border: 5px solid $elementActiveColor;
+        border-bottom-color: transparent;
+        animation: rotation  .8s infinite linear;
+      }
     }
   }
 
