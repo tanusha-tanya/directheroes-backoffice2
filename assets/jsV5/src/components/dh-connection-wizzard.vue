@@ -53,15 +53,16 @@ export default {
         return 'selectAccount'
       } else {
         switch (account.connectStep) {
-          case 'account.password_input':
+          case 'account.verify_password':
             this.title = 'Enter password'
             return 'enterPassword'
             break;
-          case 'account.connect_success':
+          case 'account.success':
             this.title = 'Success'
             return 'successAdded'
             break;
-          case 'account.challenge.request_code':
+          case 'challenge.code_sent':
+          case 'account.challenge_request_code':
             this.title = 'Challenge'
             return 'challenge'
           case 'account.checkpoint_required':
