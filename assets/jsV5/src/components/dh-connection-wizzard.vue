@@ -4,6 +4,7 @@
     width="554px"
     append-to-body
     :title="title"
+    :close-on-click-modal="false"
     :destroy-on-close="true"
     class="dh-wizzard-dialog"
   >

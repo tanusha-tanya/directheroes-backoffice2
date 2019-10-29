@@ -1,7 +1,8 @@
 <template>
   <div class="dh-wizzard-step dh-checkpoint">
     <div class="dh-wizzard-step-body">
-      Open instagram, click “it was me”
+      Open instagram, click “This was me”
+      <img src="../../assets/it_was_me.png">
     </div>
     <div class="el-dialog__footer">
       <button :class="{'dh-button': true, 'dh-reset-button': true, 'dh-loading': reseting}" :disabled="sending || reseting"  @click="resetSession">I didn’t have that prompt</button>
@@ -111,6 +112,11 @@ export default {
 
 <style lang="scss">
 .dh-checkpoint {
+  img {
+    width: 200px;
+    display: block;
+    margin: 20px auto 0;
+  }
   .el-dialog__footer {
     justify-content: space-between !important;
   }
