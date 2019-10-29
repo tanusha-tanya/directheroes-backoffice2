@@ -27,11 +27,11 @@ export default {
     }
   },
 
-  props: ['account'],
+  props: ['account', 'protocol'],
 
   methods: {
     setPassword() {
-      const { account, password } = this;
+      const { account, password, protocol } = this;
       let publicKey = null;
 
       Object.keys(sodium.base64_variants).some(variant => {
@@ -51,7 +51,7 @@ export default {
       account.password = cryptedPassword;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/password/verify`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/password/verify`,
         method: 'post',
         data: {
           account

@@ -42,16 +42,18 @@ export default {
     }
   },
 
+  props: ['protocol'],
+
   methods: {
     findAccount() {
-      const { login } = this;
+      const { login, protocol } = this;
 
       this.error = null;
       this.foundAccount = null;
       this.finding = true;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/username/check_availability`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/username/check_availability`,
         params: {
           username: login
         }
@@ -83,12 +85,13 @@ export default {
     },
 
     selectAccount() {
+      const { protocol } = this;
       const { username } = this.foundAccount;
 
       this.claiming = true;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/claim_ownership`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/claim_ownership`,
         params: {
           username,
           isClaimed: true

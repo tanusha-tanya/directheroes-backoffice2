@@ -10,6 +10,7 @@
     <component
       :is="wizzardState"
       :account="account"
+      :protocol="protocol"
       @set-account="setAccount"
       @close-wizzard="isShow = false"
       @re-login="reloginAccount"
@@ -23,6 +24,7 @@ import selectAccount from './dh-connection-wizzard/select-account'
 import enterPassword from './dh-connection-wizzard/enter-password'
 import successAdded from './dh-connection-wizzard/success-added'
 import challenge from './dh-connection-wizzard/challenge'
+import checkpoint from './dh-connection-wizzard/checkpoint'
 
 export default {
   data() {
@@ -38,7 +40,8 @@ export default {
     selectAccount,
     enterPassword,
     successAdded,
-    challenge
+    challenge,
+    checkpoint
   },
 
   computed: {
@@ -48,15 +51,32 @@ export default {
       if (!account) {
         this.title = 'Select account'
         return 'selectAccount'
-      } else if (account.igChallenge) {
-        this.title = 'Challenge'
-        return 'challenge'
-      } else if (!account.isLoggedIn) {
-        this.title = 'Enter password'
-        return 'enterPassword'
       } else {
-        this.title = 'Success'
-        return 'successAdded'
+        switch (account.connectStep) {
+          case 'account.password_input':
+            this.title = 'Enter password'
+            return 'enterPassword'
+            break;
+          case 'account.connect_success':
+            this.title = 'Success'
+            return 'successAdded'
+            break;
+          case 'account.challenge.request_code':
+            this.title = 'Challenge'
+            return 'challenge'
+          case 'account.checkpoint_required':
+            this.title = 'Checkpoint'
+            return 'checkpoint'
+        }
+      // if (account.igChallenge) {
+      //   this.title = 'Challenge'
+      //   return 'challenge'
+      // } else if (!account.isLoggedIn) {
+      //   this.title = 'Enter password'
+      //   return 'enterPassword'
+      // } else {
+      //   this.title = 'Success'
+      //   return 'successAdded'
       }
     },
 
@@ -80,6 +100,12 @@ export default {
       set(value) {
         this.$emit('set-auth-account', value)
       }
+    },
+
+    protocol() {
+      const { account } = this;
+
+      return (account && account.currentApiConnect) || 'android'
     }
   },
 
@@ -89,9 +115,9 @@ export default {
     },
 
     reloginAccount(callback) {
-      const { account } = this;
+      const { account, protocol } = this;
       const request = axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/relogin`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/relogin`,
         method: 'post',
         data: {
           accountId: account.id

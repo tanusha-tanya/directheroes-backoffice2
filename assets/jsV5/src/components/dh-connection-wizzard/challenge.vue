@@ -56,7 +56,7 @@ export default {
     }
   },
 
-  props: ['account'],
+  props: ['account', 'protocol'],
 
   computed: {
     challengeCodeMessage() {
@@ -70,12 +70,12 @@ export default {
 
   methods: {
     sendCode() {
-      const { account } = this;
+      const { account, protocol } = this;
 
       this.sending = true;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/challenge/code/request`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/challenge/code/request`,
         method: 'post',
         data: {
           account
@@ -102,7 +102,7 @@ export default {
     },
 
     verifyCode() {
-       const { account, codeToVerify } = this;
+       const { account, codeToVerify, protocol } = this;
 
       this.sending = true;
       this.error = null;
@@ -110,7 +110,7 @@ export default {
       account.igChallenge.answer = codeToVerify;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/challenge/code/verify`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/challenge/code/verify`,
         method: 'post',
         data: {
           account
