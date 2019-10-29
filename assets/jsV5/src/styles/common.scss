@@ -457,3 +457,30 @@ label.el-radio {
     }
   }
 }
+
+label.el-checkbox {
+  .el-checkbox__inner {
+    background-color: $borderColor;
+    border-color: $borderColor;
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
+  }
+
+  .el-checkbox__input {
+    &.is-checked {
+      .el-checkbox__inner {
+        background-color: $elementActiveColor;
+        border-color: $elementActiveColor;
+      }
+
+      &+.el-checkbox__label {
+        color: $mainTextColor;
+      }
+    }
+    &.is-focus .el-checkbox__inner {
+      border-color: $elementActiveColor;
+    }
+  }
+}
