@@ -61,7 +61,7 @@ export default {
             this.title = 'Success'
             return 'successAdded'
             break;
-          case 'challenge.code_sent':
+          case 'account.challenge.code_sent':
           case 'account.challenge_request_code':
             this.title = 'Challenge'
             return 'challenge'
