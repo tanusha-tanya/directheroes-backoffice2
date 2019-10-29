@@ -23,6 +23,7 @@ import axios from 'axios'
 import selectAccount from './dh-connection-wizzard/select-account'
 import enterPassword from './dh-connection-wizzard/enter-password'
 import successAdded from './dh-connection-wizzard/success-added'
+import twoFactor from './dh-connection-wizzard/two-factor'
 import challenge from './dh-connection-wizzard/challenge'
 import checkpoint from './dh-connection-wizzard/checkpoint'
 
@@ -41,7 +42,8 @@ export default {
     enterPassword,
     successAdded,
     challenge,
-    checkpoint
+    checkpoint,
+    twoFactor
   },
 
   computed: {
@@ -62,22 +64,16 @@ export default {
             return 'successAdded'
             break;
           case 'account.challenge.code_sent':
-          case 'account.challenge_request_code':
+          case 'account.challenge.request_code':
             this.title = 'Challenge'
             return 'challenge'
           case 'account.checkpoint_required':
             this.title = 'Checkpoint'
             return 'checkpoint'
+          case 'account.two_factor.code_sent':
+            this.title = 'Two factor authorization'
+            return 'twoFactor'
         }
-      // if (account.igChallenge) {
-      //   this.title = 'Challenge'
-      //   return 'challenge'
-      // } else if (!account.isLoggedIn) {
-      //   this.title = 'Enter password'
-      //   return 'enterPassword'
-      // } else {
-      //   this.title = 'Success'
-      //   return 'successAdded'
       }
     },
 
