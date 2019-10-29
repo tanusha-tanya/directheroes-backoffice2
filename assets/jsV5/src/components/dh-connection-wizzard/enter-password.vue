@@ -16,6 +16,7 @@
 
 <script>
 import axios from 'axios'
+import sodium from 'libsodium-wrappers';
 
 export default {
   data() {
@@ -31,11 +32,23 @@ export default {
   methods: {
     setPassword() {
       const { account, password } = this;
+      let publicKey = null;
+
+      Object.keys(sodium.base64_variants).some(variant => {
+        try {
+          publicKey = sodium.from_base64(this.dhAccount.publicKey, sodium.base64_variants[variant]);
+          return true;
+        } catch (error) {
+          return false
+        }
+      })
+
+      const cryptedPassword = sodium.to_base64(sodium.crypto_box_seal(password, publicKey), 1);
 
       this.error = null;
       this.connecting = true;
 
-      account.password = password;
+      account.password = cryptedPassword;
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/password/verify`,
