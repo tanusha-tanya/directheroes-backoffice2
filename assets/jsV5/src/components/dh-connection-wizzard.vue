@@ -125,7 +125,7 @@ export default {
         const { request, response } = data;
         const { account } = response.body;
 
-        this.$emit('set-account', account);
+        this.account = account;
       })
 
       callback(request)

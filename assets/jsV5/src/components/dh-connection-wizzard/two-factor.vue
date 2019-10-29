@@ -58,7 +58,7 @@ export default {
 
   methods: {
     verifyCode() {
-       const { account, twoFACode, twoFAMethod, protocol } = this;
+      const { account, twoFACode, twoFAMethod, protocol } = this;
 
       this.sending = true;
       this.error = null;

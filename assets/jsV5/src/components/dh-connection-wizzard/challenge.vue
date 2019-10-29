@@ -47,9 +47,11 @@ import axios from 'axios'
 
 export default {
   data() {
+    const { account } = this;
+
     return {
       sending: false,
-      codeSended:false,
+      codeSended: account.connectStep === "account.challenge.code_sent",
       codeToVerify: '',
       error: null,
       noCodeInfo: false
