@@ -290,6 +290,11 @@ button.dh-button {
     &:hover {
       color: $elementActiveColor;
     }
+
+    &.dh-loading:before {
+      border-color: $elementActiveColor;
+      border-bottom-color: transparent;
+    }
   }
 
   &.dh-danger-button {
@@ -416,6 +421,40 @@ div.el-pagination {
 
   .el-icon-error {
     color: #fff;
+  }
+}
+
+label.el-radio {
+  .el-radio__label {
+    color: $textColor;
+  }
+
+  .el-radio__input {
+
+    &.is-checked {
+      .el-radio__inner {
+        border-color: $elementActiveColor;
+        background: $elementActiveColor;
+      }
+
+      &+.el-radio__label {
+        color: $mainTextColor;
+      }
+    }
+  }
+
+  .el-radio__inner {
+    width: 20px;
+    height: 20px;
+
+    &::after {
+      width: 8px;
+      height: 8px;
+    }
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
   }
 }
 

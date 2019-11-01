@@ -445,6 +445,8 @@
 
         if (!threadId) return;
 
+        clearTimeout(this.requestTimeout)
+
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/message/list/${ threadId }`,
           params: {
@@ -469,9 +471,8 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
-              if (!message.id && message.clientContext === newMessage.clientContext) {
+              if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
                 this.threadMessages.splice(index, 1, newMessage);
-
                 return true;
               }
 
@@ -482,7 +483,10 @@
           })
 
 
-          if (!onlyNewMessages.length) return
+          if (!onlyNewMessages.length) {
+            this.requestTimeout= setTimeout(this.getUpdates, 2000);
+            return
+          };
 
           this.threadMessages.push(...onlyNewMessages);
         })
