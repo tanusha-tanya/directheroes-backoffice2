@@ -290,6 +290,11 @@ button.dh-button {
     &:hover {
       color: $elementActiveColor;
     }
+
+    &.dh-loading:before {
+      border-color: $elementActiveColor;
+      border-bottom-color: transparent;
+    }
   }
 
   &.dh-danger-button {
@@ -519,6 +524,32 @@ div.el-picker-panel {
   .el-time-panel {
     .el-time-panel__btn.confirm {
       color: $elementActiveColor;
+    }
+  }
+}
+label.el-checkbox {
+  .el-checkbox__inner {
+    background-color: $borderColor;
+    border-color: $borderColor;
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
+  }
+
+  .el-checkbox__input {
+    &.is-checked {
+      .el-checkbox__inner {
+        background-color: $elementActiveColor;
+        border-color: $elementActiveColor;
+      }
+
+      &+.el-checkbox__label {
+        color: $mainTextColor;
+      }
+    }
+    &.is-focus .el-checkbox__inner {
+      border-color: $elementActiveColor;
     }
   }
 }

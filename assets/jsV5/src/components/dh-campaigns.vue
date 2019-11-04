@@ -79,7 +79,7 @@
           <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
         </div>
         <template slot="footer">
-          <button class="dh-button" @click="createCampaign">Create</button>
+          <button class="dh-button" @click="createCampaign" :disabled="!newCampaignName">Create</button>
           <button class="dh-button dh-reset-button" @click="isAddCampaign = false">Close</button>
         </template>
       </el-dialog>

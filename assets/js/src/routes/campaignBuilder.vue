@@ -98,6 +98,12 @@ export default {
         elements: []
       }
 
+      if (element.type === 'group') {
+        element.elements.forEach(element => {
+          element.id = (new ObjectId).toString()
+        })
+      }
+
       step.elements.push( {
         id: (new ObjectId).toString(),
         ...element

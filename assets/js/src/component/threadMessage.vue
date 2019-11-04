@@ -1,10 +1,8 @@
 <template>
-  <div :class="{'thread-list-item': true,  'account-message': isMe}">
-    <div class="date" v-if="isShowDate">
-      {{date(message.sentAt)}}
-    </div>
+  <div :class="{'thread-list-item': true,  'account-message': isMe, 'last-group-message': isLastGroupMessage , 'not-sended': !message.id }">
     <div class="body">
-      <div class="avatar" :style="{'background-image': `url(${avatarUrl})`}"></div>
+      <div class="avatar" :style="{'background-image': `url(${avatarUrl})`}" v-if="message.id"></div>
+      <div class="avatar empty" v-else></div>
       <div :class="{
         wrapper: true,
         'bot-message': message.botCampaign,
@@ -26,10 +24,14 @@
           <div class="picture" :style="{'background-image': `url(${ message.previewUrl })`}"></div>
         </a>
       </div>
-
-      <div :class="{indicator: true, sent: message.isSeen}" v-if="isMe" :title="!message.sentAt && message.toBeSentAt && `Sending at ${ date(message.toBeSentAt)}`"
-        >
+      <div :class="{indicator: true, sent: message.isSeen}" v-if="isMe" :title="!message.sentAt && message.toBeSentAt && `Sending at ${ date(message.toBeSentAt)}`">
       </div>
+    </div>
+    <div class="date" v-if="isShowDate">
+      {{date(message.sentAt)}}
+    </div>
+    <div class="error" v-if="message.error" @click="$emit('retry-send', message)">
+      Error send, Click here to retry.
     </div>
   </div>
 </template>
@@ -40,13 +42,13 @@ import moment from 'moment'
 // import image from '../assets/svg/image-placeholder.svg'
 
 export default {
-  data() {
-    return {
-      image,
-    }
-  },
+  // data() {
+  //   return {
+  //     image,
+  //   }
+  // },
 
-  props:['message', 'prevMessage', 'contactProfile', 'owner'],
+  props:['message', 'prevMessage', 'nextMessage', 'contactProfile', 'owner'],
 
   computed: {
     isMe() {
@@ -62,26 +64,26 @@ export default {
     },
 
     isShowDate() {
-      const { message, prevMessage, isMe } = this;
+      const { message, nextMessage, isMe, prevMessage } = this;
 
       if (!message.sentAt) return;
 
-      if (!prevMessage || !prevMessage.sentAt) return true;
+      if (!nextMessage) return true;
 
-      return prevMessage.senderUsername !== message.senderUsername || moment(message.sentAt).diff(prevMessage.sentAt, 'minutes') > 15;
+      return nextMessage.senderUsername !== message.senderUsername || ( moment(nextMessage.sentAt * 1000).diff(message.sentAt * 1000, 'minutes') > 15);
     },
 
+    isLastGroupMessage() {
+      const { message, nextMessage } = this;
+
+      return !nextMessage || !nextMessage.id || nextMessage.senderUsername !== message.senderUsername
+    }
   },
 
   methods: {
     date(date) {
       return (new Date(date * 1000)).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'})
     }
-  },
-
-  created() {
-    console.log(this.message.previewUrl);
-
   }
 }
 </script>
@@ -91,11 +93,17 @@ export default {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  margin-bottom: 3px;
 
   .date {
     align-self: center;
-    color: #A7A7A7;
-    margin: 10px 0 15px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #98A9BC;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+    padding: 0 44px;
   }
 
   .type {
@@ -121,6 +129,10 @@ export default {
     flex-shrink: 0;
     border-radius: 50%;
     background-color: rgba(232, 236, 239, 0.5);
+
+    &:not(.empty) {
+       opacity: 0;
+    }
   }
 
   .body {
@@ -173,20 +185,9 @@ export default {
 
   .wrapper {
     padding: 9px 19px 4px;
-    border-radius: 18px 18px 18px 0;
+    border-radius: 18px;
     background-color: $secondBorderColor;
     // margin-right: 69px;
-    margin-bottom: 6px;
-
-    &.bot-message {
-      background-color: #742BF9 !important;
-      color: #fff
-    }
-
-    &.live-message {
-      background-color: #2674f5 !important;
-      color: #fff
-    }
   }
 
   .bot-campaign {
@@ -202,11 +203,46 @@ export default {
     .wrapper {
       background-color: $secondBorderColor;
       border-color: $secondBorderColor;
-      border-radius: 18px 18px 0 18px;
+
+      &.bot-message {
+        background-color: #742BF9 !important;
+        color: #fff
+      }
+
+      &.live-message {
+        background-color: #2674f5 !important;
+        color: #fff
+      }
     }
 
     .avatar {
       order: 1;
+    }
+
+    .date {
+      text-align: right;
+    }
+
+    .error {
+      text-align: right;
+      cursor: pointer;
+    }
+  }
+
+  &.last-group-message {
+    .wrapper {
+      border-bottom-left-radius: 0;
+    }
+
+     &.account-message {
+       .wrapper {
+          border-bottom-left-radius: 18px;
+          border-bottom-right-radius: 0;
+        }
+     }
+
+    .avatar {
+      opacity: 1;
     }
   }
 }

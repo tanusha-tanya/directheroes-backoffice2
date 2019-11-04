@@ -53,7 +53,7 @@ const campaignElementValidate = (element, isEntry) => {
     case 'group':
       if (element.displaySettings.subType === 'trigger') {
         element.elements.some(elementItem => {
-          warning = campaignElementValidate(elementItem);
+          warning = campaignElementValidate(elementItem, isEntry);
 
           return warning;
         })
@@ -146,10 +146,7 @@ export default {
     const { campaignElementValidate } = this;
 
     return campaign.steps.find((step, stepIndex) => {
-      return step.elements.some(element => {
-        // console.log(element, campaignElementValidate(element, Boolean(stepIndex)));
-        return campaignElementValidate(element, Boolean(stepIndex));
-      });
+      return step.elements.some(element => campaignElementValidate(element, !Boolean(stepIndex)))
     });
   },
 
