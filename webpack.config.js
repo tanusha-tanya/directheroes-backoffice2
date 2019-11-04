@@ -1,4 +1,3 @@
-const Encore = require('@symfony/webpack-encore');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const path = require('path')
