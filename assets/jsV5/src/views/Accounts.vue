@@ -67,7 +67,8 @@
       </dh-confirm-dialog>
     </div>
     <dh-footer></dh-footer>
-    <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog>
+    <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount"></dh-connection-wizzard>
+    <!-- <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog> -->
     <el-dialog
       :visible.sync="isExtraAccount"
       custom-class="extra-account"
@@ -87,6 +88,7 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhConnectionWizzard from '../components/dh-connection-wizzard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
 import addAccountDialog from '../../../js/src/component/addAccountDialog'
 import status from '../assets/plus.svg'
@@ -114,7 +116,8 @@ export default {
     warning,
     ellipsis,
     trash,
-    extraAccount
+    extraAccount,
+    dhConnectionWizzard
   },
 
   computed: {
@@ -171,6 +174,15 @@ export default {
     },
 
     setAuthAccount(account) {
+      const { accounts } = this;
+      const authAccount = accounts.find(accountItem => accountItem.id === account.id);
+
+      if (!authAccount) {
+        accounts.push(account)
+      } else {
+        accounts.splice(accounts.indexOf(authAccount), 1, account)
+      }
+
       this.accountToAuth = account;
     },
 
