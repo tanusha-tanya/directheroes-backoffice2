@@ -92,11 +92,12 @@ const prodConfig = {
     // }
     plugins: [
       new ManifestPlugin({
-        seed: {
-          settings: {
-            publicPath: `${process.env.PUBLIC_SCHEME}://${process.env.VIRTUAL_HOST}`,
-          },
-        },
+        basePath: 'build/',
+        // seed: {
+        //   settings: {
+        //     publicPath: `${process.env.PUBLIC_SCHEME}://${process.env.VIRTUAL_HOST}`,
+        //   },
+        // },
       }),
     ]
   }
