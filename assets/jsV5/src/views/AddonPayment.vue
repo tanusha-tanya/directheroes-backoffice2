@@ -12,7 +12,7 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 
-import addonPayment from '../../../js/src/routes/addonPayment'
+import addonPayment from '../../oldJS/routes/addonPayment'
 
 export default {
   components: {

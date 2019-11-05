@@ -90,12 +90,12 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhConnectionWizzard from '../components/dh-connection-wizzard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
-import addAccountDialog from '../../../js/src/component/addAccountDialog'
+import addAccountDialog from '../../oldJS/component/addAccountDialog'
 import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
-import extraAccount from '../../../js/src/assets/svg/extra-account.svg'
+import extraAccount from '../../oldJS/assets/svg/extra-account.svg'
 
 export default {
   data() {

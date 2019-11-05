@@ -71,8 +71,8 @@ import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
 import loader from '../components/dh-loader'
 
-import ObjectId from '../../../js/src/utils/ObjectId'
-import triangle from '../../../js/src/assets/triangle.svg'
+import ObjectId from '../../oldJS/utils/ObjectId'
+import triangle from '../../oldJS/assets/triangle.svg'
 
 export default {
   data() {

@@ -9,23 +9,22 @@ const commonTarget = 'https://www.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta.directheroes.com/app_dev.php';
 
 const commonConfig = {
-  pages: {
-    app: {
-      entry: './assets/jsV5/src/main.js',
-      template: './assets/jsV5/public/index.html',
-      filename: 'index.html'
-    },
-    register: {
-      entry: './assets/jsV5/src/registration/registration.js',
-      template: './assets/jsV5/public/register.html',
-      filename: 'register.html'
-    }
-  },
+  // pages: {
+  //   app: {
+  //     entry: './src/main.js',
+  //     template: './public/index.html',
+  //     filename: 'index.html'
+  //   },
+  //   // register: {
+  //   //   entry: './assets/jsV5/src/registration/registration.js',
+  //   //   template: './assets/jsV5/public/register.html',
+  //   //   filename: 'register.html'
+  //   // }
+  // },
   css: {
-    extract: false,
     loaderOptions: {
       scss: {
-        prependData: `@import "./assets/jsV5/src/styles/variables.scss";`
+        prependData: `@import "./src/styles/variables.scss";`
       }
     }
   },
@@ -47,12 +46,12 @@ const commonConfig = {
 
     svgRule
       .use('vue-svg-loader')
-        .loader('vue-svg-loader')
+      .loader('vue-svg-loader')
   }
 }
 const devConfig = {
   devServer: {
-    contentBase: path.resolve(__dirname, './assets/jsV5'),
+    clientLogLevel: 'info',
     historyApiFallback: {
       rewrites: [
         { from: /^\/$/, to: './public/index.html' },
@@ -100,6 +99,10 @@ const prodConfig = {
         // },
       }),
     ]
+  },
+
+  css: {
+    extract: false,
   }
 }
 

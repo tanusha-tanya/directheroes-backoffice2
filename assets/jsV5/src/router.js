@@ -20,23 +20,6 @@ import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 
-// import broadcastList from '../../js/src/routes/broadcastList.vue'
-// import broadcastBuilder from '../../js/src/routes/broadcastBuilder.vue'
-
-// import campaignBuilder from '../../js/src/routes/campaignBuilder.vue'
-// import accountThread from '../../js/src/routes/accountThread.vue'
-
-// import accountThreadMessages from '../../js/src/routes/accountThreadMessages.vue'
-// import accountThreadInfo from '../../js/src/routes/accountThreadInfo.vue'
-// import accountDH from '../../js/src/routes/accountDH.vue'
-// import accountDHProfile from '../../js/src/routes/accountDHProfile.vue'
-// import accountDHPayment from '../../js/src/routes/accountDHPayment.vue'
-// import accountDHSubscription from '../../js/src/routes/accountDHSubscription.vue'
-// import videoHelp from '../../js/src/routes/videoHelp.vue'
-// import bookHelp from '../../js/src/routes/bookHelp.vue'
-// import addonBuy from '../../js/src/routes/addonBuy.vue'
-// import addonPayment from '../../js/src/routes/addonPayment.vue'
-
 Vue.use(Router)
 
 export default new Router({

@@ -117,9 +117,9 @@ import task from '../assets/task.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
 
-import ObjectId from '../../../js/src/utils/ObjectId'
-import utils from '../../../js/src/utils'
-import triangle from '../../../js/src/assets/triangle.svg'
+import ObjectId from '../../oldJS/utils/ObjectId'
+import utils from '../../oldJS/utils'
+import triangle from '../../oldJS/assets/triangle.svg'
 
 export default {
   data() {

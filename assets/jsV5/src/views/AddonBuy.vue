@@ -12,7 +12,7 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 
-import addonBuy from '../../../js/src/routes/addonBuy'
+import addonBuy from '../../oldJS/routes/addonBuy'
 
 export default {
   components: {

@@ -32,9 +32,9 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import gear from '../assets/gear.svg'
 
-import OldBroadcastBuilder from '../../../js/src/routes/broadcastBuilder'
-import utils from '../../../js/src/utils'
-import triangle from '../../../js/src/assets/triangle.svg'
+import OldBroadcastBuilder from '../../oldJS/routes/broadcastBuilder'
+import utils from '../../oldJS/utils'
+import triangle from '../../oldJS/assets/triangle.svg'
 
 export default {
   beforeRouteEnter(to, from, next) {
