@@ -6,7 +6,7 @@
         <div class="dh-navigation-button-ico">
           <dashboard/>
         </div>
-        Dashboard
+        Dassssshboard
       </router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
