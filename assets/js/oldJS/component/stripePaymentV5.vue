@@ -64,7 +64,7 @@
 <script>
 import axios from "axios"
 import Vue from 'vue'
-import loader from '../../../jsV5/src/components/dh-loader'
+import loader from '../../src/components/dh-loader'
 
 export default {
   data() {

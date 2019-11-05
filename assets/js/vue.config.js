@@ -97,7 +97,6 @@ const prodConfig = {
         name: "my-compile-plugin",
         listeners: {
             buildStart: () => {
-              console.log('Start');
               if (fs.existsSync('../../public/build.old')) {
                 fs.rmdirSync('../../public/build.old')
               }
@@ -109,7 +108,6 @@ const prodConfig = {
               if (fs.existsSync('../../public/build.tmp')) {
                 fs.renameSync('../../public/build.tmp', '../../public/build');
               }
-              console.log('End');
             },
         },
     })
