@@ -1,26 +1,28 @@
 const webpack = require('webpack');
+const fs = require('fs');
 const merge = require('webpack-merge');
 const path = require('path')
 const isDev = process.env.NODE_ENV === 'development';
 const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackCompilerPlugin } = require('webpack-compiler-plugin');
 const commonTarget = 'https://www.directheroes.com/app_dev.php';
 // const commonTarget = 'https://staging.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta2.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta.directheroes.com/app_dev.php';
 
 const commonConfig = {
-  // pages: {
-  //   app: {
-  //     entry: './src/main.js',
-  //     template: './public/index.html',
-  //     filename: 'index.html'
-  //   },
-  //   // register: {
-  //   //   entry: './assets/jsV5/src/registration/registration.js',
-  //   //   template: './assets/jsV5/public/register.html',
-  //   //   filename: 'register.html'
-  //   // }
-  // },
+  pages: {
+    app: {
+      entry: './src/main.js',
+      template: './public/index.html',
+      filename: 'index.html'
+    },
+    register: {
+      entry: './src/registration/registration.js',
+      template: './public/register.html',
+      filename: 'register.html'
+    }
+  },
   css: {
     loaderOptions: {
       scss: {
@@ -81,23 +83,36 @@ const devConfig = {
   }
 }
 const prodConfig = {
-  outputDir: 'public/build.tmp/',
+  outputDir: '../../public/build.tmp/',
 
   publicPath: process.env.PUBLIC_SCHEME + '://' + process.env.VIRTUAL_HOST + '/build/',
 
   configureWebpack: {
-    // output: {
-    //   filename: '[name].[contenthash:8].js'
-    // }
     plugins: [
       new ManifestPlugin({
         basePath: 'build/',
-        // seed: {
-        //   settings: {
-        //     publicPath: `${process.env.PUBLIC_SCHEME}://${process.env.VIRTUAL_HOST}`,
-        //   },
-        // },
       }),
+
+      new  WebpackCompilerPlugin({
+        name: "my-compile-plugin",
+        listeners: {
+            buildStart: () => {
+              console.log('Start');
+              if (fs.existsSync('../../public/build.old')) {
+                fs.rmdirSync('../../public/build.old')
+              }
+            },
+            buildEnd: () => {
+              if (fs.existsSync('../../public/build')) {
+                fs.renameSync('../../public/build', '../../public/build.old');
+              }
+              if (fs.existsSync('../../public/build.tmp')) {
+                fs.renameSync('../../public/build.tmp', '../../public/build');
+              }
+              console.log('End');
+            },
+        },
+    })
     ]
   },
 

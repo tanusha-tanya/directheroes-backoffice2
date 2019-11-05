@@ -18,9 +18,7 @@
     "vue": "^2.6.10",
     "vue-draggable": "^1.0.6",
     "vue-router": "^3.1.3",
-    "vuex": "^3.0.1",
-    "webpack-manifest-plugin": "^2.2.0",
-    "webpack-merge": "^4.2.2"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.0.0",
@@ -30,7 +28,10 @@
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "vue-svg-loader": "^0.12.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "webpack-compiler-plugin": "^1.0.0",
+    "webpack-manifest-plugin": "^2.2.0",
+    "webpack-merge": "^4.2.2"
   },
   "postcss": {
     "plugins": {

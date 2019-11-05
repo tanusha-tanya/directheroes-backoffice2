@@ -18,13 +18,12 @@ cd "${PROJECT_DIR}"
 
 case "${ACTION}" in
   "production")
-    mkdir -p "${PROJECT_DIR}/public/build"
-    rm -rf "${PROJECT_DIR}/public/build.old"
+    # mkdir -p "${PROJECT_DIR}/public/build"
+    # rm -rf "${PROJECT_DIR}/public/build.old"
     docker-compose exec php yarn install
     docker-compose exec php yarn build --verbose
-    mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
-    rm -rf "${PROJECT_DIR}/public/build"
-    mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
+    # mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
+    # mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
     cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
     ;;
   "dev")

@@ -11,7 +11,7 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
-import oldLiveChat from '../oldJS/routes/accountThreadMessages'
+import oldLiveChat from '../../oldJS/routes/accountThreadMessages'
 
 export default {
   beforeRouteUpdate(to, from, next) {

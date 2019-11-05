@@ -66,11 +66,11 @@ import dhQuestionMark from '../components/dh-question-mark'
 import dhDeactivateDialog from '../components/dh-deactivate-dialog'
 import info from '../assets/info.svg'
 
-import ObjectId from '../oldJS/utils/ObjectId'
-import OldCampaignBuilder from '../oldJS/routes/campaignBuilder'
-import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../oldJS/elements/settings'
-import utils from '../oldJS/utils'
-import triangle from '../oldJS/assets/triangle.svg'
+import ObjectId from '../../oldJS/utils/ObjectId'
+import OldCampaignBuilder from '../../oldJS/routes/campaignBuilder'
+import { allowReEnterElement, messageRequestOnlyElement, nonSubscribersOnlyElement } from '../../oldJS/elements/settings'
+import utils from '../../oldJS/utils'
+import triangle from '../../oldJS/assets/triangle.svg'
 
 export default {
   beforeRouteEnter(to, from, next) {

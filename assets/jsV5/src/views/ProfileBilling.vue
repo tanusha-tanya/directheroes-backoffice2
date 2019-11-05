@@ -76,7 +76,7 @@
 import axios from 'axios';
 import loader from '../components/dh-loader'
 
-import stripePayment from '../oldJS/component/stripePaymentV5'
+import stripePayment from '../../oldJS/component/stripePaymentV5'
 
 export default {
   data() {
