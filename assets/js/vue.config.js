@@ -11,6 +11,8 @@ const commonTarget = 'https://www.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta2.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta.directheroes.com/app_dev.php';
 
+require('dotenv').config({ path: '../../env' })
+
 const commonConfig = {
   pages: {
     app: {
