@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const merge = require('webpack-merge');
 const path = require('path')
 const isDev = process.env.NODE_ENV === 'development';
@@ -98,7 +99,7 @@ const prodConfig = {
         listeners: {
             buildStart: () => {
               if (fs.existsSync('../../public/build.old')) {
-                fs.rmdirSync('../../public/build.old')
+                fsExtra.removeSync('../../public/build.old')
               }
             },
             buildEnd: () => {

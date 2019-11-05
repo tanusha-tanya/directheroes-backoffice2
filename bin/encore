@@ -20,8 +20,8 @@ case "${ACTION}" in
   "production")
     # mkdir -p "${PROJECT_DIR}/public/build"
     # rm -rf "${PROJECT_DIR}/public/build.old"
-    docker-compose exec php (cd asstes/js && yarn install)
-    docker-compose exec php (cd asstes/js && yarn build)
+    docker-compose exec php bash -c 'cd assets/js && yarn install'
+    docker-compose exec php bash -c 'cd assets/js && yarn build'
     # mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
     # mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
     cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
