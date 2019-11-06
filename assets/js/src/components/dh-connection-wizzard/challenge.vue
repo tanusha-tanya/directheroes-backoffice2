@@ -159,6 +159,11 @@ export default {
           }
 
           this.sending = false;
+          this.noCodeInfo = false;
+
+          if (account.connectStep !== "account.challenge.code_sent") {
+            this.codeSended = false;
+          }
         }).catch(error => {
           const { request } = error.response.data;
 
