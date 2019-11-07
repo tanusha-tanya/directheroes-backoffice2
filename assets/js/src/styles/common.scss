@@ -3,115 +3,314 @@
   100% { transform:rotate(360deg); }
 }
 
-@keyframes blink{
-  0%{opacity: 0;}
-  50%{opacity: 1;}
-  100%{opacity: 0;}
+@keyframes scale-element {
+  from {transform: scale(1)}
+  50% {transform: scale(1.5)}
+  to {transform: scale(1)}
 }
 
-.account-card {
-  padding: 17px;
-  width: 177px;
-  height: 222px;
+.dh-disabled {
+  opacity: .3;
+  pointer-events: none;
+}
+
+.dh-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+
+  .dh-view-content {
+    flex-grow: 1;
+    padding: 23px 28px;
+  }
+}
+
+.dh-new-item-button {
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  cursor: pointer;
+
+  svg {
+    margin-right: 6px;
+    width: 19px;
+    height: 19px;
+  }
+
+  &:hover {
+    color: $elementActiveColor;
+  }
+}
+
+.dh-list {
+  margin-top: 22px;
+}
+
+.dh-campaigns-controls {
+  display: flex;
+  justify-content: space-between;
+  color: $elementsColor;
+}
+
+.dh-list-item {
+  height: 80px;
+  width: 100%;
+  background-color: $sectionBG;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  color: $textColor;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
+  cursor: pointer;
+
+  &:not(:last-child) {
+    margin-bottom: 6px;
+  }
+}
+
+.dh-campaign-name {
+  font-size: 18px;
+  line-height: 22px;
+  color: $mainTextColor;
+}
+
+.dh-spacer {
+  flex-grow: 1;
+}
+
+.dh-info {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   text-align: center;
-  text-decoration: none;
-  transition: .5s border-width, .5s border-color;
+  color: $textColor;
+  font-size: 18px;
+  line-height: 22px;
 
-  .account-photo {
-    width: 98px;
-    height: 98px;
-    border-radius: 50px;
-    background-size: contain;
-    background-position: center;
-    margin: 0 auto 15px;
+  svg {
+    margin-bottom: 36px;
+  }
+}
+
+.dh-settings-form {
+  padding: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dh-settings-title {
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 32px;
+}
+
+.dh-settings-form-row {
+  display: flex;
+  margin-bottom: 22px;
+
+  & > * {
+    flex-grow: 1
+  }
+}
+
+.dh-label {
+  &:not(:last-child) {
+    margin-right: 26px;
   }
 
-  .account-login {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: bold;
-    font-size: 15px;
-    line-height: 18px;
-    color: #3C3C3C;
+  span {
+    display: block;
+    margin-bottom: 13px;
   }
 
-  .account-follow-info {
+  .dh-input {
+    width: 100%;
+  }
+}
+
+div.el-popper.el-popover[x-placement^=bottom] {
+  margin-top: 17px;
+  padding: 0;
+  box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
+  border-radius: 4px;
+
+  div.popper__arrow {
+    border-width: 15px;
+    top: -30px;
+
+    &:after {
+      border-bottom-color: #fff;
+      top: -14px;
+      border-width: 15px;
+      margin-left: -15px;
+    }
+  }
+}
+
+div.el-dialog__wrapper {
+  background-color: rgba($mainTextColor, .6);
+
+  div.el-dialog {
+    box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
+    border-radius: 4px;
+  }
+
+  .el-dialog__body {
+    background-color: $mainBGColor;
+    padding: 28px 31px 22px 24px;
+    word-break: break-word;
+  }
+
+  .el-dialog__header {
+    padding: 20px 24px;
+  }
+
+  .el-dialog__footer {
+    padding: 25px 26px 24px;
     display: flex;
-    font-size: 13px;
-    margin-top: 15px;
-    color: #828282;
-    justify-content: space-around;
+    justify-content: space-between;
+  }
+
+  .el-dialog__headerbtn .el-dialog__close {
+    background-image: url(~@/assets/close.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 19px;
+    height: 19px;
+
+    &:before {
+      content: none
+    }
   }
 }
 
-.account-website {
+.dh-options {
+  padding: 7px;
+}
+
+.dh-option {
+  padding: 13px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: inherit;
   text-decoration: none;
-  margin-top: 5px;
-  font-weight: bold;
-  color: #5334DC;
-  word-break: break-all;
-}
 
-.container-area {
-  background: #FFF;
-  border: 1px solid #DBDBDB;
-  box-shadow: 0px 2px 4px rgba(215, 215, 215, 0.5);
-  border-radius: 10px;
-}
-
-.w800 {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.w968 {
-  max-width: 968px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.content-title {
-  color: #A9A9A9;
-  font-size: 24px;
-  line-height: 29px;
-}
-
-.list-item {
-  padding: 10px;
-  display: flex;
-  font-size: 13px;
-  color: #828282;
-  align-items: center;
-  border-bottom: 1px solid #DBDBDB;
-
-  &:not(.header):hover {
-    background-color: rgba(#6A12CB, .04)
+  svg {
+    width: 100%;
+    max-width: 13px;
+    flex-shrink: 0;
+    color: $elementsColor;
+    margin-right: 6px;
   }
 }
 
-.user-row {
-  display: flex;
-  align-items: center;
+div.el-switch.is-checked .el-switch__core {
+  border-color: $elementActiveColor;
+  background-color: $elementActiveColor;
 }
 
-.user-avatar {
-  width: 26px;
-  height: 26px;
-  background-size: contain;
-  background-position: center;
-  border-radius: 26px;
-  flex-shrink: 0;
-  margin-right: 10px;
+.el-slider__bar {
+  height: 6px;
+  background-color: #9E4CF9;
 }
 
-button {
+div.el-slider__button {
+  border-color: #9E4CF9;
+}
+
+.dh-notification {
+  color: $successColor;
+}
+
+.dh-notification-error {
+  color: $failColor;
+}
+
+strong {
+  font-weight: 500;
+}
+
+input.dh-input {
+  background-color: $sectionBG;
+  border: 1px solid $borderColor;
+  border-radius: 4px;
+  padding: 14px 19px 16px 17px;
+  line-height: 17px;
+  font-weight: 500;
+  color: $inputTextColor;
+  outline: none;
+
   &:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+    background-color: $disabledBG;
+    color: $textColor;
   }
 
-  &.loading {
+  &::placeholder {
+    color: $textColor;
+  }
+}
+
+button.dh-button {
+  color: $sectionBG;
+  background-color: $elementActiveColor;
+  height: 44px;
+  font-weight: bold;
+  min-width: 206px;
+  padding: 15px 15px 14px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid $elementActiveColor;
+
+  &:hover {
+    background-color: #9248e5;
+  }
+
+  &.dh-reset-button {
+    border: 1px solid $secondBorderColor;
+    background-color: $secondBorderColor;
+    color: $elementsColor;
+
+    &:hover {
+      color: $elementActiveColor;
+    }
+
+    &.dh-loading:before {
+      border-color: $elementActiveColor;
+      border-bottom-color: transparent;
+    }
+  }
+
+  &.dh-danger-button {
+    border-color: $failColor;
+    background-color: $failColor;
+
+    &:hover {
+      background-color: #e8498c;
+    }
+  }
+
+  &:disabled {
+    opacity: .3;
+  }
+
+  &.dh-loading {
     color: transparent;
     position: relative;
 
@@ -123,72 +322,165 @@ button {
       left: calc(50% - 10px);
       width: 15px;
       height: 15px;
-      border-radius: 100%;
+      border-radius: 15px;
       border: 3px solid #FFF;
       border-bottom-color: transparent;
       animation: rotation  .8s infinite linear;
     }
   }
-}
 
-.account-dh-info {
-  width: 230px;
-  border-right: 1px solid #EEEEEE;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
+  &.dh-small {
+    min-width: auto;
+    height: auto;
+    padding: 5px 15px;
 
-  .account-dh-photo {
-    width: 98px;
-    height: 98px;
-    border-radius: 50px;
-    background-position: center;
-    background-size: contain;
-    margin-bottom: 10px;
-  }
-
-  .account-dh-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  .account-dh-joined {
-    font-size: 10px;
-    flex-grow: 1;
-  }
-
-  button {
-    border-radius: 30px;
-    background-color: transparent;
-    font-weight: normal;
-    color: #828282;
-    border: 1px solid #DBDBDB;
+    &.dh-loading {
+      &:before {
+        width: 5px;
+        height: 5px;
+        border-radius: 5px;
+        top: calc(50% - 6px);
+        left: calc(50% - 6px);
+      }
+    }
   }
 }
 
-.form-row {
-  display: flex;
-  margin: 0 -10px 10px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0 10px;
-
-    & > div:not(.error) {
-      border: 1px solid #dddddd;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 15px;
-      min-height: 37px;
+div.el-pagination {
+  &.is-background {
+    .btn-next, .btn-prev, .el-pager li:not(.active) {
+      background-color: transparent;
     }
 
-    input {
-      padding: 9px;
+    .el-pager li.active {
+      background-color: #9E4CF9 !important;
+    }
+  }
+}
+
+.dh-search-input {
+  display: flex;
+  align-items: center;
+  color: $textColor;
+
+  .dh-input {
+    border: none;
+    padding: 5px 5px 5px 13px;
+    background-color: transparent;
+  }
+}
+
+.dh-select {
+  display: flex;
+  align-items: center;
+
+  .dh-select-title {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-right: 12px;
+    font-size: 12px;
+    color: $textColor;
+  }
+
+  .el-select {
+    .el-input__inner {
+      border: none;
+      background-color: transparent;
+      font: 500 12px Rubik;
+      color: $mainTextColor;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.dh-select-popper {
+  .el-select-dropdown__list {
+    padding: 0
+  }
+
+  .el-select-dropdown__item {
+    font-size: 12px;
+    line-height: 34px;
+    font-weight: 500;
+    text-transform: uppercase;
+
+    &.selected {
+      color: $elementActiveColor;
+    }
+  }
+}
+
+.dh-global-error {
+  background-color: $failColor;
+
+  .el-notification__content {
+    color: #fff !important;
+    font-weight: bold;
+  }
+
+  .el-icon-error {
+    color: #fff;
+  }
+}
+
+label.el-radio {
+  .el-radio__label {
+    color: $textColor;
+  }
+
+  .el-radio__input {
+
+    &.is-checked {
+      .el-radio__inner {
+        border-color: $elementActiveColor;
+        background: $elementActiveColor;
+      }
+
+      &+.el-radio__label {
+        color: $mainTextColor;
+      }
+    }
+  }
+
+  .el-radio__inner {
+    width: 20px;
+    height: 20px;
+
+    &::after {
+      width: 8px;
+      height: 8px;
+    }
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
+  }
+}
+
+label.el-checkbox {
+  .el-checkbox__inner {
+    background-color: $borderColor;
+    border-color: $borderColor;
+
+    &:hover {
+      border-color: $elementActiveColor;
+    }
+  }
+
+  .el-checkbox__input {
+    &.is-checked {
+      .el-checkbox__inner {
+        background-color: $elementActiveColor;
+        border-color: $elementActiveColor;
+      }
+
+      &+.el-checkbox__label {
+        color: $mainTextColor;
+      }
+    }
+    &.is-focus .el-checkbox__inner {
+      border-color: $elementActiveColor;
     }
   }
 }
