@@ -80,16 +80,22 @@
           </div>
           <div class="dh-messages-wrapper">
             <div class="dh-messages-list" ref="threadMessages">
-              <thread-message
-              v-for="(message, index) in threadMessages"
-              :key="message.id"
-              :message="message"
-              :owner="account"
-              :prev-message="threadMessages[index - 1]"
-              :next-message="threadMessages[index + 1]"
-              :contact-profile="contactProfile"
-              @retry-send="retrySend"
-              ></thread-message>
+              <template v-for="(message, index) in threadMessages">
+                <div v-if="(message.type || '').includes('conversation')" :key="message.body.id + index">
+                  conversation {{message.body.id}}
+                </div>
+                <template v-else>
+                  <thread-message
+                    :key="message.id"
+                    :message="message"
+                    :owner="account"
+                    :prev-message="threadMessages[index - 1]"
+                    :next-message="threadMessages[index + 1]"
+                    :contact-profile="contactProfile"
+                    @retry-send="retrySend"
+                  ></thread-message>
+                </template>
+              </template>
             </div>
             <div class="dh-message-send">
               <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage"></textarea>
@@ -493,7 +499,7 @@
           }
 
           if (!body.messageList.length) {
-            this.requestTimeout= setTimeout(this.getUpdates, 2000);
+            // this.requestTimeout= setTimeout(this.getUpdates, 2000);
             return
           };
 
@@ -503,6 +509,10 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
+              console.log(message.id === 800460 || (message.body && message.body.id === 800460));
+
+              if ((message.type || '').includes('conversation')) return true;
+
               if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
                 this.threadMessages.splice(index, 1, newMessage);
                 return true;
@@ -825,11 +835,11 @@
       height: calc(100% - 58px);
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
     }
 
     .dh-messages-list {
       overflow: auto;
-      flex-grow: 1;
     }
 
     .dh-message-send {
