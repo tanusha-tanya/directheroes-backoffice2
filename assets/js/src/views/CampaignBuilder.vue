@@ -3,8 +3,8 @@
     <dh-header title="Campaign Builder">
       <div class="dh-campaign-controls">
         <div class="dh-campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><triangle/>This flow is incomplete</div>
-        <div class="dh-campaign-settings-wrapper">
-          <div class="dh-campaign-control" v-if="currentCampaign" >
+        <div class="dh-campaign-settings-wrapper" v-if="currentCampaign && hasSteps">
+          <div class="dh-campaign-control" >
             Activate
             <template v-if="hasWarning">
               <el-tooltip
@@ -20,7 +20,7 @@
               </div>
             </template>
           </div>
-          <div class="dh-campaign-gear" v-if="currentCampaign" @click="previewSettings">
+          <div class="dh-campaign-gear" @click="previewSettings">
             <info/>
           </div>
         </div>
@@ -30,7 +30,7 @@
           custom-class="dh-campaign-activate-dialog"
           append-to-body
           width="554px"
-          v-if="currentCampaign"
+          v-if="currentCampaign && hasSteps"
           >
           <div class="dh-campaign-settings">
             <div class="dh-options">
