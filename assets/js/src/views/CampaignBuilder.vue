@@ -35,21 +35,12 @@
           <div class="dh-campaign-settings">
             <div class="dh-options">
               <div class="dh-option">
-<<<<<<< HEAD:assets/jsV5/src/views/CampaignBuilder.vue
-                <div class="dh-two-third-size">Allow Re-entering campaign <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message"></dh-question-mark></div>
-                <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
-              </div>
-              <div class="dh-option">
-                <div class="dh-two-third-size">Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></div>
-                <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
-=======
                 <span>Allow Re-entering campaign <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message"></dh-question-mark></span>
                 <el-switch v-model="allowReEnter" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="nonSubscribersOnly" :disabled="isPreview"></el-switch>
->>>>>>> master:assets/js/src/views/CampaignBuilder.vue
               </div>
               <div class="dh-option">
                 <div class="dh-half-size">Schedule campaign start</div>
