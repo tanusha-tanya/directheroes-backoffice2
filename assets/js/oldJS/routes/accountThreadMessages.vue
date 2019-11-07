@@ -2,9 +2,11 @@
   <div class="dh-live-chat">
     <div class="dh-accounts">
       <div class="dh-accounts-tabs">
-        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub !== 'ignored'}">Campaigns</router-link>
+        <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': !['favorites', 'ignored'].includes($route.query.sub)}">Campaigns</router-link>
         <div class="dh-divider"></div>
         <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'ignored'}">Inbox</router-link>
+        <div class="dh-divider"></div>
+        <router-link :to="{ name: 'livechat', query: { sub: 'favorites' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'favorites'}">Favorites</router-link>
       </div>
       <div class="dh-accounts-header">
         <div class="dh-search-input">
@@ -13,7 +15,7 @@
           <el-popover placement="bottom" trigger="click" popper-class="dh-search-filter-popover" :width="300">
             <div class="dh-options" v-if="account">
               <div class="dh-search-input-campaigns">
-                <div class="dh-select">
+                <div :class="{'dh-select':true, 'dh-is-selected': filters.favoured}" v-if="$route.query.sub !== 'favorites'">
                   <div class="dh-select-title">Favorite</div>
                   <el-select v-model="filters.favoured" size="small" popper-class="dh-select-popper">
                     <el-option label="All" :value="null"></el-option>
@@ -21,7 +23,7 @@
                     <el-option label="Not Favorite" :value="false"></el-option>
                   </el-select>
                 </div>
-                <div class="dh-select">
+                <div :class="{'dh-select':true, 'dh-is-selected': filters.verified}">
                   <div class="dh-select-title">Verified</div>
                   <el-select v-model="filters.verified" size="small" popper-class="dh-select-popper">
                     <el-option label="All" :value="null"></el-option>
@@ -29,45 +31,46 @@
                     <el-option label="Not Verified" :value="false"></el-option>
                   </el-select>
                 </div>
-                <div class="dh-option"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
+                <div class="dh-option" v-if="$route.query.sub !== 'ignored'"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
                 <div class="dh-search-input-campaigns-list" v-if="isCategoryFilters">
                   <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="filters.categories"></check-box-branch>
                 </div>
                 <div class="dh-option">Follower count</div>
                 <div class="dh-option dh-sub-option">
-                  <div><span>Greater then</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
+                  <div :class="{'dh-is-selected': filters.followerCount.gte}"><span>Greater then</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
                 </div>
                 <div class="dh-option dh-sub-option">
-                  <div><span>Less then</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
+                  <div :class="{'dh-is-selected': filters.followerCount.lte}"><span>Less then</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
                 </div>
                 <div class="dh-option">Following count</div>
                 <div class="dh-option dh-sub-option">
-                  <div><span>Greater then</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
+                  <div><span :class="{'dh-is-selected': filters.followingCount.gte}">Greater then</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
                 </div>
                 <div class="dh-option dh-sub-option">
-                  <div><span>Less then</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
+                  <div><span :class="{'dh-is-selected': filters.followingCount.lte}" >Less then</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
                 </div>
               </div>
             </div>
-            <div class="dh-search-filter" slot="reference">
+            <div :class="{'dh-search-filter':true, 'dh-search-filter-active': isOneFilterSelected}" slot="reference">
               <search-filter />
             </div>
           </el-popover>
         </div>
       </div>
-      <div class="dh-accounts-list">
+      <div class="dh-accounts-list" v-if="!audienceLoading">
         <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: $route.query }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
           <div class="dh-account-favorite" @click.prevent="toggleFavorite(thread)">
             <star-filled v-if="thread.isFavourite"/>
             <star v-else />
           </div>
           <div class="dh-account-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
-          <div>
+          <div style="overflow: hidden">
             <div class="dh-account-name">{{thread.contactProfile.username}}</div>
             <div class="dh-account-last-message">{{thread.lastMessage.text || thread.lastMessage.type}}</div>
           </div>
         </router-link>
       </div>
+      <loader v-else/>
     </div>
     <div class="dh-chat" v-if="$route.params.threadId">
       <template v-if="threadMessages && threadMessages.length">
@@ -119,16 +122,16 @@
             </div>
           </div>
           <div class="dh-contact-profile-controls">
-            <div v-if="currentThread.isSubscribed !== null" :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
+            <div v-if="currentThread.hasOwnProperty('isSubscribed')" :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
               <template v-if="currentThread.isSubscribed">
                 <times />
                 Unsubscribe
               </template>
-              <template>
+              <template v-else>
                 Unsubscribed
               </template>
             </div>
-            <div class="dh-divider" v-if="currentThread.isSubscribed !== null"></div>
+            <div class="dh-divider" v-if="currentThread.hasOwnProperty('isSubscribed')"></div>
             <div class="dh-contact-profile-control dh-contact-profile-favorite" @click="toggleFavorite(currentThread)">
               <star-filled v-if="currentThread.isFavourite"/>
               <star v-else />
@@ -146,7 +149,6 @@
         new messages
       </span>
     </div>
-
   </div>
 </template>
 <script>
@@ -164,7 +166,7 @@
   import send from '../../src/assets/send.svg'
   import ellipsis from '../../src/assets/ellipsis.svg'
   import nolivechat from '../../src/assets/nolivechat.svg'
-  import ObjectId from '../utils/ObjectId';
+  import ObjectId from '../utils/ObjectId'
   import threadMessage from '../component/threadMessage.vue'
   import moment from 'moment'
   import close from '../assets/times.svg'
@@ -172,6 +174,10 @@
   import checkBoxBranch from '../component/checkBoxBranch.vue'
 
   export default {
+    beforeRouteUpdate(to,from, next) {
+
+    },
+
     data() {
       const { query } = this.$route;
 
@@ -180,6 +186,7 @@
         threadMessages: null,
         contactProfile: null,
         ownProfile: null,
+        audienceLoading: false,
         messageText: '',
         status: query.st || 'audience',
         defaultAvatar,
@@ -192,7 +199,7 @@
           usernameQuery: query.q || '',
           includeLastMessage: true,
           categories: [],
-          favoured: null,
+          favoured: query.sub === 'favorites' || null,
           verified: null,
           followerCount: {
             gte: null,
@@ -253,6 +260,22 @@
         if (!currentAccountData) return [];
 
         return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+      },
+
+      isOneFilterSelected() {
+        const { filters, $route } = this;
+
+        if (filters.categories.length) {
+          return true
+        } else if (filters.favoured !== null && $route.query.sub !== 'favorites') {
+          return true
+        } else if (filters.verified !== null) {
+          return true
+        } else if (filters.followerCount.gte || filters.followerCount.lte) {
+          return true
+        } else if (filters.followingCount.gte || filters.followingCount.lte) {
+          return true
+        }
       },
 
       subscriberMainCategory() {
@@ -333,6 +356,9 @@
             break
           case 'ignored':
             return 'ignored'
+            break
+          case 'favorites':
+            return 'all'
             break
           default:
             return true
@@ -508,6 +534,8 @@
 
         if (!account) return;
 
+        this.audienceLoading = true;
+
         this.allThreads = null;
 
         axios({
@@ -527,6 +555,8 @@
           const { threadList } = data.response.body
 
           this.allThreads = threadList;
+
+          this.audienceLoading = false;
         })
       },
 
@@ -541,10 +571,20 @@
         this.filters.usernameQuery = query.q || ''
         this.paging.page = query.p || 1
 
+        if (query.sub === 'ignored') {
+          this.filters.categories = []
+        }
+
+        this.filters.favoured = query.sub === 'favorites' || null;
+
         if (to.params.threadId) {
           this.getUpdates(to.params.threadId);
         } else {
-          this.getAudience(query)
+          if (!['ignored', 'favorites'].includes(query.sub)) {
+            this.getAudience(query)
+          } else {
+            this.audienceLoading = true;
+          }
         }
 
         next()
@@ -677,6 +717,10 @@
       }
     }
 
+    .dh-search-filter-active {
+      color: $elementActiveColor
+    }
+
     .dh-accounts {
       border-right: 1px solid $secondBorderColor;
       width: 262px;
@@ -749,6 +793,8 @@
 
     .dh-account-name {
       margin-bottom: 7px;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     .dh-account-last-message {
@@ -975,6 +1021,16 @@
       overflow-y: auto;
       overflow-x: none;
       margin: 0 20px;
+    }
+
+    .dh-is-selected {
+      .el-select .el-input__inner {
+        color: $elementActiveColor
+      }
+
+      & > span {
+        color: $elementActiveColor
+      }
     }
   }
 </style>
