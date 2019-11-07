@@ -374,7 +374,6 @@ export default {
       if (this.currentCampaign) return;
 
       this.setCurrentCampaign(this.$route);
-<<<<<<< HEAD:assets/jsV5/src/views/CampaignBuilder.vue
     },
 
     isActivateCampaign(value) {
@@ -394,8 +393,6 @@ export default {
 
       this.isDateStart = Boolean(this.startAt);
       this.isDateClose = Boolean(this.closeAt);
-=======
->>>>>>> master:assets/js/src/views/CampaignBuilder.vue
     }
   }
 };
