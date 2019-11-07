@@ -81,8 +81,24 @@
           <div class="dh-messages-wrapper">
             <div class="dh-messages-list" ref="threadMessages">
               <template v-for="(message, index) in threadMessages">
-                <div v-if="(message.type || '').includes('conversation')" :key="message.body.id + index">
-                  conversation {{message.body.id}}
+                <div class="dh-conversation-divider" v-if="(message.type || '').includes('conversation')" :key="message.body.conversation.id + index">
+                  <div>
+                    Conversation
+                    <router-link
+                      :to="{ name: 'accountCampaign', params:{ campaignId: message.body.conversation.campaign.id }}"
+                      target= '_blank'>
+                      {{message.body.conversation.campaign.name}}
+                    </router-link>
+                    <template v-if="message.type === 'conversation_start'">
+                      start.
+                    </template>
+                    <template v-else>
+                      end.
+                      <div class="dh-force-resume-button" v-if="['1','3','7','8'].includes(message.body.conversation.closeState)">
+                        Force Resume
+                      </div>
+                    </template>
+                  </div>
                 </div>
                 <template v-else>
                   <thread-message
@@ -499,7 +515,7 @@
           }
 
           if (!body.messageList.length) {
-            // this.requestTimeout= setTimeout(this.getUpdates, 2000);
+            this.requestTimeout= setTimeout(this.getUpdates, 2000);
             return
           };
 
@@ -509,8 +525,6 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
-              console.log(message.id === 800460 || (message.body && message.body.id === 800460));
-
               if ((message.type || '').includes('conversation')) return true;
 
               if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
@@ -868,6 +882,41 @@
       padding: 0 20px;
       height: 58px;
       border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-conversation-divider {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+      position: relative;
+
+      &::before {
+        content: '';
+        border-top: 1px dashed #F2F4F6;
+        width: 95%;
+        position: absolute;
+        top: 50%;
+      }
+      & > div {
+        background-color: #F2F4F6;
+        padding: 5px 20px;
+        border-radius: 27px;
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #778CA2;
+        z-index: 1;
+      }
+
+      a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #778CA2;
+      }
+    }
+
+    .dh-force-resume-button {
+      display: inline-block;
+      // margin: 15xp
     }
 
     .dh-message-button {
