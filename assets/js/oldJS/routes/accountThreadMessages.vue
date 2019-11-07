@@ -119,11 +119,16 @@
             </div>
           </div>
           <div class="dh-contact-profile-controls">
-            <div :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
-              <times />
-              Unsubscribe
+            <div v-if="currentThread.isSubscribed !== null" :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
+              <template v-if="currentThread.isSubscribed">
+                <times />
+                Unsubscribe
+              </template>
+              <template>
+                Unsubscribed
+              </template>
             </div>
-            <div class="dh-divider"></div>
+            <div class="dh-divider" v-if="currentThread.isSubscribed !== null"></div>
             <div class="dh-contact-profile-control dh-contact-profile-favorite" @click="toggleFavorite(currentThread)">
               <star-filled v-if="currentThread.isFavourite"/>
               <star v-else />
@@ -709,8 +714,12 @@
       border-bottom: 1px solid #F2F4F6;
 
       .dh-account-favorite {
+        flex-shrink: 0;
         margin-right: 10px;
         color: $elementsColor;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         svg {
           width: 18px;
@@ -887,6 +896,7 @@
       width: 50%;
       align-items: center;
       cursor: pointer;
+      flex-grow: 1;
 
       svg {
         margin-right: 5px;

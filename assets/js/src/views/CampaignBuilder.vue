@@ -30,16 +30,17 @@
           custom-class="dh-campaign-activate-dialog"
           append-to-body
           width="554px"
+          v-if="currentCampaign"
           >
           <div class="dh-campaign-settings">
             <div class="dh-options">
               <div class="dh-option">
                 <span>Allow Re-entering campaign <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message"></dh-question-mark></span>
-                <el-switch v-model="activateOptions.allowReEnter" :disabled="isPreview"></el-switch>
+                <el-switch v-model="allowReEnter" :disabled="isPreview"></el-switch>
               </div>
               <div class="dh-option">
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
-                <el-switch v-model="activateOptions.nonSubscribersOnly" :disabled="isPreview"></el-switch>
+                <el-switch v-model="nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
             </div>
           </div>
@@ -92,10 +93,6 @@ export default {
       isActivateCampaign: false,
       isDeactivateCampaign: false,
       isPreview: false,
-      activateOptions: {
-        allowReEnter: false,
-        nonSubscribersOnly: false,
-      },
       helpTriggerText: {
         allowReEnter: {
           title: 'Help: Allow Re-Entering Campaigin Settings',
@@ -241,12 +238,6 @@ export default {
     activateCampaign() {
       const { currentCampaign, activateOptions } = this;
 
-      this.allowReEnter = activateOptions.allowReEnter;
-
-      setTimeout(() => {
-        this.nonSubscribersOnly = activateOptions.nonSubscribersOnly;
-      }, 100)
-
       currentCampaign.isEnabled = true;
 
       this.isActivateCampaign = false;
@@ -280,15 +271,6 @@ export default {
       if (this.currentCampaign) return;
 
       this.setCurrentCampaign(this.$route);
-    },
-
-    isActivateCampaign(value) {
-      const { allowReEnter, nonSubscribersOnly, activateOptions } = this;
-
-      if (!value) return;
-
-      activateOptions.allowReEnter = allowReEnter;
-      activateOptions.nonSubscribersOnly = nonSubscribersOnly;
     }
   }
 };
