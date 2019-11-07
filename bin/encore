@@ -18,12 +18,12 @@ cd "${PROJECT_DIR}"
 
 case "${ACTION}" in
   "production")
-    mkdir -p "${PROJECT_DIR}/public/build"
-    rm -rf "${PROJECT_DIR}/public/build.old"
-    docker-compose exec php yarn install
-    docker-compose exec php yarn run encore production --verbose
-    mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
-    mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
+    # mkdir -p "${PROJECT_DIR}/public/build"
+    # rm -rf "${PROJECT_DIR}/public/build.old"
+    docker-compose exec php bash -c 'cd assets/js && yarn install'
+    docker-compose exec php bash -c 'cd assets/js && yarn build'
+    # mv "${PROJECT_DIR}/public/build" "${PROJECT_DIR}/public/build.old"
+    # mv "${PROJECT_DIR}/public/build.tmp" "${PROJECT_DIR}/public/build"
     cat "${PROJECT_DIR}/public/build/manifest.json" > "${PROJECT_DIR}/var/cache/manifest.json"
     ;;
   "dev")
@@ -36,7 +36,7 @@ case "${ACTION}" in
     inotify-hookable --watch-directories "${PROJECT_DIR}/public/build" --on-modify-path-command "manifest.json=(cp ${PROJECT_DIR}/public/build/manifest.json ${PROJECT_DIR}/var/cache/manifest.json || true)" &
     #trap 'kill $(jobs -p)' SIGINT SIGTERM EXIT
     trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
-    docker-compose exec php yarn run encore dev-server --host 0.0.0.0 --port 80 --disable-host-check --hot --public=0.0.0.0:80 -d
+    docker-compose exec php yarn serve --host 0.0.0.0 --port 80 --disable-host-check --hot --public=0.0.0.0:80 -d
     ;;
   retart)
     stop

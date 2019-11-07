@@ -1,175 +1,229 @@
 <template>
-  <div id="app">
-    <dh-header></dh-header>
-    <div class="content">
-      <div :class="{'side-bar': true, 'full-view': isfullSideBar}">
-        <router-link v-if="account" class="side-bar-item avatar" :to="{ name: 'accountHome' }">
-          <div class="account-avatar" :style="{'background-image': `url(${ account.profilePicUrl })`}"></div><span class="side-bar-title">Account</span>
-        </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'accounts' }">
-          <img :src="home"/><span class="side-bar-title">Dashboard</span>
-        </router-link>
-        <router-link v-if="account" class="side-bar-item" :to="{ name: 'accountCampaignList', params: { accountId: account.id } }">
-          <img :src="socialBuffer"/><span class="side-bar-title">Campaign</span>
-        </router-link>
-        <router-link  v-if="account && dhAccount && dhAccount.features.broadcast" class="side-bar-item" :to="{ name: 'accountBroadcastList', params: { accountId: account.id } }">
-          <img :src="broadcast"/><span class="side-bar-title">Broadcast</span>
-        </router-link>
-        <router-link v-if="account" class="side-bar-item" :to="{ name: 'audience' }">
-          <img :src="people"/><span class="side-bar-title">Audience</span>
-        </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'video-help' }" v-if="dhAccount && dhAccount.features.igCourse">
-          <img :src="youtube"/><span class="side-bar-title"> IG Course</span>
-        </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'book-help' }">
-          <img :src="pdf"/><span class="side-bar-title">Documents</span>
-        </router-link>
-        <router-link class="side-bar-item" :to="{ name: 'easywebinar-join' }" v-if="false">
-          <img :src="easywebinar"/><span class="side-bar-title">Join the Webinar!</span>
-        </router-link>
-      </div>
-      <div class="content-container" v-if="dhAccount">
-        <router-view></router-view>
-      </div>
-      <div class="loading-content" v-else-if="$store.state.firstLoad">
-        <div class="pre-loader"></div>
-      </div>
-      <div class="error-loading" v-else>
+  <div class="dh-application">
+    <div class="dh-navigation">
+      <router-link class="dh-logo" :to="{ name: 'accounts'}"></router-link>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <dashboard/>
+        </div>
+        Dashboard
+      </router-link>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <campaigns/>
+        </div>
+        Campaigns
+      </router-link>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountBroadcastList', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <broadcast/>
+        </div>
+        Broadcast
+      </router-link>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <livechat/>
+        </div>
+        Live chat
+      </router-link>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'audience', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <audience/>
+        </div>
+        Audience
+      </router-link>
+      <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <schedule/>
+        </div>
+        Schedule
+      </router-link>
+      <router-link :class="{'dh-navigation-button': true }" :to="{ name: 'affiliate' }">
+        <div class="dh-navigation-button-ico">
+          <affiliate/>
+        </div>
+        Affiliate
+      </router-link>
+      <router-link v-if="hasTutorialAccess" class="dh-navigation-button" :to="{ name: 'tutorials' }">
+        <div class="dh-navigation-button-ico">
+          <tutorials/>
+        </div>
+        Tutorials
+      </router-link>
+       <router-link class="dh-navigation-button" :to="{ name: 'trainings' }">
+        <div class="dh-navigation-button-ico">
+          <training/>
+        </div>
+        Trainings
+      </router-link>
+      <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+        <div class="dh-navigation-button-ico">
+          <support/>
+        </div>
+        Support
+      </router-link>
+    </div>
+    <div class="dh-content" v-if="dhAccount">
+      <router-view ></router-view>
+    </div>
+    <loader v-else-if="isFirstLoad"></loader>
+    <div class="dh-init-error" v-else>
+      <span>
         This page failed to load. <br />
         Please reload it, or contact support if problem persists
-      </div>
+      </span>
     </div>
   </div>
 </template>
 
 <script>
-import Header from './sections/header.vue'
-import home from './assets/svg/home.svg'
-import people from './assets/svg/people.svg'
-import socialBuffer from './assets/svg/social-buffer.svg'
-import youtube from './assets/svg/youtube.svg'
-import pdf from './assets/svg/pdf.svg'
-import broadcast from './assets/svg/broadcast.svg'
-import easywebinar from './assets/svg/youtube.svg'
+import dhLogo from './assets/logo.svg'
+import dashboard from './assets/dashboard.svg'
+import campaigns from './assets/campaigns.svg'
+import broadcast from './assets/broadcast.svg'
+import livechat from './assets/livechat.svg'
+import audience from './assets/audience.svg'
+import schedule from './assets/schedule.svg'
+import tutorials from './assets/tutorials.svg'
+import training from './assets/training.svg'
+import support from './assets/support.svg'
+import affiliate from './assets/affiliate.svg'
+import loader from './components/dh-loader'
 
 export default {
-  name: 'app',
-
-  data() {
-    return {
-      home,
-      people,
-      socialBuffer,
-      youtube,
-      broadcast,
-      pdf,
-      easywebinar
-    }
-  },
-
   components: {
-    'dh-header': Header
+    dhLogo,
+    dashboard,
+    campaigns,
+    broadcast,
+    livechat,
+    audience,
+    schedule,
+    tutorials,
+    support,
+    loader,
+    affiliate,
+    training,
   },
 
   computed: {
     account() {
-      return this.$store.state.currentAccount;
+      const { state } = this.$store;
+
+      return state.currentAccount || { id: 0 };
     },
 
-    accounts() {
-      return this.$store.state.accounts.length;
+    hasAccounts() {
+      const { state } = this.$store;
+
+      return state.accounts.length;
     },
 
-    isfullSideBar() {
-      return this.$store.state.isfullSideBar;
+    isFullSideBar() {
+      const { state } = this.$store;
+
+      return state.isfullSideBar;
+    },
+
+    isFirstLoad() {
+      const { state } = this.$store;
+
+      return state.isFirstLoad;
+    },
+
+    hasTutorialAccess() {
+      const accessList = ['kalum@adoku.ca']
+      const { dhAccount } = this;
+
+      return dhAccount && accessList.includes(dhAccount.username);
     }
+
   },
-
-
 }
 </script>
 
 <style lang="scss">
-.content {
+@import './styles/fonts.scss';
+@import './styles/common.scss';
+
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: $mainBGColor;
+  font: normal 14px Rubik, sans-serif;
+  color: $mainTextColor;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .zEWidget-launcher {
+    right: 160px !important;
+    bottom: -5px !important;
+  }
+}
+
+.dh-application {
+  height: 100%;
   display: flex;
-  height: calc(100% - 50px);
 
-  .side-bar {
+  .dh-navigation {
+    width: 242px;
+    background-color: $sectionBG;
     height: 100%;
-    background-color: #fff;
     flex-shrink: 0;
-    width: 50px;
-    // transition: .6s width .8s;
-
-    &.full-view {
-      width: 150px;
-      // transition: .6s width .3s;
-
-      .side-bar-title {
-        opacity: 1;
-        // transition: .6s opacity .8s;
-      }
-    }
+    border-right: 1px solid $borderColor;
   }
 
-  .side-bar-item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    height: 50px;
-    padding: 10px;
-    text-decoration: none;
-    overflow: hidden;
-
-    &:not(.avatar) {
-      box-shadow: 0px 2px 13px rgba(207, 207, 207, 0.5);
-    }
-
-    &:hover .side-bar-title{
-      color: #434890;
-    }
-
-    .side-bar-title {
-      font-size: 18px;
-      line-height: 22px;
-      color: #3C3C3C;
-      margin-left: 10px;
-      opacity: 0;
-      transition: .6s opacity .1s;
-    }
-
-    img {
-      max-height: 30px;
-      max-width: 30px;
-      width: 30px;
-      flex-shrink: 0;
-    }
-  }
-
-  .account-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50px;
-    background-size: contain;
+  .dh-logo {
+    width: 100%;
+    height: 64px;
+    background-image: url(./assets/logo.png);
     background-position: center;
-    flex-shrink: 0;
+    background-size: 70%;
+    background-repeat: no-repeat;
+    display: block;
+    padding: 20px 35px 11px 35px;
   }
 
-  .content-container {
-    flex-grow: 1;
-    max-height: 100%;
-    overflow: auto;
-  }
-
-  .error-loading {
-    height: 100%;
-    flex-grow: 1;
+  .dh-navigation-button {
     display: flex;
     align-items: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: $elementsColor;
+    border-left: 2px solid transparent;
+    padding: 21px 28px 22px 26px;
+    letter-spacing: .3px;
+    line-height: 17px;
+
+    &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
+      font-weight: 500;
+      border-color: $elementActiveColor;
+      background-color: $mainBGColor;
+    }
+  }
+
+  .dh-navigation-button-ico {
+    margin-right: 18px;
+  }
+
+  .dh-content {
+    height: 100%;
+    max-height: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .dh-init-error {
+    width: 100%;
+    height: 100%;
+    display: flex;
     justify-content: center;
+    align-items: center;
     text-align: center;
     font-size: 24px;
-    line-height: normal;
   }
 }
 </style>

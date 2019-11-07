@@ -1,42 +1,32 @@
+import './elementui';
+
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import App from './App.vue'
-import { Message } from 'element-ui'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faCheckCircle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import { faEnvelopeOpen, faEnvelope, faClock } from '@fortawesome/free-regular-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import './directives/move'
-// import sodium from 'libsodium-wrappers'
-
-library.add(faUser, faEnvelopeOpen, faEnvelope, faCheckCircle, faClock, faEye, faEyeSlash);
-
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-
-Vue.use(VueRouter)
+import { Message, Notification } from 'element-ui'
+import router from './router'
+import store from './store'
 
 Vue.prototype.$message = Message;
+Vue.prototype.$notify = Notification;
 
-import store from './store/store'
+router.beforeEach((to, from, next) => {
+  const { dhAccount } = store.state;
 
+  store.state.isfullSideBar = !['accountCampaign','accountBroadcast'].includes(to.name)
 
-import './assets/fonts/stylesheet.css'
+  if (dhAccount && !dhAccount.subscription.isActive && !['addonBuy', 'addonPayment'].includes(to.name)) {
+    next({name: 'addonBuy'})
+  } else {
+    next()
+  }
+})
 
-import '../../jsV5/src/elementui'
-import './styles/main.scss'
-import './styles/common.scss'
+store.dispatch('getAccounts');
 
-
-
-
-
-
-
-
+Vue.config.productionTip = false
 
 Vue.mixin({
   computed: {
-
     dhAccount() {
       return this.$store.state.dhAccount
     },
@@ -50,6 +40,7 @@ Vue.mixin({
 
   methods: {
     blockEvent(event) {
+      event.preventDefault();
       event.stopPropagation();
       return false;
     }
@@ -64,13 +55,8 @@ Vue.mixin({
   }
 });
 
-
-
 new Vue({
-  el: '#app',
-  store,
   router,
+  store,
   render: h => h(App)
-});
-
-
+}).$mount('#app')
