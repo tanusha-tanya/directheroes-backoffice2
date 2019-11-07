@@ -185,6 +185,7 @@
         allThreads: [],
         threadMessages: null,
         contactProfile: null,
+        inUpdate: false,
         ownProfile: null,
         audienceLoading: false,
         messageText: '',
@@ -563,6 +564,8 @@
       routeUpdate(to, from, next) {
         const { query } = to;
 
+        this.inUpdate = true;
+
         this.source.cancel('Cancel on turn on other user');
 
         this.lastMessage = {};
@@ -580,12 +583,10 @@
         if (to.params.threadId) {
           this.getUpdates(to.params.threadId);
         } else {
-          if (!['ignored', 'favorites'].includes(query.sub)) {
-            this.getAudience(query)
-          } else {
-            this.audienceLoading = true;
-          }
+          this.getAudience(query)
         }
+
+        // this.inUpdate = false;
 
         next()
       },
@@ -665,7 +666,12 @@
       filters: {
         handler(filters) {
           const { followerCount, followingCount } = filters;
-          const { getAudience } = this;
+          const { getAudience, inUpdate } = this;
+
+          if (inUpdate) {
+            this.inUpdate = false;
+            return;
+          }
 
           clearTimeout(this.applyFilterTimeout);
 
