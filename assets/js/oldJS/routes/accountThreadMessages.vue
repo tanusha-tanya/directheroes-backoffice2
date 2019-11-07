@@ -81,7 +81,7 @@
           <div class="dh-messages-wrapper">
             <div class="dh-messages-list" ref="threadMessages">
               <template v-for="(message, index) in threadMessages">
-                <div class="dh-conversation-divider" v-if="(message.type || '').includes('conversation')" :key="message.body.conversation.id + index">
+                <div class="dh-conversation-divider" v-if="(message.type || '').includes('conversation')" :key="message.body.conversation.id + index" :title="conversationEndReason(message)">
                   <div>
                     Conversation
                     <router-link
@@ -94,7 +94,7 @@
                     </template>
                     <template v-else>
                       end.
-                      <div class="dh-force-resume-button" v-if="['1','3','7','8'].includes(message.body.conversation.closeState)">
+                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && ['1','3','7','8'].includes(message.body.conversation.closeState)">
                         Force Resume
                       </div>
                     </template>
@@ -632,6 +632,53 @@
         }).then(({ data })=> {
           thread.isSubscribed = false
         })
+      },
+
+      conversationEndReason(message) {
+        if (message.type !== 'conversation_end') return '';
+
+        switch (message.body.conversation.closeState) {
+          case '1':
+            return 'Reason: On going'
+            break;
+          case '2':
+            return 'Reason: End reached'
+            break;
+          case '3':
+            return 'Reason: Overdue'
+            break;
+          case '4':
+            return 'Reason: Overlapped'
+            break;
+          case '5':
+            return 'Reason: Broadcst'
+            break;
+          case '6':
+            return 'Reason: Archived'
+            break;
+          case '7':
+            return 'Reason: Canceled by custom message'
+            break;
+          case '8':
+            return 'Reason: Stop word'
+            break;
+          case '9':
+            return 'Reason: Profile not found'
+            break;
+          default:
+            return ''
+            break;
+        }
+      },
+
+      forceResumeConversation(message) {
+        Vue.set(message, 'sent', true);
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/resume-conversation/${ message.body.conversation.id }`,
+        }).then(()=> {
+        }).catch(() => {
+          Vue.set(message, 'sent', false);
+        })
       }
     },
 
@@ -911,12 +958,21 @@
         text-decoration: none;
         font-weight: bold;
         color: #778CA2;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 
     .dh-force-resume-button {
       display: inline-block;
-      // margin: 15xp
+      background-color: $elementActiveColor;
+      padding: 0 10px;
+      margin-left: 10px;
+      font-size: 10px;
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
     }
 
     .dh-message-button {
