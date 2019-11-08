@@ -83,6 +83,34 @@
             </div>
           </div>
         </template>
+        <template v-else-if="element.displaySettings.type === 'hasTag'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Has tag?
+              <keywords v-model="element.elements[0].value"></keywords>
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" :ref="element.id">
+                Yes
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element)"
+                  v-else
+                ></add-mid-step-popup>
+               </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                No
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
         <template v-else-if="element.displaySettings.type === 'scarcity'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -202,6 +230,7 @@ import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
+import keywords from '../keywords';
 
 export default {
   data() {
@@ -211,7 +240,8 @@ export default {
         followers: 'Followers',
         verified: 'Is Verified',
         topCategory: 'Is Majority Member',
-        scarcity: 'Scarcity'
+        scarcity: 'Scarcity',
+        hasTag: 'Has Tag'
       }
     }
   },
@@ -225,7 +255,8 @@ export default {
     timeout,
     inputAutosize,
     addMidStepPopup,
-    addTriggerPopup
+    addTriggerPopup,
+    keywords
   },
 
   computed: {

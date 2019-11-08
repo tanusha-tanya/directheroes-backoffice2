@@ -35,6 +35,8 @@ export default {
 
       if (!availableList) return true;
 
+      console.log(conditions);
+
       return conditions.some(condition => {
         return availableList.includes(condition.template.displaySettings.type)
       })

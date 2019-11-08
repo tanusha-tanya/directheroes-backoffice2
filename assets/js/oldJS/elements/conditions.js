@@ -123,4 +123,75 @@ export default [
       ]
     }
   },
+  {
+    title: 'Has tag',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'hasTag'
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "subscriber",
+            field: "categories",
+            operand: "contains",
+            value: []
+          },
+        }
+      ]
+    }
+  },
+  {
+    title: 'Wait till',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'waitTill'
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "runtime",
+            field: "sinceStart",
+            operand: "lt",
+            value: 1
+          },
+          onMatch: {
+            action: 'fallthrough'
+          }
+        },
+        {
+          type: "action",
+          body: {
+            action: "registerTimeout",
+            till: {
+              entity: "campaign",
+              field: "periodSinceStart"
+            },
+            delta: 1,
+          }
+        },
+        {
+          type: "checkpoint",
+        },
+        {
+          type: "rule",
+          condition: {
+              entity: "time",
+              field: "delta",
+              operand: "eq",
+              value: {
+                entity: "campaign",
+                field: "endOfTerm"
+              }
+          },
+        }
+      ]
+    }
+  }
 ]
