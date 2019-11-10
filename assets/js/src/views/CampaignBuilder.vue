@@ -238,7 +238,7 @@ export default {
       },
 
       set(value) {
-        const { elements } = this. settings;
+        const { elements } = this.settings;
 
         if (!value) {
           const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
@@ -384,9 +384,6 @@ export default {
       const { allowReEnter, nonSubscribersOnly, activateOptions, currentCampaign } = this;
 
       if (!value) return;
-
-      activateOptions.allowReEnter = allowReEnter;
-      activateOptions.nonSubscribersOnly = nonSubscribersOnly;
 
       this.campaignSettings = currentCampaign.settings || {
         startAt: '',
