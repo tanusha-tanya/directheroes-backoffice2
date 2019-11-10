@@ -85,7 +85,7 @@ export default {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
 
-              if (!['rule', 'linker'].includes(matchElement.type)) return;
+              // if (!['rule', 'linker'].includes(matchElement.type)) return;
 
               linkElements.push(target || null);
 
