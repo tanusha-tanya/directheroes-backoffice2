@@ -162,6 +162,10 @@ export default {
         entryStep.elements.splice(0,0, settings);
       }
 
+      if (!settings.elements) {
+        settings.elements = [];
+      }
+
       return entryStep && settings;
     },
 
