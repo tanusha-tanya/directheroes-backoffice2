@@ -150,7 +150,7 @@ export default [
       type: 'group',
       displaySettings: {
         subType: 'condition',
-        type: 'waitTill'
+        type: 'waitTillCondition'
       },
       elements: [
         {

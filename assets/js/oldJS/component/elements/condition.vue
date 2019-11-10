@@ -86,7 +86,6 @@
         <template v-else-if="element.displaySettings.type === 'hasTag'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              Has tag?
               <keywords v-model="element.elements[0].value"></keywords>
             </div>
             <div class="condition-item-matches">
@@ -153,6 +152,32 @@
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, lastScarcityRule, true)"
+                  v-else
+                ></add-mid-step-popup>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="element.displaySettings.type === 'waitTillCondition'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              IF,<br>
+              within: <timeout :element="element"></timeout><br>
+              the user:
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" :ref="element.id">
+                Less
+                <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
+                  <div class="add-step-button"></div>
+                </add-trigger-popup>
+               </div>
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                Greater
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getWaitTillRule(element, 'runtime').onFail"></add-tag-popup>
+                <add-mid-step-popup
+                  :available-list="availableList"
+                  @add-step="addMidStep($event, element, true)"
                   v-else
                 ></add-mid-step-popup>
               </div>
@@ -241,7 +266,8 @@ export default {
         verified: 'Is Verified',
         topCategory: 'Is Majority Member',
         scarcity: 'Scarcity',
-        hasTag: 'Has Tag'
+        hasTag: 'Has Tag',
+        waitTillCondition: 'Wait Till'
       }
     }
   },
@@ -353,7 +379,11 @@ export default {
       if (condition.type === 'rule') {
         matchElement = condition;
       } else {
-        matchElement = condition.elements.find(element => element.type === 'rule');
+        if (condition.displaySettings.type === 'waitTillCondition') {
+          matchElement = this.getWaitTillRule(condition, onFail ? 'runtime' : 'time')
+        } else {
+          matchElement = condition.elements.find(element => element.type === 'rule');
+        }
       }
 
       Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
@@ -428,6 +458,10 @@ export default {
       link.target = step.id;
 
       this.$emit('add-step', step);
+    },
+
+    getWaitTillRule(element, entityType) {
+      return element.elements.find(element => element.type === 'rule' && element.condition.entity === entityType);
     }
   }
 }
