@@ -161,19 +161,19 @@
         <template v-else-if="element.displaySettings.type === 'waitTillCondition'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              IF,<br>
+              Wait For,<br>
               within: <timeout :element="element"></timeout><br>
-              the user:
+              Since: <strong>Round start</strong>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id+'3'">
-                Less
+                Then
                 <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
                   <div class="add-step-button"></div>
                 </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                Greater
+                If late
                 <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getWaitTillRule(element, 'runtime').onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
@@ -267,7 +267,7 @@ export default {
         topCategory: 'Is Majority Member',
         scarcity: 'Scarcity',
         hasTag: 'Has Tag',
-        waitTillCondition: 'Wait Till'
+        waitTillCondition: 'Wait for'
       }
     }
   },
@@ -518,6 +518,12 @@ export default {
       padding: 18px;
       color: #828282;
       flex-shrink: 0;
+
+      strong {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 12px;
+      }
     }
 
     .condition-item-matches {
