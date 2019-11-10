@@ -178,7 +178,7 @@ export default {
         case 'condition':
           step.name = 'Condition'
 
-          if (firstElementSettings.displaySettings.type === 'timeout') {
+          if (['timeout', 'waitTillCondition'].includes(firstElementSettings.displaySettings.type)) {
             const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
             const action = firstElementSettings.elements.find(element => element.type === 'action');
 
