@@ -10,8 +10,11 @@
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-pack ###
+/assets/js/node_modules/
 /node_modules/
 /public/build/
+/assets/js/npm-debug.log
+/assets/js/yarn-error.log
 npm-debug.log
 yarn-error.log
 public/build.old
