@@ -85,6 +85,8 @@ export default {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
 
+              if (!['rule', 'linker'].includes(matchElement.type)) return;
+
               linkElements.push(target || null);
 
               if (matchElement !== 'linker' && failTarget) {
@@ -97,7 +99,7 @@ export default {
               }
             };
 
-            if (element.displaySettings && ['followers', 'scarcity'].includes(element.displaySettings.type)) {
+            if (element.displaySettings && ['followers', 'scarcity', 'waitTillCondition'].includes(element.displaySettings.type)) {
               element.elements.forEach(elementAction);
             } else {
               elementAction(utils.getOnMatchElement(element));
