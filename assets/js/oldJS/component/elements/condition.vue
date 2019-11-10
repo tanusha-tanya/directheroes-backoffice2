@@ -167,9 +167,10 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id+'3'">
                 Then
-                <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
-                  <div class="add-step-button"></div>
-                </add-trigger-popup>
+                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch"></add-tag-popup>
+                <!-- <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
+                  <div class="add-step-button"></div> -->
+                <!-- </add-trigger-popup> -->
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 If late
