@@ -161,8 +161,7 @@
         <template v-else-if="element.displaySettings.type === 'waitTillCondition'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              Wait For,<br>
-              within: <timeout :element="element"></timeout><br>
+              Wait For <timeout :element="element"></timeout><br>
               Since: <strong>Round start</strong>
             </div>
             <div class="condition-item-matches">
