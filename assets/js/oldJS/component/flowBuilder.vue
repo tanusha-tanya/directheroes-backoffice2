@@ -239,7 +239,7 @@ export default {
           return true;
         };
 
-        if (element.displaySettings && element.displaySettings.type === 'followers') {
+        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
           element.elements.some(actionElement);
         } else {
           return actionElement(utils.getOnMatchElement(element));

@@ -82,12 +82,12 @@ export default {
 
       return elements.some(element => {
         const actionElement = (matchElement) => {
-          const target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target))
+          let target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target) || (matchElement.onFail && matchElement.onFail.target))
 
           return target;
         }
 
-        if (element.displaySettings && element.displaySettings.type === 'followers') {
+        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
           return element.elements.some(actionElement);
         } else {
           return actionElement(utils.getOnMatchElement(element));
