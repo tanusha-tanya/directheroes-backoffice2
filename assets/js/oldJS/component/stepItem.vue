@@ -31,7 +31,7 @@
       bind
     </div>
   </div>
-  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="addElementStep"></component>
+  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" @add-step="addElementStep"></component>
 </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
     }
   },
 
-  props: ['steps', 'step', 'flowName', 'stepRowIndex'],
+  props: ['steps', 'step', 'flowName', 'stepRowIndex', 'campaignType'],
 
   components: {
     message,

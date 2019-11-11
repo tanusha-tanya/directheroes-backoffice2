@@ -32,6 +32,7 @@
             @add-step="addStep"
             @delete-step="deleteStep"
             :key="rowItemIndex"
+            :campaign-type="entryItem.type"
             :step-row-index="rowIndex"
             :ref="stepRowItem.id"
             :steps="entryItem.steps"
@@ -154,6 +155,10 @@ export default {
           this.scaleTo(value / scaleValue);
         }, 100);
       }
+    },
+
+    isBroadcast() {
+      return entryItem.type === 'broadcast';
     }
   },
 
