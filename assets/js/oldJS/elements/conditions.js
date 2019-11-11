@@ -84,7 +84,7 @@ export default [
         {
           type: "rule",
           condition: {
-            entity: "subscriber",
+            entity: "conversation",
             field: "categories",
             operand: "contains",
             value: {
