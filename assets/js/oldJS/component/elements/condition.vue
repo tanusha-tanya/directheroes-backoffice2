@@ -86,7 +86,7 @@
         <template v-else-if="element.displaySettings.type === 'hasTag'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              <keywords v-model="element.elements[0].value"></keywords>
+              <keywords v-model="element.elements[0].condition.value"></keywords>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
