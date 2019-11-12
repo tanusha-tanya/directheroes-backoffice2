@@ -177,7 +177,7 @@ export default {
       },
 
       set(value) {
-        const { elements } = this. settings;
+        const { elements } = this.settings;
 
         if (!value) {
           const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
