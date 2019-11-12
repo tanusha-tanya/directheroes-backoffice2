@@ -13,10 +13,10 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup>
-                <!-- <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                <!-- <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup> -->
+                <add-trigger-popup :has-user-input="true" :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
                   <div class="add-step-button"></div>
-                </add-trigger-popup> -->
+                </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
