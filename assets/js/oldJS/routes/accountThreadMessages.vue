@@ -92,7 +92,7 @@
               ></thread-message>
             </div>
             <div class="dh-message-send">
-              <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage"></textarea>
+              <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage()"></textarea>
               <div class="dh-message-link">
                 <el-popover class="upload-message" v-if="media.length" placement="top">
                   <div class="uploaded-files">
@@ -102,7 +102,7 @@
                 </el-popover>
                 <div class="upload-file">
                   <dh-link/>
-                  <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage"/>
+                  <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage()"/>
                 </div>
               </div>
               <div class="dh-message-button" @click="sendMessage()">
