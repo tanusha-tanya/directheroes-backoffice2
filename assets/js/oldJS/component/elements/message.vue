@@ -1,48 +1,53 @@
 <template>
   <div class="message-items">
-    <template v-for="element in elements">
-      <div class="message-item" v-if="element.type !== 'linker'" :key="element.id">
-        <element-warning :element="element"></element-warning>
-        <template v-if="element.type === 'group' && element.displaySettings.type === 'delay'">
-          <delay :element="element"></delay>
-        </template>
-        <template v-else-if="element.body.action === 'sendText'">
-          <el-input
-            type="textarea"
-            placeholder="Please input"
-            :autosize="{maxRows: 10}"
-            v-model="element.body.text"
-            @wheel.native="scrollBlock"
-          >
-          </el-input>
-          <div class="text-counter">{{countTextLength(element.body.text)}}/1000</div>
-        </template>
-        <template v-else-if="element.body.action === 'sendMedia'">
-          <div class="send-media-preview" v-if="element.body.mediaId" :style="{'background-image': `url(${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/get?id=${ element.body.mediaId }&format=instagram)`}"></div>
-          <div class="send-media-blank" v-else>
-            <svg width="95" height="95" viewBox="0 0 95 95" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M70.5577 33.6937H61.6334L56.2921 28.3388C56.2921 28.3388 56.2656 28.3125 56.2524 28.3125L56.226 28.2862C55.4327 27.4987 54.3618 27 53.1454 27H42.0397C40.744 27 39.5938 27.5512 38.7873 28.4306V28.4438L33.5649 33.6937H24.4423C21.9832 33.6937 20 35.61 20 38.0513V64.5769C20 67.0181 21.9832 69 24.4423 69H70.5577C73.0036 69 75 67.0181 75 64.5769V38.0513C75 35.61 73.0036 33.6937 70.5577 33.6937ZM47.5 62.3719C40.7704 62.3719 35.2837 56.9119 35.2837 50.2181C35.2837 43.5112 40.7704 38.0644 47.5 38.0644C54.2428 38.0644 59.7163 43.5112 59.7163 50.2181C59.7163 56.9119 54.2428 62.3719 47.5 62.3719ZM67.8738 38.865C67.8738 39.8888 68.7067 40.7156 69.7248 40.7156C70.7428 40.7156 71.5757 39.8888 71.5757 38.865C71.5757 37.8412 70.7428 37.0144 69.7248 37.0144C68.7067 37.0144 67.8738 37.8412 67.8738 38.865Z" fill="currentColor"/>
-              <path d="M48.5 41C43.2464 41 39 45.2479 39 50.5C39 55.7386 43.2464 60 48.5 60C53.74 60 58 55.7521 58 50.5C58 45.2479 53.74 41 48.5 41Z" fill="currentColor"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M47.623 94.2461C73.3722 94.2461 94.2461 73.3722 94.2461 47.623C94.2461 21.8738 73.3722 1 47.623 1C21.8738 1 1 21.8738 1 47.623C1 73.3722 21.8738 94.2461 47.623 94.2461Z" stroke="currentColor"/>
-            </svg>
+    <draggable :list="elements" handle=".drag-handler" @change="replaceElements">
+      <template v-for="element in elements">
+        <div class="message-item" v-if="element.type !== 'linker'" :key="element.id">
+          <div class="drag-handler" @click.prevent v-if="linker ? elements.length > 2 : elements.length > 1">
+
           </div>
-          <div class="send-media-upload">
-            <input type="file" accept="image/jpeg,image/png,image/gif" @change="uploadImage($event, element)"/>
-            <svg width="23" height="14" viewBox="0 0 23 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.7953 5.89167C18.7953 5.83333 18.8056 5.775 18.8056 5.71667C18.8056 2.55694 16.1462 0 12.8656 0C10.4989 0 8.46585 1.33194 7.51094 3.25694C7.09509 3.05764 6.6279 2.94097 6.13504 2.94097C4.62054 2.94097 3.35759 4.00556 3.11629 5.39583C1.29888 5.98889 0 7.63681 0 9.57639C0 12.0167 2.05871 14 4.59487 14H9.85714V10.1111H7.38259L11.5 6.04236L15.6174 10.1062H13.1429V13.9951H18.8056C21.1261 13.9951 23 12.1722 23 9.94097C23 7.70972 21.1158 5.89653 18.7953 5.89167Z" fill="currentColor"/>
-            </svg>
+          <element-warning :element="element"></element-warning>
+          <template v-if="element.type === 'group' && element.displaySettings.type === 'delay'">
+            <delay :element="element"></delay>
+          </template>
+          <template v-else-if="element.body.action === 'sendText'">
+            <el-input
+              type="textarea"
+              placeholder="Please input"
+              :autosize="{maxRows: 10}"
+              v-model="element.body.text"
+              @wheel.native="scrollBlock"
+            >
+            </el-input>
+            <div class="text-counter">{{countTextLength(element.body.text)}}/1000</div>
+          </template>
+          <template v-else-if="element.body.action === 'sendMedia'">
+            <div class="send-media-preview" v-if="element.body.mediaId" :style="{'background-image': `url(${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/get?id=${ element.body.mediaId }&format=instagram)`}"></div>
+            <div class="send-media-blank" v-else>
+              <svg width="95" height="95" viewBox="0 0 95 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M70.5577 33.6937H61.6334L56.2921 28.3388C56.2921 28.3388 56.2656 28.3125 56.2524 28.3125L56.226 28.2862C55.4327 27.4987 54.3618 27 53.1454 27H42.0397C40.744 27 39.5938 27.5512 38.7873 28.4306V28.4438L33.5649 33.6937H24.4423C21.9832 33.6937 20 35.61 20 38.0513V64.5769C20 67.0181 21.9832 69 24.4423 69H70.5577C73.0036 69 75 67.0181 75 64.5769V38.0513C75 35.61 73.0036 33.6937 70.5577 33.6937ZM47.5 62.3719C40.7704 62.3719 35.2837 56.9119 35.2837 50.2181C35.2837 43.5112 40.7704 38.0644 47.5 38.0644C54.2428 38.0644 59.7163 43.5112 59.7163 50.2181C59.7163 56.9119 54.2428 62.3719 47.5 62.3719ZM67.8738 38.865C67.8738 39.8888 68.7067 40.7156 69.7248 40.7156C70.7428 40.7156 71.5757 39.8888 71.5757 38.865C71.5757 37.8412 70.7428 37.0144 69.7248 37.0144C68.7067 37.0144 67.8738 37.8412 67.8738 38.865Z" fill="currentColor"/>
+                <path d="M48.5 41C43.2464 41 39 45.2479 39 50.5C39 55.7386 43.2464 60 48.5 60C53.74 60 58 55.7521 58 50.5C58 45.2479 53.74 41 48.5 41Z" fill="currentColor"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M47.623 94.2461C73.3722 94.2461 94.2461 73.3722 94.2461 47.623C94.2461 21.8738 73.3722 1 47.623 1C21.8738 1 1 21.8738 1 47.623C1 73.3722 21.8738 94.2461 47.623 94.2461Z" stroke="currentColor"/>
+              </svg>
+            </div>
+            <div class="send-media-upload">
+              <input type="file" accept="image/jpeg,image/png,image/gif" @change="uploadImage($event, element)"/>
+              <svg width="23" height="14" viewBox="0 0 23 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18.7953 5.89167C18.7953 5.83333 18.8056 5.775 18.8056 5.71667C18.8056 2.55694 16.1462 0 12.8656 0C10.4989 0 8.46585 1.33194 7.51094 3.25694C7.09509 3.05764 6.6279 2.94097 6.13504 2.94097C4.62054 2.94097 3.35759 4.00556 3.11629 5.39583C1.29888 5.98889 0 7.63681 0 9.57639C0 12.0167 2.05871 14 4.59487 14H9.85714V10.1111H7.38259L11.5 6.04236L15.6174 10.1062H13.1429V13.9951H18.8056C21.1261 13.9951 23 12.1722 23 9.94097C23 7.70972 21.1158 5.89653 18.7953 5.89167Z" fill="currentColor"/>
+              </svg>
+            </div>
+          </template>
+          <template v-else>
+            <div class="unknown-message-wrapper">
+              Unknown element
+            </div>
+          </template>
+          <div class="message-delete-button" @click="deleteMessage(element)" v-if="elements.length > (linker ? 2 : 1)">
+            <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z" fill="currentColor" fill-rule="evenodd"/></svg>
           </div>
-        </template>
-        <template v-else>
-          <div class="unknown-message-wrapper">
-            Unknown element
-          </div>
-        </template>
-        <div class="message-delete-button" @click="deleteMessage(element)" v-if="elements.length > (linker ? 2 : 1)">
-          <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z" fill="currentColor" fill-rule="evenodd"/></svg>
         </div>
-      </div>
-    </template>
+      </template>
+    </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}" v-if="!linker">
       <template v-if="isBroadcast">
         <add-step-popup @add-step="addElement" :available-list="['sendText', 'sendMedia']" >
@@ -66,9 +71,12 @@ import linker from '../linker'
 import { userInputSubscriber } from '../../elements/userInput'
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
+import dragMixin from '../../../src/mixins/dragElements'
 
 export default {
   props: ['elements', 'campaignType'],
+
+  mixins: [dragMixin],
 
   components: {
     addElementPopup,
@@ -269,7 +277,9 @@ export default {
         opacity: 1;
       }
 
-
+      .drag-handler {
+        opacity: 1;
+      }
     }
   }
 
