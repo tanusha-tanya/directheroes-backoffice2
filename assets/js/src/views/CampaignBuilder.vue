@@ -162,6 +162,10 @@ export default {
         entryStep.elements.splice(0,0, settings);
       }
 
+      if (!settings.elements) {
+        settings.elements = [];
+      }
+
       return entryStep && settings;
     },
 
@@ -173,7 +177,7 @@ export default {
       },
 
       set(value) {
-        const { elements } = this. settings;
+        const { elements } = this.settings;
 
         if (!value) {
           const newAllowReEnter = JSON.parse(JSON.stringify(allowReEnterElement));
@@ -197,7 +201,7 @@ export default {
       },
 
       set(value) {
-        const { elements } = this. settings;
+        const { elements } = this.settings;
 
         if (value) {
           const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));

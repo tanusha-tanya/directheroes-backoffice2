@@ -43,11 +43,13 @@
         </div>
       </div>
     </template>
-    <div class="message-add-button" v-if="!linker">
-      <add-element-popup @add-element="addElement">
-        <div class="message-add-event">
-
-        </div>
+    <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}" v-if="!linker">
+      <template v-if="isBroadcast">
+        <add-step-popup @add-step="addElement" :available-list="['sendText', 'sendMedia']" >
+        </add-step-popup>
+      </template>
+      <add-element-popup @add-element="addElement" v-else>
+        <div class="message-add-event"></div>
       </add-element-popup>
     </div>
     <linker :linker="linker" v-if="linker"></linker>
@@ -58,6 +60,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
+import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
 import { userInputSubscriber } from '../../elements/userInput'
@@ -65,13 +68,14 @@ import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
 
 export default {
-  props: ['elements'],
+  props: ['elements', 'campaignType'],
 
   components: {
     addElementPopup,
     elementWarning,
     linker,
-    delay
+    delay,
+    addStepPopup
   },
 
   computed: {
@@ -83,6 +87,12 @@ export default {
       const { elements } = this;
 
       return elements.find(element => element.type === 'linker');
+    },
+
+    isBroadcast() {
+      const { campaignType } = this;
+
+      return campaignType === 'broadcast';
     }
   },
 
@@ -315,9 +325,24 @@ export default {
     background-color: rgba(255, 103, 103, 0.68);
   }
 
+  div.add-step-button {
+    position: relative;
+    width: 100%;
+    padding: 19px;
+    border-radius: 5px;
+    border: 1px dashed #D8D8D8;
+    right: 0;
+    top: 0;
+  }
+
   .message-add-button {
     width: 100%;
     padding: 19px;
+
+    &.button-disabled {
+      pointer-events: none;
+      opacity: .3;
+    }
 
     .message-add-event {
       width: 100%;
