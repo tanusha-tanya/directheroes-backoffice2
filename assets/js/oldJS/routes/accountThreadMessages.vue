@@ -80,16 +80,38 @@
           </div>
           <div class="dh-messages-wrapper">
             <div class="dh-messages-list" ref="threadMessages">
-              <thread-message
-              v-for="(message, index) in threadMessages"
-              :key="message.id"
-              :message="message"
-              :owner="account"
-              :prev-message="threadMessages[index - 1]"
-              :next-message="threadMessages[index + 1]"
-              :contact-profile="contactProfile"
-              @retry-send="retrySend"
-              ></thread-message>
+              <template v-for="(message, index) in threadMessages">
+                <div class="dh-conversation-divider" v-if="(message.type || '').includes('conversation')" :key="message.body.conversation.id + index" :title="conversationEndReason(message)">
+                  <div>
+                    Conversation
+                    <router-link
+                      :to="{ name: 'accountCampaign', params:{ campaignId: message.body.conversation.campaign.id }}"
+                      target= '_blank'>
+                      {{message.body.conversation.campaign.name}}
+                    </router-link>
+                    <template v-if="message.type === 'conversation_start'">
+                      start.
+                    </template>
+                    <template v-else>
+                      end.
+                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && [3,7,8].includes(message.body.conversation.closeState)">
+                        Force Resume
+                      </div>
+                    </template>
+                  </div>
+                </div>
+                <template v-else>
+                  <thread-message
+                    :key="message.id"
+                    :message="message"
+                    :owner="account"
+                    :prev-message="threadMessages[index - 1]"
+                    :next-message="threadMessages[index + 1]"
+                    :contact-profile="contactProfile"
+                    @retry-send="retrySend"
+                  ></thread-message>
+                </template>
+              </template>
             </div>
             <div class="dh-message-send">
               <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage()"></textarea>
@@ -456,6 +478,7 @@
         if (message.text) {
           sendMessage({
             text: message.text,
+            medias:[],
             clientContext: message.clientContext,
           })
         } else if (message.previewUrl) {
@@ -503,6 +526,8 @@
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             return !this.threadMessages.find((message, index) => {
+              if ((message.type || '').includes('conversation')) return true;
+
               if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
                 this.threadMessages.splice(index, 1, newMessage);
                 return true;
@@ -607,6 +632,53 @@
           method: 'patch',
         }).then(({ data })=> {
           thread.isSubscribed = false
+        })
+      },
+
+      conversationEndReason(message) {
+        if (message.type !== 'conversation_end') return '';
+
+        switch (message.body.conversation.closeState) {
+          case '1':
+            return 'Reason: On going'
+            break;
+          case '2':
+            return 'Reason: End reached'
+            break;
+          case '3':
+            return 'Reason: Overdue'
+            break;
+          case '4':
+            return 'Reason: Overlapped'
+            break;
+          case '5':
+            return 'Reason: Broadcst'
+            break;
+          case '6':
+            return 'Reason: Archived'
+            break;
+          case '7':
+            return 'Reason: Canceled by custom message'
+            break;
+          case '8':
+            return 'Reason: Stop word'
+            break;
+          case '9':
+            return 'Reason: Profile not found'
+            break;
+          default:
+            return ''
+            break;
+        }
+      },
+
+      forceResumeConversation(message) {
+        Vue.set(message, 'sent', true);
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/resume-conversation/${ message.body.conversation.id }`,
+        }).then(()=> {
+        }).catch(() => {
+          Vue.set(message, 'sent', false);
         })
       }
     },
@@ -825,11 +897,11 @@
       height: calc(100% - 58px);
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
     }
 
     .dh-messages-list {
       overflow: auto;
-      flex-grow: 1;
     }
 
     .dh-message-send {
@@ -858,6 +930,50 @@
       padding: 0 20px;
       height: 58px;
       border-bottom: 1px solid $secondBorderColor;
+    }
+
+    .dh-conversation-divider {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+      position: relative;
+
+      &::before {
+        content: '';
+        border-top: 1px dashed #F2F4F6;
+        width: 95%;
+        position: absolute;
+        top: 50%;
+      }
+      & > div {
+        background-color: #F2F4F6;
+        padding: 5px 20px;
+        border-radius: 27px;
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #778CA2;
+        z-index: 1;
+      }
+
+      a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #778CA2;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .dh-force-resume-button {
+      display: inline-block;
+      background-color: $elementActiveColor;
+      padding: 0 10px;
+      margin-left: 10px;
+      font-size: 10px;
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
     }
 
     .dh-message-button {
