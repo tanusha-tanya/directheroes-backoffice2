@@ -94,7 +94,7 @@
                     </template>
                     <template v-else>
                       end.
-                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && ['3','7','8'].includes(message.body.conversation.closeState)">
+                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && [3,7,8].includes(message.body.conversation.closeState)">
                         Force Resume
                       </div>
                     </template>
@@ -478,6 +478,7 @@
         if (message.text) {
           sendMessage({
             text: message.text,
+            medias:[],
             clientContext: message.clientContext,
           })
         } else if (message.previewUrl) {
