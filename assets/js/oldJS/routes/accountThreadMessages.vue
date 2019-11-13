@@ -124,7 +124,7 @@
                 </el-popover>
                 <div class="upload-file">
                   <dh-link/>
-                  <input type="file" @change="uploadFile" @keyup.ctrl.enter="sendMessage()"/>
+                  <input type="file" @change="uploadFile"/>
                 </div>
               </div>
               <div class="dh-message-button" @click="sendMessage()">
@@ -448,7 +448,7 @@
           method: 'post',
           data: messageData
         }).then(({ data }) => {
-          this.media.splice(0, this.media.length)
+          this.media.splice(0, this.media.length);
         }).catch(error => {
           const { reverseThreadMessages } = this;
           const clientContexts = retryMessage  ? (retryMessage.text ? [retryMessage.clientContext] : []) : [textUUID];
@@ -525,18 +525,20 @@
           }
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
-            return !this.threadMessages.find((message, index) => {
-              if ((message.type || '').includes('conversation')) return true;
+            const messages = this.threadMessages.filter(message => !(message.type || '').includes('conversation'))
 
-              if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
-                this.threadMessages.splice(index, 1, newMessage);
-                return true;
-              }
+            if ((newMessage.type || '').includes('conversation')) return;
 
-              return (newMessage.id && (newMessage.id === message.id))
-              || (newMessage.botMessageId && (newMessage.botMessageId === message.botMessageId))
-              || newMessage.text === message.text
-            })
+            return !messages.find((message, index) => {
+                if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
+                  this.threadMessages.splice(index, 1, newMessage);
+                  return true;
+                }
+
+                return (newMessage.id && (newMessage.id === message.id))
+                || (newMessage.botMessageId && (newMessage.botMessageId === message.botMessageId))
+                || newMessage.text === message.text
+              })
           })
 
 
@@ -546,6 +548,8 @@
           };
 
           this.threadMessages.push(...onlyNewMessages);
+        }).catch(error => {
+          this.requestTimeout= setTimeout(this.getUpdates, 2000);
         })
       },
 
