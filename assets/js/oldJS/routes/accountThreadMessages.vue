@@ -167,7 +167,7 @@
     <div class="dh-info" v-else>
       <nolivechat/>
       <span>
-        Select one of the discussion to see<br>
+        Select one of the discussions to see<br>
         new messages
       </span>
     </div>
