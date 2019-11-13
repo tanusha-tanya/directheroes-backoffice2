@@ -7,5 +7,5 @@ export default {
   fromCondition: ['sendText', 'sendMedia', 'delay', 'followers', 'addCategory', 'zapier', 'verified', 'user-input', 'existingStep'],
   fromUserInputFails: ['sendText', 'sendMedia', 'delay', 'timeout', 'followers', 'addCategory', 'verified', 'existingStep'],
   fromUserInput: ['sendText', 'sendMedia', 'delay', 'followers', 'zapier', 'addCategory', 'removeCategory', 'verified'],
-  fromBroadcastFlow: ['sendText', 'sendMedia', 'followers', 'verified'],
+  fromBroadcastFlow: ['sendText', 'sendMedia'],
 }
