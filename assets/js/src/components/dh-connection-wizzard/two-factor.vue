@@ -1,20 +1,13 @@
 <template>
-  <div class="dh-wizzard-step dh-two-factor" v-if="!isMethodSubmited">
+  <div class="dh-wizzard-step dh-two-factor">
     <div class="dh-wizzard-step-body">
-      Two factor authorization is enabled on your account, please choose 2FA source <br>
+      Two factor authorization is enabled on your account, you should know where do you get the code<br>
       <div class="dh-two-factor-radio-list">
-        <el-radio v-model="twoFAMethod" label="1" :disabled="!twoFAmethods[1]">SMS</el-radio><br>
-        <el-radio v-model="twoFAMethod" label="3" :disabled="!twoFAmethods[3]">Application</el-radio><br>
-        <el-radio v-model="twoFAMethod" label="2" :disabled="!twoFAmethods[2]">Backup code</el-radio>
-      </div>
-    </div>
-    <div class="el-dialog__footer">
-      <button class="dh-button" :disabled="!twoFAMethod" @click="isMethodSubmited = true">Choose</button>
-    </div>
-  </div>
-  <div class="dh-wizzard-step dh-two-factor" v-else>
-    <div class="dh-wizzard-step-body">
-      {{twoFAMethod == 2 ? 'You should already have pre-generated backup codes, please pick one that you haven\'t used before' : 'You should receive a verification code in a minute'}}
+        <el-radio v-model="twoFAMethod" :label="1" :disabled="!twoFAmethods[1]">I just got an SMS from Instagram with a code</el-radio><br>
+        <el-radio v-model="twoFAMethod" :label="3" :disabled="!twoFAmethods[3]">I'm using an application (Authy / Googe Authenticator / etc.)</el-radio><br>
+        <el-radio v-model="twoFAMethod" :label="2" :disabled="!twoFAmethods[2]">I have a pre-generated backup code that I haven't used before</el-radio>
+      </div><br/>
+      Please enter the code below:
       <input placeholder="Verification Code" v-model="twoFACode" class="dh-input" @input="error = null" :maxlength="twoFAMethod == 2 ? 8 : 6" :disabled="false">
       <div class="dh-wizzard-error" v-if="error">
         {{error}}
@@ -23,7 +16,7 @@
     <div class="el-dialog__footer">
       <button
         :class="{ 'dh-button': true, 'dh-loading': sending }"
-        :disabled="!twoFACode"
+        :disabled="!twoFACode || !twoFAMethod"
         @click="verifyCode">
         Verify
       </button>
@@ -40,7 +33,6 @@ export default {
     return {
       twoFACode: '',
       twoFAMethod: null,
-      isMethodSubmited: false,
       sending: false,
       error: null,
     }
