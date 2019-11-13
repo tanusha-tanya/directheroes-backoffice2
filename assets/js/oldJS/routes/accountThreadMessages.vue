@@ -521,7 +521,8 @@
           };
 
           if (!this.threadMessages) {
-            this.threadMessages = [];
+            this.threadMessages = body.messageList;
+            return;
           }
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
