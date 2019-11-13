@@ -27,6 +27,7 @@ import successAdded from './dh-connection-wizzard/success-added'
 import twoFactor from './dh-connection-wizzard/two-factor'
 import challenge from './dh-connection-wizzard/challenge'
 import checkpoint from './dh-connection-wizzard/checkpoint'
+import resetAccount from './dh-connection-wizzard/reset-account'
 
 export default {
   data() {
@@ -44,7 +45,8 @@ export default {
     successAdded,
     challenge,
     checkpoint,
-    twoFactor
+    twoFactor,
+    resetAccount
   },
 
   computed: {
@@ -74,6 +76,9 @@ export default {
           case 'account.two_factor.code_sent':
             this.title = 'Two factor authorization'
             return 'twoFactor'
+          case 'account.reset':
+            this.title = 'Alternative connection'
+            return 'resetAccount'
         }
       }
     },
