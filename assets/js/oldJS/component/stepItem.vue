@@ -118,7 +118,7 @@ export default {
       const { stepRowIndex, $store } = this;
       const { existConnection } = $store.state;
 
-      return existConnection //&& stepRowIndex > existConnection.stepRowIndex
+      return existConnection && stepRowIndex > existConnection.stepRowIndex
     },
 
     hasUserInputMatch() {
@@ -245,7 +245,7 @@ export default {
         font-size: 24px;
         font-weight: bold;
         letter-spacing: 2px;
-        animation: scale-element 1s infinite;
+      //   animation: scale-element 1s infinite;
       }
     }
 
