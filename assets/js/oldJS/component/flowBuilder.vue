@@ -89,12 +89,12 @@ export default {
               linkElements.push(target || null);
 
               if (matchElement !== 'linker' && failTarget) {
-                arrows.push({parent: `${element.id}-fail`, child: failTarget});
+                arrows.push({parent: `${element.id}-fail`, child: failTarget, stepId: stepRow.id});
                 linkElements.push(failTarget)
               }
 
               if (target) {
-                arrows.push({parent: element.id + suffix, child: target});
+                arrows.push({parent: element.id + suffix, child: target, stepId: stepRow.id});
               }
             };
 
@@ -317,6 +317,19 @@ export default {
 
       zoomTool.moveTo(positionX, positionY);
     },
+
+    stepsInOneBranch(endStepId, searchStepId) {
+      const { arrows, stepsInOneBranch } = this;
+      const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
+
+      if (!endStepConnection) return;
+
+      if (endStepConnection.stepId === searchStepId) {
+        return true
+      } else {
+        return stepsInOneBranch(endStepConnection.stepId, searchStepId)
+      }
+    }
   },
 
   mounted() {
