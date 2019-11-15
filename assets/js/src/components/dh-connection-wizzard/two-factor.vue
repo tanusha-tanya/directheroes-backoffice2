@@ -1,5 +1,21 @@
 <template>
-  <div class="dh-wizzard-step dh-two-factor">
+<div class="dh-wizzard-step dh-two-factor" v-if="hasNotCodeInfo">
+    <div class="dh-wizzard-step-body">
+      <ul>
+        <li>open Instagram app</li>
+        <li>go to settings</li>
+        <li>choose “Security”, then “Two-Factor Authentication”</li>
+        <li>select “Backup Codes”</li>
+        <li>click “Regenerate codes”</li>
+      </ul>
+      Then just take a code from the list. Each code can only be used once. Be sure to save the rest of codes in a secure place.
+    </div>
+    <div class="el-dialog__footer">
+      <button class="dh-button dh-reset-button" @click="toggleHelp">Back</button>
+      <button class="dh-button" @click="toggleHelp">I got the code</button>
+    </div>
+  </div>
+  <div class="dh-wizzard-step dh-two-factor" v-else>
     <div class="dh-wizzard-step-body">
       Two factor authorization is enabled on your account, you should know where do you get the code<br>
       <div class="dh-two-factor-radio-list">
@@ -14,6 +30,12 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <button
+        :class="{ 'dh-button': true, 'dh-reset-button': true,'dh-loading': sending }"
+        :disabled="sending"
+        @click="toggleHelp">
+         I don’t have the code
+      </button>
       <button
         :class="{ 'dh-button': true, 'dh-loading': sending }"
         :disabled="!twoFACode || !twoFAMethod"
@@ -35,6 +57,7 @@ export default {
       twoFAMethod: null,
       sending: false,
       error: null,
+      hasNotCodeInfo: false,
     }
   },
 
@@ -92,6 +115,15 @@ export default {
       })
     },
 
+    toggleHelp() {
+      this.hasNotCodeInfo = !this.hasNotCodeInfo;
+
+      if (this.hasNotCodeInfo) {
+        this.$emit('set-title', 'Get 2fa code')
+      } else {
+        this.$emit('set-title', 'Two factor authorization')
+      }
+    }
   }
 }
 </script>
@@ -109,6 +141,10 @@ export default {
   .dh-input {
     margin-top: 20px;
     width: 100%;
+  }
+
+  .el-dialog__footer {
+    justify-content: space-between !important;
   }
 }
 
