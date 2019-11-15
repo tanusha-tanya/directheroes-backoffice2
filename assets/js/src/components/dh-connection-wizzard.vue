@@ -78,7 +78,7 @@ export default {
             this.title = 'Two factor authorization'
             return 'twoFactor'
           case 'account.reset':
-            this.title = 'Alternative connection'
+            this.title = 'Retry'
             return 'resetAccount'
         }
       }

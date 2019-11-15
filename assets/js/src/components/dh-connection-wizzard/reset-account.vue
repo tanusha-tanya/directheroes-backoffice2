@@ -1,7 +1,7 @@
 <template>
   <div class="dh-wizzard-step dh-reset-account">
     <div class="dh-wizzard-step-body">
-      Instragram ... let's try again with alternative connection mechanism
+      It didn't work! Connection process might take a bit longer than usual: we need to start over and try an alternative method. Please be patient, it's a variation of a normal connection process. Sometimes you might need to start over up to 3 times
     </div>
     <div class="el-dialog__footer">
       <button :class="{'dh-button': true, 'dh-loading': reseting}" :disabled="reseting" @click="resetSession">Start over</button>
