@@ -15,6 +15,7 @@
       @set-account="setAccount"
       @close-wizzard="isShow = false"
       @re-login="reloginAccount"
+      @set-title="title = $event"
       ></component>
   </el-dialog>
 </template>
@@ -59,7 +60,7 @@ export default {
       } else {
         switch (account.connectStep) {
           case 'account.verify_password':
-            this.title = 'Enter password'
+            this.title = 'Clear previous attempt' //'Enter password'
             return 'enterPassword'
             break;
           case 'account.success':

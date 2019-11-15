@@ -1,5 +1,14 @@
 <template>
-  <div class="dh-wizzard-step dh-enter-password">
+  <div class="dh-wizzard-step dh-enter-password" v-if="!infoViwed">
+    <div class="dh-wizzard-step-body">
+      Please take your phone, open Instagram app, and reload news feed. Then click “it was me” if you see this prompt:
+      <img src="../../assets/it_was_me.png">
+    </div>
+    <div class="el-dialog__footer">
+      <button class="dh-button" @click="viewInfo">Next</button>
+    </div>
+  </div>
+  <div class="dh-wizzard-step dh-enter-password" v-else>
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="password" @input="error = null" v-model="password" placeholder="Enter password"/>
@@ -24,6 +33,7 @@ export default {
       password: '',
       connecting: false,
       error: null,
+      infoViwed: false,
     }
   },
 
@@ -82,6 +92,11 @@ export default {
 
         this.connecting = false;
       })
+    },
+
+    viewInfo() {
+      this.infoViwed = true;
+      this.$emit('set-title', 'Enter password')
     }
   }
 }
@@ -89,6 +104,12 @@ export default {
 
 <style lang="scss">
 .dh-enter-password {
+  img {
+    width: 200px;
+    display: block;
+    margin: 20px auto 0;
+  }
+
   .dh-select-account-controls {
     display: flex;
     align-items: center;

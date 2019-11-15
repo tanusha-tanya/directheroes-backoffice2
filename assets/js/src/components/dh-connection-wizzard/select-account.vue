@@ -1,5 +1,24 @@
 <template>
-  <div class="dh-wizzard-step dh-select-account">
+  <div class="dh-wizzard-step dh-select-account" v-if="hasPartners">
+    <div class="dh-wizzard-step-body">
+      Please warn ask your colleagues either to do not use the account while you’re getting it connected, or to pay attention to messages shown, and to click “it was me” if they see this prompt:
+      <img src="../../assets/it_was_me.png">
+    </div>
+    <div class="el-dialog__footer">
+      <span></span>
+      <button class="dh-button" @click="$emit('set-account', accountToAdd)">I did that</button>
+    </div>
+  </div>
+  <div class="dh-wizzard-step dh-select-account" v-else-if="helpStep">
+    <div class="dh-wizzard-step-body">
+      Who is using this account on mobile?
+    </div>
+    <div class="el-dialog__footer">
+      <button class="dh-button dh-reset-button" @click="hasPartners = true">Multiple people</button>
+      <button class="dh-button" @click="$emit('set-account', accountToAdd)">Just me</button>
+    </div>
+  </div>
+  <div class="dh-wizzard-step dh-select-account" v-else>
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="text" v-model="login" @input="error = null" placeholder="Enter Instagram login" :disabled="finding" @keypress.enter="findAccount"/>
@@ -39,6 +58,9 @@ export default {
       foundAccount: null,
       error: null,
       claiming: false,
+      helpStep: false,
+      accountToAdd: null,
+      hasPartners: false,
     }
   },
 
@@ -100,16 +122,25 @@ export default {
         const { account_info } = data.response.body;
 
         this.claiming = false;
+        this.accountToAdd = account_info;
 
-        this.$emit('set-account', account_info);
+        this.helpStep = true;
+        this.$emit('set-title', 'Preparation');
       })
     }
+
   }
 }
 </script>
 
 <style lang="scss">
 .dh-select-account {
+  img {
+    width: 200px;
+    display: block;
+    margin: 20px auto 0;
+  }
+
   .dh-select-account-controls {
     display: flex;
     align-items: center;
@@ -118,11 +149,6 @@ export default {
 
   .dh-input {
     flex-grow: 1;
-  }
-
-  .dh-button {
-    min-width: 100px;
-    margin-left: 20px;
   }
 
   .dh-select-account-founded {
@@ -197,6 +223,10 @@ export default {
     width: 100%;
     text-align: center;
     margin-top: 4px;
+  }
+
+  .el-dialog__footer {
+    justify-content: space-between !important;
   }
 }
 </style>
