@@ -167,7 +167,7 @@
     <div class="dh-info" v-else>
       <nolivechat/>
       <span>
-        Select one of the discussion to see<br>
+        Select one of the discussions to see<br>
         new messages
       </span>
     </div>
@@ -521,7 +521,8 @@
           };
 
           if (!this.threadMessages) {
-            this.threadMessages = [];
+            this.threadMessages = body.messageList;
+            return;
           }
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
