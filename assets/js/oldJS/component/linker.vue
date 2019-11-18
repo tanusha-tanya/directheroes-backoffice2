@@ -24,7 +24,7 @@ export default {
       const { linkerChild } = this;
       const firstElement = linkerChild.elements.find(element => !['checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
 
-      return (firstElement.type === 'group' && firstElement.displaySettings.subType) || firstElement.type
+      return firstElement.displaySettings.subType || firstElement.type
     },
 
     linkerName() {
@@ -39,6 +39,8 @@ export default {
           return 'User Input'
         case 'condition':
           return 'Condition'
+        case 'message':
+          return 'Message'
       }
     },
   }
@@ -87,6 +89,16 @@ export default {
 
       &:after {
         background-image: url(../assets/v5/actions.png);
+      }
+    }
+
+    .linker-message-type {
+      color: #6A12CB;
+      background-color: rgba(#6A12CB, .25);
+      border: 1px solid #6A12CB;
+
+      &:after {
+        background-image: url(../assets/v5/messages.png);
       }
     }
 

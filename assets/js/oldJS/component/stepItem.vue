@@ -31,7 +31,7 @@
       bind
     </div>
   </div>
-  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" @add-step="addElementStep"></component>
+  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" @add-step="addElementStep"></component>
 </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
     }
   },
 
-  props: ['steps', 'step', 'flowName', 'stepRowIndex'],
+  props: ['steps', 'step', 'flowName', 'stepRowIndex', 'campaignType'],
 
   components: {
     message,
@@ -405,6 +405,25 @@ export default {
       position: absolute;
       right: 20px;
       top: 10px;
+    }
+
+    .drag-handler {
+      position: absolute;
+      left: 2px;
+      top: calc(50% + 9px - 5px);
+      color: #D8D8D8;
+      width: 13px;
+      height: 10px;
+      opacity: 0;
+      background-image: url(../../oldJS/assets/drag.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 </style>

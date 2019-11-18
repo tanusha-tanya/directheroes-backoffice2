@@ -8,14 +8,20 @@
   >
     <div class="dialog-text">{{ message }}</div>
     <template slot="footer">
-      <button class="dh-button" @click="$emit('success')">Delete</button>
-      <button class="dh-button dh-reset-button" @click="cancelHandler">Cancel</button>
+      <button :class="{'dh-button': true, 'dh-loading': inProgress}" :disabled="inProgress" @click="successHandler">Delete</button>
+      <button class="dh-button dh-reset-button" :disabled="inProgress" @click="cancelHandler">Cancel</button>
     </template>
   </el-dialog>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      inProgress: false,
+    }
+  },
+
   props: ['value', 'message', 'title'],
 
   computed: {
@@ -34,7 +40,13 @@ export default {
     cancelHandler() {
       this.$emit('cancel'),
       this.isShow = false
+    },
+
+    successHandler() {
+      this.$emit('success');
+      this.inProgress = true;
     }
+
   }
 }
 </script>

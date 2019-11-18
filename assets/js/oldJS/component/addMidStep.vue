@@ -8,6 +8,16 @@
       @click="selectElement(action)">
       Add tag
     </div>
+    <div
+      class="action-item"
+      @click="selectElement(sendText)">
+      Text
+    </div>
+    <div
+      class="action-item"
+      @click="selectElement(sendMedia)">
+      Image
+    </div>
     <add-step-popup
       v-if="false"
       :available-list="availableList"
@@ -24,6 +34,7 @@
 
 <script>
 import actions from '../elements/actions';
+import messages from '../elements/messages';
 import addStepPopup from './addStepPopup';
 
 export default {
@@ -44,6 +55,16 @@ export default {
       const addTagAction = actions.find(action => action.template.body.action == 'addCategory');
 
       return addTagAction.template
+    },
+    sendText() {
+      const sendTextAction = messages.find(action => action.template.body.action == 'sendText');
+
+      return sendTextAction.template
+    },
+    sendMedia() {
+      const sendMediaAction = messages.find(action => action.template.body.action == 'sendMedia');
+
+      return sendMediaAction.template
     }
   },
 

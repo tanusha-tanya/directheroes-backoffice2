@@ -262,7 +262,7 @@ export default {
       },
 
       set(value) {
-        const { elements } = this. settings;
+        const { elements } = this.settings;
 
         if (value) {
           const nonSubscribersOnly = JSON.parse(JSON.stringify(nonSubscribersOnlyElement));
