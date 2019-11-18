@@ -5,7 +5,8 @@
       <img src="../../assets/it_was_me.png">
     </div>
     <div class="el-dialog__footer">
-      <button class="dh-button" @click="viewInfo">Next</button>
+      <button class="dh-button dh-reset-button" @click="viewInfo">Clicked that button</button>
+      <button class="dh-button" @click="viewInfo">Didn't pop up</button>
     </div>
   </div>
   <div class="dh-wizzard-step dh-enter-password" v-else>
@@ -18,6 +19,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <span></span>
       <button :class="{'dh-button': true, 'dh-loading': connecting}" :disabled="!password || connecting" @click="setPassword">Connect</button>
     </div>
   </div>
@@ -120,9 +122,8 @@ export default {
     flex-grow: 1;
   }
 
-  .dh-button {
-    min-width: 100px;
-    margin-left: 20px;
+  .el-dialog__footer {
+    justify-content: space-between !important;
   }
 }
 </style>

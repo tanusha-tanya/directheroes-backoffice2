@@ -43,6 +43,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <span></span>
       <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding || claiming" @click="findAccount">Find</button>
     </div>
   </div>

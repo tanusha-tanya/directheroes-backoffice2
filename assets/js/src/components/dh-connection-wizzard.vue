@@ -6,6 +6,7 @@
     :title="title"
     :close-on-click-modal="false"
     :destroy-on-close="true"
+    @close="checkAddAccount"
     class="dh-wizzard-dialog"
   >
     <component
@@ -16,6 +17,7 @@
       @close-wizzard="isShow = false"
       @re-login="reloginAccount"
       @set-title="title = $event"
+      ref="cwStep"
       ></component>
   </el-dialog>
 </template>
@@ -136,6 +138,14 @@ export default {
       })
 
       callback(request)
+    },
+
+    checkAddAccount() {
+      const { cwStep } = this.$refs;
+
+      if (cwStep.$vnode.componentOptions.tag == 'selectAccount' && (cwStep.helpStep || cwStep.hasPartners)) {
+        this.account = cwStep.accountToAdd
+      }
     }
   }
 }

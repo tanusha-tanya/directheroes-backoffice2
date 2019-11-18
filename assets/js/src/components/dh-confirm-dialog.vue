@@ -5,6 +5,7 @@
     width="554px"
     append-to-body
     class="dh-confirm-dialog"
+    @close="inProgress = false"
   >
     <div class="dialog-text">{{ message }}</div>
     <template slot="footer">

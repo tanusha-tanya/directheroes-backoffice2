@@ -1,12 +1,12 @@
 <template>
-<div class="dh-wizzard-step dh-two-factor" v-if="hasNotCodeInfo">
+  <div class="dh-wizzard-step dh-two-factor" v-if="hasNotCodeInfo">
     <div class="dh-wizzard-step-body">
       <ul>
-        <li>open Instagram app</li>
-        <li>go to settings</li>
-        <li>choose “Security”, then “Two-Factor Authentication”</li>
-        <li>select “Backup Codes”</li>
-        <li>click “Regenerate codes”</li>
+        <li>Open Instagram app.</li>
+        <li>Go to settings.</li>
+        <li>Choose “Security”, then “Two-Factor Authentication”.</li>
+        <li>Select “Recovery Codes”.</li>
+        <li>Tap “Get New Codes”.</li>
       </ul>
       Then just take a code from the list. Each code can only be used once. Be sure to save the rest of codes in a secure place.
     </div>
@@ -34,7 +34,7 @@
         :class="{ 'dh-button': true, 'dh-reset-button': true,'dh-loading': sending }"
         :disabled="sending"
         @click="toggleHelp">
-         I don’t have the code
+         How to get a backup code
       </button>
       <button
         :class="{ 'dh-button': true, 'dh-loading': sending }"
