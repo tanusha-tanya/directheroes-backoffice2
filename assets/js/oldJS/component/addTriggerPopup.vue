@@ -14,21 +14,30 @@
           {{trigger.title}}
       </div>
     </template>
+    <template v-if="hasUserInput">
+      <div
+        class="trigger-item"
+        @click="selectTrigger(userInput)">
+          {{userInput.title}}
+      </div>
+    </template>
   </el-popover>
 </template>
 
 <script>
 import triggers from '../elements/triggers'
+import { userInput } from '../elements/userInput';
 
 export default {
     data() {
       return {
         isShow: false,
         triggers,
+        userInput,
       };
     },
 
-    props: ['availableList'],
+    props: ['availableList', 'hasUserInput'],
 
     computed: {
       hasAvailableTriggers() {

@@ -3,12 +3,13 @@ export let userInput = {
   template: {
     type: 'group',
     displaySettings: {
-      subType: 'user-input'
+      subType: 'user-input',
+      type: 'user-input'
     },
     elements: [
-      {
-        type: 'checkpoint'
-      },
+      // {
+      //   type: 'checkpoint'
+      // },
       {
         type: 'rule',
         condition: {

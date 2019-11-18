@@ -1,5 +1,15 @@
 <template>
-  <div class="dh-wizzard-step dh-enter-password">
+  <div class="dh-wizzard-step dh-enter-password" v-if="!infoViwed">
+    <div class="dh-wizzard-step-body">
+      Please take your phone, open Instagram app, and reload news feed. Then click “it was me” if you see this prompt:
+      <img src="../../assets/it_was_me.png">
+    </div>
+    <div class="el-dialog__footer">
+      <button class="dh-button dh-reset-button" @click="viewInfo">Clicked that button</button>
+      <button class="dh-button" @click="viewInfo">Didn't pop up</button>
+    </div>
+  </div>
+  <div class="dh-wizzard-step dh-enter-password" v-else>
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="password" @input="error = null" v-model="password" placeholder="Enter password"/>
@@ -9,6 +19,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <span></span>
       <button :class="{'dh-button': true, 'dh-loading': connecting}" :disabled="!password || connecting" @click="setPassword">Connect</button>
     </div>
   </div>
@@ -24,6 +35,7 @@ export default {
       password: '',
       connecting: false,
       error: null,
+      infoViwed: false,
     }
   },
 
@@ -82,6 +94,11 @@ export default {
 
         this.connecting = false;
       })
+    },
+
+    viewInfo() {
+      this.infoViwed = true;
+      this.$emit('set-title', 'Enter password')
     }
   }
 }
@@ -89,6 +106,12 @@ export default {
 
 <style lang="scss">
 .dh-enter-password {
+  img {
+    width: 200px;
+    display: block;
+    margin: 20px auto 0;
+  }
+
   .dh-select-account-controls {
     display: flex;
     align-items: center;
@@ -99,9 +122,8 @@ export default {
     flex-grow: 1;
   }
 
-  .dh-button {
-    min-width: 100px;
-    margin-left: 20px;
+  .el-dialog__footer {
+    justify-content: space-between !important;
   }
 }
 </style>

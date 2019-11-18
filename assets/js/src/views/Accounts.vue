@@ -67,7 +67,7 @@
       </dh-confirm-dialog>
     </div>
     <dh-footer></dh-footer>
-    <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount"></dh-connection-wizzard>
+    <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizzard>
     <!-- <add-account-dialog :is-add-account="isAddAccount" @set-auth-account="setAuthAccount" :account-auth="accountToAuth" @close-dialog="isAddAccount = false"></add-account-dialog> -->
     <el-dialog
       :visible.sync="isExtraAccount"

@@ -118,7 +118,7 @@ export default {
       const { stepRowIndex, $store } = this;
       const { existConnection } = $store.state;
 
-      return existConnection && stepRowIndex > existConnection.stepRowIndex
+      return existConnection //&& stepRowIndex > existConnection.stepRowIndex
     },
 
     hasUserInputMatch() {
@@ -196,8 +196,6 @@ export default {
     bindAsExistStep() {
       const { step, $store } = this;
       const { existConnection } = $store.state;
-
-      console.log(step);
 
       existConnection.element.target = step.id;
       existConnection.step.elements.push(existConnection.element);

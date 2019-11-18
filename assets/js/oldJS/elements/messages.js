@@ -1,4 +1,5 @@
 import conditions from './conditions';
+import { userInput } from './userInput'
 
 let timeout = conditions.find(condition => condition.title === 'Timeout');
 
@@ -10,33 +11,34 @@ if (timeout) {
 }
 
 export default [
-    {
-      title: 'Text',
-      template: {
-        type: 'action',
-        displaySettings: {
-          subType: 'message'
-        },
-        body: {
-          action: 'sendText',
-          text: ''
-        }
+  {
+    title: 'Text',
+    template: {
+      type: 'action',
+      displaySettings: {
+        subType: 'message'
+      },
+      body: {
+        action: 'sendText',
+        text: ''
       }
-    },
-    {
-      title: 'Image',
-      template: {
-        type: 'action',
-        displaySettings: {
-          subType: 'message'
-        },
-        body: {
-          action: 'sendMedia',
-        }
-      }
-    },
-    {
-      title: 'Delay',
-      template: timeout.template
     }
-  ]
+  },
+  {
+    title: 'Image',
+    template: {
+      type: 'action',
+      displaySettings: {
+        subType: 'message'
+      },
+      body: {
+        action: 'sendMedia',
+      }
+    }
+  },
+  {
+    title: 'Delay',
+    template: timeout.template
+  },
+  userInput
+]
