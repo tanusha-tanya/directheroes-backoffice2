@@ -66,7 +66,7 @@
           <div class="dh-account-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl })`}"></div>
           <div style="overflow: hidden">
             <div class="dh-account-name">{{thread.contactProfile.username}}</div>
-            <div class="dh-account-last-message">{{thread.lastMessage.text || thread.lastMessage.type}}</div>
+            <div class="dh-account-last-message">{{thread.lastMessage && (thread.lastMessage.text || thread.lastMessage.type)}}</div>
           </div>
         </router-link>
       </div>
