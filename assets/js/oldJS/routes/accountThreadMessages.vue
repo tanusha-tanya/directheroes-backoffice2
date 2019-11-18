@@ -715,7 +715,7 @@
             const thread = this.allThreads.find(thread => thread.id == threadId);
 
             if (thread) {
-              thread.lastMessage = reverseThreadMessages[0];
+              thread.lastMessage = reverseThreadMessages.find(message => !(message.type || '').includes('conversation')) || {};
             }
           }
 
