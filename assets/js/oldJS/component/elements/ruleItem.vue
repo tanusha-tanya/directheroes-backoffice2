@@ -49,6 +49,7 @@ import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
 import elementsPermissions from '../../elements/permissions'
+import { userInputSubscriber } from '../../elements/userInput'
 
 
 export default {
@@ -115,15 +116,47 @@ export default {
         ]
       }
 
-      step.elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: hasOnMatch.target
-      })
+      let subStep = null;
+
+
+      if (element.displaySettings.subType === 'user-input') {
+        const rule = element.elements.find(element => element.type === 'rule');
+
+        subStep = {
+          id: (new ObjectId).toString(),
+          elements: [
+            {
+              id: (new ObjectId).toString(),
+              ...userInputSubscriber
+            },
+            {
+              id: (new ObjectId).toString(),
+              type: 'linker',
+              target: hasOnMatch.target
+            }
+          ]
+        }
+
+        rule.onMatch = {action: 'goto', target: subStep.id}
+      } else if (element.displaySettings.subType === 'trigger') {
+        const rule = element.elements.find(element => element.type === 'rule');
+
+        rule.onMatch = {action: 'goto', target: hasOnMatch.target}
+      } else {
+        step.elements.push({
+          id: (new ObjectId).toString(),
+          type: 'linker',
+          target: hasOnMatch.target
+        })
+      }
 
       hasOnMatch.target = step.id;
 
       this.$emit('add-step', step);
+
+      if (subStep) {
+        this.$emit('add-step', subStep);
+      }
     }
   }
 };

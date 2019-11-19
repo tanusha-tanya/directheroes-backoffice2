@@ -206,7 +206,7 @@ export default {
         case 'user-input':
           step.name = 'User Input'
 
-          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+          if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
             step.elements[0].elements.splice(0,0, {
               type: 'checkpoint',
               id: (new ObjectId).toString()

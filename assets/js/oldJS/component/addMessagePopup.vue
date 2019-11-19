@@ -32,7 +32,7 @@ export default {
 
   computed: {
     hasAvailableMessage() {
-      const { availableList, messages, getActionElement } = this;
+      const { availableList, messages } = this;
 
       if (!availableList) return true;
 
