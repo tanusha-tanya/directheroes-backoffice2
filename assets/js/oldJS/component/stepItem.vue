@@ -115,10 +115,12 @@ export default {
     },
 
     canConnectAsExist() {
-      const { stepRowIndex, $store } = this;
+      const { stepRowIndex, $store, builder, step } = this;
       const { existConnection } = $store.state;
 
-      return existConnection //&& stepRowIndex > existConnection.stepRowIndex
+      if (!existConnection || existConnection.step.id === step.id) return;
+
+      return !builder.stepsInOneBranch(existConnection.step.id, step.id)
     },
 
     hasUserInputMatch() {
@@ -132,6 +134,10 @@ export default {
       const subInputStep = steps.find(step => step.id === userInputRule.onMatch.target);
 
       return subInputStep.elements.find(element => element.type === 'linker');
+    },
+
+    builder() {
+      return this.$parent
     }
   },
 
@@ -211,8 +217,8 @@ export default {
 
     addElementStep(event, parentElement) {
       this.$emit('add-step', event, parentElement);
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -245,7 +251,7 @@ export default {
         font-size: 24px;
         font-weight: bold;
         letter-spacing: 2px;
-        animation: scale-element 1s infinite;
+      //   animation: scale-element 1s infinite;
       }
     }
 
