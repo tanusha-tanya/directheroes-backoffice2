@@ -49,7 +49,7 @@
           <input class="dh-input" v-model="newBroadcastName" placeholder="Enter Broadcast name">
         </div>
         <template slot="footer">
-          <button class="dh-button" @click="createBroadcast">Create</button>
+          <button class="dh-button" @click="createBroadcast" :disabled="!newBroadcastName">Create</button>
           <button class="dh-button dh-reset-button" @click="isAddBroadcast = false">Close</button>
         </template>
       </el-dialog>

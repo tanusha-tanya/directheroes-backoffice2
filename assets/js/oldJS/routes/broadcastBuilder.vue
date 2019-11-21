@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-    <flow-builder v-else :entry-item="currentBroadcast" :has-warning="hasWarning" :disabled="currentBroadcast && (isStarted || notStarted)" ref="flowBuilder"></flow-builder>
+    <flow-builder v-else-if="currentBroadcast" :entry-item="currentBroadcast" :disabled="startAt && blockStatus" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
     <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
     <div class="broadcast-settings-area" @click.stop="">
       <div class="broadcast-settings-controls">
@@ -47,12 +47,12 @@
             time-arrow-control
             :clearable="false"
             size="mini"
-            :disabled="isStarted || notStarted"
+            :disabled="(startAt && blockStatus) || Boolean(hasWarning)"
             :picker-options="pickerOptions"
             placeholder="Select date and time">
           </el-date-picker>
         or:
-          <button @click="setNowDate" :disabled="isStarted || notStarted">Broadcast now</button>
+          <button @click="setNowDate" :disabled="(startAt && blockStatus) || Boolean(hasWarning)">Broadcast now</button>
       </div>
       <div class="broadcast-settings-info">
         <div class="broadcast-settings-campaign-list">
@@ -105,10 +105,11 @@ export default {
   data() {
     return {
       isSettings: false,
-      timeToStart: null,
       broadcastTimeout: null,
+      broadcastRuntime: null,
       inGetCount: true,
       totalSubscribers: null,
+      broadcastStartTimeout: null,
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < Date.now();
@@ -137,30 +138,17 @@ export default {
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
+        const { account, currentBroadcast } = this
         const { settings } = this.currentBroadcast;
+        const startAtDate = moment(value);
 
-        Vue.set(settings, 'startAt', moment(value).utc().format());
-        settings.startTimeSetAt = moment().utc().format();
+        Vue.set(settings, 'startAt', startAtDate.isValid() ? startAtDate.utc().format() : null);
+        settings.startTimeSetAt = startAtDate.isValid() ? moment().utc().format() : null;
 
-        this.updateBroadcastStatus();
+        this.broadcastRuntime = null;
+
+        this.setBroadcastStart();
       }
-    },
-
-    isComplete() {
-      const { currentBroadcast } = this
-
-      return currentBroadcast.status.statusText == 'completed'
-    },
-
-    isStarted() {
-      const { currentBroadcast } = this
-      return currentBroadcast.status.statusText == 'running'
-    },
-
-    notStarted() {
-      const { isStarted, startAt, currentBroadcast } = this;
-
-      return !isStarted && startAt && moment().diff(new Date(startAt), 'minutes') > 1
     },
 
     hasWarning() {
@@ -220,7 +208,8 @@ export default {
     },
 
     messagesInfo() {
-      const { sentMessages = 0, remainingMessages = 0 } = this.currentBroadcast.status;
+      const broadcastRuntime = this.broadcastRuntime || {}
+      const { sentMessages = 0, remainingMessages = 0 } = broadcastRuntime;
 
       return {
         sentMessages: sentMessages,
@@ -230,7 +219,8 @@ export default {
     },
 
     conversationInfo() {
-      const { completedConversations = 0, remainingConversations = 0 } = this.currentBroadcast.status;
+      const broadcastRuntime = this.broadcastRuntime || {};
+      const { completedConversations = 0, remainingConversations = 0 } = broadcastRuntime;
 
       return {
         completedConversations: completedConversations,
@@ -240,7 +230,8 @@ export default {
     },
 
     estimatedTime() {
-      const { estimatedTime } = this.currentBroadcast.status;
+      const broadcastRuntime = this.broadcastRuntime || {};
+      const { estimatedTime } = broadcastRuntime;
       const date = new Date(null);
 
       if (!estimatedTime) return;
@@ -254,11 +245,25 @@ export default {
         stringTime = date.getUTCDay() + 'd ' + stringTime;
       }
 
-      return  stringTime
+      return stringTime
     },
 
     availableElements() {
       return elementsPermissions.fromBroadcastFlow
+    },
+
+    timeToStart() {
+      const { startAt } = this;
+
+      return `${moment().from(new Date(startAt), true)} to start`
+    },
+
+    blockStatus() {
+      const { broadcastRuntime } = this;
+
+      if (!broadcastRuntime) return true;
+
+      return ['running', 'compleated'].includes(broadcastRuntime.status);
     }
   },
 
@@ -289,21 +294,54 @@ export default {
       })
     },
 
-    setNowDate() {
-      const { currentBroadcast } = this;
+    setBroadcastStart() {
+      const { account, currentBroadcast } = this
+      const { settings } = this.currentBroadcast;
 
-      // currentBroadcast.status.statusText = 'running'
-      this.startAt = moment().utc().format()
+      clearTimeout(this.broadcastStartTimeout);
+
+      this.broadcastStartTimeout = setTimeout(() => {
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/${ currentBroadcast.id }/runtime-info`,
+          method: 'post',
+          data: {
+            accountId: account.id,
+            startAt: settings.startAt
+          }
+        }).then(({ data }) => {
+          this.broadcastRuntime = data.response.body.broadcastRuntime
+
+          this.updateBroadcastStatus();
+        }).catch(() => {
+          this.setBroadcastStart()
+        })
+      }, 3000)
+    },
+
+    setNowDate() {
+      this.startAt = moment().utc().format();
     },
 
     updateBroadcastStatus() {
-      const { isStarted, startAt, currentBroadcast, notStarted } = this;
-      const diff = moment(new Date(startAt)).diff();
-      let timeout = 60 * 1000;
+      const { startAt, currentBroadcast, updateBroadcastStatus } = this;
+
+      clearTimeout(this.broadcastTimeout)
+
+      if (!startAt) return;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/${ currentBroadcast.id }/runtime-info`,
+      }).then(({ data }) => {
+        this.broadcastRuntime = data.response.body.broadcastRuntime
+
+        this.broadcastTimeout = setTimeout(updateBroadcastStatus.bind(this), 10 * 1000)
+      }).catch(() => {
+        this.broadcastTimeout = setTimeout(updateBroadcastStatus.bind(this), 10 * 1000)
+      })
 
       // clearTimeout(this.broadcastTimeout)
 
-      this.timeToStart = (!startAt || moment().diff(new Date(startAt)) > 0) ? null : `${moment().from(new Date(startAt), true)} to start`
+      // this.timeToStart = (!startAt || moment().diff(new Date(startAt)) > 0) ? null : `${moment().from(new Date(startAt), true)} to start`
 
       // if ((diff > 60 * 60 * 1000) || isStarted || notStarted) return;
 

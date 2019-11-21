@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'flow-builder': true, 'flow-disabled': globalError}" v-if="entryItem" ref="flowBuilder">
+  <div :class="{'flow-builder': true, 'flow-disabled': globalError || disabled}" v-if="entryItem" ref="flowBuilder">
     <div class="zoom-element" @mousedown="blockEvent">
       <el-slider
         v-model="scale"
@@ -63,7 +63,7 @@ export default {
     }
   },
 
-  props: ['entryItem', 'hasWarning'],
+  props: ['entryItem', 'hasWarning', 'disabled'],
 
   components: {
     stepItem,

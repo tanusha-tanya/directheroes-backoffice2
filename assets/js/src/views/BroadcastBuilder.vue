@@ -3,18 +3,21 @@
     <dh-header title="Broadcast Builder">
       <div class="dh-campaign-controls" v-if="currentCampaign && hasSteps">
         <div class="dh-campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><triangle/>This flow is incomplete</div>
-        <div class="dh-campaign-settings-wrapper" v-if="builder.currentBroadcast">
-          <div class="info" v-if="builder.isComplete">
+        <div class="dh-campaign-settings-wrapper" v-if="builder">
+          <div class="info" v-if="builder.broadcastRuntime && builder.broadcastRuntime.status === 'completed'">
             <div>Broadcast complete</div>
           </div>
           <div class="info" v-else-if="!hasWarning">
-            <div class="start-message" v-if="builder.timeToStart">{{ builder.timeToStart }}</div>
-            <div class="fail-message" v-if="builder.notStarted">Campaign didn't start</div>
-            <div class="start-message" v-else-if="!builder.timeToStart && !builder.isStarted && !builder.notStarted && builder.startAt">Prepare to start</div>
-            <div class="start-message" v-if="builder.isStarted">Broadcast was started</div>
+            <template v-if="builder.broadcastRuntime && builder.startAt">
+              <div class="start-message" v-if="builder.broadcastRuntime.status === 'scheduled'">{{timeToStart(builder.startAt)}}</div>
+              <!-- <div class="fail-message" v-else-if="builder.notStarted">Campaign didn't start</div> -->
+              <!-- <div class="start-message" v-else-if="!builder.timeToStart && !builder.isStarted && !builder.notStarted && builder.startAt">Prepare to start</div> -->
+              <div class="start-message" v-else-if="builder.broadcastRuntime.status === 'running'">Broadcast was started</div>
+            </template>
             <div v-if="!builder.startAt">Click to set broadcast</div>
+            <div v-else-if="!builder.broadcastRuntime">Getting status info</div>
           </div>
-          <div class="dh-campaign-gear" @click="builder.isSettings = !builder.isSettings">
+          <div class="dh-campaign-gear" @click="toggleBuilderSettings">
             <gear/>
           </div>
         </div>
@@ -28,6 +31,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import gear from '../assets/gear.svg'
@@ -54,6 +58,7 @@ export default {
   data() {
     return {
       currentCampaign: null,
+      builder: null
     }
   },
 
@@ -87,10 +92,6 @@ export default {
 
       return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
     },
-
-    builder() {
-      return this.$refs.oldBuilder
-    }
   },
 
   methods: {
@@ -105,6 +106,10 @@ export default {
       if (currentCampaign) {
         this.currentCampaign = currentCampaign;
       }
+
+      this.$nextTick(() => {
+        this.builder = this.$refs.oldBuilder;
+      })
     },
 
     findWarningStep() {
@@ -112,7 +117,17 @@ export default {
       const { oldBuilder } = this.$refs;
 
       oldBuilder.findEntryStep(hasWarning.id);
-    }
+    },
+
+    toggleBuilderSettings() {
+      const { builder } = this;
+
+      builder.isSettings = !builder.isSettings;
+    },
+
+    timeToStart(startAt) {
+      return `${moment().from(new Date(startAt), true)} to start`
+    },
   },
 
   watch:{
