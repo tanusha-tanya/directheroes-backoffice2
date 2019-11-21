@@ -263,7 +263,7 @@ export default {
 
       if (!broadcastRuntime) return true;
 
-      return ['running', 'compleated'].includes(broadcastRuntime.status);
+      return ['running', 'completed'].includes(broadcastRuntime.status);
     }
   },
 
