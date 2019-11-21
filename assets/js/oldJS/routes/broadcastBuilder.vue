@@ -654,10 +654,6 @@ export default {
       }
     }
   }
-
-  .flow-builder {
-    height: calc(100% - 50px);
-  }
 }
 
 .add-disabled-popup > * {
