@@ -240,9 +240,10 @@ export default {
 
       let stringTime = date.getUTCHours() + 'h ' + date.getUTCMinutes() + 'm ' +  date.getUTCSeconds() + 's';
 
+      const days = Math.floor(estimatedTime / (3600*24));
 
-      if (date.getDay()) {
-        stringTime = date.getUTCDay() + 'd ' + stringTime;
+      if (days) {
+        stringTime = days + 'd ' + stringTime;
       }
 
       return stringTime

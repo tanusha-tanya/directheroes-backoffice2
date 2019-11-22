@@ -99,10 +99,13 @@ export default {
   computed: {
     broadcasts() {
       const { currentAccountData } = this.$store.state;
+      let campaigns = null;
 
       if (!currentAccountData) return null;
 
-      return currentAccountData.campaigns.filter(campaign => campaign.type == 'broadcast' && !campaign.isArchived);
+      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
+
+      return campaigns.reverse();
     },
 
     currentAccountData() {
