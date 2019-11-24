@@ -103,7 +103,7 @@ export default {
 
       if (!currentAccountData) return null;
 
-      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
+      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'broadcast' && !campaign.isArchived);
 
       return campaigns.reverse();
     },
