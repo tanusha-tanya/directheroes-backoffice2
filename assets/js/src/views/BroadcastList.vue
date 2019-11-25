@@ -155,7 +155,7 @@ export default {
       this.isAddBroadcast = false;
       this.newBroadcastName = '';
 
-      // this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
+      this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
     },
 
     deleteCampaign() {
