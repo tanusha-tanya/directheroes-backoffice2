@@ -24,9 +24,10 @@
             </div>
           </div>
         </div>
-        <div class="dh-campaign-test">
+        <div class="dh-campaign-test" v-if="false">
           <button class="dh-button dh-small" :disabled="hasWarning" @click="isTestCampaign = true">Test broadcast</button>
         </div>
+        <span></span>
       </div>
     </dh-header>
     <div class="dh-view-content">
