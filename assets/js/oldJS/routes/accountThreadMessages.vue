@@ -37,17 +37,17 @@
                 </div>
                 <div class="dh-option">Follower count</div>
                 <div class="dh-option dh-sub-option">
-                  <div :class="{'dh-is-selected': filters.followerCount.gte}"><span>Greater then</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
+                  <div :class="{'dh-is-selected': filters.followerCount.gte}"><span>Greater than</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
                 </div>
                 <div class="dh-option dh-sub-option">
-                  <div :class="{'dh-is-selected': filters.followerCount.lte}"><span>Less then</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
+                  <div :class="{'dh-is-selected': filters.followerCount.lte}"><span>Less than</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
                 </div>
                 <div class="dh-option">Following count</div>
                 <div class="dh-option dh-sub-option">
-                  <div><span :class="{'dh-is-selected': filters.followingCount.gte}">Greater then</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
+                  <div><span :class="{'dh-is-selected': filters.followingCount.gte}">Greater than</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
                 </div>
                 <div class="dh-option dh-sub-option">
-                  <div><span :class="{'dh-is-selected': filters.followingCount.lte}" >Less then</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
+                  <div><span :class="{'dh-is-selected': filters.followingCount.lte}" >Less than</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
                 </div>
               </div>
             </div>
