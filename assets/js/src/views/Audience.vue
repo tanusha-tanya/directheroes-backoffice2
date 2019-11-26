@@ -38,8 +38,10 @@
               </div>
             </div>
             <template slot="reference">
-              <div class="dh-filter-title">Campaigns</div>
-              <div class="dh-filter-info">All</div>
+              <div class="dh-filter-wrapper">
+                <div class="dh-filter-title">Campaigns</div>
+                <div :class="{'dh-filter-info': true, 'dh-filter-selected': campaignsFilterText }">{{campaignsFilterText || 'All'}}</div>
+              </div>
             </template>
           </el-popover>
         </div>
@@ -60,8 +62,10 @@
               </div>
             </div>
             <template slot="reference">
-              <div class="dh-filter-title">Categories</div>
-              <div class="dh-filter-info">All</div>
+              <div class="dh-filter-wrapper">
+                <div class="dh-filter-title">Categories</div>
+                <div :class="{'dh-filter-info': true, 'dh-filter-selected': categoriesFilterText }">{{categoriesFilterText || 'All'}}</div>
+              </div>
             </template>
           </el-popover>
         </div>
@@ -182,6 +186,36 @@ export default {
           return 'ignored'
           break;
       }
+    },
+
+    campaignsFilterText() {
+      const { campaigns } = this.filters;
+      let filterText = '';
+
+      if (campaigns.in.length) {
+        filterText += `entered in ${ campaigns.in.length }`
+      }
+
+      if (campaigns.nin.length) {
+        filterText += (filterText ? ', ' : '') + `none ${ campaigns.nin.length }`
+      }
+
+      return filterText
+    },
+
+    categoriesFilterText() {
+      const { categories } = this.filters;
+      let filterText = '';
+
+      if (categories.in.length) {
+        filterText += `has ${ categories.in.length }`
+      }
+
+      if (categories.nin.length) {
+        filterText += (filterText ? ', ' : '') + `none ${ categories.nin.length }`
+      }
+
+      return filterText
     },
 
     campaigns() {
@@ -331,7 +365,7 @@ export default {
     display: flex;
     align-items: center;
 
-    span {
+    .dh-filter-wrapper {
       display: flex;
       align-items: center;
       text-transform: uppercase;
@@ -347,6 +381,10 @@ export default {
 
     .dh-filter-info {
       color: #252631;
+
+      &.dh-filter-selected {
+        color: #9E4CF9;
+      }
     }
 
     &.dh-campaign-filter {
@@ -361,6 +399,28 @@ export default {
 
   .el-select {
     width: 100%;
+
+    .el-input {
+      &.is-focus {
+        .el-input__inner {
+          border-color: #9E4CF9;
+        }
+      }
+
+      .el-input__inner:focus {
+        border-color: #9E4CF9;
+      }
+    }
+  }
+}
+
+div.el-select-dropdown {
+  &.is-multiple {
+    .el-select-dropdown__item {
+      &.selected {
+        color: #9E4CF9;
+      }
+    }
   }
 }
 </style>
