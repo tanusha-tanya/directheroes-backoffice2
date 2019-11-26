@@ -8,7 +8,7 @@
     >
     <div class="dh-campaign-test-body" v-if="!sent">
       <el-select
-        v-model="selectedSubscriber"
+        v-model="selectedSubscriberId"
         remote
         filterable
         popper-class="dh-subscribers-dropdown"
@@ -19,7 +19,7 @@
           v-for="subscriber in subscribers"
           :key="subscriber.id"
           :label="subscriber.username"
-          :value="subscriber">
+          :value="subscriber.id">
           <div class="dh-subscriber-item">
             <div class="dh-subscriber-userpic" :style="{'background-image': `url(${ subscriber.contactProfile.profilePicUrl })`}"></div>
             <div class="dh-subscriber-info">
@@ -63,7 +63,7 @@ export default {
       sending: false,
       subscribers: [],
       searching: false,
-      selectedSubscriber: null,
+      selectedSubscriberId: null,
       source: null,
       sent: false
     }
@@ -86,6 +86,11 @@ export default {
       return this.$route.params.accountId
     },
 
+    selectedSubscriber() {
+      const { selectedSubscriberId, subscribers } = this;
+
+      return subscribers.find(subscriber => subscriber.id === selectedSubscriberId);
+    }
   },
 
   methods: {
