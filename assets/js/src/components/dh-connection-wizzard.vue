@@ -13,10 +13,12 @@
       :is="wizzardState"
       :account="account"
       :protocol="protocol"
+      :is-first-time="isFirstTime"
       @set-account="setAccount"
       @close-wizzard="isShow = false"
       @re-login="reloginAccount"
       @set-title="title = $event"
+      @first-run="isFirstTime = false"
       ref="cwStep"
       ></component>
   </el-dialog>
@@ -36,7 +38,8 @@ export default {
   data() {
     return {
       title: '',
-      accountData: null
+      accountData: null,
+      isFirstTime: true,
     }
   },
 
@@ -49,7 +52,7 @@ export default {
     challenge,
     checkpoint,
     twoFactor,
-    resetAccount
+    resetAccount,
   },
 
   computed: {
@@ -62,7 +65,7 @@ export default {
       } else {
         switch (account.connectStep) {
           case 'account.verify_password':
-            this.title = 'Clear previous attempt' //'Enter password'
+            this.title = 'Enter password'
             return 'enterPassword'
             break;
           case 'account.success':

@@ -1,14 +1,23 @@
 <template>
-  <div class="dh-wizzard-step dh-enter-password" v-if="!infoViwed">
+  <div class="dh-wizzard-step dh-enter-password" v-if="currentState === 'preparation'">
     <div class="dh-wizzard-step-body">
-      Please take your phone, open Instagram app, and reload news feed. Then click “it was me” if you see this prompt:
-      <img src="../../assets/it_was_me.png">
+      Who is using this account on mobile?
     </div>
     <div class="el-dialog__footer">
-      <button class="dh-button dh-reset-button" @click="viewInfo">Clicked that button</button>
-      <button class="dh-button" @click="viewInfo">Didn't pop up</button>
+      <button class="dh-button dh-reset-button" @click="currentState = 'preparation-2'">Multiple people</button>
+      <button class="dh-button" @click="currentState = 'checkpoint'">Just me</button>
     </div>
   </div>
+  <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
+    <div class="dh-wizzard-step-body">
+      Please ask your colleagues to do not use the account while you're getting it connected, it might take up to 15 minutes.
+    </div>
+    <div class="el-dialog__footer">
+      <button class="dh-button dh-reset-button" @click="currentState = 'checkpoint'">No one is using it</button>
+      <button class="dh-button" @click="$emit('close-wizzard')">It's in use, I have to waitt</button>
+    </div>
+  </div>
+  <checkpoint v-else-if="currentState === 'checkpoint'" @re-login="relogin($event)"></checkpoint>
   <div class="dh-wizzard-step dh-enter-password" v-else>
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
@@ -27,19 +36,31 @@
 
 <script>
 import axios from 'axios'
-import sodium from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers'
+import checkpoint from './checkpoint';
 
 export default {
   data() {
+    const { isFirstTime } = this;
+
+    if (isFirstTime) {
+      this.$emit('set-title', 'Preparation')
+    }
+
     return {
       password: '',
       connecting: false,
       error: null,
       infoViwed: false,
+      currentState: isFirstTime ? 'preparation' : ''
     }
   },
 
-  props: ['account', 'protocol'],
+  props: ['account', 'protocol', 'isFirstTime'],
+
+  components: {
+    checkpoint
+  },
 
   methods: {
     setPassword() {
@@ -96,9 +117,17 @@ export default {
       })
     },
 
-    viewInfo() {
-      this.infoViwed = true;
-      this.$emit('set-title', 'Enter password')
+    relogin(callback) {
+      this.currentState = '';
+      // this.$emit('re-login', (request) => {
+      //   callback(request)
+
+      //   request.then(() => {
+      //     this.$nextTick(() => {
+      //       this.currentState = '';
+      //     })
+      //   })
+      // })
     }
   }
 }
