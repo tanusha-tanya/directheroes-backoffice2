@@ -193,11 +193,11 @@ export default {
       let filterText = '';
 
       if (campaigns.in.length) {
-        filterText += `entered in ${ campaigns.in.length }`
+        filterText += `${ campaigns.in.length } selected`
       }
 
       if (campaigns.nin.length) {
-        filterText += (filterText ? ', ' : '') + `none ${ campaigns.nin.length }`
+        filterText += (filterText ? ', ' : '') + `${ campaigns.nin.length } excluded`
       }
 
       return filterText
@@ -208,11 +208,11 @@ export default {
       let filterText = '';
 
       if (categories.in.length) {
-        filterText += `has ${ categories.in.length }`
+        filterText += `${ categories.in.length } selected`
       }
 
       if (categories.nin.length) {
-        filterText += (filterText ? ', ' : '') + `none ${ categories.nin.length }`
+        filterText += (filterText ? ', ' : '') + `${ categories.nin.length } excluded`
       }
 
       return filterText
