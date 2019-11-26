@@ -4,7 +4,7 @@
       <div class="dh-accounts-tabs">
         <router-link :to="{ name: 'livechat' }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': !['favorites', 'ignored'].includes($route.query.sub)}">Campaigns</router-link>
         <div class="dh-divider"></div>
-        <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'ignored'}">Inbox</router-link>
+        <router-link :to="{ name: 'livechat', query: { sub: 'ignored' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': isInbox}">Inbox</router-link>
         <div class="dh-divider"></div>
         <router-link :to="{ name: 'livechat', query: { sub: 'favorites' } }" tag="div" :class="{'dh-accounts-tab': true, 'dh-accounts-tab-active': $route.query.sub === 'favorites'}">Favorites</router-link>
       </div>
@@ -23,32 +23,34 @@
                     <el-option label="Not Favorite" :value="false"></el-option>
                   </el-select>
                 </div>
-                <div :class="{'dh-select':true, 'dh-is-selected': filters.verified}">
-                  <div class="dh-select-title">Verified</div>
-                  <el-select v-model="filters.verified" size="small" popper-class="dh-select-popper">
-                    <el-option label="All" :value="null"></el-option>
-                    <el-option label="Verified" :value="true"></el-option>
-                    <el-option label="Not Verified" :value="false"></el-option>
-                  </el-select>
-                </div>
-                <div class="dh-option" v-if="$route.query.sub !== 'ignored'"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
-                <div class="dh-search-input-campaigns-list" v-if="isCategoryFilters">
-                  <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="filters.categories"></check-box-branch>
-                </div>
-                <div class="dh-option">Follower count</div>
-                <div class="dh-option dh-sub-option">
-                  <div :class="{'dh-is-selected': filters.followerCount.gte}"><span>Greater than</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
-                </div>
-                <div class="dh-option dh-sub-option">
-                  <div :class="{'dh-is-selected': filters.followerCount.lte}"><span>Less than</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
-                </div>
-                <div class="dh-option">Following count</div>
-                <div class="dh-option dh-sub-option">
-                  <div><span :class="{'dh-is-selected': filters.followingCount.gte}">Greater than</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
-                </div>
-                <div class="dh-option dh-sub-option">
-                  <div><span :class="{'dh-is-selected': filters.followingCount.lte}" >Less than</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
-                </div>
+                <template v-if="!isInbox">
+                  <div :class="{'dh-select':true, 'dh-is-selected': filters.verified}">
+                    <div class="dh-select-title">Verified</div>
+                    <el-select v-model="filters.verified" size="small" popper-class="dh-select-popper">
+                      <el-option label="All" :value="null"></el-option>
+                      <el-option label="Verified" :value="true"></el-option>
+                      <el-option label="Not Verified" :value="false"></el-option>
+                    </el-select>
+                  </div>
+                  <div class="dh-option" v-if="$route.query.sub !== 'ignored'"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
+                  <div class="dh-search-input-campaigns-list" v-if="isCategoryFilters">
+                    <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="filters.categories"></check-box-branch>
+                  </div>
+                  <div class="dh-option">Follower count</div>
+                  <div class="dh-option dh-sub-option">
+                    <div :class="{'dh-is-selected': filters.followerCount.gte}"><span>Greater than</span><input type="number" v-model="filters.followerCount.gte" class="dh-input"></div>
+                  </div>
+                  <div class="dh-option dh-sub-option">
+                    <div :class="{'dh-is-selected': filters.followerCount.lte}"><span>Less than</span><input type="number" v-model="filters.followerCount.lte" class="dh-input"></div>
+                  </div>
+                  <div class="dh-option">Following count</div>
+                  <div class="dh-option dh-sub-option">
+                    <div><span :class="{'dh-is-selected': filters.followingCount.gte}">Greater than</span><input type="number" v-model="filters.followingCount.gte" class="dh-input"></div>
+                  </div>
+                  <div class="dh-option dh-sub-option">
+                    <div><span :class="{'dh-is-selected': filters.followingCount.lte}" >Less than</span><input type="number" v-model="filters.followingCount.lte" class="dh-input"></div>
+                  </div>
+                </template>
               </div>
             </div>
             <div :class="{'dh-search-filter':true, 'dh-search-filter-active': isOneFilterSelected}" slot="reference">
@@ -356,6 +358,13 @@
         if (!threadMessages) return;
 
         return threadMessages.slice(0).reverse()
+      },
+
+
+      isInbox() {
+        const { $route } = this;
+
+        return $route.query.sub === 'ignored'
       }
     },
 

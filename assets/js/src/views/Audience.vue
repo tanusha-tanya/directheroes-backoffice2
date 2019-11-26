@@ -12,13 +12,58 @@
             <el-option label="Ignored" value="ignored" v-if="isAdmin"></el-option>
           </el-select>
         </div>
-        <div class="dh-select dh-audience-status">
-          <div class="dh-select-title">Status</div>
+        <div class="dh-select dh-audience-status" v-if="isAdmin">
+          <div class="dh-select-title" >Conversation</div>
           <el-select v-model="status" @change="getAudience" size="small" popper-class="dh-select-popper">
             <el-option label="All" value="audience"></el-option>
             <el-option label="Stuck" value="stuck"></el-option>
             <el-option label="Ignored" value="ignored"></el-option>
           </el-select>
+        </div>
+        <div class="dh-divider"></div>
+        <div class="dh-filter dh-campaign-filter">
+          <el-popover placement="bottom" trigger="click" popper-class="dh-campaign-filter-popover" :width="300">
+            <div class="dh-options" v-if="account">
+              <div class="dh-option">entered any of</div>
+              <div class="dh-select-wrapper">
+                <el-select v-model="filters.campaigns.in" multiple placeholder="Select campaign">
+                  <el-option v-for="campaign in campaigns" :key="campaign.id" :label="campaign.name" :value="campaign.id"></el-option>
+                </el-select>
+              </div>
+              <div class="dh-option">entered none of</div>
+              <div class="dh-select-wrapper">
+                <el-select v-model="filters.campaigns.nin" multiple placeholder="Select campaign">
+                  <el-option v-for="campaign in campaigns" :key="campaign.id" :label="campaign.name" :value="campaign.id"></el-option>
+                </el-select>
+              </div>
+            </div>
+            <template slot="reference">
+              <div class="dh-filter-title">Campaigns</div>
+              <div class="dh-filter-info">All</div>
+            </template>
+          </el-popover>
+        </div>
+        <div class="dh-filter">
+          <el-popover placement="bottom" trigger="click" popper-class="dh-category-filter-popover" :width="300">
+            <div class="dh-options" v-if="account">
+              <div class="dh-option">has any of</div>
+              <div class="dh-select-wrapper">
+                <el-select v-model="filters.categories.in" multiple placeholder="Select category">
+                  <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id"></el-option>
+                </el-select>
+              </div>
+              <div class="dh-option">has none of</div>
+              <div class="dh-select-wrapper">
+                <el-select v-model="filters.categories.nin" multiple placeholder="Select category">
+                  <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id"></el-option>
+                </el-select>
+              </div>
+            </div>
+            <template slot="reference">
+              <div class="dh-filter-title">Categories</div>
+              <div class="dh-filter-info">All</div>
+            </template>
+          </el-popover>
         </div>
         <div class="dh-divider"></div>
         <div class="dh-search-input">
@@ -93,8 +138,16 @@ export default {
       filters: {
         subscribed: true,
         usernameQuery: '',
-        campaignId: null,
+        campaigns: {
+          in: [],
+          nin: []
+        },
+        categories: {
+          in: [],
+          nin: []
+        }
       },
+      applyFilterTimeout:null,
       paging: {
         page: 1,
         totalPageCount: 1
@@ -129,6 +182,20 @@ export default {
           return 'ignored'
           break;
       }
+    },
+
+    campaigns() {
+      const { currentAccountData } = this.$store.state;
+
+      if (!currentAccountData) return;
+
+      return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
+    },
+
+    categories() {
+      const { subscriberCategoryList } = this.account;
+
+      return subscriberCategoryList;
     }
   },
 
@@ -166,6 +233,28 @@ export default {
   watch: {
     '$store.state.accounts'() {
       this.getAudience();
+    },
+
+    'filters.campaigns': {
+      handler() {
+        const { getAudience } = this;
+
+        clearTimeout(this.applyFilterTimeout);
+
+        this.applyFilterTimeout = setTimeout(getAudience, 2500)
+      },
+      deep:true
+    },
+
+    'filters.categories': {
+      handler() {
+        const { getAudience } = this;
+
+        clearTimeout(this.applyFilterTimeout);
+
+        this.applyFilterTimeout = setTimeout(getAudience, 2500)
+      },
+      deep:true
     }
   }
 }
@@ -236,6 +325,42 @@ export default {
     padding: 30px 0 10px;
     display: flex;
     justify-content: space-between;
+  }
+
+  .dh-filter {
+    display: flex;
+    align-items: center;
+
+    span {
+      display: flex;
+      align-items: center;
+      text-transform: uppercase;
+      font-weight: 500;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .dh-filter-title{
+      color: #98A9BC;
+      margin-right: 12px;
+    }
+
+    .dh-filter-info {
+      color: #252631;
+    }
+
+    &.dh-campaign-filter {
+      margin-right: 20px;
+    }
+  }
+}
+
+.dh-select-wrapper {
+  padding: 0 13px 0 25px;
+  margin: -10px 0 10px;
+
+  .el-select {
+    width: 100%;
   }
 }
 </style>
