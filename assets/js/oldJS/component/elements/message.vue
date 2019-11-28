@@ -106,7 +106,7 @@ export default {
     broadcastAvailableList() {
       const firstElement = this.elements[0];
 
-      return [ firstElement.body.action === 'sendText' ? 'sendMedia' : 'sendText']
+      return firstElement.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
     }
   },
 
