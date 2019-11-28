@@ -185,9 +185,9 @@ export default {
     const { followersGraph, likeGraph, commentGraph, account, analyticInfo } = this;
 
     axios({
-      url: 'http://app13.directheroes.com:8080/api/v1/account/short-report',
+      url: 'https://igwm.directheroes.com/api/v1/account/short-report',
       params: {
-        username: 'absofacto' || account.login
+        username: account.login
       }
     }).then(({ data }) => {
       const analyticInfo = data.reports;
