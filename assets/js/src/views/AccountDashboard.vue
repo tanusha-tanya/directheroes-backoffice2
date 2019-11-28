@@ -18,7 +18,10 @@
           </div>
         </div>
       </div>
-      <div class="dh-dashboard-analytics">
+      <div class="dh-dashboard-title" v-if="analyticInfo">
+        Stats
+      </div>
+      <div class="dh-dashboard-analytics" v-if="analyticInfo">
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
@@ -88,6 +91,7 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhCampaigns from '../components/dh-campaigns'
+import moment from 'moment'
 import Vue from 'vue'
 import axios from 'axios'
 import VueC3 from 'vue-c3'
@@ -98,110 +102,7 @@ export default {
       followersGraph: new Vue(),
       likeGraph: new Vue(),
       commentGraph: new Vue(),
-      analyticInfo: {
-        "followerCount": [
-          {
-            "time": "2019-11-21T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-22T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-23T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-24T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-25T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-26T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-27T00:00:00Z",
-            "value": 11
-          },
-          {
-            "time": "2019-11-28T00:00:00Z",
-            "value": 11
-          }
-        ],
-        "likeCount": [
-          {
-            "time": "2019-11-21T00:00:00Z",
-            "value": 27892
-          },
-          {
-            "time": "2019-11-22T00:00:00Z",
-            "value": 28118
-          },
-          {
-            "time": "2019-11-23T00:00:00Z",
-            "value": 28256
-          },
-          {
-            "time": "2019-11-24T00:00:00Z",
-            "value": 28554
-          },
-          {
-            "time": "2019-11-25T00:00:00Z",
-            "value": 28804
-          },
-          {
-            "time": "2019-11-26T00:00:00Z",
-            "value": 28978
-          },
-          {
-            "time": "2019-11-27T00:00:00Z",
-            "value": 29192
-          },
-          {
-            "time": "2019-11-28T00:00:00Z",
-            "value": 29276
-          }
-        ],
-        "commentCount": [
-          {
-            "time": "2019-11-21T00:00:00Z",
-            "value": 1534
-          },
-          {
-            "time": "2019-11-22T00:00:00Z",
-            "value": 1534
-          },
-          {
-            "time": "2019-11-23T00:00:00Z",
-            "value": 1544
-          },
-          {
-            "time": "2019-11-24T00:00:00Z",
-            "value": 1550
-          },
-          {
-            "time": "2019-11-25T00:00:00Z",
-            "value": 1552
-          },
-          {
-            "time": "2019-11-26T00:00:00Z",
-            "value": 1552
-          },
-          {
-            "time": "2019-11-27T00:00:00Z",
-            "value": 1552
-          },
-          {
-            "time": "2019-11-28T00:00:00Z",
-            "value": 1552
-          }
-        ]
-      }
+      analyticInfo: null
     }
   },
 
@@ -282,98 +183,124 @@ export default {
 
   mounted() {
     const { followersGraph, likeGraph, commentGraph, account, analyticInfo } = this;
-    const { followerCount, likeCount, commentCount } = analyticInfo;
 
-    // axios({
-    //   url: 'http://app13.directheroes.com:8080/api/v1/account/short-report',
-    //   params: {
-    //     username: 'absofacto' || account.login
-    //   }
-    // }).then(({ data }) => {
-    //   console.log(data);
+    axios({
+      url: 'http://app13.directheroes.com:8080/api/v1/account/short-report',
+      params: {
+        username: 'absofacto' || account.login
+      }
+    }).then(({ data }) => {
+      const analyticInfo = data.reports;
+      const { followerCount, likeCount, commentCount } = analyticInfo;
 
-    // })
+      if ( !followerCount && !likeCount && !commentCount) return;
 
-    this.$nextTick(() => {
-      followersGraph.$emit('init', {
-        data: {
-          type: 'area',
-          labels: false,
-          columns: [
-            ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
-          ]
-        },
-        size: {
-          height: 80,
-        },
-        color: {
-          pattern: ['#9E4CF9']
-        },
-        axis: {
-          y: {
-            show: false
+      this.analyticInfo = analyticInfo;
+      console.log(followerCount.map(followerItem => followerItem.time));
+
+
+      this.$nextTick(() => {
+        followersGraph.$emit('init', {
+          data: {
+            x: 'x',
+            xFormat: '%Y-%m-%d',
+            type: 'area',
+            labels: false,
+            columns: [
+              ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
+              ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
+            ]
           },
-          x: {
-            show: false
-          }
-        },
-        legend: {
-          hide: true
-        }
-      });
-
-      likeGraph.$emit('init', {
-        data: {
-          type: 'area',
-          labels: false,
-          columns: [
-            ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
-          ]
-        },
-        color: {
-          pattern: ['#6DD230']
-        },
-        size: {
-          height: 80,
-        },
-        axis: {
-          y: {
-            show: false
+          size: {
+            height: 80,
           },
-          x: {
-            show: false
-          }
-        },
-        legend: {
-          hide: true
-        }
-      });
-
-      commentGraph.$emit('init', {
-        data: {
-          type: 'area',
-          labels: false,
-          columns: [
-            ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
-          ]
-        },
-        size: {
-          height: 80,
-        },
-        color: {
-          pattern: ['#FFAB2B']
-        },
-        axis: {
-          y: {
-            show: false
+          color: {
+            pattern: ['#9E4CF9']
           },
-          x: {
-            show: false
+          axis: {
+            y: {
+              show: false
+            },
+            x: {
+              show: false,
+              type: 'timeseries',
+              tick: {
+                format: '%Y-%m-%d'
+              }
+            }
+          },
+          legend: {
+            hide: true
           }
-        },
-        legend: {
-          hide: true
-        }
+        });
+
+        likeGraph.$emit('init', {
+          data: {
+            x: 'x',
+            xFormat: '%Y-%m-%d',
+            type: 'area',
+            labels: false,
+            columns: [
+              ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
+              ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
+            ]
+          },
+          color: {
+            pattern: ['#6DD230']
+          },
+          size: {
+            height: 80,
+          },
+          axis: {
+            y: {
+              show: false
+            },
+            x: {
+              show: false,
+              type: 'timeseries',
+              tick: {
+                format: '%Y-%m-%d'
+              }
+            }
+          },
+          legend: {
+            hide: true
+          }
+        });
+
+        commentGraph.$emit('init', {
+          data: {
+            x: 'x',
+            xFormat: '%Y-%m-%d',
+            type: 'area',
+            labels: false,
+            columns: [
+              ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
+              ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
+            ]
+          },
+          size: {
+            height: 80,
+          },
+          color: {
+            pattern: ['#FFAB2B']
+          },
+          axis: {
+            y: {
+              show: false
+            },
+            x: {
+              show: false,
+              type: 'timeseries',
+              tick: {
+                format: '%Y-%m-%d'
+              }
+            }
+          },
+          legend: {
+            hide: true
+          }
+        })
       })
     })
   }
@@ -389,6 +316,13 @@ export default {
     min-height: 198px;
     display: flex;
     align-items: flex-start;
+  }
+
+  .dh-dashboard-title {
+    font-size: 18px;
+    line-height: 22px;
+    color: #778CA2;
+    margin-top: 46px;
   }
 
   .dh-dashboard-userpic {
@@ -431,7 +365,7 @@ export default {
     display: flex;
     max-width: 100%;
     justify-content: space-between;
-    margin-top: 40px;
+    margin-top: 24px;
   }
 
   .dh-dashboard-analytics-item {
@@ -446,7 +380,7 @@ export default {
       margin-right: 32px;
       flex-grow: 1;
       width: 20%;
-      font-size: 26px;
+      font-size: 19px;
     }
 
     .dh-analytics-item-graph {
@@ -459,7 +393,7 @@ export default {
 
       svg {
         display: inline-block;
-        margin-bottom: 6px;
+        margin-bottom: 2px;
         color: #FE4D97;
         transform: rotate(180deg)
       }
@@ -467,7 +401,6 @@ export default {
       &.dh-analytics-success {
         svg {
           display: inline-block;
-          margin-bottom: 6px;
           color: #6DD230;
           transform: rotate(0)
         }
