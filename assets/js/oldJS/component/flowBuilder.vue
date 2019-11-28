@@ -407,6 +407,7 @@ export default {
     position: relative;
     width: 5000px;
     height: 5000px;
+    overflow: auto;
   }
 
   input {
