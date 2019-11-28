@@ -242,6 +242,7 @@ export default {
     padding: 18px 18px 0;
     // border-bottom: 1px solid #D8D8D8;
     position: relative;
+    overflow: auto;
 
     .element-warning {
       right: 24px;
