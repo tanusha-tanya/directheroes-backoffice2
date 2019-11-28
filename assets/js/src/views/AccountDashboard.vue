@@ -181,128 +181,148 @@ export default {
     },
   },
 
-  mounted() {
-    const { followersGraph, likeGraph, commentGraph, account, analyticInfo } = this;
+  methods: {
+    getAnalyticInfo() {
+      const { followersGraph, likeGraph, commentGraph, account } = this;
 
-    axios({
-      url: 'https://igwm.directheroes.com/api/v1/account/short-report',
-      params: {
-        username: account.login
-      }
-    }).then(({ data }) => {
-      const analyticInfo = data.reports;
-      const { followerCount, likeCount, commentCount } = analyticInfo;
+      axios({
+        url: 'https://igwm.directheroes.com/api/v1/account/short-report',
+        params: {
+          username: account.login
+        }
+      }).then(({ data }) => {
+        const analyticInfo = data.reports;
+        const { followerCount, likeCount, commentCount } = analyticInfo;
 
-      if ( !followerCount && !likeCount && !commentCount) return;
+        if ( !followerCount && !likeCount && !commentCount) return;
 
-      this.analyticInfo = analyticInfo;
-      console.log(followerCount.map(followerItem => followerItem.time));
+        this.analyticInfo = analyticInfo;
 
-
-      this.$nextTick(() => {
-        followersGraph.$emit('init', {
-          data: {
-            x: 'x',
-            xFormat: '%Y-%m-%d',
-            type: 'area',
-            labels: false,
-            columns: [
-              ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
-              ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
-            ]
-          },
-          size: {
-            height: 80,
-          },
-          color: {
-            pattern: ['#9E4CF9']
-          },
-          axis: {
-            y: {
-              show: false
+        this.$nextTick(() => {
+          followersGraph.$emit('init', {
+            data: {
+              x: 'x',
+              xFormat: '%Y-%m-%d',
+              type: 'area',
+              labels: false,
+              columns: [
+                ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
+                ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
+              ]
             },
-            x: {
-              show: false,
-              type: 'timeseries',
-              tick: {
-                format: '%Y-%m-%d'
-              }
-            }
-          },
-          legend: {
-            hide: true
-          }
-        });
-
-        likeGraph.$emit('init', {
-          data: {
-            x: 'x',
-            xFormat: '%Y-%m-%d',
-            type: 'area',
-            labels: false,
-            columns: [
-              ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
-              ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
-            ]
-          },
-          color: {
-            pattern: ['#6DD230']
-          },
-          size: {
-            height: 80,
-          },
-          axis: {
-            y: {
-              show: false
+            size: {
+              height: 80,
             },
-            x: {
-              show: false,
-              type: 'timeseries',
-              tick: {
-                format: '%Y-%m-%d'
-              }
-            }
-          },
-          legend: {
-            hide: true
-          }
-        });
-
-        commentGraph.$emit('init', {
-          data: {
-            x: 'x',
-            xFormat: '%Y-%m-%d',
-            type: 'area',
-            labels: false,
-            columns: [
-              ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
-              ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
-            ]
-          },
-          size: {
-            height: 80,
-          },
-          color: {
-            pattern: ['#FFAB2B']
-          },
-          axis: {
-            y: {
-              show: false
+            color: {
+              pattern: ['#9E4CF9']
             },
-            x: {
-              show: false,
-              type: 'timeseries',
-              tick: {
-                format: '%Y-%m-%d'
+            axis: {
+              y: {
+                show: false
+              },
+              x: {
+                show: false,
+                type: 'timeseries',
+                tick: {
+                  format: '%Y-%m-%d'
+                }
               }
+            },
+            legend: {
+              hide: true
             }
-          },
-          legend: {
-            hide: true
-          }
+          });
+
+          likeGraph.$emit('init', {
+            data: {
+              x: 'x',
+              xFormat: '%Y-%m-%d',
+              type: 'area',
+              labels: false,
+              columns: [
+                ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
+                ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
+              ]
+            },
+            color: {
+              pattern: ['#6DD230']
+            },
+            size: {
+              height: 80,
+            },
+            axis: {
+              y: {
+                show: false
+              },
+              x: {
+                show: false,
+                type: 'timeseries',
+                tick: {
+                  format: '%Y-%m-%d'
+                }
+              }
+            },
+            legend: {
+              hide: true
+            }
+          });
+
+          commentGraph.$emit('init', {
+            data: {
+              x: 'x',
+              xFormat: '%Y-%m-%d',
+              type: 'area',
+              labels: false,
+              columns: [
+                ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
+                ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
+              ]
+            },
+            size: {
+              height: 80,
+            },
+            color: {
+              pattern: ['#FFAB2B']
+            },
+            axis: {
+              y: {
+                show: false
+              },
+              x: {
+                show: false,
+                type: 'timeseries',
+                tick: {
+                  format: '%Y-%m-%d'
+                }
+              }
+            },
+            legend: {
+              hide: true
+            }
+          })
         })
       })
+    }
+  },
+
+  mounted() {
+    const { analyticInfo, $nextTick, getAnalyticInfo, account } = this;
+
+    if (!analyticInfo || !account) return;
+
+    $nextTick(() => {
+      getAnalyticInfo();
     })
+  },
+
+  watch: {
+    account(value) {
+      const { getAnalyticInfo, _isMounted } = this;
+
+      if (!value || !_isMounted) return;
+
+      getAnalyticInfo();
+    }
   }
 }
 </script>
