@@ -21,26 +21,59 @@
       <div class="dh-dashboard-analytics">
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
-            {{lastFollowerCount.value.toLocaleString()}}
+            <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
+              {{lastFollowerCount.value.toLocaleString()}}
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
+                <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="dh-analytics-item-title">
+              Followers
+            </div>
           </div>
           <div class="dh-analytics-item-graph">
             <vue-c3 :handler="followersGraph"></vue-c3>
+            <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
+              {{followerCountProgress.toFixed(2)}}%
+            </div>
           </div>
         </div>
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
-            {{lastLikeCount.value.toLocaleString()}}
+            <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
+              {{lastLikeCount.value.toLocaleString()}}
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
+                <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="dh-analytics-item-title">
+              Likes
+            </div>
           </div>
           <div class="dh-analytics-item-graph">
             <vue-c3 :handler="likeGraph"></vue-c3>
+            <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
+              {{likeCountProgress.toFixed(2)}}%
+            </div>
           </div>
         </div>
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
-            {{lastCommentCount.value.toLocaleString()}}
+            <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
+              {{lastCommentCount.value.toLocaleString()}}
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
+                <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="dh-analytics-item-title">
+              Comments
+            </div>
           </div>
           <div class="dh-analytics-item-graph">
             <vue-c3 :handler="commentGraph"></vue-c3>
+            <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
+              {{commentCountProgress.toFixed(2)}}%
+            </div>
           </div>
         </div>
       </div>
@@ -194,6 +227,18 @@ export default {
       return followerCount[followerCount.length - 1]
     },
 
+    followerCountProgress() {
+      const { followerCount } = this.analyticInfo;
+
+      if (!followerCount || !followerCount.length) return;
+
+      const firstElement = followerCount[0];
+      const lastElement = followerCount[followerCount.length - 1];
+      const delta = lastElement.value - firstElement.value;
+
+      return delta * 100 / lastElement.value
+    },
+
     lastLikeCount() {
       const { likeCount } = this.analyticInfo;
 
@@ -202,13 +247,37 @@ export default {
       return likeCount[likeCount.length - 1]
     },
 
+    likeCountProgress() {
+      const { likeCount } = this.analyticInfo;
+
+      if (!likeCount || !likeCount.length) return;
+
+      const firstElement = likeCount[0];
+      const lastElement = likeCount[likeCount.length - 1];
+      const delta = lastElement.value - firstElement.value;
+
+      return delta * 100 / lastElement.value
+    },
+
     lastCommentCount() {
       const { commentCount } = this.analyticInfo;
 
       if (!commentCount) return {}
 
       return commentCount[commentCount.length - 1]
-    }
+    },
+
+    commentCountProgress() {
+      const { commentCount } = this.analyticInfo;
+
+      if (!commentCount || !commentCount.length) return;
+
+      const firstElement = commentCount[0];
+      const lastElement = commentCount[commentCount.length - 1];
+      const delta = lastElement.value - firstElement.value;
+
+      return delta * 100 / lastElement.value
+    },
   },
 
   mounted() {
@@ -382,11 +451,62 @@ export default {
 
     .dh-analytics-item-graph {
        width: 80%;
+       position: relative;
+    }
+
+    .dh-analytics-item-value {
+      white-space: nowrap;
+
+      svg {
+        display: inline-block;
+        margin-bottom: 6px;
+        color: #FE4D97;
+        transform: rotate(180deg)
+      }
+
+      &.dh-analytics-success {
+        svg {
+          display: inline-block;
+          margin-bottom: 6px;
+          color: #6DD230;
+          transform: rotate(0)
+        }
+      }
+    }
+
+    .dh-analytics-item-title {
+      font-size: 14px;
+      color: #98A9BC;
+      margin-top: 7px;
+    }
+
+    .dh-analytics-item-profit {
+      color: #FE4D97;
+      position: absolute;
+      bottom: 0;
+      right: 5px;
+
+      &.dh-analytics-success {
+        color: #6DD230;
+
+        &:before {
+          content: '+';
+        }
+      }
     }
 
     .c3-line {
       stroke-width: 3px;
     }
+
+    // .c3-areas-Followers {
+    //   fill: url(#follower-linear-gradient);
+
+    //   path {
+    //     fill: inherit !important;
+    //     opacity: 1 !important;
+    //   }
+    // }
   }
 }
 </style>
