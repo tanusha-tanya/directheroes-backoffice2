@@ -18,6 +18,32 @@
           </div>
         </div>
       </div>
+      <div class="dh-dashboard-analytics">
+        <div class="dh-dashboard-analytics-item">
+          <div class="dh-analytics-item-info">
+            {{lastFollowerCount.value.toLocaleString()}}
+          </div>
+          <div class="dh-analytics-item-graph">
+            <vue-c3 :handler="followersGraph"></vue-c3>
+          </div>
+        </div>
+        <div class="dh-dashboard-analytics-item">
+          <div class="dh-analytics-item-info">
+            {{lastLikeCount.value.toLocaleString()}}
+          </div>
+          <div class="dh-analytics-item-graph">
+            <vue-c3 :handler="likeGraph"></vue-c3>
+          </div>
+        </div>
+        <div class="dh-dashboard-analytics-item">
+          <div class="dh-analytics-item-info">
+            {{lastCommentCount.value.toLocaleString()}}
+          </div>
+          <div class="dh-analytics-item-graph">
+            <vue-c3 :handler="commentGraph"></vue-c3>
+          </div>
+        </div>
+      </div>
       <dh-campaigns title="Campaigns" :limit="5">
       </dh-campaigns>
     </div>
@@ -29,12 +55,128 @@
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhCampaigns from '../components/dh-campaigns'
+import Vue from 'vue'
+import axios from 'axios'
+import VueC3 from 'vue-c3'
 
 export default {
+  data() {
+    return {
+      followersGraph: new Vue(),
+      likeGraph: new Vue(),
+      commentGraph: new Vue(),
+      analyticInfo: {
+        "followerCount": [
+          {
+            "time": "2019-11-21T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-22T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-23T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-24T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-25T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-26T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-27T00:00:00Z",
+            "value": 11
+          },
+          {
+            "time": "2019-11-28T00:00:00Z",
+            "value": 11
+          }
+        ],
+        "likeCount": [
+          {
+            "time": "2019-11-21T00:00:00Z",
+            "value": 27892
+          },
+          {
+            "time": "2019-11-22T00:00:00Z",
+            "value": 28118
+          },
+          {
+            "time": "2019-11-23T00:00:00Z",
+            "value": 28256
+          },
+          {
+            "time": "2019-11-24T00:00:00Z",
+            "value": 28554
+          },
+          {
+            "time": "2019-11-25T00:00:00Z",
+            "value": 28804
+          },
+          {
+            "time": "2019-11-26T00:00:00Z",
+            "value": 28978
+          },
+          {
+            "time": "2019-11-27T00:00:00Z",
+            "value": 29192
+          },
+          {
+            "time": "2019-11-28T00:00:00Z",
+            "value": 29276
+          }
+        ],
+        "commentCount": [
+          {
+            "time": "2019-11-21T00:00:00Z",
+            "value": 1534
+          },
+          {
+            "time": "2019-11-22T00:00:00Z",
+            "value": 1534
+          },
+          {
+            "time": "2019-11-23T00:00:00Z",
+            "value": 1544
+          },
+          {
+            "time": "2019-11-24T00:00:00Z",
+            "value": 1550
+          },
+          {
+            "time": "2019-11-25T00:00:00Z",
+            "value": 1552
+          },
+          {
+            "time": "2019-11-26T00:00:00Z",
+            "value": 1552
+          },
+          {
+            "time": "2019-11-27T00:00:00Z",
+            "value": 1552
+          },
+          {
+            "time": "2019-11-28T00:00:00Z",
+            "value": 1552
+          }
+        ]
+      }
+    }
+  },
+
   components: {
     dhHeader,
     dhFooter,
-    dhCampaigns
+    dhCampaigns,
+    VueC3
   },
 
   computed: {
@@ -42,8 +184,130 @@ export default {
       const { currentAccount } = this.$store.state;
 
       return currentAccount
+    },
+
+    lastFollowerCount() {
+      const { followerCount } = this.analyticInfo;
+
+      if (!followerCount) return {}
+
+      return followerCount[followerCount.length - 1]
+    },
+
+    lastLikeCount() {
+      const { likeCount } = this.analyticInfo;
+
+      if (!likeCount) return {}
+
+      return likeCount[likeCount.length - 1]
+    },
+
+    lastCommentCount() {
+      const { commentCount } = this.analyticInfo;
+
+      if (!commentCount) return {}
+
+      return commentCount[commentCount.length - 1]
     }
   },
+
+  mounted() {
+    const { followersGraph, likeGraph, commentGraph, account, analyticInfo } = this;
+    const { followerCount, likeCount, commentCount } = analyticInfo;
+
+    // axios({
+    //   url: 'http://app13.directheroes.com:8080/api/v1/account/short-report',
+    //   params: {
+    //     username: 'absofacto' || account.login
+    //   }
+    // }).then(({ data }) => {
+    //   console.log(data);
+
+    // })
+
+    this.$nextTick(() => {
+      followersGraph.$emit('init', {
+        data: {
+          type: 'area',
+          labels: false,
+          columns: [
+            ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
+          ]
+        },
+        size: {
+          height: 80,
+        },
+        color: {
+          pattern: ['#9E4CF9']
+        },
+        axis: {
+          y: {
+            show: false
+          },
+          x: {
+            show: false
+          }
+        },
+        legend: {
+          hide: true
+        }
+      });
+
+      likeGraph.$emit('init', {
+        data: {
+          type: 'area',
+          labels: false,
+          columns: [
+            ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
+          ]
+        },
+        color: {
+          pattern: ['#6DD230']
+        },
+        size: {
+          height: 80,
+        },
+        axis: {
+          y: {
+            show: false
+          },
+          x: {
+            show: false
+          }
+        },
+        legend: {
+          hide: true
+        }
+      });
+
+      commentGraph.$emit('init', {
+        data: {
+          type: 'area',
+          labels: false,
+          columns: [
+            ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
+          ]
+        },
+        size: {
+          height: 80,
+        },
+        color: {
+          pattern: ['#FFAB2B']
+        },
+        axis: {
+          y: {
+            show: false
+          },
+          x: {
+            show: false
+          }
+        },
+        legend: {
+          hide: true
+        }
+      })
+    })
+  }
 }
 </script>
 
@@ -92,6 +356,37 @@ export default {
 
   .dh-campaigns {
     margin-top: 46px;
+  }
+
+  .dh-dashboard-analytics {
+    display: flex;
+    max-width: 100%;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+
+  .dh-dashboard-analytics-item {
+    background: #FFFFFF;
+    border-radius: 4px;
+    width: 30%;
+    height: 100px;
+    padding: 25px;
+    display: flex;
+
+    .dh-analytics-item-info {
+      margin-right: 32px;
+      flex-grow: 1;
+      width: 20%;
+      font-size: 26px;
+    }
+
+    .dh-analytics-item-graph {
+       width: 80%;
+    }
+
+    .c3-line {
+      stroke-width: 3px;
+    }
   }
 }
 </style>
