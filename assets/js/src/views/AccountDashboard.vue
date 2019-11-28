@@ -207,7 +207,7 @@ export default {
               labels: false,
               columns: [
                 ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
-                ['Followers'].concat(followerCount.map(followerItem => followerItem.value))
+                ['Followers'].concat(followerCount.map(followerItem => followerItem.value.toFixed(0)))
               ]
             },
             size: {
