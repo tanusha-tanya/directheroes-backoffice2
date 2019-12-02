@@ -193,6 +193,11 @@ export default {
       }).then(({ data }) => {
         const analyticInfo = data.reports;
         const { followerCount, likeCount, commentCount } = analyticInfo;
+        const calcValues = (item, index, array) => {
+          if (!index) return 0;
+
+          return (item.value - array[0].value).toFixed(0);
+        }
 
         if ( !followerCount && !likeCount && !commentCount) return;
 
@@ -207,7 +212,7 @@ export default {
               labels: false,
               columns: [
                 ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
-                ['Followers'].concat(followerCount.map(followerItem => followerItem.value.toFixed(0)))
+                ['Followers'].concat(followerCount.map(calcValues))
               ]
             },
             size: {
@@ -241,7 +246,7 @@ export default {
               labels: false,
               columns: [
                 ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
-                ['Likes'].concat(likeCount.map(likeItem => likeItem.value))
+                ['Likes'].concat(likeCount.map(calcValues))
               ]
             },
             color: {
@@ -275,7 +280,7 @@ export default {
               labels: false,
               columns: [
                 ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
-                ['Commemts'].concat(commentCount.map(commentItem => commentItem.value))
+                ['Commemts'].concat(commentCount.map(calcValues))
               ]
             },
             size: {
