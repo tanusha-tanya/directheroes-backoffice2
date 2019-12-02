@@ -25,7 +25,7 @@
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
-              {{lastFollowerCount.value.toLocaleString()}}
+              {{deltaFollowerCount.toLocaleString()}}
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
                 <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
               </svg>
@@ -44,7 +44,7 @@
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
-              {{lastLikeCount.value.toLocaleString()}}
+              {{deltaLikeCount.toLocaleString()}}
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
                 <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
               </svg>
@@ -63,7 +63,7 @@
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
             <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
-              {{lastCommentCount.value.toLocaleString()}}
+              {{deltaCommentCount.toLocaleString()}}
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
                 <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
               </svg>
@@ -120,12 +120,12 @@ export default {
       return currentAccount
     },
 
-    lastFollowerCount() {
+    deltaFollowerCount() {
       const { followerCount } = this.analyticInfo;
 
       if (!followerCount) return {}
 
-      return followerCount[followerCount.length - 1]
+      return followerCount[followerCount.length - 1].value - followerCount[0].value
     },
 
     followerCountProgress() {
@@ -133,19 +133,18 @@ export default {
 
       if (!followerCount || !followerCount.length) return;
 
-      const firstElement = followerCount[0];
       const lastElement = followerCount[followerCount.length - 1];
-      const delta = lastElement.value - firstElement.value;
+      const { deltaFollowerCount }= this;
 
-      return delta * 100 / lastElement.value
+      return deltaFollowerCount * 100 / lastElement.value
     },
 
-    lastLikeCount() {
+    deltaLikeCount() {
       const { likeCount } = this.analyticInfo;
 
       if (!likeCount) return {}
 
-      return likeCount[likeCount.length - 1]
+      return likeCount[likeCount.length - 1].value - likeCount[0].value
     },
 
     likeCountProgress() {
@@ -153,19 +152,18 @@ export default {
 
       if (!likeCount || !likeCount.length) return;
 
-      const firstElement = likeCount[0];
       const lastElement = likeCount[likeCount.length - 1];
-      const delta = lastElement.value - firstElement.value;
+      const { deltaLikeCount } = this;
 
-      return delta * 100 / lastElement.value
+      return deltaLikeCount * 100 / lastElement.value
     },
 
-    lastCommentCount() {
+    deltaCommentCount() {
       const { commentCount } = this.analyticInfo;
 
       if (!commentCount) return {}
 
-      return commentCount[commentCount.length - 1]
+      return commentCount[commentCount.length - 1].value - commentCount[0].value
     },
 
     commentCountProgress() {
@@ -173,11 +171,10 @@ export default {
 
       if (!commentCount || !commentCount.length) return;
 
-      const firstElement = commentCount[0];
       const lastElement = commentCount[commentCount.length - 1];
-      const delta = lastElement.value - firstElement.value;
+      const { deltaCommentCount } = this;
 
-      return delta * 100 / lastElement.value
+      return deltaCommentCount * 100 / lastElement.value
     },
   },
 
