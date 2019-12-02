@@ -4,7 +4,7 @@ const getOnMatchElement = (element) => {
 
   if (!['group', 'linker', 'rule'].includes(type)) return;
 
-  if (type === 'group' && !(displaySettings && displaySettings.subType === 'settings'))
+  if (type === 'group' && !(displaySettings && (displaySettings.subType === 'settings' || displaySettings.type === 'zapier')))
 
   if (type === 'group') {
     matchElement = element.elements.find(element => element.type === 'rule');

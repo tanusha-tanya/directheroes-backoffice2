@@ -3,9 +3,9 @@
     <div class="user-webhook-title">
       Please enter hook URL
     </div>
-    <input v-model="element.body.url" @input="clearStatuses">
-    <div :class="[{'status-message': true}, element.body.data.status]" v-if="statusText">{{statusText}}</div>
-    <button :class="{ loading }" :disabled="loading || !element.body.url.length" @click="testHookUrl" v-else>Send test</button>
+    <input v-model="zapierAction.body.url" @input="clearStatuses">
+    <div :class="[{'status-message': true}, zapierAction.body.data.status]" v-if="statusText">{{statusText}}</div>
+    <button :class="{ loading }" :disabled="loading || !zapierAction.body.url.length" @click="testHookUrl" v-else>Send test</button>
   </div>
 </template>
 
@@ -25,11 +25,17 @@ export default {
 
   computed: {
     statusText() {
-      const { element, error } = this;
-      const { status } = element.body.data;
+      const { zapierAction, error } = this;
+      const { status } = zapierAction.body.data;
 
       return error || (status == 'fail' && 'Invalid' ) || (status == 'success' && 'Validated' ) || null
     },
+
+    zapierAction() {
+      const { element } = this;
+
+      return element.elements.find(element => element.body.action === 'webhook')
+    }
   },
 
   methods: {
