@@ -40,14 +40,14 @@ export default {
 
   methods: {
     clearStatuses() {
-      const { data } = this.element.body;
+      const { data } = this.zapierAction.body;
 
       data.status = null;
       this.error = null;
     },
 
     testHookUrl() {
-      const { data: elementData, url } =  this.element.body
+      const { data: elementData, url } =  this.zapierAction.body
 
       this.loading = true
       elementData.status = null;
