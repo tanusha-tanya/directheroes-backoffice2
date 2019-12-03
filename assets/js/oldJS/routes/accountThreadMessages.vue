@@ -381,7 +381,7 @@
 
         switch(sub) {
           case 'all':
-            return null
+            return true
             break
           case 'unsubscribed':
             return false
@@ -393,7 +393,7 @@
             return 'all'
             break
           default:
-            return true
+            return null
         }
       },
 
