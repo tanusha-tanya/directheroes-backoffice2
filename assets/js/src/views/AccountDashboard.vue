@@ -18,10 +18,10 @@
           </div>
         </div>
       </div>
-      <div class="dh-dashboard-title" v-if="analyticInfo">
+      <div class="dh-dashboard-title" v-if="analyticInfo && hasThreeDays">
         Stats
       </div>
-      <div class="dh-dashboard-analytics" v-if="analyticInfo">
+      <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays">
         <div class="dh-dashboard-analytics-item">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
@@ -118,6 +118,14 @@ export default {
       const { currentAccount } = this.$store.state;
 
       return currentAccount
+    },
+
+    hasThreeDays() {
+      const { followerCount } = this.analyticInfo;
+
+      if (!followerCount) return
+
+      return followerCount.length > 3;
     },
 
     deltaFollowerCount() {
@@ -454,14 +462,9 @@ export default {
       stroke-width: 3px;
     }
 
-    // .c3-areas-Followers {
-    //   fill: url(#follower-linear-gradient);
-
-    //   path {
-    //     fill: inherit !important;
-    //     opacity: 1 !important;
-    //   }
-    // }
+    .c3-chart {
+      clip-path: unset !important;
+    }
   }
 }
 </style>
