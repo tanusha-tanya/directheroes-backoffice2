@@ -6,6 +6,8 @@ import { Message, Notification } from 'element-ui'
 import router from './router'
 import store from './store'
 
+import 'c3/c3.min.css';
+
 Vue.prototype.$message = Message;
 Vue.prototype.$notify = Notification;
 
