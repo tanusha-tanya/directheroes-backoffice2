@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'flow-builder': true, 'flow-disabled': globalError}" v-if="entryItem" ref="flowBuilder">
+  <div :class="{'flow-builder': true, 'flow-disabled': globalError || disabled}" v-if="entryItem" ref="flowBuilder">
     <div class="zoom-element" @mousedown="blockEvent">
       <el-slider
         v-model="scale"
@@ -63,7 +63,7 @@ export default {
     }
   },
 
-  props: ['entryItem', 'hasWarning'],
+  props: ['entryItem', 'hasWarning', 'disabled'],
 
   components: {
     stepItem,
@@ -91,12 +91,12 @@ export default {
               linkElements.push(target || null);
 
               if (matchElement !== 'linker' && failTarget) {
-                arrows.push({parent: `${element.id}-fail`, child: failTarget});
+                arrows.push({parent: `${element.id}-fail`, child: failTarget, stepId: stepRow.id});
                 linkElements.push(failTarget)
               }
 
               if (target) {
-                arrows.push({parent: element.id + suffix, child: target});
+                arrows.push({parent: element.id + suffix, child: target, stepId: stepRow.id});
               }
             };
 
@@ -212,6 +212,14 @@ export default {
           break;
         case 'user-input':
           step.name = 'User Input'
+
+          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+            step.elements[0].elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
+
           break;
         case 'sub-input':
           step.name = 'Collect'
@@ -316,6 +324,19 @@ export default {
 
       zoomTool.moveTo(positionX, positionY);
     },
+
+    stepsInOneBranch(endStepId, searchStepId) {
+      const { arrows, stepsInOneBranch } = this;
+      const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
+
+      if (!endStepConnection) return;
+
+      if (endStepConnection.stepId === searchStepId) {
+        return true
+      } else {
+        return stepsInOneBranch(endStepConnection.stepId, searchStepId)
+      }
+    }
   },
 
   mounted() {
@@ -393,6 +414,7 @@ export default {
     position: relative;
     width: 5000px;
     height: 5000px;
+    overflow: auto;
   }
 
   input {

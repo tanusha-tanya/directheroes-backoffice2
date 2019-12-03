@@ -1,4 +1,5 @@
 import conditions from './conditions';
+import { userInput } from './userInput'
 
 let timeout = conditions.find(condition => condition.title === 'Timeout');
 
@@ -80,4 +81,5 @@ export default [
       ]
     }
   },
+  userInput
 ]

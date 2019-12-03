@@ -217,7 +217,7 @@ export default {
           displaySettings: {
             subType: 'settings'
           },
-          elements: [newAllowReEnter, nonSubscribersOnly]
+          elements: [newAllowReEnter]
         }
 
         entryStep.elements.splice(0,0, settings);

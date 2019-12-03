@@ -38,7 +38,7 @@ import addConditionPopup from './addConditionPopup'
 
 export default {
   data() {
-    const elements = messages.concat([userInput]);
+    const elements = messages //.concat([userInput]);
 
     return {
       isShow: false,

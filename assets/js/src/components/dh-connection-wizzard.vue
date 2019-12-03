@@ -6,15 +6,20 @@
     :title="title"
     :close-on-click-modal="false"
     :destroy-on-close="true"
+    @close="checkAddAccount"
     class="dh-wizzard-dialog"
   >
     <component
       :is="wizzardState"
       :account="account"
       :protocol="protocol"
+      :is-first-time="isFirstTime"
       @set-account="setAccount"
       @close-wizzard="isShow = false"
       @re-login="reloginAccount"
+      @set-title="title = $event"
+      @first-run="isFirstTime = false"
+      ref="cwStep"
       ></component>
   </el-dialog>
 </template>
@@ -27,12 +32,14 @@ import successAdded from './dh-connection-wizzard/success-added'
 import twoFactor from './dh-connection-wizzard/two-factor'
 import challenge from './dh-connection-wizzard/challenge'
 import checkpoint from './dh-connection-wizzard/checkpoint'
+import resetAccount from './dh-connection-wizzard/reset-account'
 
 export default {
   data() {
     return {
       title: '',
-      accountData: null
+      accountData: null,
+      isFirstTime: true,
     }
   },
 
@@ -44,7 +51,8 @@ export default {
     successAdded,
     challenge,
     checkpoint,
-    twoFactor
+    twoFactor,
+    resetAccount,
   },
 
   computed: {
@@ -74,6 +82,9 @@ export default {
           case 'account.two_factor.code_sent':
             this.title = 'Two factor authorization'
             return 'twoFactor'
+          case 'account.reset':
+            this.title = 'Retry'
+            return 'resetAccount'
         }
       }
     },
@@ -130,6 +141,14 @@ export default {
       })
 
       callback(request)
+    },
+
+    checkAddAccount() {
+      const { cwStep } = this.$refs;
+
+      if (cwStep.$vnode.componentOptions.tag == 'selectAccount' && (cwStep.helpStep || cwStep.hasPartners)) {
+        this.account = cwStep.accountToAdd
+      }
     }
   }
 }

@@ -31,19 +31,19 @@ export default [
       }
     }
   },
-  {
-    title: 'Subscription',
-    template: {
-      type: 'action',
-      displaySettings: {
-        subType: 'action',
-        type: 'subscription'
-      },
-      body: {
-        action: 'subscribe',
-      }
-    }
-  },
+  // {
+  //   title: 'Subscription',
+  //   template: {
+  //     type: 'action',
+  //     displaySettings: {
+  //       subType: 'action',
+  //       type: 'subscription'
+  //     },
+  //     body: {
+  //       action: 'subscribe',
+  //     }
+  //   }
+  // },
   {
     title: 'Zapier',
     template: {

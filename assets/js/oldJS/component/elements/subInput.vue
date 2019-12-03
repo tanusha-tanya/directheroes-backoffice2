@@ -1,9 +1,9 @@
 <template>
   <div class="user-sub-input">
     <div class="user-sub-input-select" :ref="linker && linker.id">
-      <el-select :value="element.body.action" @change="changeAction" size="small" popper-class="user-sub-input-dropdown">
-        <el-option value="collect" :label="`Store ${ elementField }`"></el-option>
-        <el-option value="webhook" label="Connect to Zapier"></el-option>
+      <el-select :value="element.displaySettings.type" @change="changeAction" size="small" popper-class="user-sub-input-dropdown">
+        <el-option value="subscriber" :label="`Store e-mail`"></el-option>
+        <el-option value="zapier" label="Connect to Zapier"></el-option>
       </el-select>
       <add-tag-popup
         :available-list="availableList"
@@ -11,7 +11,7 @@
         v-if="!linker"
       ></add-tag-popup>
     </div>
-    <zapier :element="element" v-if="element.body.action === 'webhook'"></zapier>
+    <zapier :element="element" v-if="element.displaySettings.type === 'zapier'"></zapier>
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
     element() {
       const { elements } = this;
 
-      return elements.find(element => element.type === 'action');
+      return elements[0];
     },
 
     elementField() {
@@ -55,19 +55,26 @@ export default {
       const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
 
       return elementsPermissions.fromUserInput.concat(messageTypes);
+    },
+    selectedValue() {
+
     }
   },
 
   methods: {
     changeAction(value) {
-      const { element, elements, elementField } = this;
+      const { element, elements } = this;
       let newElement = JSON.parse(JSON.stringify(userInputSubscriber));
 
-      if (value === 'webhook') {
+      if (value === 'zapier') {
+        const storeAction = newElement;
         newElement = JSON.parse(JSON.stringify(userInputZapier));
-        newElement.body.data.field = elementField;
-      } else {
-        newElement.body.destination.field = elementField;
+
+        delete storeAction.displaySettings;
+
+        newElement.elements.push(storeAction);
+
+        newElement.elements.forEach(element => element.id = (new ObjectId).toString())
       }
 
       newElement.id = (new ObjectId).toString();

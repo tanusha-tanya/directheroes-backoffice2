@@ -55,7 +55,7 @@
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}" v-if="!linker">
       <template v-if="isBroadcast">
-        <add-step-popup @add-step="addElement" :available-list="['sendText', 'sendMedia']" >
+        <add-step-popup @add-step="addElement" :available-list="broadcastAvailableList" >
         </add-step-popup>
       </template>
       <add-element-popup @add-element="addElement" v-else>
@@ -106,6 +106,12 @@ export default {
       const { campaignType } = this;
 
       return campaignType === 'broadcast';
+    },
+
+    broadcastAvailableList() {
+      const firstElement = this.elements[0];
+
+      return firstElement.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
     }
   },
 
@@ -241,6 +247,7 @@ export default {
     padding: 18px 18px 0;
     // border-bottom: 1px solid #D8D8D8;
     position: relative;
+    overflow: auto;
 
     .element-warning {
       right: 24px;

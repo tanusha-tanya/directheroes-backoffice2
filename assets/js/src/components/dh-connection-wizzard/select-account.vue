@@ -24,6 +24,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
+      <span></span>
       <button :class="{'dh-button': true, 'dh-loading': finding}" :disabled="!login || finding || claiming" @click="findAccount">Find</button>
     </div>
   </div>
@@ -101,15 +102,22 @@ export default {
 
         this.claiming = false;
 
-        this.$emit('set-account', account_info);
+        this.$emit('set-account', account_info)
       })
     }
+
   }
 }
 </script>
 
 <style lang="scss">
 .dh-select-account {
+  img {
+    width: 200px;
+    display: block;
+    margin: 20px auto 0;
+  }
+
   .dh-select-account-controls {
     display: flex;
     align-items: center;
@@ -118,11 +126,6 @@ export default {
 
   .dh-input {
     flex-grow: 1;
-  }
-
-  .dh-button {
-    min-width: 100px;
-    margin-left: 20px;
   }
 
   .dh-select-account-founded {
@@ -197,6 +200,10 @@ export default {
     width: 100%;
     text-align: center;
     margin-top: 4px;
+  }
+
+  .el-dialog__footer {
+    justify-content: space-between !important;
   }
 }
 </style>

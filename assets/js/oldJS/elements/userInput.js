@@ -3,12 +3,13 @@ export let userInput = {
   template: {
     type: 'group',
     displaySettings: {
-      subType: 'user-input'
+      subType: 'user-input',
+      type: 'user-input'
     },
     elements: [
-      {
-        type: 'checkpoint'
-      },
+      // {
+      //   type: 'checkpoint'
+      // },
       {
         type: 'rule',
         condition: {
@@ -46,14 +47,20 @@ export let userInputZapier = {
     subType: 'sub-input',
     type: 'zapier'
   },
-  type: 'action',
-  body: {
-    action: 'webhook',
-    url: '',
-    data: {
-      entity: 'subscriber',
-      field: 'email',
-      status: null
+  type: 'group',
+  elements: [
+    {
+      type: 'action',
+      body: {
+        action: 'webhook',
+        url: '',
+        data: {
+          entity: 'subscriber',
+          field: 'email',
+          status: null
+        }
+      }
     }
-  }
+  ]
+
 }

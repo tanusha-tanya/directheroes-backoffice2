@@ -13,7 +13,8 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                <!-- <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup> -->
+                <add-trigger-popup :has-user-input="true" :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
                   <div class="add-step-button"></div>
                 </add-trigger-popup>
                </div>
@@ -256,6 +257,7 @@ import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
 import keywords from '../keywords';
+import { userInputSubscriber } from '../../elements/userInput'
 
 export default {
   data() {
@@ -369,11 +371,30 @@ export default {
         ]
       }
       let matchElement;
+      let subStep = null;
 
       if (element.type === 'group') {
+
+
         element.elements.forEach(element => {
           element.id = (new ObjectId).toString()
         })
+
+        if (element.displaySettings.subType === 'user-input') {
+          const rule = element.elements.find(element => element.type === 'rule');
+
+          subStep = {
+            id: (new ObjectId).toString(),
+            elements: [
+              {
+                id: (new ObjectId).toString(),
+                ...userInputSubscriber
+              }
+            ]
+          }
+
+          rule.onMatch = {action: 'goto', target: subStep.id}
+        }
       }
 
       if (condition.type === 'rule') {
@@ -392,6 +413,10 @@ export default {
       });
 
       this.$emit('add-step', step, condition );
+
+      if (subStep) {
+        this.$emit('add-step', subStep);
+      }
     },
 
     setRulesOperand(value) {
