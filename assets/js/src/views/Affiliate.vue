@@ -2,7 +2,7 @@
   <div class="dh-view dh-affiliate-view">
     <dh-header title="Partner Program"></dh-header>
     <div class="dh-view-content">
-      <template v-if="dhAccount.features.affilate">
+      <template v-if="dhAccount.features.affiliate">
         <div class="dh-affiliate" v-if="affiliateInfo">
           <div class="dh-affiliate-row dh-affiliate-info">
             <div class="dh-affiliate-column">
