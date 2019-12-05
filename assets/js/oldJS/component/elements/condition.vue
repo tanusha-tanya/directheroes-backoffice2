@@ -57,7 +57,7 @@
             </div>
           </div>
         </template>
-        <template v-else>
+        <template v-else-if="element.displaySettings.type === 'followers'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Followers count<br>
