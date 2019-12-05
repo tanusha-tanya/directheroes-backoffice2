@@ -246,6 +246,7 @@ export default {
     flex-grow: 1;
     margin: 30px 0;
     transition: box-shadow 1s;
+    background-color: #fff;
 
     .existin-step-connector {
       position: absolute;
