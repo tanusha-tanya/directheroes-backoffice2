@@ -47,14 +47,20 @@ export let userInputZapier = {
     subType: 'sub-input',
     type: 'zapier'
   },
-  type: 'action',
-  body: {
-    action: 'webhook',
-    url: '',
-    data: {
-      entity: 'subscriber',
-      field: 'email',
-      status: null
+  type: 'group',
+  elements: [
+    {
+      type: 'action',
+      body: {
+        action: 'webhook',
+        url: '',
+        data: {
+          entity: 'subscriber',
+          field: 'email',
+          status: null
+        }
+      }
     }
-  }
+  ]
+
 }

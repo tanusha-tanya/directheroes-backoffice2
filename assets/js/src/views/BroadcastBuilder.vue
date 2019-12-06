@@ -1,22 +1,31 @@
 <template>
   <div class="dh-view dh-campaign-builder">
     <dh-header title="Broadcast Builder">
-      <div class="dh-campaign-controls" v-if="currentCampaign && hasSteps">
-        <div class="dh-campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><triangle/>This flow is incomplete</div>
-        <div class="dh-campaign-settings-wrapper" v-if="builder.currentBroadcast">
-          <div class="info" v-if="builder.isComplete">
-            <div>Broadcast complete</div>
+      <div class="dh-campaign-controls-wrapper" v-if="currentCampaign && hasSteps">
+        <span></span>
+        <div class="dh-campaign-controls" >
+          <div class="dh-campaign-warning" v-if="hasWarning" @click="findWarningStep"><triangle/>This flow is incomplete</div>
+          <div class="dh-campaign-settings-wrapper" v-if="builder">
+            <div class="info" v-if="builder.broadcastRuntime && builder.broadcastRuntime.status === 'completed'">
+              <div>Broadcast complete</div>
+            </div>
+            <div class="info" v-else-if="!hasWarning">
+              <template v-if="builder.broadcastRuntime && builder.startAt">
+                <div class="start-message" v-if="builder.broadcastRuntime.status === 'scheduled'">{{timeToStart(builder.startAt)}}</div>
+                <!-- <div class="fail-message" v-else-if="builder.notStarted">Campaign didn't start</div> -->
+                <!-- <div class="start-message" v-else-if="!builder.timeToStart && !builder.isStarted && !builder.notStarted && builder.startAt">Prepare to start</div> -->
+                <div class="start-message" v-else-if="builder.broadcastRuntime.status === 'running'">Broadcast was started</div>
+              </template>
+              <div v-if="!builder.startAt">Click to set broadcast</div>
+              <div v-else-if="!builder.broadcastRuntime">Getting status info</div>
+            </div>
+            <div class="dh-campaign-gear" @click="toggleBuilderSettings">
+              <gear/>
+            </div>
           </div>
-          <div class="info" v-else-if="!hasWarning">
-            <div class="start-message" v-if="builder.timeToStart">{{ builder.timeToStart }}</div>
-            <div class="fail-message" v-if="builder.notStarted">Campaign didn't start</div>
-            <div class="start-message" v-else-if="!builder.timeToStart && !builder.isStarted && !builder.notStarted && builder.startAt">Prepare to start</div>
-            <div class="start-message" v-if="builder.isStarted">Broadcast was started</div>
-            <div v-if="!builder.startAt">Click to set broadcast</div>
-          </div>
-          <div class="dh-campaign-gear" @click="builder.isSettings = !builder.isSettings">
-            <gear/>
-          </div>
+        </div>
+        <div class="dh-campaign-test">
+          <button class="dh-button dh-small" :disabled="hasWarning" @click="isTestCampaign = true">Test broadcast</button>
         </div>
       </div>
     </dh-header>
@@ -24,12 +33,15 @@
       <old-broadcast-builder ref="oldBuilder" :has-warning="hasWarning" :current-broadcast="currentCampaign"></old-broadcast-builder>
     </div>
     <dh-footer></dh-footer>
+    <dh-campaign-test-dialog v-model="isTestCampaign" v-if="isTestCampaign" :campaign-id="currentCampaign.id"></dh-campaign-test-dialog>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhCampaignTestDialog from '../components/dh-campaign-test-dialog'
 import gear from '../assets/gear.svg'
 
 import OldBroadcastBuilder from '../../oldJS/routes/broadcastBuilder'
@@ -53,7 +65,9 @@ export default {
 
   data() {
     return {
+      isTestCampaign: false,
       currentCampaign: null,
+      builder: null,
     }
   },
 
@@ -61,8 +75,9 @@ export default {
     dhHeader,
     dhFooter,
     OldBroadcastBuilder,
+    dhCampaignTestDialog,
     gear,
-    triangle
+    triangle,
   },
 
   computed: {
@@ -87,10 +102,6 @@ export default {
 
       return currentAccountData.campaigns.filter(campaign => !campaign.isArchived)
     },
-
-    builder() {
-      return this.$refs.oldBuilder
-    }
   },
 
   methods: {
@@ -105,6 +116,10 @@ export default {
       if (currentCampaign) {
         this.currentCampaign = currentCampaign;
       }
+
+      this.$nextTick(() => {
+        this.builder = this.$refs.oldBuilder;
+      })
     },
 
     findWarningStep() {
@@ -112,7 +127,17 @@ export default {
       const { oldBuilder } = this.$refs;
 
       oldBuilder.findEntryStep(hasWarning.id);
-    }
+    },
+
+    toggleBuilderSettings() {
+      const { builder } = this;
+
+      builder.isSettings = !builder.isSettings;
+    },
+
+    timeToStart(startAt) {
+      return `${moment().from(new Date(startAt), true)} to start`
+    },
   },
 
   watch:{
@@ -136,6 +161,13 @@ export default {
   .dh-campaign-gear {
     width: 18px;
     margin-left: 20px;
+  }
+
+  .dh-campaign-controls-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    align-items: center;
   }
 
   .dh-campaign-controls {

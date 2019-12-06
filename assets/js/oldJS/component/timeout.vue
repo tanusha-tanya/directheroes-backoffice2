@@ -1,6 +1,6 @@
 <template>
   <div class="timeout">
-    <input-autosize v-model="timeValue" @input.native="checkTime" only-numbers></input-autosize>
+    <input-autosize :value="timeValue" @input.native="checkTime" only-numbers></input-autosize>
     <el-select class="hidden-select" v-model="timeType" size="mini" popper-class="small-dropdown">
       <el-option label="Hours" value="hours"></el-option>
       <el-option label="Minutes" value="minutes"></el-option>
@@ -62,7 +62,11 @@ export default {
       },
 
       set(value) {
-        this.seconds = 1 * utils.types[value];
+        const { timeValue } = this;
+
+        this.timeValue = Math.min(timeValue || 0, timeValue === 'hours' ? 72 : 59);
+
+        this.seconds = this.timeValue * utils.types[value];
       }
     },
   },
@@ -75,8 +79,11 @@ export default {
       return utils.timeFromSeconds(seconds, timeType)
     },
 
-    checkTime() {
-      this.timeValue = this.calculate();
+    checkTime(event) {
+      const { timeType } = this;
+      const { value } = event.target;
+
+      Vue.set(this, 'timeValue', Math.max(Math.min(value || 0, timeType === 'hours' ? 72 : 59), 1))
     }
   },
 

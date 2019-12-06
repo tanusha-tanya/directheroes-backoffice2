@@ -1,15 +1,17 @@
 <template>
   <div class="input-autosize">
-    <div class="input-buffer" v-html="value" ref="buffer"></div>
-    <input :type="isNumbers ? 'number': 'text'" :value="value" :style="{width}" @input="inputChange" ref="input">
+    <div class="input-buffer" v-html="currentValue" ref="buffer"></div>
+    <input :type="isNumbers ? 'number': 'text'" :value="currentValue" :style="{width}" @input="inputChange" ref="input">
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    const { value } = this;
     return {
-      width: 0
+      width: 0,
+      currentValue: value
     }
   },
 
@@ -26,6 +28,8 @@ export default {
   methods: {
     inputChange(event) {
       const value = this.isNumbers ? parseFloat(event.target.value.replace(/[^0-9]/g,'')) : event.target.value;
+
+      this.currentValue = value;
 
       this.$emit('input', value);
     },
@@ -46,9 +50,13 @@ export default {
   },
 
   watch: {
-    value() {
+    currentValue() {
       this.setWidth();
     },
+
+    value(value) {
+      this.currentValue = value;
+    }
   }
 }
 </script>

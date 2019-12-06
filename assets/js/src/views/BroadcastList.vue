@@ -49,7 +49,7 @@
           <input class="dh-input" v-model="newBroadcastName" placeholder="Enter Broadcast name">
         </div>
         <template slot="footer">
-          <button class="dh-button" @click="createBroadcast">Create</button>
+          <button class="dh-button" @click="createBroadcast" :disabled="!newBroadcastName">Create</button>
           <button class="dh-button dh-reset-button" @click="isAddBroadcast = false">Close</button>
         </template>
       </el-dialog>
@@ -99,10 +99,13 @@ export default {
   computed: {
     broadcasts() {
       const { currentAccountData } = this.$store.state;
+      let campaigns = null;
 
       if (!currentAccountData) return null;
 
-      return currentAccountData.campaigns.filter(campaign => campaign.type == 'broadcast' && !campaign.isArchived);
+      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'broadcast' && !campaign.isArchived);
+
+      return campaigns.reverse();
     },
 
     currentAccountData() {
@@ -152,7 +155,7 @@ export default {
       this.isAddBroadcast = false;
       this.newBroadcastName = '';
 
-      // this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
+      this.$router.push({ name: 'accountBroadcast', params: { campaignId: newBroadcast.id, accountId: currentAccount.id } })
     },
 
     deleteCampaign() {

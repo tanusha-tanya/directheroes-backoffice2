@@ -20,7 +20,7 @@
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList.filter(item => item !== 'user-input')" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
                 <add-mid-step-popup
                   :available-list="availableList"
                   @add-step="addMidStep($event, element, true)"
@@ -57,7 +57,7 @@
             </div>
           </div>
         </template>
-        <template v-else>
+        <template v-else-if="element.displaySettings.type === 'followers'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Followers count<br>

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'flow-builder': true, 'flow-disabled': globalError}" v-if="entryItem" ref="flowBuilder">
+  <div :class="{'flow-builder': true, 'flow-disabled': globalError || disabled}" v-if="entryItem" ref="flowBuilder">
     <div class="zoom-element" @mousedown="blockEvent">
       <el-slider
         v-model="scale"
@@ -39,6 +39,7 @@
             ></step-item>
         </template>
       </div>
+      <arrows ref="subArrows" class="sub-arrows" :refs="builder" :arrows="subArrows" :scale="scaleValue"></arrows>
       <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows>
     </div>
   </div>
@@ -60,10 +61,11 @@ export default {
       zoomTool: null,
       scaleValue: 1,
       arrows: [],
+      subArrows: [],
     }
   },
 
-  props: ['entryItem', 'hasWarning'],
+  props: ['entryItem', 'hasWarning', 'disabled'],
 
   components: {
     stepItem,
@@ -75,26 +77,37 @@ export default {
       const { steps } = this.entryItem;
       const stepRows = [[steps[0]]];
       const arrows = [];
+      const subArrows = [];
       const getLinkElements = (row) => {
         let linkElements = [];
 
         row.forEach(stepRow => {
           if (!stepRow) return;
 
-          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || (element.type === 'linker' && !element.displaySettings)).forEach(element => {
+          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
             const elementAction = (matchElement, suffix = '') => {
               const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
               const failTarget = matchElement.onFail && matchElement.onFail.target;
 
-              linkElements.push(target || null);
+              if (matchElement.type === 'linker' && matchElement.displaySettings) {
 
-              if (matchElement !== 'linker' && failTarget) {
-                arrows.push({parent: `${element.id}-fail`, child: failTarget});
+              } else {
+                linkElements.push(target || null);
+              }
+
+              if (matchElement.type !== 'linker' && failTarget) {
+                arrows.push({parent: `${element.id}-fail`, child: failTarget, stepId: stepRow.id});
                 linkElements.push(failTarget)
               }
 
               if (target) {
-                arrows.push({parent: element.id + suffix, child: target});
+                const arrowObject = { parent: element.id + suffix, child: target, stepId: stepRow.id }
+
+                if (matchElement.type === 'linker' && matchElement.displaySettings) {
+                  subArrows.push({ ...arrowObject, isExisting: true});
+                } else {
+                  arrows.push(arrowObject);
+                }
               }
             };
 
@@ -122,6 +135,7 @@ export default {
       getLinkElements(stepRows[0])
 
       this.arrows = arrows;
+      this.subArrows = subArrows;
 
       return stepRows
     },
@@ -317,6 +331,32 @@ export default {
 
       zoomTool.moveTo(positionX, positionY);
     },
+
+    stepsInOneBranch(endStepId, searchStepId) {
+      const { arrows, stepsInOneBranch } = this;
+      const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
+
+      if (!endStepConnection) return;
+
+      if (endStepConnection.stepId === searchStepId) {
+        return true
+      } else {
+        return stepsInOneBranch(endStepConnection.stepId, searchStepId)
+      }
+    },
+
+    getStepArrows(stepId) {
+      const { arrows, subArrows } = this;
+      const stepArrows = [];
+
+      arrows.concat(subArrows).forEach(arrow => {
+        if (arrow.stepId !== stepId && arrow.child !== stepId) return;
+
+        stepArrows.push(arrow);
+      })
+
+      return stepArrows;
+    }
   },
 
   mounted() {
@@ -340,7 +380,11 @@ export default {
     entryItem: {
       handler: function (entry, oldEntry) {
 
+        console.log(this.$refs);
+
+
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
 
         if (entry) {
           if (!oldEntry && this._isMounted) {
@@ -394,6 +438,11 @@ export default {
     position: relative;
     width: 5000px;
     height: 5000px;
+    overflow: auto;
+  }
+
+  .sub-arrows {
+    z-index: -1;
   }
 
   input {
