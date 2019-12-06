@@ -360,10 +360,6 @@
         return threadMessages.slice(0).reverse()
       },
 
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/subscriber_page
       isInbox() {
         const { $route } = this;
 
