@@ -19,6 +19,7 @@ import ProfileBilling from './views/ProfileBilling'
 import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
+import SubscriberInfo from './views/SubscriberInfo'
 
 Vue.use(Router)
 
@@ -44,6 +45,7 @@ export default new Router({
         { name: 'accountCampaign', path: 'campaigns/:campaignId', component: CampaignBuilder },
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: BroadcastBuilder },
+        { name: 'subscriber', path: 'audience/:threadId', component: SubscriberInfo },
         { name: 'audience', path: 'audience', component: Audience },
         { name: 'livechat', path: 'livechat/:threadId?', component: LiveChat },
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
