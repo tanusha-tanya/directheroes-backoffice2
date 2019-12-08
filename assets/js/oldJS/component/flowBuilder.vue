@@ -365,14 +365,14 @@ export default {
 
     if (!builderArea || !entryItem) return;
 
-    this.initZoom();
-    this.findEntryStep();
-
     this.$nextTick(() => {
-      const { builderArea } = this.$refs;
+      const { builderArea } = this.$refs
 
-      builderArea.style.width = `${builderArea.scrollWidth}px`;
+      builderArea.style.width = `${builderArea.scrollWidth + builderArea.scrollLeft}px`;
       builderArea.style.height = `${builderArea.scrollHeight}px`
+
+      this.initZoom();
+      this.findEntryStep();
     });
   },
 
@@ -380,29 +380,26 @@ export default {
     entryItem: {
       handler: function (entry, oldEntry) {
 
-        console.log(this.$refs);
-
-
-        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
-        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
-
         if (entry) {
+          if (this._isMounted) {
+            this.$nextTick(() => {
+              const { builderArea } = this.$refs;
+
+              builderArea.style.width = `${builderArea.scrollWidth + builderArea.scrollLeft}px`;
+              builderArea.style.height = `${builderArea.scrollHeight}px`
+            });
+          }
+
           if (!oldEntry && this._isMounted) {
             this.$nextTick(() => {
               this.initZoom();
               this.findEntryStep();
             });
           };
-
-          if (this._isMounted) {
-            this.$nextTick(() => {
-              const { builderArea } = this.$refs;
-
-              builderArea.style.width = `${builderArea.scrollWidth}px`;
-              builderArea.style.height = `${builderArea.scrollHeight}px`
-            });
-          }
         }
+
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
           return;
@@ -436,8 +433,8 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 5000px;
-    height: 5000px;
+    width: 10000px;
+    height: 10000px;
     overflow: auto;
   }
 
