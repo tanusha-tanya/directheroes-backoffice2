@@ -1,13 +1,13 @@
 <template>
   <div class="action-items">
     <template v-for="action in elements">
-      <div :class="[{'action-item': true}, elementClass(action.body.action)]" v-if="action.type !== 'linker'" :key="action.id">
-        <div class="action-item-title">{{ actionTitles[action.displaySettings.type || action.body.action] }}</div>
+      <div :class="[{'action-item': true}, elementClass(getAction(action))]" v-if="action.type !== 'linker'" :key="action.id">
+        <div class="action-item-title">{{ actionTitles[action.displaySettings.type || getAction(action)] }}</div>
         <element-warning :element="action"></element-warning>
-        <template v-if="['addCategory', 'removeCategory'].includes(action.body.action)">
+        <template v-if="['addCategory', 'removeCategory'].includes(getAction(action))">
           <keywords v-model="action.body.name"></keywords>
         </template>
-        <template v-else-if="action.body.action === 'webhook'">
+        <template v-else-if="action.displaySettings.type === 'zapier'">
           <zapier :element="action"></zapier>
         </template>
         <template v-else-if="action.displaySettings.type === 'subscription'">
@@ -51,7 +51,7 @@ export default {
       actionTitles:{
         addCategory: 'Add tag',
         removeCategory: 'Remove tag',
-        webhook: 'Zapier',
+        zapier: 'Zapier',
         subscription: 'Subscription'
       }
     }
@@ -99,6 +99,14 @@ export default {
       const { elements } = this;
 
       elements.splice(elements.indexOf(element), 1);
+    },
+
+    getAction(action) {
+      if (action.body) {
+        return action.body.action
+      } else if (action.type === 'group') {
+        return action.elements.find(element => element.body.action === 'webhook').body.action
+      }
     }
   }
 }

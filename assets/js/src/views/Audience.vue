@@ -13,11 +13,12 @@
           </el-select>
         </div>
         <div class="dh-select dh-audience-status" v-if="isAdmin">
-          <div class="dh-select-title" >Conversation</div>
+          <div class="dh-select-title">Conversation</div>
           <el-select v-model="status" @change="getAudience" size="small" popper-class="dh-select-popper">
             <el-option label="All" value="audience"></el-option>
             <el-option label="Stuck" value="stuck"></el-option>
-            <el-option label="Ignored" value="ignored"></el-option>
+            <el-option label="Interrupted" value="interrupted"></el-option>
+            <el-option label="Complete" value="complete"></el-option>
           </el-select>
         </div>
         <div class="dh-divider"></div>
