@@ -209,107 +209,113 @@ export default {
         this.analyticInfo = analyticInfo;
 
         this.$nextTick(() => {
-          followersGraph.$emit('init', {
-            data: {
-              x: 'x',
-              xFormat: '%Y-%m-%d',
-              type: 'area',
-              labels: false,
-              columns: [
-                ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
-                ['Followers'].concat(followerCount.map(calcValues))
-              ]
-            },
-            size: {
-              height: 80,
-            },
-            color: {
-              pattern: ['#9E4CF9']
-            },
-            axis: {
-              y: {
-                show: false
+          if (followerCount) {
+            followersGraph.$emit('init', {
+              data: {
+                x: 'x',
+                xFormat: '%Y-%m-%d',
+                type: 'area',
+                labels: false,
+                columns: [
+                  ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
+                  ['Followers'].concat(followerCount.map(calcValues))
+                ]
               },
-              x: {
-                show: false,
-                type: 'timeseries',
-                tick: {
-                  format: '%Y-%m-%d'
+              size: {
+                height: 80,
+              },
+              color: {
+                pattern: ['#9E4CF9']
+              },
+              axis: {
+                y: {
+                  show: false
+                },
+                x: {
+                  show: false,
+                  type: 'timeseries',
+                  tick: {
+                    format: '%Y-%m-%d'
+                  }
                 }
+              },
+              legend: {
+                hide: true
               }
-            },
-            legend: {
-              hide: true
-            }
-          });
+            });
+          }
 
-          likeGraph.$emit('init', {
-            data: {
-              x: 'x',
-              xFormat: '%Y-%m-%d',
-              type: 'area',
-              labels: false,
-              columns: [
-                ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
-                ['Likes'].concat(likeCount.map(calcValues))
-              ]
-            },
-            color: {
-              pattern: ['#6DD230']
-            },
-            size: {
-              height: 80,
-            },
-            axis: {
-              y: {
-                show: false
+          if (likeCount) {
+            likeGraph.$emit('init', {
+              data: {
+                x: 'x',
+                xFormat: '%Y-%m-%d',
+                type: 'area',
+                labels: false,
+                columns: [
+                  ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
+                  ['Likes'].concat(likeCount.map(calcValues))
+                ]
               },
-              x: {
-                show: false,
-                type: 'timeseries',
-                tick: {
-                  format: '%Y-%m-%d'
+              color: {
+                pattern: ['#6DD230']
+              },
+              size: {
+                height: 80,
+              },
+              axis: {
+                y: {
+                  show: false
+                },
+                x: {
+                  show: false,
+                  type: 'timeseries',
+                  tick: {
+                    format: '%Y-%m-%d'
+                  }
                 }
+              },
+              legend: {
+                hide: true
               }
-            },
-            legend: {
-              hide: true
-            }
-          });
+            });
+          }
 
-          commentGraph.$emit('init', {
-            data: {
-              x: 'x',
-              xFormat: '%Y-%m-%d',
-              type: 'area',
-              labels: false,
-              columns: [
-                ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
-                ['Commemts'].concat(commentCount.map(calcValues))
-              ]
-            },
-            size: {
-              height: 80,
-            },
-            color: {
-              pattern: ['#FFAB2B']
-            },
-            axis: {
-              y: {
-                show: false
+          if (commentCount) {
+            commentGraph.$emit('init', {
+              data: {
+                x: 'x',
+                xFormat: '%Y-%m-%d',
+                type: 'area',
+                labels: false,
+                columns: [
+                  ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
+                  ['Commemts'].concat(commentCount.map(calcValues))
+                ]
               },
-              x: {
-                show: false,
-                type: 'timeseries',
-                tick: {
-                  format: '%Y-%m-%d'
+              size: {
+                height: 80,
+              },
+              color: {
+                pattern: ['#FFAB2B']
+              },
+              axis: {
+                y: {
+                  show: false
+                },
+                x: {
+                  show: false,
+                  type: 'timeseries',
+                  tick: {
+                    format: '%Y-%m-%d'
+                  }
                 }
+              },
+              legend: {
+                hide: true
               }
-            },
-            legend: {
-              hide: true
-            }
-          })
+            })
+          }
         })
       })
     }
