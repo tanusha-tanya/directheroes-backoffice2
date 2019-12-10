@@ -26,29 +26,9 @@ export default class Builder {
   }
 
   updateOldStructure() {
+    const { getAllMatchElements } = this;
     const { steps } = this.campaign;
     const firstStep = steps[0];
-    const getAllMatches = (element) => {
-      const { type } = element;
-      const matches = [];
-
-      switch (type) {
-        case 'group':
-
-          break;
-        case 'linker':
-
-          break;
-        case 'rule':
-
-          break;
-
-        default:
-          break;
-      }
-
-      return matches
-    };
     const getStepMatches = (stepLinks, treeIndex) => {
       Object.keys(stepLinks).forEach(stepId => {
         const step = steps.find(step => step.id === stepId);
@@ -57,7 +37,7 @@ export default class Builder {
         if (!step) return;
 
         step.elements.forEach(element => {
-          const matches = getAllMatches(element)
+          const matches = getAllMatchElements(element)
         });
       })
     };
@@ -67,4 +47,28 @@ export default class Builder {
 
     getStepMatches(stepsTree, 0)
   }
+
+  getAllMatchElements(element) {
+    const { getAllMatchElements } = this;
+    const { type } = element;
+    let matches = [];
+
+    switch (type) {
+      case 'group':
+        element.elements.forEach(subElement => {
+          matches = matches.concat(getAllMatchElements(subElement))
+        })
+        break;
+      case 'linker':
+
+        break;
+      case 'rule':
+        console.log(element)
+        break;
+      default:
+        break;
+    }
+
+    return matches
+  };
 }
