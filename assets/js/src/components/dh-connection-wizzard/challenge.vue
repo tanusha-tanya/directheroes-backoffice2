@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="el-dialog__footer">
-      <button :class="{'dh-button': true, 'dh-loading': sending}" :disabled="sending || !sendMethod" @click="sendCode">Request verification code</button>
+      <button :class="{'dh-button': true, 'dh-loading': sending}" :disabled="sending || sendMethod === null" @click="sendCode">Request verification code</button>
     </div>
   </div>
   <div class="dh-wizzard-step dh-challange-verify" v-else-if="noCodeInfo">
