@@ -31,6 +31,15 @@
               Setup payment methods
             </div>
           </router-link>
+          <router-link :to="{ name: 'managers'}" class="dh-profile-settings-item">
+            <billing />
+            <div class="dh-profile-settings-info">
+              <div class="dh-profile-settings-title">
+                Managers
+              </div>
+              Entrusted dh-accounts
+            </div>
+          </router-link>
         </div>
         <router-view></router-view>
       </div>
