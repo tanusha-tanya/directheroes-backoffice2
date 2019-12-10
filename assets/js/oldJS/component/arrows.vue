@@ -2,7 +2,7 @@
   <svg class="arrows" width="100%" height="100%">
     <template v-for="path in pathes" v-if="path && path.line">
       <circle :cx="path.begin.x" :cy="path.begin.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
-      <path :d="path.line"  fill="none" :stroke="path.color" stroke-width="1"></path>
+      <path :d="path.line"  fill="none" :stroke="path.color" :stroke-dasharray="path.arrowInfo.isExisting && '10 5'" :style="{'stroke-width': path.arrowInfo.hover ? 3 : 1}"></path>
       <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 12}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" :fill="path.color"/>
       <circle :cx="path.arrow.x" :cy="path.arrow.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
     </template>
@@ -21,7 +21,7 @@ export default {
   props: ['refs', 'arrows', 'scale'],
 
   methods: {
-    recalcPathes: debounce(function () {
+    recalcPathes() {
       const { refs, getElement, scale } = this;
       const areaRect = this.$el.getBoundingClientRect();
 
@@ -104,10 +104,12 @@ export default {
             y: endY,
             angle
           },
-          color
+          color,
+
+          arrowInfo: arrow,
         }
       })
-    }, 0),
+    },
 
     getElement(id) {
       const findElement = container => {
@@ -128,7 +130,9 @@ export default {
   },
 
   mounted() {
-    this.recalcPathes()
+    setTimeout(() => {
+      this.recalcPathes()
+    }, 10)
   },
 
   // watch: {

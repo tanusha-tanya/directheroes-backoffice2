@@ -25,7 +25,7 @@ Vue.use(Router)
 export default new Router({
   routes:[
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
-    { path: '/affiliate', name: 'affiliate', component: Affiliate },
+    { path: '/partner-program', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
     { path: '/trainings', name: 'trainings', component: Trainings },
     { path: '/settings', component: Settings,

@@ -42,7 +42,7 @@
         <div class="dh-navigation-button-ico">
           <affiliate/>
         </div>
-        Affiliate
+        Partner Program
       </router-link>
       <router-link v-if="hasTutorialAccess" class="dh-navigation-button" :to="{ name: 'tutorials' }">
         <div class="dh-navigation-button-ico">

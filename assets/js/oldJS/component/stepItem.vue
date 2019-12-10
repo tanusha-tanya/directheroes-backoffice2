@@ -1,5 +1,14 @@
 <template>
-<div :class="[{'step-item': true, 'step-founded': findAnimation, 'step-to-bind': canConnectAsExist, 'step-not-bind': canConnectAsExist === false }, `step-${ stepType }-type`]" @mousedown.stop="" @transitionend="findAnimation = false">
+<div
+  :class="[{
+    'step-item': true,
+    'step-founded': findAnimation,
+    'step-to-bind': canConnectAsExist,
+    'step-not-bind': canConnectAsExist === false },
+    `step-${ stepType }-type`]"
+  @mousedown.stop="" @transitionend="findAnimation = false"
+  @mouseover="toggleGlow(true)"
+  @mouseout="toggleGlow(false)">
   <div class="step-item-header" :ref="stepType === 'action' && linker && linker.id">
     <span>
       {{flowName || step.name || '&nbsp;'}}
@@ -36,6 +45,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import elementsPermissions from '../elements/permissions'
 import action from './elements/action'
 import condition from './elements/condition'
@@ -218,6 +228,13 @@ export default {
     addElementStep(event, parentElement) {
       this.$emit('add-step', event, parentElement);
     },
+
+    toggleGlow(status) {
+      const { builder, step } = this;
+      const arrows = builder.getStepArrows(step.id);
+
+      arrows.forEach(arrow => Vue.set(arrow, 'hover', status))
+    }
   },
 }
 </script>
@@ -229,6 +246,7 @@ export default {
     flex-grow: 1;
     margin: 30px 0;
     transition: box-shadow 1s;
+    background-color: #fff;
 
     .existin-step-connector {
       position: absolute;
