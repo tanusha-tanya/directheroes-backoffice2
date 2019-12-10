@@ -360,7 +360,7 @@ export default {
   created() {
     const { entryItem } = this;
 
-    this.builder =  new Builder(entryItem);
+    this.builder = new Builder(entryItem);
 
     this.builder.scheme;
   },
@@ -439,8 +439,8 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 5000px;
-    height: 5000px;
+    width: 10000px;
+    height: 10000px;
     overflow: auto;
   }
 

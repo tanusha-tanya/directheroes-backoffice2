@@ -22,7 +22,7 @@
         Stats
       </div>
       <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays">
-        <div class="dh-dashboard-analytics-item">
+        <div class="dh-dashboard-analytics-item" v-if="analyticInfo.followerCount">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
               {{deltaFollowerCount.toLocaleString()}}
@@ -41,7 +41,7 @@
             </div>
           </div>
         </div>
-        <div class="dh-dashboard-analytics-item">
+        <div class="dh-dashboard-analytics-item" v-if="analyticInfo.likeCount">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
               {{deltaLikeCount.toLocaleString()}}
@@ -60,7 +60,7 @@
             </div>
           </div>
         </div>
-        <div class="dh-dashboard-analytics-item">
+        <div class="dh-dashboard-analytics-item" v-if="analyticInfo.commentCount">
           <div class="dh-analytics-item-info">
             <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
               {{deltaCommentCount.toLocaleString()}}
