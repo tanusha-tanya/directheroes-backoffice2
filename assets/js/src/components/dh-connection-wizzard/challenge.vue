@@ -2,11 +2,16 @@
   <div class="dh-wizzard-step dh-challange" v-if="!codeSended">
     <div class="dh-wizzard-step-body">
       <div class="dh-wizzard-text">
-        Instagram requires additional verification for this connection
+        Instagram requires additional verification for this connection<br><br>
+        <div class="dh-wizzard-choose-code-variants" v-if="hasMoreOneVariants">
+          Please, select send code variant:<br>
+          <el-radio v-model="sendMethod" :label="0" >Phone: {{account.igChallenge.sendCodeVariants.phone_number}}</el-radio><br>
+          <el-radio v-model="sendMethod" :label="1" >E-mail: {{account.igChallenge.sendCodeVariants.email}}</el-radio>
+        </div>
       </div>
     </div>
     <div class="el-dialog__footer">
-      <button :class="{'dh-button': true, 'dh-loading': sending}" :disabled="sending" @click="sendCode">Request verification code</button>
+      <button :class="{'dh-button': true, 'dh-loading': sending}" :disabled="sending || sendMethod === null" @click="sendCode">Request verification code</button>
     </div>
   </div>
   <div class="dh-wizzard-step dh-challange-verify" v-else-if="noCodeInfo">
@@ -48,9 +53,13 @@ import axios from 'axios'
 export default {
   data() {
     const { account } = this;
+    const { email, phone_number } = account.igChallenge.sendCodeVariants;
+
+
 
     return {
       sending: false,
+      sendMethod: email && phone_number ? null : (email && 1) || (phone_number && 0),
       codeSended: account.connectStep === "account.challenge.code_sent",
       codeToVerify: '',
       error: null,
@@ -68,13 +77,21 @@ export default {
 
       return `Please check your ${ email ? 'email ('+email+')'  : '' }${ email && phone_number ? ' or '  : '' }${ phone_number ? 'sms ('+phone_number+')'  : '' } for your most recent 6-digit Instagram verification code and enter it below`
     },
+
+    hasMoreOneVariants() {
+      const { sendCodeVariants } = this.account.igChallenge;
+
+      return Object.keys(sendCodeVariants).length > 1;
+    }
   },
 
   methods: {
     sendCode() {
-      const { account, protocol } = this;
+      const { account, protocol, sendMethod } = this;
 
       this.sending = true;
+
+      account.igChallenge.sendMethod = sendMethod;
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/${ protocol }/challenge/code/request`,
@@ -201,6 +218,12 @@ export default {
   .dh-input {
     margin-top: 20px;
     width: 100%;
+  }
+}
+
+.dh-challange {
+  .el-radio:not(:last-child) {
+    margin-top: 5px;
   }
 }
 </style>
