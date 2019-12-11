@@ -3,8 +3,8 @@
     <div class="dh-wizzard-step-body">
       <div class="dh-wizzard-text">
         Instagram requires additional verification for this connection<br><br>
-        Please, select send code variant:
         <div class="dh-wizzard-choose-code-variants" v-if="hasMoreOneVariants">
+          Please, select send code variant:
           <el-radio v-model="sendMethod" :label="0" >Phone: {{account.igChallenge.sendCodeVariants.phone_number}}</el-radio><br>
           <el-radio v-model="sendMethod" :label="1" >E-mail: {{account.igChallenge.sendCodeVariants.email}}</el-radio>
         </div>
@@ -53,10 +53,13 @@ import axios from 'axios'
 export default {
   data() {
     const { account } = this;
+    const { email, phone_number } = account.igChallenge.sendCodeVariants;
+
+
 
     return {
       sending: false,
-      sendMethod: null,
+      sendMethod: email && phone_number ? null : (email && 1) || (phone_number && 0),
       codeSended: account.connectStep === "account.challenge.code_sent",
       codeToVerify: '',
       error: null,
