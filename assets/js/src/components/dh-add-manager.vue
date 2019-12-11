@@ -12,7 +12,7 @@
         <div class="dh-wizzard-step dh-select-account">
             <div class="dh-wizzard-step-body">
                 <div class="dh-select-account-controls">
-                    <input class="dh-input" type="text" v-model="email" @input="error = null" placeholder="Enter new user email" :disabled="creating" @keypress.enter="createManager"/>
+                    <input ref="email" class="dh-input" type="text" v-model="email" @input="error = null" placeholder="Enter new user email" :disabled="creating" @keypress.enter="createManager"/>
                 </div>
                 <div class="dh-wizzard-error" v-if="error">
                     {{error}}
@@ -54,7 +54,7 @@
                     }, {
                         timeout: 30000
                     }
-                ).then((response) => {
+                ).then(() => {
                     this.$emit('created')
                     this.selfClose()
                 }).catch((error) => {
@@ -74,6 +74,11 @@
 
         created() {
             this.isShow = true
+        },
+        mounted() {
+            this.$nextTick().then(()=>{
+                this.$refs.email.focus()
+            })
         }
     }
 </script>
