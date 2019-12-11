@@ -56,6 +56,12 @@
         </div>
         Trainings
       </router-link>
+      <a class="dh-navigation-button dh-easy-webinar" v-if="false" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
+        <div class="dh-navigation-button-ico">
+          <easywebinar/>
+        </div>
+        Join the Webinar!
+      </a>
       <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <support/>
@@ -89,6 +95,7 @@ import training from './assets/training.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
+import easywebinar from '../oldJS/assets/svg/youtube.svg'
 
 export default {
   components: {
@@ -104,9 +111,14 @@ export default {
     loader,
     affiliate,
     training,
+    easywebinar
   },
 
   computed: {
+    dh() {
+      return window.dh
+    },
+
     account() {
       const { state } = this.$store;
 
@@ -201,6 +213,13 @@ body {
       font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
+    }
+
+  }
+
+  .dh-easy-webinar {
+    svg {
+      width: 19px;
     }
   }
 

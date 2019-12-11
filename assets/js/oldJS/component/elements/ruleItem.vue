@@ -21,7 +21,7 @@
       v-if="!hasOnMatch"
     ></add-tag-popup>
     <add-mid-step-popup
-      :available-list="availableList"
+      :available-list="['addCategory', 'sendText', 'sendMedia']"
       @add-step="addMidStep($event)"
       v-else
     ></add-mid-step-popup>
