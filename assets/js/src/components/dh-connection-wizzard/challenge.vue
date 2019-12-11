@@ -4,7 +4,7 @@
       <div class="dh-wizzard-text">
         Instagram requires additional verification for this connection<br><br>
         <div class="dh-wizzard-choose-code-variants" v-if="hasMoreOneVariants">
-          Please, select send code variant:
+          Please, select send code variant:<br>
           <el-radio v-model="sendMethod" :label="0" >Phone: {{account.igChallenge.sendCodeVariants.phone_number}}</el-radio><br>
           <el-radio v-model="sendMethod" :label="1" >E-mail: {{account.igChallenge.sendCodeVariants.email}}</el-radio>
         </div>
@@ -218,6 +218,12 @@ export default {
   .dh-input {
     margin-top: 20px;
     width: 100%;
+  }
+}
+
+.dh-challange {
+  .el-radio:not(:last-child) {
+    margin-top: 5px;
   }
 }
 </style>
