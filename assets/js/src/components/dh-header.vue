@@ -27,7 +27,6 @@
         </div>
         <div class="dh-options">
           <router-link :to="{ name: 'settings'}" class="dh-option"><profile /> Your profile</router-link>
-          <router-link :to="{ name: 'settings'}" class="dh-option"><gear /> Settings</router-link>
           <a href="/logout" class="dh-option"><signout /> Sign out</a>
         </div>
         <div class="dh-header-account-icon" slot="reference">
