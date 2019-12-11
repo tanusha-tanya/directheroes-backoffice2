@@ -8,9 +8,9 @@
     </div>
     <confirm-dialog
             :title="'Manager delete'"
-            :message="'Confirm delete manager ' + managerToDelete.email"
+            :message="'Confirm delete manager ' + managerToDelete.username"
             :value="true"
-            v-if="managerToDelete.email"
+            v-if="managerToDelete.username"
             @success="deleteManager"
             @cancel="cancelDelete"/>
     <loader v-if="loading"/>
@@ -74,6 +74,7 @@ export default {
       }).catch(()=>{
         this.deleting = false
       })
+      this.cancelDelete()
     },
     cancelDelete() {
       this.managerToDelete = {}
