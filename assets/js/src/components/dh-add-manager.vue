@@ -55,7 +55,6 @@
                         timeout: 30000
                     }
                 ).then(() => {
-                    this.$emit('created')
                     this.selfClose()
                 }).catch((error) => {
                     if (error.response && typeof error.response.data.request !== "undefined") {
@@ -68,7 +67,7 @@
             },
             selfClose() {
                 this.isShow = false
-                this.$emit('creating', false)
+                this.$emit('closing')
             }
         },
 

@@ -1,10 +1,12 @@
 <template>
   <div class="dh-settings-form dh-profile-general">
     <div class="dh-settings-title">
-      Profile managers
+      Managers
     </div>
     <div class="dh-settings-form-row">
-      <button class="dh-button" @click="creating = true">Create manager</button>
+      <div class="dh-settings-form-footer">
+        <button class="dh-button" @click="creating = true">Create manager</button>
+      </div>
     </div>
     <confirm-dialog
             :title="'Manager delete'"
@@ -15,15 +17,19 @@
             @cancel="cancelDelete"/>
     <loader v-if="loading"/>
     <div v-else>
-      <add-manager-popup @creating="setCreating" @created="getManagers" v-if="creating" :created="managerCreated"></add-manager-popup>
-      <div class="dh-settings-form-row" v-for="(manager, key) in managers" :key=key>
-        <div class="dh-label">
-          <span>Email</span>
-          {{ manager.username }}
+      <add-manager-popup @closing="addManagerEnd" v-if="creating"/>
+      <div class="dh-settings-form">
+        <div class="dh-settings-form-row" v-for="(manager, key) in managers" :key=key>
+          <div class="dh-label">
+            <span>Email</span>
+            {{ manager.username }}
+          </div>
+          <div class="dh-settings-form-footer">
+            <button class="dh-button" @click="managerToDelete = manager" :disabled="deleting">
+              Delete
+            </button>
+          </div>
         </div>
-        <button class="dh-button" @click="managerToDelete = manager" :disabled="deleting">
-          Delete
-        </button>
       </div>
     </div>
   </div>
@@ -54,8 +60,9 @@ export default {
   },
 
   methods: {
-    setCreating(creating) {
-      this.creating = creating
+    addManagerEnd() {
+      this.creating = false
+      this.getManagers()
     },
     getManagers() {
       axios({
@@ -79,9 +86,6 @@ export default {
     cancelDelete() {
       this.managerToDelete = {}
       this.deleting = false
-    },
-    managerCreated() {
-      this.getManagers()
     }
   },
   created() {
