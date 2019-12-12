@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="builder-area" ref="builderArea" @click="$store.commit('set', {path: 'existConnection', value: null })">
-      <!-- <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
+      <div class="steps-row" v-for="(stepRow, rowIndex) in builder.scheme" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
           <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
           <step-item
@@ -38,7 +38,7 @@
             :steps="entryItem.steps"
             ></step-item>
         </template>
-      </div> -->
+      </div>
       <!-- <arrows ref="subArrows" class="sub-arrows" :refs="builder" :arrows="subArrows" :scale="scaleValue"></arrows>
       <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows> -->
     </div>
@@ -46,8 +46,8 @@
 </template>
 
 <script>
-// import panzoom from 'panzoom';
-// import stepItem from './stepItem';
+import panzoom from 'panzoom';
+import stepItem from './stepItem';
 // import arrows from './arrows';
 import Vue from 'vue';
 import Builder from '../../src/builder'
@@ -70,78 +70,11 @@ export default {
   props: ['entryItem', 'hasWarning', 'disabled'],
 
   components: {
-    // stepItem,
+    stepItem,
     // arrows,
   },
 
   computed: {
-    // stepRows() {
-    //   const { steps } = this.entryItem;
-    //   const stepRows = [[steps[0]]];
-    //   const arrows = [];
-    //   const subArrows = [];
-    //   const getLinkElements = (row) => {
-    //     let linkElements = [];
-
-    //     row.forEach(stepRow => {
-    //       if (!stepRow) return;
-
-    //       stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
-    //         const elementAction = (matchElement, suffix = '') => {
-    //           const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-    //           const failTarget = matchElement.onFail && matchElement.onFail.target;
-
-    //           if (matchElement.type === 'linker' && matchElement.displaySettings) {
-
-    //           } else {
-    //             linkElements.push(target || null);
-    //           }
-
-    //           if (matchElement.type !== 'linker' && failTarget) {
-    //             arrows.push({parent: `${element.id}-fail`, child: failTarget, stepId: stepRow.id});
-    //             linkElements.push(failTarget)
-    //           }
-
-    //           if (target) {
-    //             const arrowObject = { parent: element.id + suffix, child: target, stepId: stepRow.id }
-
-    //             if (matchElement.type === 'linker' && matchElement.displaySettings) {
-    //               subArrows.push({ ...arrowObject, isExisting: true});
-    //             } else {
-    //               arrows.push(arrowObject);
-    //             }
-    //           }
-    //         };
-
-    //         if (element.displaySettings && element.displaySettings.type === 'followers') {
-    //           element.elements.forEach(elementAction);
-    //         } else {
-    //           elementAction(utils.getOnMatchElement(element));
-    //         }
-    //       })
-    //     });
-
-    //     if (!linkElements.length || !linkElements.some(elementTarget => elementTarget)) return;
-
-    //     linkElements = linkElements.map(elementTarget => {
-    //       if (!elementTarget) return elementTarget;
-
-    //       return steps.find(step => step.id === elementTarget)
-    //     });
-
-    //     stepRows.push(linkElements);
-
-    //     getLinkElements(linkElements);
-    //   };
-
-    //   getLinkElements(stepRows[0])
-
-    //   this.arrows = arrows;
-    //   this.subArrows = subArrows;
-
-    //   return stepRows
-    // },
-
     globalError() {
       const { globalError } = this.$store.state;
 
@@ -169,166 +102,166 @@ export default {
       }
     },
 
-    // isBroadcast() {
-    //   return entryItem.type === 'broadcast';
-    // }
+    isBroadcast() {
+      return entryItem.type === 'broadcast';
+    }
   },
 
   methods: {
-    //   addStep(step, parentElement) {
-    //     const { entryItem } = this;
-    //     const firstElementSettings = step.elements[0];
+    addStep(step, parentElement) {
+      const { entryItem } = this;
+      const firstElementSettings = step.elements[0];
 
-    //     switch (firstElementSettings.displaySettings.subType) {
-    //       case 'message':
-    //         step.name = 'New message'
+      switch (firstElementSettings.displaySettings.subType) {
+        case 'message':
+          step.name = 'New message'
 
-    //         if (firstElementSettings.displaySettings.type === 'delay') {
-    //           const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-    //           const action = firstElementSettings.elements.find(element => element.type === 'action');
+          if (firstElementSettings.displaySettings.type === 'delay') {
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
 
-    //           action.body.checkpointId = checkpoint.id;
-    //         }
-    //         break;
-    //       case 'condition':
-    //         step.name = 'Condition'
+            action.body.checkpointId = checkpoint.id;
+          }
+          break;
+        case 'condition':
+          step.name = 'Condition'
 
-    //         if (firstElementSettings.displaySettings.type === 'timeout') {
-    //           const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-    //           const action = firstElementSettings.elements.find(element => element.type === 'action');
+          if (firstElementSettings.displaySettings.type === 'timeout') {
+            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
 
-    //           action.body.checkpointId = checkpoint.id;
-    //         }
+            action.body.checkpointId = checkpoint.id;
+          }
 
-    //         break;
-    //       case 'action':
-    //         step.name = 'Action'
-    //         break;
-    //       case 'trigger':
-    //         step.name = 'Trigger';
+          break;
+        case 'action':
+          step.name = 'Action'
+          break;
+        case 'trigger':
+          step.name = 'Trigger';
 
-    //         if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
-    //           step.elements.splice(0,0, {
-    //             type: 'checkpoint',
-    //             id: (new ObjectId).toString()
-    //           })
-    //         }
+          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+            step.elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
 
-    //         break;
-    //       case 'user-input':
-    //         step.name = 'User Input'
+          break;
+        case 'user-input':
+          step.name = 'User Input'
 
-    //         if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
-    //           step.elements[0].elements.splice(0,0, {
-    //             type: 'checkpoint',
-    //             id: (new ObjectId).toString()
-    //           })
-    //         }
+          if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
+            step.elements[0].elements.splice(0,0, {
+              type: 'checkpoint',
+              id: (new ObjectId).toString()
+            })
+          }
 
-    //         break;
-    //       case 'sub-input':
-    //         step.name = 'Collect'
-    //         break;
-    //     }
+          break;
+        case 'sub-input':
+          step.name = 'Collect'
+          break;
+      }
 
-    //     entryItem.steps.push(step);
-    //   },
+      entryItem.steps.push(step);
+    },
 
-    //   deleteStep(step) {
-    //     const { steps } = this.entryItem;
-    //     const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
+    deleteStep(step) {
+      const { steps } = this.entryItem;
+      const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
 
-    //     steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
-    //       const actionElement = (matchElement) => {
-    //         if (!matchElement) return;
+      steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
+        const actionElement = (matchElement) => {
+          if (!matchElement) return;
 
-    //         const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-    //         const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
+          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
+          const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
 
-    //         if ((target !== step.id) && (failTarget !== step.id)) return;
+          if ((target !== step.id) && (failTarget !== step.id)) return;
 
 
-    //         if (element.type == 'linker') {
-    //           stepItem.elements.splice(index, 1)
-    //         } else {
-    //           Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
-    //         }
+          if (element.type == 'linker') {
+            stepItem.elements.splice(index, 1)
+          } else {
+            Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
+          }
 
-    //         return true;
-    //       };
+          return true;
+        };
 
-    //       if (element.displaySettings && element.displaySettings.type === 'followers') {
-    //         element.elements.some(actionElement);
-    //       } else {
-    //         return actionElement(utils.getOnMatchElement(element));
-    //       }
-    //     }))
+        if (element.displaySettings && element.displaySettings.type === 'followers') {
+          element.elements.some(actionElement);
+        } else {
+          return actionElement(utils.getOnMatchElement(element));
+        }
+      }))
 
-    //     if (userInputElement) {
-    //       const matchElement = utils.getOnMatchElement(userInputElement);
-    //       const subStep = steps.find(step => step.id === matchElement.onMatch.target);
+      if (userInputElement) {
+        const matchElement = utils.getOnMatchElement(userInputElement);
+        const subStep = steps.find(step => step.id === matchElement.onMatch.target);
 
-    //       steps.splice(steps.indexOf(subStep), 1)
-    //     }
+        steps.splice(steps.indexOf(subStep), 1)
+      }
 
-    //     steps.splice(steps.indexOf(step), 1)
-    //   },
+      steps.splice(steps.indexOf(step), 1)
+    },
 
-    //   initZoom() {
-    //     const zoomTool = panzoom(this.$refs.builderArea, {
-    //       maxZoom: 2,
-    //       minZoom: 0.1,
-    //       smoothScroll: false,
-    //       zoomDoubleClickSpeed: 1,
-    //       beforeWheel(event) {
-    //         if (!event.shiftKey) {
-    //           const { x, y } = zoomTool.getTransform();
+    initZoom() {
+      const zoomTool = panzoom(this.$refs.builderArea, {
+        maxZoom: 2,
+        minZoom: 0.1,
+        smoothScroll: false,
+        zoomDoubleClickSpeed: 1,
+        beforeWheel(event) {
+          if (!event.shiftKey) {
+            const { x, y } = zoomTool.getTransform();
 
-    //           zoomTool.moveTo(x - event.deltaX, y - event.deltaY)
-    //         }
+            zoomTool.moveTo(x - event.deltaX, y - event.deltaY)
+          }
 
-    //         return !event.shiftKey;
-    //       },
-    //       filterKey(event) {
-    //         return true;
-    //       }
-    //     })
+          return !event.shiftKey;
+        },
+        filterKey(event) {
+          return true;
+        }
+      })
 
-    //     zoomTool.on('zoom', () => {
-    //       this.scaleValue = zoomTool.getTransform().scale;
-    //     })
+      zoomTool.on('zoom', () => {
+        this.scaleValue = zoomTool.getTransform().scale;
+      })
 
-    //     this.zoomTool = zoomTool;
-    //   },
+      this.zoomTool = zoomTool;
+    },
 
-    //   scaleTo(ration) {
-    //     const { zoomTool } = this;
-    //     const { flowBuilder } = this.$refs;
-    //     const flowBuilderRect = flowBuilder.getBoundingClientRect();
+    scaleTo(ration) {
+      const { zoomTool } = this;
+      const { flowBuilder } = this.$refs;
+      const flowBuilderRect = flowBuilder.getBoundingClientRect();
 
-    //     const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
-    //     const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
+      const positionX = (flowBuilderRect.x + flowBuilderRect.width) / 2;
+      const positionY = (flowBuilderRect.y + flowBuilderRect.height) / 2;
 
-    //     zoomTool.smoothZoom(positionX, positionY, ration);
-    //   },
+      zoomTool.smoothZoom(positionX, positionY, ration);
+    },
 
-    //   findEntryStep(stepId, animation) {
-    //     const { zoomTool, entryItem } = this;
-    //     const { flowBuilder } = this.$refs;
-    //     const campaignCard = this.$refs[stepId || entryItem.steps[0].id][0];
-    //     const campaignCardRect = campaignCard.$el.getBoundingClientRect();
-    //     const flowBuilderRect = flowBuilder.getBoundingClientRect();
-    //     const { x, y } = zoomTool.getTransform();
+    findEntryStep(stepId, animation) {
+      const { zoomTool, entryItem } = this;
+      const { flowBuilder } = this.$refs;
+      const campaignCard = this.$refs[stepId || entryItem.steps[0].id][0];
+      const campaignCardRect = campaignCard.$el.getBoundingClientRect();
+      const flowBuilderRect = flowBuilder.getBoundingClientRect();
+      const { x, y } = zoomTool.getTransform();
 
-    //     const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
-    //     const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
+      const positionX = -((campaignCardRect.x + campaignCardRect.width / 2) - x - (flowBuilderRect.x + flowBuilderRect.width) / 2);
+      const positionY = -((campaignCardRect.y + campaignCardRect.height / 2) - y - (flowBuilderRect.y + flowBuilderRect.height) / 2);
 
-    //     if (animation) {
-    //       campaignCard.findAnimation = true;
-    //     }
+      if (animation) {
+        campaignCard.findAnimation = true;
+      }
 
-    //     zoomTool.moveTo(positionX, positionY);
-    //   },
+      zoomTool.moveTo(positionX, positionY);
+    },
 
     //   stepsInOneBranch(endStepId, searchStepId) {
     //     const { arrows, stepsInOneBranch } = this;
@@ -359,27 +292,26 @@ export default {
 
   created() {
     const { entryItem } = this;
+    const builder = new Builder(entryItem);
 
-    this.builder = new Builder(entryItem);
-
-    this.builder.scheme;
+    this.builder = builder;
   },
 
   mounted() {
-    //   const { entryItem, $refs } = this;
-    //   const { builderArea } = $refs;
+    const { entryItem, $refs } = this;
+    const { builderArea } = $refs;
 
-    //   if (!builderArea || !entryItem) return;
+    if (!builderArea || !entryItem) return;
 
-    //   this.initZoom();
-    //   this.findEntryStep();
+    this.initZoom();
+    this.findEntryStep();
 
-    //   this.$nextTick(() => {
-    //     const { builderArea } = this.$refs;
+    this.$nextTick(() => {
+      const { builderArea } = this.$refs;
 
-    //     builderArea.style.width = `${builderArea.scrollWidth}px`;
-    //     builderArea.style.height = `${builderArea.scrollHeight}px`
-    //   });
+      builderArea.style.width = `${builderArea.scrollWidth}px`;
+      builderArea.style.height = `${builderArea.scrollHeight}px`
+    });
   },
 
   watch:{
