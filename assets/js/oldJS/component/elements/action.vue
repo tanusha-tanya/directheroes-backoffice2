@@ -5,7 +5,7 @@
         <div class="action-item-title">{{ actionTitles[action.displaySettings.type || getAction(action)] }}</div>
         <element-warning :element="action"></element-warning>
         <template v-if="['addCategory', 'removeCategory'].includes(getAction(action))">
-          <keywords v-model="action.body.name"></keywords>
+          <keywords v-model="action.body.name" :placeholder="getAction(action) === 'addCategory' ? 'Click to specify tags to add' : 'Click to specify tags to remove'"></keywords>
         </template>
         <template v-else-if="action.displaySettings.type === 'zapier'">
           <zapier :element="action"></zapier>
@@ -49,8 +49,8 @@ export default {
   data() {
     return {
       actionTitles:{
-        addCategory: 'Add tag',
-        removeCategory: 'Remove tag',
+        addCategory: 'Add tags',
+        removeCategory: 'Remove tags',
         zapier: 'Zapier',
         subscription: 'Subscription'
       }

@@ -2,7 +2,7 @@
   <div class="keywords">
     <el-select
       :value="value"
-      placeholder="Matches any text, click to edit"
+      :placeholder="placeholder || 'Matches any text, click to edit'"
       popper-class="keywords-dropdown"
       multiple
       filterable
@@ -23,10 +23,11 @@ export default {
     }
   },
 
-  props: ['value'],
+  props: ['value', 'placeholder'],
 
   methods: {
     keywordsChange(value) {
+      this.$emit('change', value);
       this.$emit('input', value.filter(keyword => keyword.trim()))
     },
 
