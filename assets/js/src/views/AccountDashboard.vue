@@ -133,7 +133,7 @@ export default {
 
       if (!followerCount) return {}
 
-      return followerCount[followerCount.length - 1].value - followerCount[0].value
+      return Math.floor(followerCount[followerCount.length - 1].value - followerCount[0].value)
     },
 
     followerCountProgress() {

@@ -48,14 +48,20 @@
         </div>
       </template>
     </draggable>
-    <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}" v-if="!linker">
+    <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
       <template v-if="isBroadcast">
         <add-step-popup @add-step="addElement" :available-list="broadcastAvailableList" >
         </add-step-popup>
       </template>
-      <add-element-popup @add-element="addElement" v-else>
-        <div class="message-add-event"></div>
-      </add-element-popup>
+      <template v-else>
+        <add-mid-step-popup v-if="linker"
+          :available-list="['delay', 'sendText', 'sendMedia']"
+          @add-step="addElement">
+        </add-mid-step-popup>
+        <add-element-popup @add-element="addElement" v-else>
+          <div class="message-add-event"></div>
+        </add-element-popup>
+      </template>
     </div>
     <linker :linker="linker" v-if="linker"></linker>
   </div>
@@ -65,6 +71,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
+import addMidStepPopup from '../addMidStep';
 import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
@@ -83,7 +90,8 @@ export default {
     elementWarning,
     linker,
     delay,
-    addStepPopup
+    addStepPopup,
+    addMidStepPopup
   },
 
   computed: {
@@ -112,7 +120,7 @@ export default {
 
   methods: {
     addElement(element) {
-      const { elements } = this;
+      const { elements, linker } = this;
       const { displaySettings } = element;
 
       if (['group', 'action'].includes(element.type) && displaySettings && displaySettings.subType === 'message') {
@@ -130,10 +138,17 @@ export default {
           }
         }
 
-        elements.push({
-          id: (new ObjectId).toString(),
-          ...element
-        })
+        if (linker)
+          elements.splice(elements.indexOf(linker), 0,{
+            id: (new ObjectId).toString(),
+            ...element
+          })
+        else {
+          elements.push({
+            id: (new ObjectId).toString(),
+            ...element
+          })
+        }
       } else {
         let subStep = null;
         const step = {

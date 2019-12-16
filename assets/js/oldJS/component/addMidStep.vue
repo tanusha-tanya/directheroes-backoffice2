@@ -3,22 +3,25 @@
     <div class="add-step-button" slot="reference">
       <slot></slot>
     </div>
-    <div class="types-of-elements">
-      <div class="type-of-element">
-        <add-message-popup :available-list="availableElements" @on-select="selectElement">
-          <span class="message-elements">Messages</span>
-        </add-message-popup>
-      </div>
-      <div class="type-of-element">
-        <add-trigger-popup :available-list="availableElements" @on-select="selectElement" >
-          <span class="trigger-elements">Triggers</span>
-        </add-trigger-popup>
-      </div>
-      <div class="type-of-element">
-        <add-action-popup :available-list="availableElements" @on-select="selectElement">
-          <span class="action-elements">Actions</span>
-        </add-action-popup>
-      </div>
+    <div
+      class="action-item"
+      @click="selectElement(action)" v-if="availableList && availableList.includes('addCategory')">
+      Add tag
+    </div>
+    <div
+      class="action-item"
+      @click="selectElement(sendText)" v-if="availableList && availableList.includes('sendText')">
+      Text
+    </div>
+    <div
+      class="action-item"
+      @click="selectElement(sendMedia)" v-if="availableList && availableList.includes('sendMedia')">
+      Image
+    </div>
+    <div
+      class="action-item"
+      @click="selectElement(delay)" v-if="availableList && availableList.includes('delay')">
+      Delay
     </div>
   </el-popover>
 </template>
@@ -44,10 +47,10 @@ export default {
   },
 
   computed: {
-    availableElements() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+    delay() {
+      const sendDelayAction = messages.find(action => action.template.displaySettings.type == 'delay');
 
-      return ['sendText', 'sendMedia', 'user-input', 'addCategory', 'delay'].concat(messageTypes);
+      return sendDelayAction.template
     }
   },
 
