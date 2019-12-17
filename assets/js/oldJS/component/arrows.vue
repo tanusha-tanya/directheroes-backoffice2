@@ -124,8 +124,6 @@ export default {
 
       findElement(refs);
 
-      console.log(refs);
-
       return element
     }
   },

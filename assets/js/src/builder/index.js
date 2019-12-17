@@ -21,8 +21,12 @@ export default {
         scheme() {
           const { getAllMatchElements } = this;
           const { steps } = this.campaign;
+          const sprouts = steps
+            .filter(step => step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))
+            .sort((sproutA, sproutB) => sproutA.columnIndex - sproutB.columnIndex);
           const firstStep = steps[0];
           const getStepMatches = (stepRow) => {
+            const stepsTreeRows = stepsTree.length - 1
             let linkElements = [];
 
             stepRow.forEach(step => {
@@ -64,13 +68,33 @@ export default {
                 } else {
                   matchesHandler(stepElement)
                 }
+
+                sprouts.forEach((sprout, index, sproutArray) => {
+                  if (sprout.displaySettings.rowIndex === stepsTreeRows && sprout.displaySettings.columnIndex <= linkElements.length) {
+                    linkElements.push(sprout.id);
+                    sproutArray.splice(index, 1);
+                  }
+                })
               });
             })
 
-            console.log(linkElements);
+            sprouts.forEach((sprout, index, sproutArray) => {
+              if (sprout.displaySettings.rowIndex !== stepsTreeRows) return;
+
+              linkElements.push(sprout.id);
+              sproutArray.splice(index, 1);
+            })
 
 
-            if (!linkElements.length) return;
+            if (!linkElements.length) {
+              sprouts.forEach((sprout, index, sproutArray) => {
+                sprout.displaySettings.rowIndex = stepsTreeRows;
+                linkElements.push(sprout.id);
+                sproutArray.splice(index, 1);
+              })
+
+              if (!linkElements.length) return;
+            }
 
             linkElements = linkElements.map(elementTarget => {
               if (!elementTarget) return elementTarget;
@@ -91,13 +115,63 @@ export default {
           this.arrows = arrows;
           this.subArrows = subArrows;
 
-          console.log(arrows);
-
           return stepsTree;
         }
       },
 
       methods: {
+        getStep(stepId) {
+          const { steps } = this;
+
+          return steps.find(step => step.id === stepId);
+        },
+
+        getStepByElement(element) {
+          const { steps } = this;
+
+          return steps.find(step => step.elements.includes(element));
+        },
+
+        getStepRow(step) {
+          const { scheme } = this;
+
+          return scheme.find(schemaRow => schemaRow.includes(step))
+        },
+
+        getElementByTargetId(targetId) {
+          const { steps, getAllMatchElements } = this;
+          const matchElement = [];
+
+          steps.some(step => {
+            return step.elements.forEach(element => {
+              const elementMatches = getAllMatchElements(element);
+
+              elementMatches.forEach(elementMatched => {
+                const { type } = elementMatched;
+
+                switch (type) {
+                  case 'linker':
+                    if (elementMatched.target === targetId) {
+                      matchElement.push(elementMatched);
+                    }
+
+                    break;
+                  case 'rule':
+                    if (elementMatched.onMatch && elementMatched.onMatch.target === targetId) {
+                      matchElement.push(elementMatched);
+                    } else if (elementMatched.onFail && elementMatched.onFail.target === targetId) {
+                      matchElement.push(elementMatched);
+                    }
+
+                    break;
+                }
+              })
+            })
+          });
+
+          return matchElement
+        },
+
         getAllMatchElements(element) {
           const { getAllMatchElements } = this;
           const { type } = element;
@@ -117,7 +191,7 @@ export default {
               break;
             case 'rule':
               const { value } = element.condition;
-              const matchElement = element;
+              let matchElement = element;
 
               if (['postShare', 'storyMention', 'storyShare'].includes(value)) {
                 matchElement = element.onMatch.elements[0]
@@ -160,8 +234,50 @@ export default {
         },
 
         deleteStep(step) {
-          console.log(step);
+          const { getStepArrows, getStep, getElementByTargetId, getStepByElement, getStepRow, scheme, steps } = this;
+          const clearStepData = (elementsList = [], childStepId) => {
+            elementsList.forEach( element => {
+              const { type } = element;
 
+              switch (type) {
+                case 'linker':
+                  const linkerStep = getStepByElement(element)
+
+                  linkerStep.elements.splice(linkerStep.elements.indexOf(linkerStep), 1)
+
+                  break;
+                case 'rule':
+                  if (element.onMatch && element.onMatch.target === childStepId) {
+                    delete element.onMatch;
+                  } else if (element.onFail && element.onFail.target === childStepId) {
+                    delete element.onFail;
+                  }
+
+                  break;
+              }
+            })
+          }
+          const stepArrows = getStepArrows(step.id);
+          const stepRow = getStepRow(step);
+          const stepRowIndex = scheme.indexOf(stepRow);
+          const childStepRowIndex = stepRow.length > 1 ? stepRowIndex + 1 : stepRowIndex;
+
+          stepArrows.forEach((stepArrow, index) => {
+            const isParentArrow = stepArrow.child === step.id;
+
+            clearStepData(getElementByTargetId(stepArrow.child), stepArrow.child)
+
+            if (isParentArrow) return;
+
+            const childStep = getStep(stepArrow.child);
+
+            childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
+              rowIndex: childStepRowIndex,
+              columnIndex: stepRow.indexOf(step) + index
+            });
+          })
+
+          steps.splice(steps.indexOf(step), 1)
         }
       }
     })
