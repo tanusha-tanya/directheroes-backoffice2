@@ -14,7 +14,7 @@
       {{flowName || step.name || '&nbsp;'}}
     </span>
     <span>
-      <div class="step-delete-button" v-if="(!isEntry && !hasChilds && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="$emit('delete-step', step)">
+      <div class="step-delete-button" v-if="(!isEntry && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="builder.deleteStep(step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
       <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
@@ -147,7 +147,7 @@ export default {
     },
 
     builder() {
-      return this.$parent
+      return this.$parent.builder
     }
   },
 
@@ -233,7 +233,7 @@ export default {
       const { builder, step } = this;
       const arrows = builder.getStepArrows(step.id);
 
-      arrows.forEach(arrow => Vue.set(arrow, 'hover', status))
+      // arrows.forEach(arrow => Vue.set(arrow, 'hover', status))
     }
   },
 }

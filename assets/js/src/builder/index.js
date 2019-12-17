@@ -1,122 +1,169 @@
-const getAllMatchElements = (element) => {
-  const { type } = element;
-  let matches = [];
+import Vue from 'vue'
 
-  switch (type) {
-    case 'group':
-      if (element.displaySettings.subType === 'settings') return matches;
+export default {
+  create(campaign) {
+    return new Vue({
+      data() {
+        return {
+          campaign,
+          arrows: [],
+          subArrows: []
+        }
+      },
 
-      element.elements.forEach(subElement => {
-        matches = matches.concat(getAllMatchElements(subElement))
-      })
+      computed: {
+        steps() {
+          const { steps } = this.campaign;
 
-      break;
-    case 'linker':
-      matches.push(element)
-      break;
-    case 'rule':
-      const { value } = element.condition;
-      const matchElement = element;
+          return steps;
+        },
 
-      if (['postShare', 'storyMention', 'storyShare'].includes(value)) {
-        matchElement = element.onMatch.elements[0]
-      }
+        scheme() {
+          const { getAllMatchElements } = this;
+          const { steps } = this.campaign;
+          const firstStep = steps[0];
+          const getStepMatches = (stepRow) => {
+            let linkElements = [];
 
-      if (matchElement.onMatch && matchElement.onMatch.target || matchElement.onFail && matchElement.onFail.target) {
-        matches.push(matchElement)
-      }
+            stepRow.forEach(step => {
+              if (!step) return;
 
-      break;
-  }
+              step.elements.map(stepElement => {
+                const matchesHandler = (element, suffix = '') => {
+                  const matches = getAllMatchElements(element);
 
-  return matches
-}
+                  matches.forEach(matchElement => {
+                    const match = matchElement.onMatch || matchElement;
+                    const failTarget = matchElement.onFail && matchElement.onFail.target;
+                    const { target } = match;
+                    const isExistingStepLink = matchElement.type === 'linker' && matchElement.displaySettings
 
-class Builder {
-  constructor(campaign) {
-    this.campaign = campaign;
-    this.arrows = [];
-  }
+                    if (!isExistingStepLink) {
+                      linkElements.push(target);
+                    }
 
-  get steps() {
-    const { steps } = this.campaign;
+                    if (failTarget) {
+                      arrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id});
+                      linkElements.push(failTarget);
+                    }
 
-    return steps;
-  }
+                    if (target) {
+                      const arrowObject = { parent: stepElement.id + suffix, child: target, stepId: step.id }
 
-  get scheme() {
-    const { steps } = this.campaign;
-    const firstStep = steps[0];
-    const getStepMatches = (stepRow) => {
-      let linkElements = [];
+                      if (isExistingStepLink) {
+                        subArrows.push({ ...arrowObject, isExisting: true});
+                      } else {
+                        arrows.push(arrowObject);
+                      }
+                    }
+                  })
+                };
 
-      stepRow.forEach(step => {
-        if (!step) return;
-
-        step.elements.map(stepElement => {
-          const matchesHandler = (element, suffix = '') => {
-            const matches = getAllMatchElements(element);
-
-            matches.forEach(matchElement => {
-              const match = matchElement.onMatch || matchElement;
-              const failTarget = matchElement.onFail && matchElement.onFail.target;
-              const { target } = match;
-              const isExistingStepLink = matchElement.type === 'linker' && matchElement.displaySettings
-
-              if (!isExistingStepLink) {
-                linkElements.push(target);
-              }
-
-              if (failTarget) {
-                arrows.push({parent: `${matchElement.id}-fail`, child: failTarget, stepId: step.id});
-              }
-
-              if (target) {
-                const arrowObject = { parent: matchElement.id + suffix, child: target, stepId: step.id }
-
-                if (isExistingStepLink) {
-                  subArrows.push({ ...arrowObject, isExisting: true});
+                if (stepElement.displaySettings && stepElement.displaySettings.type === 'followers') {
+                  stepElement.elements.forEach(matchesHandler);
                 } else {
-                  arrows.push(arrowObject);
+                  matchesHandler(stepElement)
                 }
-              }
+              });
             })
+
+            console.log(linkElements);
+
+
+            if (!linkElements.length) return;
+
+            linkElements = linkElements.map(elementTarget => {
+              if (!elementTarget) return elementTarget;
+
+              return steps.find(step => step.id === elementTarget)
+            });
+
+            stepsTree.push(linkElements);
+
+            getStepMatches(linkElements);
           };
+          const stepsTree = [[firstStep]];
+          const arrows = [];
+          const subArrows = [];
 
-          if (stepElement.displaySettings && stepElement.displaySettings.type === 'followers') {
-            stepElement.elements.forEach(matchesHandler);
-          } else {
-            matchesHandler(stepElement)
+          getStepMatches(stepsTree[0])
+
+          this.arrows = arrows;
+          this.subArrows = subArrows;
+
+          console.log(arrows);
+
+          return stepsTree;
+        }
+      },
+
+      methods: {
+        getAllMatchElements(element) {
+          const { getAllMatchElements } = this;
+          const { type } = element;
+          let matches = [];
+
+          switch (type) {
+            case 'group':
+              if (element.displaySettings.subType === 'settings') return matches;
+
+              element.elements.forEach(subElement => {
+                matches = matches.concat(getAllMatchElements(subElement))
+              })
+
+              break;
+            case 'linker':
+              matches.push(element)
+              break;
+            case 'rule':
+              const { value } = element.condition;
+              const matchElement = element;
+
+              if (['postShare', 'storyMention', 'storyShare'].includes(value)) {
+                matchElement = element.onMatch.elements[0]
+              }
+
+              if (matchElement.onMatch && matchElement.onMatch.target || matchElement.onFail && matchElement.onFail.target) {
+                matches.push(matchElement)
+              }
+
+              break;
           }
-        });
-      })
 
-      if (!linkElements.length) return;
+          return matches
+        },
 
-      linkElements = linkElements.map(elementTarget => {
-        if (!elementTarget) return elementTarget;
+        getStepArrows(stepId) {
+          const { arrows, subArrows } = this;
+          const stepArrows = [];
 
-        return steps.find(step => step.id === elementTarget)
-      });
+          arrows.concat(subArrows).forEach(arrow => {
+            if (arrow.stepId !== stepId && arrow.child !== stepId) return;
 
-      stepsTree.push(linkElements);
+            stepArrows.push(arrow);
+          })
 
-      getStepMatches(linkElements);
-    };
-    const stepsTree = [[firstStep]];
-    const arrows = [];
-    const subArrows = [];
+          return stepArrows;
+        },
 
-    getStepMatches(stepsTree[0])
+        stepsInOneBranch(endStepId, searchStepId) {
+          const { arrows, stepsInOneBranch } = this;
+          const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
 
-    this.arrows = arrows;
-    this.subArrows = subArrows;
+          if (!endStepConnection) return;
 
-    return stepsTree;
+          if (endStepConnection.stepId === searchStepId) {
+            return true
+          } else {
+            return stepsInOneBranch(endStepConnection.stepId, searchStepId)
+          }
+        },
+
+        deleteStep(step) {
+          console.log(step);
+
+        }
+      }
+    })
   }
-
 }
-
-Builder.prototype.getAllMatchElements = getAllMatchElements;
-
-export default Builder

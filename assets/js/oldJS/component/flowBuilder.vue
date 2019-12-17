@@ -39,8 +39,8 @@
             ></step-item>
         </template>
       </div>
-      <!-- <arrows ref="subArrows" class="sub-arrows" :refs="builder" :arrows="subArrows" :scale="scaleValue"></arrows>
-      <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows> -->
+      <arrows ref="subArrows" class="sub-arrows" :refs="builderArea" :arrows="builder.subArrows" :scale="scaleValue"></arrows>
+      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue"></arrows>
     </div>
   </div>
 </template>
@@ -48,7 +48,7 @@
 <script>
 import panzoom from 'panzoom';
 import stepItem from './stepItem';
-// import arrows from './arrows';
+import arrows from './arrows';
 import Vue from 'vue';
 import Builder from '../../src/builder'
 // import utils from '../utils';
@@ -71,7 +71,7 @@ export default {
 
   components: {
     stepItem,
-    // arrows,
+    arrows,
   },
 
   computed: {
@@ -104,6 +104,10 @@ export default {
 
     isBroadcast() {
       return entryItem.type === 'broadcast';
+    },
+
+    builderArea() {
+      return this;
     }
   },
 
@@ -262,37 +266,11 @@ export default {
 
       zoomTool.moveTo(positionX, positionY);
     },
-
-    //   stepsInOneBranch(endStepId, searchStepId) {
-    //     const { arrows, stepsInOneBranch } = this;
-    //     const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
-
-    //     if (!endStepConnection) return;
-
-    //     if (endStepConnection.stepId === searchStepId) {
-    //       return true
-    //     } else {
-    //       return stepsInOneBranch(endStepConnection.stepId, searchStepId)
-    //     }
-    //   },
-
-    //   getStepArrows(stepId) {
-    //     const { arrows, subArrows } = this;
-    //     const stepArrows = [];
-
-    //     arrows.concat(subArrows).forEach(arrow => {
-    //       if (arrow.stepId !== stepId && arrow.child !== stepId) return;
-
-    //       stepArrows.push(arrow);
-    //     })
-
-    //     return stepArrows;
-    //   }
   },
 
   created() {
     const { entryItem } = this;
-    const builder = new Builder(entryItem);
+    const builder = Builder.create(entryItem);
 
     this.builder = builder;
   },
@@ -315,39 +293,39 @@ export default {
   },
 
   watch:{
-    //   entryItem: {
-    //     handler: function (entry, oldEntry) {
+    entryItem: {
+      handler: function (entry, oldEntry) {
 
-    //       if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
-    //       if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
 
-    //       if (entry) {
-    //         if (!oldEntry && this._isMounted) {
-    //           this.$nextTick(() => {
-    //             this.initZoom();
-    //             this.findEntryStep();
-    //           });
-    //         };
+        if (entry) {
+          if (!oldEntry && this._isMounted) {
+            this.$nextTick(() => {
+              this.initZoom();
+              this.findEntryStep();
+            });
+          };
 
-    //         if (this._isMounted) {
-    //           this.$nextTick(() => {
-    //             const { builderArea } = this.$refs;
+          if (this._isMounted) {
+            this.$nextTick(() => {
+              const { builderArea } = this.$refs;
 
-    //             builderArea.style.width = `${builderArea.scrollWidth}px`;
-    //             builderArea.style.height = `${builderArea.scrollHeight}px`
-    //           });
-    //         }
-    //       }
+              builderArea.style.width = `${builderArea.scrollWidth}px`;
+              builderArea.style.height = `${builderArea.scrollHeight}px`
+            });
+          }
+        }
 
-    //       if (!oldEntry || !entry || entry.id !== oldEntry.id) {
-    //         return;
-    //       }
+        if (!oldEntry || !entry || entry.id !== oldEntry.id) {
+          return;
+        }
 
-    //       entry.isActive = entry.isEnabled && !Boolean(this.hasWarning);
-    //       entry.isIncomplete = Boolean(this.hasWarning);
-    //     },
-    //     deep: true
-    //   },
+        entry.isActive = entry.isEnabled && !Boolean(this.hasWarning);
+        entry.isIncomplete = Boolean(this.hasWarning);
+      },
+      deep: true
+    },
   }
 }
 </script>

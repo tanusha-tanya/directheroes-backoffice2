@@ -29,7 +29,7 @@ export default {
         const isToPoint = arrow.child == 'toPoint';
         let color = '#B2B2B2';
         let parent = getElement(arrow.parent);
-        let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
+        let child = getElement(arrow.child);
 
         if (!parent || !child) return;
 
@@ -123,6 +123,8 @@ export default {
       let element = null;
 
       findElement(refs);
+
+      console.log(refs);
 
       return element
     }
