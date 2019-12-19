@@ -4,6 +4,7 @@
     'step-item': true,
     'step-founded': findAnimation,
     'step-to-bind': canConnectAsExist,
+    'step-is-broken': isInBrokenBranch,
     'step-not-bind': canConnectAsExist === false },
     `step-${ stepType }-type`]"
   @mousedown.stop="" @transitionend="findAnimation = false"
@@ -125,12 +126,18 @@ export default {
     },
 
     canConnectAsExist() {
-      const { stepRowIndex, $store, builder, step } = this;
+      const { $store, builder, step, isInBrokenBranch } = this;
       const { existConnection } = $store.state;
 
       if (!existConnection || existConnection.step.id === step.id) return;
 
-      return !builder.stepsInOneBranch(existConnection.step.id, step.id)
+      return !builder.stepsInOneBranch(existConnection.step.id, step.id) && !isInBrokenBranch
+    },
+
+    isInBrokenBranch() {
+      const { builder, step } = this;
+
+      return (step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')) || builder.stepInBrokenBranch(step.id)
     },
 
     hasUserInputMatch() {
@@ -233,7 +240,7 @@ export default {
       const { builder, step } = this;
       const arrows = builder.getStepArrows(step.id);
 
-      // arrows.forEach(arrow => Vue.set(arrow, 'hover', status))
+      arrows.forEach(arrow => Vue.set(arrow, 'hover', status))
     }
   },
 }
@@ -279,6 +286,12 @@ export default {
 
     &.step-not-bind {
       opacity: .3;
+    }
+
+    &.step-is-broken {
+      opacity: .7;
+      pointer-events: none;
+      filter: grayscale(.5);
     }
 
     .step-item-header {

@@ -233,6 +233,21 @@ export default {
           }
         },
 
+        stepInBrokenBranch(stepId) {
+          const { arrows, stepInBrokenBranch, getStep } = this;
+          const endStepConnection = arrows.find(arrow => arrow.child === stepId);
+
+          if (!endStepConnection) return;
+
+          const step = getStep(endStepConnection.stepId)
+
+          if (step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')) {
+            return true
+          } else {
+            return stepInBrokenBranch(endStepConnection.stepId)
+          }
+        },
+
         deleteStep(step) {
           const { getStepArrows, getStep, getElementByTargetId, getStepByElement, getStepRow, scheme, steps } = this;
           const clearStepData = (elementsList = [], childStepId) => {
