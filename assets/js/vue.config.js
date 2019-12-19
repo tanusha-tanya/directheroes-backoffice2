@@ -7,8 +7,8 @@ const isDev = process.env.NODE_ENV === 'development';
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { WebpackCompilerPlugin } = require('webpack-compiler-plugin');
 // const commonTarget = 'https://www.directheroes.com/app_dev.php';
-const commonTarget = 'https://staging.directheroes.com/app_dev.php';
-// const commonTarget = 'https://beta2.directheroes.com/app_dev.php';
+// const commonTarget = 'https://staging.directheroes.com/app_dev.php';
+const commonTarget = 'https://beta2.directheroes.com';
 // const commonTarget = 'https://beta.directheroes.com/app_dev.php';
 
 require('dotenv').config({ path: '../../.env' })

@@ -6,7 +6,7 @@ zapierAction.displaySettings.subType = 'action';
 
 export default [
   {
-    title: 'Add tag',
+    title: 'Add tags',
     template: {
       type: 'action',
       displaySettings: {
@@ -19,7 +19,7 @@ export default [
     }
   },
   {
-    title: 'Remove tag',
+    title: 'Remove tags',
     template: {
       type: 'action',
       displaySettings: {
