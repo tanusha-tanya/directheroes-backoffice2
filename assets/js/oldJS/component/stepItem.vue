@@ -108,8 +108,9 @@ export default {
     availableList() {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
+      const { elements } = this.dhAccount.flowBuilderSettings;
 
-      return elementsPermissions.fromActionStep.concat(messageTypes);
+      return elementsPermissions.fromActionStep.concat(messageTypes, elements);
     },
 
     isEntry() {
