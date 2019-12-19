@@ -18,10 +18,10 @@
           </div>
         </div>
       </div>
-      <div class="dh-dashboard-title" v-if="analyticInfo && hasThreeDays">
+      <div class="dh-dashboard-title" v-if="analyticInfo && hasThreeDays && isAdmin">
         Stats
       </div>
-      <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays">
+      <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays && isAdmin">
         <div class="dh-dashboard-analytics-item" v-if="analyticInfo.followerCount">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">

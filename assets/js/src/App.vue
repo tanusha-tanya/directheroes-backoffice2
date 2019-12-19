@@ -60,7 +60,7 @@
         <div class="dh-navigation-button-ico">
           <easywebinar/>
         </div>
-        Join the Webinar!
+        Join the Training!
       </a>
       <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
