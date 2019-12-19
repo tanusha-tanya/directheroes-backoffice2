@@ -42,7 +42,7 @@
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
-              <div class="dh-option">
+              <div class="dh-option" v-if="false">
                 <div class="dh-half-size">Schedule campaign start</div>
                 <div class="dh-option-controls dh-half-size">
                   <el-radio v-model="isDateStart" :label="false" :disabled="isPreview">Start campaign now</el-radio><br>
@@ -60,7 +60,7 @@
                   </el-date-picker>
                 </div>
               </div>
-              <div class="dh-option">
+              <div class="dh-option" v-if="false">
                 <div class="dh-half-size">Schedule campaign close</div>
                 <div class="dh-option-controls dh-half-size">
                   <el-radio v-model="isDateClose" :label="false" :disabled="isPreview">Manual deactivation</el-radio><br>

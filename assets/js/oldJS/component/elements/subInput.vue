@@ -52,9 +52,9 @@ export default {
     },
 
     availableList() {
-      const { triggers, supercross } = this.dhAccount.flowBuilderSettings.triggers;
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings.triggers;
 
-      return elementsPermissions.fromUserInput.concat(triggers.messageTypes, supercross);
+      return elementsPermissions.fromUserInput.concat(triggers.messageTypes, elements);
     },
     selectedValue() {
 

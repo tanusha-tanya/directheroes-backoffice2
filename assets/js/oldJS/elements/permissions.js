@@ -8,8 +8,7 @@ export default {
     'removeCategory',
     'followers',
     'zapier',
-    'verified',
-    'hasTag'],
+    'verified'],
   fromTriggerStep: [],
   fromMessageStep: [
     'sendText',
@@ -20,8 +19,7 @@ export default {
     'user-input',
     'followers',
     'zapier',
-    'verified',
-    'hasTag'],
+    'verified'],
   fromActionStep: [
     'sendText',
     'sendMedia',
@@ -39,8 +37,7 @@ export default {
     'followers',
     'addCategory',
     'zapier',
-    'verified',
-    'hasTag'],
+    'verified'],
   fromUserInputFails: [
     'sendText',
     'sendMedia',
@@ -48,8 +45,7 @@ export default {
     'timeout',
     'followers',
     'addCategory',
-    'verified',
-    'hasTag'],
+    'verified'],
   fromUserInput: [
     'sendText',
     'sendMedia',
@@ -58,8 +54,7 @@ export default {
     'zapier',
     'addCategory',
     'removeCategory',
-    'verified',
-    'hasTag'],
+    'verified'],
   fromBroadcastFlow: [
     'sendText',
     'sendMedia'],

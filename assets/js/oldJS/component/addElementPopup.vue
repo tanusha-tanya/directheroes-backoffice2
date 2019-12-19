@@ -54,9 +54,9 @@ export default {
 
   computed: {
     availableList() {
-      const { triggers, supercross } = this.dhAccount.flowBuilderSettings;
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
 
-      return elementsPermissions.fromMessageStep.concat(triggers.messageTypes, supercross)
+      return elementsPermissions.fromMessageStep.concat(triggers.messageTypes, elements)
     }
   },
 
@@ -104,6 +104,10 @@ export default {
       color: #828282;
       margin: 3px;
       cursor: pointer;
+
+      &.element-disabled {
+        display: none;
+      }
 
       &:hover {
         color: #6A12CB;
