@@ -55,6 +55,8 @@ export default new Vuex.Store({
       }).then(({ data }) => {
         const { accountList, dhAccount } = data.response.body;
 
+        dhAccount.flowBuilderSettings.supercross = ['topCategory', 'scarcity', 'waitTillCondition', 'delayTill']
+
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
         commit('set', { path: 'isFirstLoad', value: false });

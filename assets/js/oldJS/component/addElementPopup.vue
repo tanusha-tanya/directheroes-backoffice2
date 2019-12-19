@@ -54,9 +54,9 @@ export default {
 
   computed: {
     availableList() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+      const { triggers, supercross } = this.dhAccount.flowBuilderSettings;
 
-      return elementsPermissions.fromMessageStep.concat(messageTypes)
+      return elementsPermissions.fromMessageStep.concat(triggers.messageTypes, supercross)
     }
   },
 

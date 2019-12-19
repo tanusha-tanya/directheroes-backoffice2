@@ -301,9 +301,9 @@ export default {
     },
 
     availableList() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+      const { triggers, supercross } = this.dhAccount.flowBuilderSettings;
 
-      return elementsPermissions.fromCondition.concat(messageTypes)
+      return elementsPermissions.fromCondition.concat(triggers.messageTypes, supercross)
     },
 
     lastFollowersRule() {
