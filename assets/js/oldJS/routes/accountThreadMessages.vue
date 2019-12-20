@@ -96,7 +96,10 @@
                     </template>
                     <template v-else>
                       end.
-                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && [2,3,7,8].includes(message.body.conversation.closeState)">
+                      <div
+                        @click="forceResumeConversation(message)"
+                        class="dh-force-resume-button"
+                        v-if="lastConversationEnd === message && message.body.conversation.campaign.type !== 'broadcast' && !message.sent && [2,3,7,8].includes(message.body.conversation.closeState)">
                         Force Resume
                       </div>
                     </template>
@@ -360,11 +363,16 @@
         return threadMessages.slice(0).reverse()
       },
 
-
       isInbox() {
         const { $route } = this;
 
         return $route.query.sub === 'ignored'
+      },
+
+      lastConversationEnd() {
+        const { reverseThreadMessages } = this;
+
+        return reverseThreadMessages.find(message => message.type && message.type === 'conversation_end');
       }
     },
 
