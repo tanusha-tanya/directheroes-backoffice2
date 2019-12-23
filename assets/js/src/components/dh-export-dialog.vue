@@ -40,7 +40,7 @@
       </div>
     </div>
     <template slot="footer">
-      <a :href="csvUri" :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="isShow = false">Export</a>
+      <button :class="{'dh-button': true, 'dh-loading': loading}" :disabled="loading" @click="getCSV">Export</button>
       <button class="dh-button dh-reset-button" @click="isShow = false" :disabled="loading">Cancel</button>
     </template>
   </el-dialog>
@@ -103,16 +103,6 @@ export default {
 
       return subscriberCategoryList;
     },
-
-    csvUri() {
-      const { account, paging, filters } = this;
-      const csvURI = axios.getUri({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
-        params: { paging,  ...filters,  contentFormat: 'csv'}
-      })
-
-      return csvURI;
-    }
   },
 
   methods: {
@@ -137,6 +127,29 @@ export default {
         this.paging = paging;
       })
     },
+
+    getCSV() {
+      const { account, paging, filters } = this;
+
+      this.loading = true;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+        data: { paging,  ...filters,  contentFormat: 'csv'},
+        responseType: 'blob',
+        method: 'post'
+      }).then(({data}) => {
+        const url = window.URL.createObjectURL(new Blob([data]));
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.setAttribute('download', 'audience.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        this.isShow = false;
+      })
+    }
   },
 
   watch: {
