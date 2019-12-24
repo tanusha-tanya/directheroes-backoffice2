@@ -126,6 +126,16 @@
                   ></thread-message>
                 </template>
               </template>
+              <div class="dh-conversation-divider dh-re-check-divider" v-if="false && canRecheckCampaigns">
+                  <div>
+                    <div
+                      @click="forceResumeConversation()"
+                      class="dh-force-resume-button"
+                      v-if="true">
+                      Re-check campaigns
+                    </div>
+                  </div>
+                </div>
             </div>
             <div class="dh-message-send">
               <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage()"></textarea>
@@ -385,6 +395,15 @@
         const { reverseThreadMessages } = this;
 
         return reverseThreadMessages.find(message => message.type && message.type === 'conversation_end');
+      },
+
+      canRecheckCampaigns() {
+        const { reverseThreadMessages, contactProfile, lastConversationEnd } = this;
+        const lastMessage = reverseThreadMessages[0];
+        const firstConversationItem = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
+        const noOpenConversation = !firstConversationItem || firstConversationItem.type === 'conversation_end'
+
+        return noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
       }
     },
 
