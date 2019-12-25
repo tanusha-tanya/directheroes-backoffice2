@@ -308,6 +308,8 @@ export default {
       newCampaign.name = newCampaignName;
       newCampaign.id = (new ObjectId).toString(),
       newCampaign.createdAt = Date.now(),
+      newCampaign.isEnabled = false,
+      newCampaign.isActive = false
 
       currentAccountData.campaigns.push(newCampaign);
 
