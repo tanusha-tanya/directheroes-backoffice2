@@ -65,6 +65,7 @@ export default {
     }
 
     &.message-disabled {
+      display: none;
       opacity: .3;
       pointer-events: none;
     }

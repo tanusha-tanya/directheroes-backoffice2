@@ -56,11 +56,7 @@ import { userInputSubscriber } from '../../elements/userInput'
 
 
 export default {
-  data() {
-    return {
-      availableList: elementsPermissions.fromTrigger,
-    }
-  },
+
 
   props:['element', 'isEntry', 'elements'],
 
@@ -74,6 +70,12 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount;
+    },
+
+    availableList() {
+      const { elements } = this.dhAccount.flowBuilderSettings;
+
+      return elementsPermissions.fromTrigger.concat(elements);
     },
 
     hasOnMatch() {
