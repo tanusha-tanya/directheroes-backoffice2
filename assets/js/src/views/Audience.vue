@@ -75,6 +75,8 @@
           <search />
           <input type="text" class="dh-input" placeholder="Type to search"  v-model="filters.usernameQuery" @keypress.enter="getAudience">
         </div>
+        <span></span>
+        <button class="dh-button dh-small" @click="isExportData = true" v-if="false">Export</button>
       </div>
       <div class="dh-list" v-if="threads">
         <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id">
@@ -118,6 +120,7 @@
         ></el-pagination>
       </div>
     </div>
+    <dh-export-dialog v-model="isExportData" v-if="isExportData"></dh-export-dialog>
     <dh-footer></dh-footer>
   </div>
 </template>
@@ -125,6 +128,7 @@
 <script>
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
+import dhExportDialog from '../components/dh-export-dialog'
 import livechat from '../assets/livechat.svg'
 import search from '../assets/search.svg'
 import axios from 'axios';
@@ -158,13 +162,15 @@ export default {
       paging: {
         page: 1,
         totalPageCount: 1
-      }
+      },
+      isExportData: false
     }
   },
 
   components: {
     dhHeader,
     dhFooter,
+    dhExportDialog,
     livechat,
     loader,
     search
@@ -307,6 +313,10 @@ export default {
 
   .dh-audience-controls {
     display: flex;
+
+    & > span {
+      flex-grow: 1;
+    }
   }
 
   .dh-audience-subscription {
