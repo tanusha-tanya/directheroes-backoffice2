@@ -10,7 +10,12 @@
           <template v-if="element.type === 'group' && element.displaySettings.type === 'delay'">
             <delay :element="element"></delay>
           </template>
-          <template v-else-if="element.body.action === 'sendText'">
+          <template v-else-if="element.type === 'group' && element.displaySettings.type === 'delayTill'">
+            <div class="message-delay-till">
+              Wait till campaign entry closes
+            </div>
+          </template>
+          <template v-else-if="element.body && element.body.action === 'sendText'">
             <el-input
               type="textarea"
               placeholder="Please input"
@@ -21,7 +26,7 @@
             </el-input>
             <div class="text-counter">{{countTextLength(element.body.text)}}/1000</div>
           </template>
-          <template v-else-if="element.body.action === 'sendMedia'">
+          <template v-else-if="element.body && element.body.action === 'sendMedia'">
             <div class="send-media-preview" v-if="element.body.mediaId" :style="{'background-image': `url(${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/get?id=${ element.body.mediaId }&format=instagram)`}"></div>
             <div class="send-media-blank" v-else>
               <svg width="95" height="95" viewBox="0 0 95 95" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,14 +53,20 @@
         </div>
       </template>
     </draggable>
-    <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}" v-if="!linker">
+    <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
       <template v-if="isBroadcast">
         <add-step-popup @add-step="addElement" :available-list="broadcastAvailableList" >
         </add-step-popup>
       </template>
-      <add-element-popup @add-element="addElement" v-else>
-        <div class="message-add-event"></div>
-      </add-element-popup>
+      <template v-else>
+        <add-mid-step-popup v-if="linker"
+          :available-list="['delay', 'sendText', 'sendMedia']"
+          @add-step="addElement">
+        </add-mid-step-popup>
+        <add-element-popup @add-element="addElement" v-else>
+          <div class="message-add-event"></div>
+        </add-element-popup>
+      </template>
     </div>
     <linker :linker="linker" v-if="linker"></linker>
   </div>
@@ -65,6 +76,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
+import addMidStepPopup from '../addMidStep';
 import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
@@ -83,7 +95,8 @@ export default {
     elementWarning,
     linker,
     delay,
-    addStepPopup
+    addStepPopup,
+    addMidStepPopup
   },
 
   computed: {
@@ -112,7 +125,7 @@ export default {
 
   methods: {
     addElement(element) {
-      const { elements } = this;
+      const { elements, linker } = this;
       const { displaySettings } = element;
 
       if (['group', 'action'].includes(element.type) && displaySettings && displaySettings.subType === 'message') {
@@ -121,7 +134,7 @@ export default {
             element.id = (new ObjectId).toString()
           })
 
-          if (element.displaySettings.type === 'delay') {
+          if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
             const { elements } = element;
             const checkpoint = elements.find(element => element.type === 'checkpoint');
             const action = elements.find(element => element.type === 'action');
@@ -130,10 +143,17 @@ export default {
           }
         }
 
-        elements.push({
-          id: (new ObjectId).toString(),
-          ...element
-        })
+        if (linker)
+          elements.splice(elements.indexOf(linker), 0,{
+            id: (new ObjectId).toString(),
+            ...element
+          })
+        else {
+          elements.push({
+            id: (new ObjectId).toString(),
+            ...element
+          })
+        }
       } else {
         let subStep = null;
         const step = {
@@ -313,6 +333,14 @@ export default {
     }
   }
 
+  .message-delay-till {
+    padding: 10px 10px 10px 20px;
+    border: 1px solid #D8D8D8;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #2D2D2D;
+    text-align: center;
+  }
   .send-media-upload {
     background-color: #51C99E;
     border-radius: 3px;

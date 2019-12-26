@@ -59,8 +59,14 @@
           </el-popover>
         </div>
       </div>
-      <div class="dh-accounts-list" v-if="!audienceLoading">
-        <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: $route.query }" class="dh-account" v-for="thread in allThreads" :key="thread.id">
+      <div class="dh-accounts-list" v-if="!audienceLoading" ref="threadScroll">
+        <router-link
+          :to="{ name: 'livechat', params: { threadId: thread.id }, query: $route.query }"
+          class="dh-account"
+          v-for="thread in allThreads"
+          :key="thread.id"
+          ref="threads"
+          >
           <div class="dh-account-favorite" @click.prevent="toggleFavorite(thread)">
             <star-filled v-if="thread.isFavourite"/>
             <star v-else />
@@ -73,6 +79,9 @@
         </router-link>
       </div>
       <loader v-else/>
+      <div class="dh-accounts-up" v-if="paging.page > 2" @click="setPage(1)">
+        <up/>
+      </div>
     </div>
     <div class="dh-chat" v-if="$route.params.threadId">
       <template v-if="threadMessages && threadMessages.length">
@@ -96,7 +105,10 @@
                     </template>
                     <template v-else>
                       end.
-                      <div @click="forceResumeConversation(message)" class="dh-force-resume-button" v-if="!message.sent && [3,7,8].includes(message.body.conversation.closeState)">
+                      <div
+                        @click="forceResumeConversation(message)"
+                        class="dh-force-resume-button"
+                        v-if="lastConversationEnd === message && message.body.conversation.campaign.type !== 'broadcast' && !message.sent && [2,3,7,8].includes(message.body.conversation.closeState)">
                         Force Resume
                       </div>
                     </template>
@@ -114,6 +126,15 @@
                   ></thread-message>
                 </template>
               </template>
+              <div class="dh-conversation-divider dh-re-check-divider" v-if="false && canRecheckCampaigns">
+                  <div>
+                    <div
+                      @click="recheckCampaigns()"
+                      class="dh-force-resume-button">
+                      Re-check campaigns
+                    </div>
+                  </div>
+                </div>
             </div>
             <div class="dh-message-send">
               <textarea class="scroller" row="3" v-model="messageText" placeholder="Your message" @keyup.ctrl.enter="sendMessage()"></textarea>
@@ -188,6 +209,7 @@
   import searchFilter from '../../src/assets/filter.svg'
   import starFilled from '../../src/assets/star-filled.svg'
   import send from '../../src/assets/send.svg'
+  import up from '../../src/assets/up.svg'
   import ellipsis from '../../src/assets/ellipsis.svg'
   import nolivechat from '../../src/assets/nolivechat.svg'
   import ObjectId from '../utils/ObjectId'
@@ -218,6 +240,7 @@
         requestTimeout: null,
         lastMessage: {},
         media: [],
+        infinityPageObserver: null,
         source: null,
         isCategoryFilters: false,
         filters: {
@@ -258,7 +281,8 @@
       starFilled,
       times,
       searchFilter,
-      checkBoxBranch
+      checkBoxBranch,
+      up
     },
 
     computed: {
@@ -271,12 +295,12 @@
       },
 
       currentThread() {
-        const { allThreads } = this;
+        const { allThreads, contactProfile } = this;
         const { threadId } = this.$route.params;
 
         if (!allThreads) return;
 
-        return allThreads.find(thread => thread.id == threadId);
+        return allThreads.find(thread => thread.id == threadId) || { contactProfile };
       },
 
       campaigns() {
@@ -360,11 +384,26 @@
         return threadMessages.slice(0).reverse()
       },
 
-
       isInbox() {
         const { $route } = this;
 
         return $route.query.sub === 'ignored'
+      },
+
+      lastConversationEnd() {
+        const { reverseThreadMessages } = this;
+        const lastConversationDivider = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
+
+        return lastConversationDivider.type === 'conversation_end' && lastConversationDivider;
+      },
+
+      canRecheckCampaigns() {
+        const { reverseThreadMessages, contactProfile, lastConversationEnd, currentThread } = this;
+        const lastMessage = reverseThreadMessages[0];
+        const firstConversationItem = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
+        const noOpenConversation = !firstConversationItem || firstConversationItem.type === 'conversation_end'
+
+        return !currentThread.campaignsRechecked && noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
       }
     },
 
@@ -570,13 +609,13 @@
       getAudience(beforeQuery) {
         const { query } = this.$route;
         const subscribed = this.subscribed(beforeQuery)
-        const { account, status, filters , paging } = this;
+        const { account, status, filters , paging, infinityPageObserver } = this;
 
         if (!account) return;
 
-        this.audienceLoading = true;
-
-        this.allThreads = null;
+        if (paging.page === 1) {
+          this.audienceLoading = true;
+        }
 
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
@@ -592,11 +631,38 @@
           },
         })
         .then(({ data }) => {
-          const { threadList } = data.response.body
+          const { threadList, paging } = data.response.body
 
-          this.allThreads = threadList;
+          if (paging.page > 2) {
+            this.allThreads = this.allThreads.splice(-paging.perPage, paging.perPage).concat(threadList);
+          } else if (paging.page === 1) {
+            this.allThreads = threadList;
+          } else {
+            this.allThreads = this.allThreads.concat(threadList);
+          }
 
+          this.paging = paging
           this.audienceLoading = false;
+
+          if (paging.page !== paging.totalPageCount) {
+
+            this.$nextTick(() => {
+              const { threads } = this.$refs;
+
+              if (!threads.length) return;
+
+              const last5ThreadEl = threads[threads.length - 5].$el;
+
+              if (paging.page > 2) {
+                const threadRect = last5ThreadEl.getBoundingClientRect()
+                const { threadScroll } = this.$refs
+
+                threadScroll.scrollTop = threadScroll.scrollTop - threadRect.height * paging.perPage;
+              }
+
+              infinityPageObserver.observe(last5ThreadEl);
+            })
+          }
         })
       },
 
@@ -688,17 +754,54 @@
 
       forceResumeConversation(message) {
         Vue.set(message, 'sent', true);
+
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/resume-conversation/${ message.body.conversation.id }`,
-        }).then(()=> {
+        }).then(() => {
         }).catch(() => {
           Vue.set(message, 'sent', false);
         })
+      },
+
+      recheckCampaigns() {
+        const { currentThread, accountId } = this;
+
+        Vue.set(currentThread, 'campaignsRechecked', true);
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/recheck-campaigns`,
+          method: 'post',
+          data: {
+            accountId,
+            threadIdList: [currentThread.id]
+          }
+        }).then(()=> {
+        })
+      },
+
+      setPage(pageNumber) {
+        const { paging } = this;
+
+        paging.page = pageNumber || paging.page + 1;
+
+        this.getAudience();
       }
     },
 
     created() {
       if (this.threadMessages && this.$store.state.currentAccount) return;
+
+      this.infinityPageObserver = new IntersectionObserver((entries, observer) => {
+        const { threads } = this.$refs;
+
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+
+          this.setPage();
+
+          observer.unobserve(entry.target);
+        })
+      })
 
       this.getAudience();
       this.getUpdates();
@@ -712,7 +815,7 @@
       threadMessages(value) {
         this.$nextTick(() => {
           const { threadId } = this.$route.params
-          const { reverseThreadMessages,  } = this;
+          const { reverseThreadMessages } = this;
           const { threadMessages } = this.$refs;
 
           if (!value) return;
@@ -817,6 +920,7 @@
       border-right: 1px solid $secondBorderColor;
       width: 262px;
       flex-shrink: 0;
+      position: relative;
       // height: 100%;
     }
 
@@ -833,6 +937,22 @@
       max-height: calc(100% - 116px);
       overflow-x: hidden;
       overflow-y: auto;
+      position: relative;
+    }
+
+    .dh-accounts-up {
+      position: absolute;
+      top: 125px;
+      color: #778CA2;
+      width: 25px;
+      height: 25px;
+      right: 20px;
+      cursor: pointer;
+
+      svg {
+        width: 100% !important;
+        height: 100% !important;
+      }
     }
 
     .dh-divider {

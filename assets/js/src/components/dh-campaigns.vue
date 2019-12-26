@@ -47,6 +47,9 @@
               <div class="dh-option" @click="prepareToRename(campaign)">
                 <task /> Rename
               </div>
+              <div class="dh-option" @click="prepareToClone(campaign)">
+                <duplicated  /> Clone
+              </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
               <ellipsis />
@@ -69,8 +72,8 @@
         @success="deleteCampaign">
       </dh-confirm-dialog>
       <el-dialog
-        :visible.sync="isAddCampaign"
-        title="Create New Campaign"
+        :visible.sync="isCampaignAction"
+        :title="campaignActionTitle"
         custom-class="dh-campaign-add-dialog"
         append-to-body
         width="554px"
@@ -79,23 +82,8 @@
           <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
         </div>
         <template slot="footer">
-          <button class="dh-button" @click="createCampaign" :disabled="!newCampaignName">Create</button>
-          <button class="dh-button dh-reset-button" @click="isAddCampaign = false">Close</button>
-        </template>
-      </el-dialog>
-      <el-dialog
-        :visible.sync="isRenameCampaign"
-        title="Rename Campaign"
-        custom-class="dh-campaign-add-dialog"
-        append-to-body
-        width="554px"
-        >
-        <div class="dh-campaign-add-input">
-          <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
-        </div>
-        <template slot="footer">
-          <button class="dh-button" :disabled="!newCampaignName" @click="renameCampaign">Rename</button>
-          <button class="dh-button dh-reset-button" @click="campaignToRename = null">Close</button>
+          <button class="dh-button" :disabled="!newCampaignName || [campaignToRename && campaignToRename.name, campaignToClone && campaignToClone.name].includes(newCampaignName)" @click="actionCampaign">{{campaignActionButton}}</button>
+          <button class="dh-button dh-reset-button" @click="isCampaignAction = false">Close</button>
         </template>
       </el-dialog>
       <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="campaignToDeactivate" :campaign-name="campaignToDeactivate.name" @success="deactivateCampaign"></dh-deactivate-dialog>
@@ -114,6 +102,7 @@ import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import task from '../assets/task.svg'
+import duplicated from '../assets/duplicated.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
 
@@ -126,6 +115,7 @@ export default {
     return {
       campaignToRename: null,
       campaignToDelete: null,
+      campaignToClone: null,
       campaignToDeactivate: null,
       isAddCampaign: false,
       newCampaignName: '',
@@ -143,7 +133,8 @@ export default {
     loader,
     nocampaign,
     triangle,
-    task
+    task,
+    duplicated
   },
 
   props: ['title', 'limit'],
@@ -172,6 +163,43 @@ export default {
       return currentAccountData
     },
 
+    isCampaignAction: {
+      get() {
+        const { isAddCampaign, campaignToRename, campaignToClone } = this;
+
+        return Boolean(isAddCampaign || campaignToRename || campaignToClone);
+      },
+      set() {
+        this.campaignToRename = null;
+        this.campaignToClone = null;
+        this.isAddCampaign = false;
+      }
+    },
+
+    campaignActionTitle() {
+      const { isAddCampaign, campaignToRename, campaignToClone } = this;
+
+      if (isAddCampaign) {
+        return 'Create New Campaign'
+      } else if (campaignToRename) {
+        return 'Rename'
+      } else if (campaignToClone) {
+        return 'Clone'
+      }
+    },
+
+    campaignActionButton() {
+      const { isAddCampaign, campaignToRename, campaignToClone } = this;
+
+      if (isAddCampaign) {
+        return 'Create'
+      } else if (campaignToRename) {
+        return 'Rename Campaign'
+      } else if (campaignToClone) {
+        return 'Clone Campaign'
+      }
+    },
+
     isDeleteCampaign: {
       get() {
         const { campaignToDelete } = this;
@@ -180,17 +208,6 @@ export default {
       },
       set(value) {
         this.campaignToDelete = value;
-      }
-    },
-
-    isRenameCampaign: {
-      get() {
-        const { campaignToRename } = this;
-
-        return Boolean(campaignToRename)
-      },
-      set(value) {
-        this.campaignToRename = value;
       }
     },
 
@@ -251,12 +268,52 @@ export default {
       this.campaignToRename = campaign;
     },
 
+    prepareToClone(campaign) {
+      this.newCampaignName = campaign.name;
+      this.campaignToClone = campaign;
+    },
+
+    actionCampaign() {
+      const {
+        isAddCampaign,
+        campaignToRename,
+        campaignToClone,
+        createCampaign,
+        renameCampaign,
+        cloneCampaign
+      } = this;
+
+      if (isAddCampaign) {
+        createCampaign()
+      } else if (campaignToRename) {
+        renameCampaign()
+      } else if (campaignToClone) {
+        cloneCampaign()
+      }
+    },
+
     renameCampaign() {
       const { newCampaignName, campaignToRename } = this;
 
       campaignToRename.name = newCampaignName;
 
       this.campaignToRename = null;
+    },
+
+    cloneCampaign() {
+      const { newCampaignName, campaignToClone, $store } = this;
+      const { currentAccountData } = $store.state;
+      const newCampaign = JSON.parse(JSON.stringify(campaignToClone));
+
+      newCampaign.name = newCampaignName;
+      newCampaign.id = (new ObjectId).toString(),
+      newCampaign.createdAt = Date.now(),
+      newCampaign.isEnabled = false,
+      newCampaign.isActive = false
+
+      currentAccountData.campaigns.push(newCampaign);
+
+      this.campaignToClone = null;
     },
 
     hasWarning(campaign) {

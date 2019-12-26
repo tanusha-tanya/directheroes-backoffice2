@@ -71,5 +71,127 @@ export default [
         }
       ]
     }
+  },
+  {
+    title: 'Is Majority Member',
+    template: {
+      type: "group",
+      displaySettings: {
+        subType: "condition",
+        type: "topCategory"
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "conversation",
+            field: "categories",
+            operand: "contains",
+            value: {
+              entity: "runtime",
+              field: "topCategory"
+            }
+          },
+        }
+      ]
+    }
+  },
+  {
+    title: 'Scarcity',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'scarcity'
+      },
+      elements: [
+        {
+          type: "action",
+          body: {
+            action: "incrementRuntimeField"
+          }
+        },
+        {
+          type: 'rule',
+          condition: {
+            entity: 'runtimeField',
+            // field: 'categories',
+            operand: 'lte',
+            value: 1
+          }
+        },
+      ]
+    }
+  },
+  {
+    title: 'Has tag',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'hasTag'
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "subscriber",
+            field: "categories",
+            operand: "contains",
+            value: []
+          },
+        }
+      ]
+    }
+  },
+  {
+    title: 'Wait till',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'waitTillCondition'
+      },
+      elements: [
+        {
+          type: "rule",
+          condition: {
+            entity: "runtime",
+            field: "sinceStart",
+            operand: "lt",
+            value: 1
+          },
+          onMatch: {
+            action: 'fallthrough'
+          }
+        },
+        {
+          type: "action",
+          body: {
+            action: "registerTimeout",
+            till: {
+              entity: "campaign",
+              field: "periodSinceStart"
+            },
+            delta: 1,
+          }
+        },
+        {
+          type: "checkpoint",
+        },
+        {
+          type: "rule",
+          condition: {
+              entity: "time",
+              field: "delta",
+              operand: "eq",
+              value: {
+                entity: "campaign",
+                field: "endOfTerm"
+              }
+          },
+        }
+      ]
+    }
   }
 ]

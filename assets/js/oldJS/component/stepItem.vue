@@ -92,12 +92,12 @@ export default {
 
       return elements.some(element => {
         const actionElement = (matchElement) => {
-          const target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target))
+          let target =  matchElement && (matchElement.target || (matchElement.onMatch && matchElement.onMatch.target) || (matchElement.onFail && matchElement.onFail.target))
 
           return target;
         }
 
-        if (element.displaySettings && element.displaySettings.type === 'followers') {
+        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
           return element.elements.some(actionElement);
         } else {
           return actionElement(utils.getOnMatchElement(element));
@@ -108,8 +108,9 @@ export default {
     availableList() {
       const { isEntry } = this;
       const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
+      const { elements } = this.dhAccount.flowBuilderSettings;
 
-      return elementsPermissions.fromActionStep.concat(messageTypes);
+      return elementsPermissions.fromActionStep.concat(messageTypes, elements);
     },
 
     isEntry() {
@@ -185,7 +186,7 @@ export default {
           element.id = (new ObjectId).toString()
         })
 
-        if (element.displaySettings.type === 'delay') {
+        if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
           const { elements } = element;
           const checkpoint = elements.find(element => element.type === 'checkpoint');
           const action = elements.find(element => element.type === 'action');

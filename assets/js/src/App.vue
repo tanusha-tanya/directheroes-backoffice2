@@ -56,6 +56,12 @@
         </div>
         Trainings
       </router-link>
+      <a class="dh-navigation-button dh-easy-webinar" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
+        <div class="dh-navigation-button-ico">
+          <easywebinar/>
+        </div>
+        Join the Training!
+      </a>
       <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <support/>
@@ -65,6 +71,22 @@
     </div>
     <div class="dh-content" v-if="dhAccount">
       <router-view ></router-view>
+      <el-dialog
+        :visible.sync="showWebinarPopup"
+        width="554px"
+        append-to-body
+        class="dh-webinar-dialog"
+        title="Announcing weekly live training"
+        :destroy-on-close="true"
+        @close="hidePopup"
+      >
+        Get the most out of direct heroes, join our weekly webinars with Jeff MacPhearson CEO and Founder of Direct Heroes. <br><br>
+        We show you high converting flows, showcase some of the top performing Direct Heroes. And answer questions each week.<br><br>
+        Register now using the link in lefthand menu.
+        <template slot="footer">
+          <button class="dh-button" @click="hidePopup">Ok</button>
+        </template>
+      </el-dialog>
     </div>
     <loader v-else-if="isFirstLoad"></loader>
     <div class="dh-init-error" v-else>
@@ -89,8 +111,15 @@ import training from './assets/training.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
+import easywebinar from '../oldJS/assets/svg/youtube.svg'
 
 export default {
+  data() {
+    return {
+      showWebinarPopup: !localStorage.getItem('webinarInfoViewed')
+    }
+  },
+
   components: {
     dhLogo,
     dashboard,
@@ -104,9 +133,14 @@ export default {
     loader,
     affiliate,
     training,
+    easywebinar
   },
 
   computed: {
+    dh() {
+      return window.dh
+    },
+
     account() {
       const { state } = this.$store;
 
@@ -136,9 +170,15 @@ export default {
       const { dhAccount } = this;
 
       return dhAccount && accessList.includes(dhAccount.username);
-    }
-
+    },
   },
+
+  methods: {
+    hidePopup() {
+      this.showWebinarPopup = false;
+      localStorage.setItem('webinarInfoViewed', true)
+    }
+  }
 }
 </script>
 
@@ -202,6 +242,13 @@ body {
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
     }
+
+  }
+
+  .dh-easy-webinar {
+    svg {
+      width: 19px;
+    }
   }
 
   .dh-navigation-button-ico {
@@ -224,6 +271,13 @@ body {
     align-items: center;
     text-align: center;
     font-size: 24px;
+  }
+}
+
+.dh-webinar-dialog {
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end !important;
   }
 }
 </style>

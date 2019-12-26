@@ -1,7 +1,7 @@
 <template>
   <div class="rule-item" :ref="element.id">
     <element-warning :element="rule" :is-entry="isEntry"></element-warning>
-    <div class="rule-item-title">{{ ruleTitles[ruleType] }}</div>
+    <div class="rule-item-title">{{ ruleTitles[ruleType] }} <span v-if="ruleType === 'storyMention'">@{{account.login}}</span></div>
     <template v-if="ruleType == 'list'">
       <keywords v-model="rule.condition.value"></keywords>
     </template>
@@ -12,8 +12,11 @@
         v-model="rule.onMatch.elements[0].condition.value"
       ></el-input>
     </template>
-    <template v-else-if="['storyMention', 'storyShare'].includes(ruleType)">
-      <keywords v-model="rule.onMatch.elements[0].condition.value"></keywords>
+    <template v-else-if="['storyMention'].includes(ruleType)">
+      <keywords class="rule-item-story-mention" v-model="rule.onMatch.elements[0].condition.value" placeholder="Click to add hashtags" @change="checkHashTags"></keywords>
+    </template>
+    <template v-else-if="['storyShare'].includes(ruleType)">
+      <keywords v-model="rule.onMatch.elements[0].condition.value" ></keywords>
     </template>
     <add-tag-popup
       :available-list="availableList"
@@ -21,7 +24,7 @@
       v-if="!hasOnMatch"
     ></add-tag-popup>
     <add-mid-step-popup
-      :available-list="availableList"
+      :available-list="['addCategory', 'sendText', 'sendMedia']"
       @add-step="addMidStep($event)"
       v-else
     ></add-mid-step-popup>
@@ -52,11 +55,7 @@ import elementsPermissions from '../../elements/permissions'
 
 
 export default {
-  data() {
-    return {
-      availableList: elementsPermissions.fromTrigger,
-    }
-  },
+
 
   props:['element', 'isEntry', 'elements'],
 
@@ -68,6 +67,16 @@ export default {
   },
 
   computed: {
+    account() {
+      return this.$store.state.currentAccount;
+    },
+
+    availableList() {
+      const { elements } = this.dhAccount.flowBuilderSettings;
+
+      return elementsPermissions.fromTrigger.concat(elements);
+    },
+
     hasOnMatch() {
       const matchElement = utils.getOnMatchElement(this.rule);
 
@@ -124,10 +133,27 @@ export default {
       hasOnMatch.target = step.id;
 
       this.$emit('add-step', step);
+    },
+
+    checkHashTags(value) {
+      value.forEach((keyword, index) => {
+        if(!/^#/.test(keyword)) return;
+
+        value.splice(index, 1, keyword.replace(/^#/, ''))
+      })
     }
   }
 };
 </script>
 
 <style lang="scss">
+ .rule-item-title span {
+   font-weight: bold;
+ }
+
+ .rule-item-story-mention {
+   .el-select__tags-text::before {
+     content: '#'
+   }
+ }
 </style>

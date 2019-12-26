@@ -65,6 +65,7 @@ export default {
 
     &.condition-disabled {
       opacity: .3;
+      display: none;
       pointer-events: none;
     }
   }

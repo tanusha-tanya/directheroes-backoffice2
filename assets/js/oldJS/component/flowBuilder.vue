@@ -111,7 +111,7 @@ export default {
               }
             };
 
-            if (element.displaySettings && element.displaySettings.type === 'followers') {
+            if (element.displaySettings && ['followers', 'scarcity', 'waitTillCondition'].includes(element.displaySettings.type)) {
               element.elements.forEach(elementAction);
             } else {
               elementAction(utils.getOnMatchElement(element));
@@ -185,7 +185,7 @@ export default {
         case 'message':
           step.name = 'New message'
 
-          if (firstElementSettings.displaySettings.type === 'delay') {
+          if (['delay', 'delayTill'].includes(firstElementSettings.displaySettings.type)) {
             const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
             const action = firstElementSettings.elements.find(element => element.type === 'action');
 
@@ -195,11 +195,16 @@ export default {
         case 'condition':
           step.name = 'Condition'
 
-          if (firstElementSettings.displaySettings.type === 'timeout') {
+          if (['timeout', 'waitTillCondition'].includes(firstElementSettings.displaySettings.type)) {
             const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
             const action = firstElementSettings.elements.find(element => element.type === 'action');
 
             action.body.checkpointId = checkpoint.id;
+          } else if (firstElementSettings.displaySettings.type === 'scarcity') {
+            const action = firstElementSettings.elements.find(element => element.type === 'action');
+            const rule = firstElementSettings.elements.find(element => element.type === 'rule');
+
+            rule.condition.field = action.id;
           }
 
           break;
@@ -259,7 +264,7 @@ export default {
           return true;
         };
 
-        if (element.displaySettings && element.displaySettings.type === 'followers') {
+        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
           element.elements.some(actionElement);
         } else {
           return actionElement(utils.getOnMatchElement(element));

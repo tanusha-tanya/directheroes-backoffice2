@@ -5,18 +5,23 @@
     </div>
     <div
       class="action-item"
-      @click="selectElement(action)">
+      @click="selectElement(action)" v-if="availableList && availableList.includes('addCategory')">
       Add tag
     </div>
     <div
       class="action-item"
-      @click="selectElement(sendText)">
+      @click="selectElement(sendText)" v-if="availableList && availableList.includes('sendText')">
       Text
     </div>
     <div
       class="action-item"
-      @click="selectElement(sendMedia)">
+      @click="selectElement(sendMedia)" v-if="availableList && availableList.includes('sendMedia')">
       Image
+    </div>
+    <div
+      class="action-item"
+      @click="selectElement(delay)" v-if="availableList && availableList.includes('delay')">
+      Delay
     </div>
     <add-step-popup
       v-if="false"
@@ -65,6 +70,12 @@ export default {
       const sendMediaAction = messages.find(action => action.template.body.action == 'sendMedia');
 
       return sendMediaAction.template
+    },
+
+    delay() {
+      const sendDelayAction = messages.find(action => action.template.displaySettings.type == 'delay');
+
+      return sendDelayAction.template
     }
   },
 
