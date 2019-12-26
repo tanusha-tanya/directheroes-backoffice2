@@ -32,7 +32,7 @@
             </div>
           </router-link>
           <router-link :to="{ name: 'managers'}" class="dh-profile-settings-item">
-            <billing />
+            <manage />
             <div class="dh-profile-settings-info">
               <div class="dh-profile-settings-title">
                 Managers
@@ -51,6 +51,7 @@
 <script>
 import security from '../assets/security.svg'
 import billing from '../assets/billing.svg'
+import manage from '../assets/manage.svg'
 import profile from '../assets/profile.svg'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
@@ -61,6 +62,7 @@ export default {
     dhFooter,
     profile,
     billing,
+    manage,
     security
   },
 };
@@ -70,6 +72,7 @@ export default {
 .dh-settings-view {
   .dh-view-content {
     display: flex;
+    flex-direction: column;
   }
 
   .dh-profile-settings {
