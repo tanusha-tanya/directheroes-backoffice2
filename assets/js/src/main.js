@@ -8,6 +8,8 @@ import store from './store'
 
 import 'c3/c3.min.css';
 
+import 'intersection-observer';
+
 Vue.prototype.$message = Message;
 Vue.prototype.$notify = Notification;
 
