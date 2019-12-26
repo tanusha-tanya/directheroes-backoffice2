@@ -10,6 +10,9 @@ if (timeout) {
   timeout.template.displaySettings.subType ='message';
 }
 
+console.log(timeout.template);
+
+
 export default [
   {
     title: 'Text',
@@ -39,6 +42,44 @@ export default [
   {
     title: 'Delay',
     template: timeout.template
+  },
+  {
+    title: 'Wait till',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'message',
+        type: 'delayTill'
+      },
+      elements: [
+        {
+          type: 'action',
+          body: {
+            action: "registerTimeout",
+            till: {
+              entity: "campaign",
+              field: "endOfTerm"
+            },
+          }
+        },
+        {
+          type: 'checkpoint'
+        },
+        {
+          type: 'rule',
+          condition: {
+            entity: "time",
+            field: "delta",
+            operand: "eq",
+            value: {
+              entity: "campaign",
+              field: "endOfTerm"
+            }
+          },
+          onMatch: { action: 'fallthrough' }
+        },
+      ]
+    }
   },
   userInput
 ]

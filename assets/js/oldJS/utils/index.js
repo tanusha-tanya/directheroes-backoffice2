@@ -57,7 +57,7 @@ const campaignElementValidate = (element, isEntry) => {
 
           return warning;
         })
-    }
+      }
     // case 'sendImageAction':
     //   if (!element.value) {
     //     warning = 'Image not uploaded'

@@ -41,7 +41,7 @@
     <div class="broadcast-settings-area" @click.stop="">
       <div class="broadcast-settings-controls">
         Broadcast on:
-         <el-date-picker
+          <el-date-picker
             v-model="startAt"
             type="datetime"
             time-arrow-control
