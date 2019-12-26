@@ -132,7 +132,7 @@ export default {
 
       if (!existConnection || existConnection.step.id === step.id) return;
 
-      return !builder.stepsInOneBranch(existConnection.step.id, step.id) && !isInBrokenBranch
+      return !(builder.stepsInOneBranch(existConnection.step.id, step.id) || (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))))
     },
 
     isInBrokenBranch() {
@@ -293,6 +293,10 @@ export default {
       opacity: .7;
       pointer-events: none;
       filter: grayscale(.5);
+
+      .step-delete-button {
+        pointer-events: all;
+      }
     }
 
     .step-item-header {

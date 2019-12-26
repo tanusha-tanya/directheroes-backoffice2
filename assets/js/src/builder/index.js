@@ -263,9 +263,9 @@ export default {
                   break;
                 case 'rule':
                   if (element.onMatch && element.onMatch.target === childStepId) {
-                    delete element.onMatch;
+                    Vue.set(element, 'onMatch', undefined);
                   } else if (element.onFail && element.onFail.target === childStepId) {
-                    delete element.onFail;
+                    Vue.set(element, 'onFail', undefined);
                   }
 
                   break;
