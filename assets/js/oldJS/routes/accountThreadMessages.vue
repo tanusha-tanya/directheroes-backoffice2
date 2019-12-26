@@ -393,8 +393,9 @@
 
       lastConversationEnd() {
         const { reverseThreadMessages } = this;
+        const lastConversationDivider = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
 
-        return reverseThreadMessages.find(message => message.type && message.type === 'conversation_end');
+        return lastConversationDivider.type === 'conversation_end' && lastConversationDivider;
       },
 
       canRecheckCampaigns() {
