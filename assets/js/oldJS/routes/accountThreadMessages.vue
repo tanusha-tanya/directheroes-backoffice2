@@ -129,9 +129,8 @@
               <div class="dh-conversation-divider dh-re-check-divider" v-if="false && canRecheckCampaigns">
                   <div>
                     <div
-                      @click="forceResumeConversation()"
-                      class="dh-force-resume-button"
-                      v-if="true">
+                      @click="recheckCampaigns()"
+                      class="dh-force-resume-button">
                       Re-check campaigns
                     </div>
                   </div>
@@ -393,17 +392,18 @@
 
       lastConversationEnd() {
         const { reverseThreadMessages } = this;
+        const lastConversationDivider = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
 
-        return reverseThreadMessages.find(message => message.type && message.type === 'conversation_end');
+        return lastConversationDivider.type === 'conversation_end' && lastConversationDivider;
       },
 
       canRecheckCampaigns() {
-        const { reverseThreadMessages, contactProfile, lastConversationEnd } = this;
+        const { reverseThreadMessages, contactProfile, lastConversationEnd, currentThread } = this;
         const lastMessage = reverseThreadMessages[0];
         const firstConversationItem = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
         const noOpenConversation = !firstConversationItem || firstConversationItem.type === 'conversation_end'
 
-        return noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
+        return !currentThread.campaignsRechecked && noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
       }
     },
 
@@ -754,11 +754,28 @@
 
       forceResumeConversation(message) {
         Vue.set(message, 'sent', true);
+
         axios({
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/resume-conversation/${ message.body.conversation.id }`,
-        }).then(()=> {
+        }).then(() => {
         }).catch(() => {
           Vue.set(message, 'sent', false);
+        })
+      },
+
+      recheckCampaigns() {
+        const { currentThread, accountId } = this;
+
+        Vue.set(currentThread, 'campaignsRechecked', true);
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/recheck-campaigns`,
+          method: 'post',
+          data: {
+            accountId,
+            threadIdList: [currentThread.id]
+          }
+        }).then(()=> {
         })
       },
 

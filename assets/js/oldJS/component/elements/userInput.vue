@@ -51,8 +51,9 @@ export default {
     },
 
     availableList() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
-      return elementsPermissions.fromUserInputFails.concat(messageTypes)
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
+
+      return elementsPermissions.fromUserInputFails.concat(triggers.messageTypes, elements)
     }
   },
 

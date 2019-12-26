@@ -52,9 +52,9 @@ export default {
     },
 
     availableList() {
-      const { messageTypes } = this.dhAccount.flowBuilderSettings.triggers;
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings.triggers;
 
-      return elementsPermissions.fromUserInput.concat(messageTypes);
+      return elementsPermissions.fromUserInput.concat(triggers.messageTypes, elements);
     },
     selectedValue() {
 

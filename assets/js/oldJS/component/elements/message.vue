@@ -10,7 +10,12 @@
           <template v-if="element.type === 'group' && element.displaySettings.type === 'delay'">
             <delay :element="element"></delay>
           </template>
-          <template v-else-if="element.body.action === 'sendText'">
+          <template v-else-if="element.type === 'group' && element.displaySettings.type === 'delayTill'">
+            <div class="message-delay-till">
+              Wait till campaign entry closes
+            </div>
+          </template>
+          <template v-else-if="element.body && element.body.action === 'sendText'">
             <el-input
               type="textarea"
               placeholder="Please input"
@@ -21,7 +26,7 @@
             </el-input>
             <div class="text-counter">{{countTextLength(element.body.text)}}/1000</div>
           </template>
-          <template v-else-if="element.body.action === 'sendMedia'">
+          <template v-else-if="element.body && element.body.action === 'sendMedia'">
             <div class="send-media-preview" v-if="element.body.mediaId" :style="{'background-image': `url(${ dh.apiUrl }/api/1.0.0/${ dh.userName }/file/get?id=${ element.body.mediaId }&format=instagram)`}"></div>
             <div class="send-media-blank" v-else>
               <svg width="95" height="95" viewBox="0 0 95 95" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +134,7 @@ export default {
             element.id = (new ObjectId).toString()
           })
 
-          if (element.displaySettings.type === 'delay') {
+          if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
             const { elements } = element;
             const checkpoint = elements.find(element => element.type === 'checkpoint');
             const action = elements.find(element => element.type === 'action');
@@ -328,6 +333,14 @@ export default {
     }
   }
 
+  .message-delay-till {
+    padding: 10px 10px 10px 20px;
+    border: 1px solid #D8D8D8;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #2D2D2D;
+    text-align: center;
+  }
   .send-media-upload {
     background-color: #51C99E;
     border-radius: 3px;
