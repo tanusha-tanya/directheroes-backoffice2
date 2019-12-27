@@ -53,7 +53,10 @@ export default new Vuex.Store({
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/list`
       }).then(({ data }) => {
+        const { viewedBy } = data.response;
         const { accountList, dhAccount } = data.response.body;
+
+        dhAccount.isAdmin = !viewedBy || viewedBy.id !== dhAccount.id
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });

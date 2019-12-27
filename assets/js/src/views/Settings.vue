@@ -22,7 +22,7 @@
               Password & security questions
             </div>
           </router-link>
-          <router-link :to="{ name: 'billing'}" class="dh-profile-settings-item">
+          <router-link :to="{ name: 'billing'}" class="dh-profile-settings-item" v-if="dhAccount.isAdmin">
             <billing />
             <div class="dh-profile-settings-info">
               <div class="dh-profile-settings-title">
@@ -31,7 +31,7 @@
               Setup payment methods
             </div>
           </router-link>
-          <router-link :to="{ name: 'managers'}" class="dh-profile-settings-item">
+          <router-link :to="{ name: 'managers'}" class="dh-profile-settings-item" v-if="dhAccount.isAdmin">
             <manage />
             <div class="dh-profile-settings-info">
               <div class="dh-profile-settings-title">
