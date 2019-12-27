@@ -79,7 +79,7 @@
         </router-link>
       </div>
       <loader v-else/>
-      <div class="dh-accounts-up" v-if="paging.page > 2" @click="setPage(1)">
+      <div class="dh-accounts-up" v-if="paging.page > 9" @click="setPage(1)">
         <up/>
       </div>
     </div>
@@ -633,7 +633,7 @@
         .then(({ data }) => {
           const { threadList, paging } = data.response.body
 
-          if (paging.page > 2) {
+          if (paging.page > 9) {
             this.allThreads = this.allThreads.splice(-paging.perPage, paging.perPage).concat(threadList);
           } else if (paging.page === 1) {
             this.allThreads = threadList;
@@ -653,7 +653,7 @@
 
               const last5ThreadEl = threads[threads.length - 5].$el;
 
-              if (paging.page > 2) {
+              if (paging.page > 9) {
                 const threadRect = last5ThreadEl.getBoundingClientRect()
                 const { threadScroll } = this.$refs
 
