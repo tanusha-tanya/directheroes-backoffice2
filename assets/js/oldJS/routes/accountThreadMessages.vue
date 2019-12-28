@@ -633,8 +633,10 @@
         .then(({ data }) => {
           const { threadList, paging } = data.response.body
 
-          if (paging.page > 9) {
-            this.allThreads = this.allThreads.splice(-paging.perPage, paging.perPage).concat(threadList);
+          if (paging.page > 10) {
+            this.allThreads.splice(0, paging.perPage)
+
+            this.allThreads = this.allThreads.concat(threadList);
           } else if (paging.page === 1) {
             this.allThreads = threadList;
           } else {
@@ -653,7 +655,7 @@
 
               const last5ThreadEl = threads[threads.length - 5].$el;
 
-              if (paging.page > 9) {
+              if (paging.page > 10) {
                 const threadRect = last5ThreadEl.getBoundingClientRect()
                 const { threadScroll } = this.$refs
 
