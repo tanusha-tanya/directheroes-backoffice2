@@ -34,7 +34,7 @@ export default new Router({
         { name: 'settings', path: '', component: ProfileGeneral },
         { name: 'security', path: 'security', component: ProfileSecurity },
         { name: 'billing', path: 'billing', component: ProfileBilling },
-        { name: 'managers', path: 'managers', component: ProfileManagers },
+        { name: 'assignment', path: 'assignment', component: ProfileManagers },
       ]
     },
     { name: 'addonBuy', path: '/addon-buy', component: AddonBuy },

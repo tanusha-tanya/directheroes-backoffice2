@@ -1,7 +1,7 @@
 <template>
   <div class="dh-settings-form dh-profile-general">
     <div class="dh-settings-title">
-      Managers
+      Assignment
     </div>
     <div class="dh-settings-controls">
       <div class="dh-new-item-button" @click="isAddManager = true">

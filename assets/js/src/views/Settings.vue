@@ -31,11 +31,11 @@
               Setup payment methods
             </div>
           </router-link>
-          <router-link :to="{ name: 'managers'}" class="dh-profile-settings-item" v-if="dhAccount.isAdmin">
+          <router-link :to="{ name: 'assignment'}" class="dh-profile-settings-item" v-if="dhAccount.isAdmin">
             <manage />
             <div class="dh-profile-settings-info">
               <div class="dh-profile-settings-title">
-                Managers
+                Assignment
               </div>
               Entrusted dh-accounts
             </div>
