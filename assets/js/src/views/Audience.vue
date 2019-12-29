@@ -118,7 +118,7 @@
         ></el-pagination>
       </div>
     </div>
-    <dh-export-dialog v-model="isExportData" v-if="isExportData"></dh-export-dialog>
+    <dh-export-dialog v-model="isExportData" v-if="isExportData" :campaigns="JSON.parse(JSON.stringify(filters.campaigns))" :categories="JSON.parse(JSON.stringify(filters.categories))"></dh-export-dialog>
     <dh-footer></dh-footer>
   </div>
 </template>
