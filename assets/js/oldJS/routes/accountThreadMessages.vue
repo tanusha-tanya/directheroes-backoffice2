@@ -126,7 +126,7 @@
                   ></thread-message>
                 </template>
               </template>
-              <div class="dh-conversation-divider dh-re-check-divider" v-if="false && canRecheckCampaigns">
+              <div class="dh-conversation-divider dh-re-check-divider" v-if="canRecheckCampaigns">
                   <div>
                     <div
                       @click="recheckCampaigns()"

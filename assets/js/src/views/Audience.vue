@@ -76,7 +76,7 @@
           <input type="text" class="dh-input" placeholder="Type to search"  v-model="filters.usernameQuery" @keypress.enter="getAudience">
         </div>
         <span></span>
-        <button class="dh-button dh-small" @click="isExportData = true" v-if="false">Export</button>
+        <button class="dh-button dh-small" @click="isExportData = true">Export</button>
       </div>
       <div class="dh-list" v-if="threads">
         <div class="dh-list-item" v-for="thread in threads" :key="thread.id">
@@ -118,7 +118,7 @@
         ></el-pagination>
       </div>
     </div>
-    <dh-export-dialog v-model="isExportData" v-if="isExportData"></dh-export-dialog>
+    <dh-export-dialog v-model="isExportData" v-if="isExportData" :campaigns="JSON.parse(JSON.stringify(filters.campaigns))" :categories="JSON.parse(JSON.stringify(filters.categories))"></dh-export-dialog>
     <dh-footer></dh-footer>
   </div>
 </template>
