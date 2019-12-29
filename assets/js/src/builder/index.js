@@ -23,13 +23,13 @@ export default {
           const { steps } = this.campaign;
           const sprouts = steps
             .filter(step => step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))
-            .sort((sproutA, sproutB) => sproutA.columnIndex - sproutB.columnIndex);
+            .sort((sproutA, sproutB) => sproutA.rowIndex - sproutB.rowIndex);
           const firstStep = steps[0];
-          const getStepMatches = (stepRow) => {
-            const stepsTreeRows = stepsTree.length - 1
+          const getStepMatches = (stepColumn) => {
+            const stepsTreeColumns = stepsTree.length - 1
             let linkElements = [];
 
-            stepRow.forEach(step => {
+            stepColumn.forEach(step => {
               if (!step) return;
 
               step.elements.map(stepElement => {
@@ -70,7 +70,7 @@ export default {
                 }
 
                 sprouts.forEach((sprout, index, sproutArray) => {
-                  if (sprout.displaySettings.rowIndex === stepsTreeRows && sprout.displaySettings.columnIndex <= linkElements.length) {
+                  if (sprout.displaySettings.columnIndex === stepsTreeColumns && sprout.displaySettings.rowIndex <= linkElements.length) {
                     linkElements.push(sprout.id);
                     sproutArray.splice(index, 1);
                   }
@@ -79,7 +79,7 @@ export default {
             })
 
             sprouts.forEach((sprout, index, sproutArray) => {
-              if (sprout.displaySettings.rowIndex !== stepsTreeRows) return;
+              if (sprout.displaySettings.columnIndex !== stepsTreeColumns) return;
 
               linkElements.push(sprout.id);
               sproutArray.splice(index, 1);
@@ -88,7 +88,7 @@ export default {
 
             if (!linkElements.length) {
               sprouts.forEach((sprout, index, sproutArray) => {
-                sprout.displaySettings.rowIndex = stepsTreeRows;
+                sprout.displaySettings.columnIndex = stepsTreeColumns;
                 linkElements.push(sprout.id);
                 sproutArray.splice(index, 1);
               })
@@ -132,10 +132,10 @@ export default {
           return steps.find(step => step.elements.includes(element));
         },
 
-        getStepRow(step) {
+        getStepColumn(step) {
           const { scheme } = this;
 
-          return scheme.find(schemaRow => schemaRow.includes(step))
+          return scheme.find(schemaColumn => schemaColumn.includes(step))
         },
 
         getElementByTargetId(targetId) {
@@ -241,41 +241,44 @@ export default {
 
           const step = getStep(endStepConnection.stepId)
 
-          if (step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')) {
+          if (step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex')) {
             return true
           } else {
             return stepInBrokenBranch(endStepConnection.stepId)
           }
         },
 
+        clearStepData(elementsList = [], childStepId) {
+          const { getStepByElement } = this;
+
+          elementsList.forEach( element => {
+            const { type } = element;
+
+            switch (type) {
+              case 'linker':
+                const linkerStep = getStepByElement(element)
+
+                linkerStep.elements.splice(linkerStep.elements.indexOf(linkerStep), 1)
+
+                break;
+              case 'rule':
+                if (element.onMatch && element.onMatch.target === childStepId) {
+                  Vue.set(element, 'onMatch', undefined);
+                } else if (element.onFail && element.onFail.target === childStepId) {
+                  Vue.set(element, 'onFail', undefined);
+                }
+
+                break;
+            }
+          })
+        },
+
         deleteStep(step) {
-          const { getStepArrows, getStep, getElementByTargetId, getStepByElement, getStepRow, scheme, steps } = this;
-          const clearStepData = (elementsList = [], childStepId) => {
-            elementsList.forEach( element => {
-              const { type } = element;
-
-              switch (type) {
-                case 'linker':
-                  const linkerStep = getStepByElement(element)
-
-                  linkerStep.elements.splice(linkerStep.elements.indexOf(linkerStep), 1)
-
-                  break;
-                case 'rule':
-                  if (element.onMatch && element.onMatch.target === childStepId) {
-                    Vue.set(element, 'onMatch', undefined);
-                  } else if (element.onFail && element.onFail.target === childStepId) {
-                    Vue.set(element, 'onFail', undefined);
-                  }
-
-                  break;
-              }
-            })
-          }
+          const { getStepArrows, clearStepData, getStep, getElementByTargetId, getStepColumn, scheme, steps } = this;
           const stepArrows = getStepArrows(step.id);
-          const stepRow = getStepRow(step);
-          const stepRowIndex = scheme.indexOf(stepRow);
-          const childStepRowIndex = stepRow.length > 1 ? stepRowIndex + 1 : stepRowIndex;
+          const stepColumn = getStepColumn(step);
+          const stepColumnIndex = scheme.indexOf(stepColumn);
+          const childStepColumnIndex = stepColumn.length > 1 ? stepColumnIndex + 1 : stepColumnIndex;
 
           stepArrows.forEach((stepArrow, index) => {
             const isParentArrow = stepArrow.child === step.id;
@@ -287,12 +290,26 @@ export default {
             const childStep = getStep(stepArrow.child);
 
             childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
-              rowIndex: childStepRowIndex,
-              columnIndex: stepRow.indexOf(step) + index
+              columnIndex: childStepColumnIndex,
+              rowIndex: stepColumn.indexOf(step) + index
             });
           })
 
           steps.splice(steps.indexOf(step), 1)
+        },
+
+        deleteLink({ arrowInfo }) {
+          const { clearStepData, getStep, getElementByTargetId, getStepColumn, scheme } = this;
+          const childStep = getStep(arrowInfo.child);
+          const childStepColumn = getStepColumn(childStep)
+          const childStepColumnIndex = scheme.indexOf(childStepColumn);
+
+          childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
+            columnIndex: childStepColumnIndex - 1,
+            rowIndex: childStepColumn.indexOf(childStep)
+          });
+
+          clearStepData(getElementByTargetId(arrowInfo.child), arrowInfo.child)
         }
       }
     })

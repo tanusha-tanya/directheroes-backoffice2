@@ -51,12 +51,6 @@ export default {
   data() {
     return {
       isShow: false,
-      existingStepElement: {
-        type: 'linker',
-        displaySettings: {
-          subType: 'existingStep'
-        }
-      }
     }
   },
 
@@ -76,9 +70,6 @@ export default {
     },
 
     addExistStepConnection() {
-      const { selectElement, existingStepElement } = this;
-
-      selectElement(existingStepElement);
     }
   }
 }

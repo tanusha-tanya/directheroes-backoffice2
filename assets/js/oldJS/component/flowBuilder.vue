@@ -40,7 +40,7 @@
         </template>
       </div>
       <arrows ref="subArrows" class="sub-arrows" :refs="builderArea" :arrows="builder.subArrows" :scale="scaleValue"></arrows>
-      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue"></arrows>
+      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue" @remove-link="builder.deleteLink"></arrows>
     </div>
   </div>
 </template>

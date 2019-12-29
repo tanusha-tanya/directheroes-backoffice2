@@ -76,7 +76,6 @@
 import axios from 'axios';
 import Vue from 'vue';
 import addElementPopup from '../addElementPopup';
-import addMidStepPopup from '../addMidStep';
 import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
@@ -96,7 +95,6 @@ export default {
     linker,
     delay,
     addStepPopup,
-    addMidStepPopup
   },
 
   computed: {

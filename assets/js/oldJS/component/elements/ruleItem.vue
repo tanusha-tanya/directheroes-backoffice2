@@ -23,11 +23,6 @@
       @add-step="$emit('create-step', $event)"
       v-if="!hasOnMatch"
     ></add-tag-popup>
-    <add-mid-step-popup
-      :available-list="['addCategory', 'sendText', 'sendMedia']"
-      @add-step="addMidStep($event)"
-      v-else
-    ></add-mid-step-popup>
     <div
       class="rule-delete-button"
       @click="$emit('delete-trigger', element)"
@@ -48,7 +43,6 @@
 import utils from '../../utils';
 import ObjectId from '../../utils/ObjectId';
 import addTagPopup from '../addTagPopup';
-import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
 import elementsPermissions from '../../elements/permissions'
@@ -64,7 +58,6 @@ export default {
     keywords,
     addTagPopup,
     elementWarning,
-    addMidStepPopup
   },
 
   computed: {
@@ -113,61 +106,6 @@ export default {
   },
 
   methods: {
-    addMidStep(element) {
-      const { hasOnMatch } = this;
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-
-      let subStep = null;
-
-
-      if (element.displaySettings.subType === 'user-input') {
-        const rule = element.elements.find(element => element.type === 'rule');
-
-        subStep = {
-          id: (new ObjectId).toString(),
-          elements: [
-            {
-              id: (new ObjectId).toString(),
-              ...userInputSubscriber
-            },
-            {
-              id: (new ObjectId).toString(),
-              type: 'linker',
-              target: hasOnMatch.target
-            }
-          ]
-        }
-
-        rule.onMatch = {action: 'goto', target: subStep.id}
-      } else if (element.displaySettings.subType === 'trigger') {
-        const rule = element.elements.find(element => element.type === 'rule');
-
-        rule.onMatch = {action: 'goto', target: hasOnMatch.target}
-      } else {
-        step.elements.push({
-          id: (new ObjectId).toString(),
-          type: 'linker',
-          target: hasOnMatch.target
-        })
-      }
-
-      hasOnMatch.target = step.id;
-
-      this.$emit('add-step', step);
-
-      if (subStep) {
-        this.$emit('add-step', subStep);
-      }
-    },
-
     checkHashTags(value) {
       value.forEach((keyword, index) => {
         if(!/^#/.test(keyword)) return;
