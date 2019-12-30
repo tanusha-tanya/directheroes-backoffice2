@@ -38,7 +38,8 @@
         </template>
       </div>
       <arrows ref="subArrows" class="sub-arrows" :refs="builderArea" :arrows="builder.subArrows" :scale="scaleValue"></arrows>
-      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue" @remove-link="builder.deleteLink"></arrows>
+      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue" @remove-link="builder.deleteLink" @mid-step-button="toggleMidStepButton"></arrows>
+      <addStepPopup class="dh-mid-campaign-button" v-if="midStepButtonData" :style="midStepButtonData.style" @mouseover.native="mouseOnButton = true" @mouseleave.native="mouseOnButton = false"/>
     </div>
   </div>
 </template>
@@ -48,7 +49,8 @@ import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
 import Vue from 'vue';
-import Builder from '../../src/builder'
+import Builder from '../../src/builder';
+import addStepPopup from './addStepPopup'
 // import utils from '../utils';
 import ObjectId from '../utils/ObjectId';
 
@@ -62,6 +64,7 @@ export default {
       arrows: [],
       subArrows: [],
       builder: null,
+      midStepButtonData: null,
     }
   },
 
@@ -70,6 +73,7 @@ export default {
   components: {
     stepItem,
     arrows,
+    addStepPopup
   },
 
   computed: {
@@ -165,6 +169,17 @@ export default {
 
       zoomTool.moveTo(positionX, positionY);
     },
+
+    toggleMidStepButton(path) {
+      this.midStepButtonData = {
+        style: {
+          top: `${path.begin.y + (path.arrow.y - path.begin.y) / 2 - 14}px`,
+          left: `${path.begin.x + (path.arrow.x - path.begin.x) / 2 - 14}px`,
+          position: 'absolute',
+          'z-index': 20
+        }
+      }
+    }
   },
 
   created() {
@@ -313,6 +328,41 @@ export default {
 
     .el-input__suffix {
       display: none;
+    }
+  }
+
+  .add-step-button {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: calc(50% - 1px);
+      left: calc(50% - 7px);
+      height: 2px;
+      background-color: #ccc;
+      width: 14px;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 7px);
+      left: calc(50% - 1px);
+      height: 14px;
+      background-color: #ccc;
+      width: 2px;
+    }
+
+    &:hover {
+      &:after, &:before {
+        background-color: #6A12CB;
+      }
     }
   }
 }

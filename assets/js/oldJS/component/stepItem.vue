@@ -271,38 +271,6 @@ export default {
       position: relative;
     }
 
-    .add-step-button {
-      position: absolute;
-      right: -14px;
-      top: calc(50% - 14px);
-
-      &:after {
-        content: '';
-        position: absolute;
-        top: calc(50% - 1px);
-        left: calc(50% - 7px);
-        height: 2px;
-        background-color: #ccc;
-        width: 14px;
-      }
-
-      &:before {
-        content: '';
-        position: absolute;
-        top: calc(50% - 7px);
-        left: calc(50% - 1px);
-        height: 14px;
-        background-color: #ccc;
-        width: 2px;
-      }
-
-      &:hover {
-        &:after, &:before {
-          background-color: #6A12CB;
-        }
-      }
-    }
-
     &.step-founded {
       box-shadow: 0 0 20px #9E4CF9;
     }

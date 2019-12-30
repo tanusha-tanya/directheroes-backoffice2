@@ -212,7 +212,7 @@ export default {
         getElementByType(step, type) {
           let foundElement = step.elements.find(element => element.type === type);
 
-          if (step.displaySettings.subType === 'trigger' && ['postShare', 'storyMention', 'storyShare'].includes(foundElement.condition.value)) {
+          if (step.displaySettings && step.displaySettings.subType === 'trigger' && ['postShare', 'storyMention', 'storyShare'].includes(foundElement.condition.value)) {
             foundElement = foundElement.onMatch.elements[0]
           }
 
@@ -286,7 +286,7 @@ export default {
         },
 
         addStep(parentElement, stepElement, isFail) {
-          const { steps, getElementByType, addStep, getAllMatchElements } = this;
+          const { steps, getElementByType, addStep } = this;
           const step = {
             id: (new ObjectId).toString(),
             elements: [
@@ -332,8 +332,6 @@ export default {
 
               break;
             case 'user-input':
-              const rule = getElementByType(stepElement, 'rule');
-
               step.name = 'User Input'
 
               if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
@@ -343,8 +341,7 @@ export default {
                 })
               }
 
-              addStep(rule, userInputSubscriber)
-
+              addStep(stepElement, userInputSubscriber)
               break;
             case 'sub-input':
               step.name = 'Collect'
@@ -395,12 +392,11 @@ export default {
 
           stepArrows.forEach((stepArrow, index) => {
             const isParentArrow = stepArrow.child === step.id;
+            const childStep = getStep(stepArrow.child);
 
-            clearStepData(getElementByTargetId(stepArrow.child), stepArrow.child)
+            clearStepData(getElementByTargetId(stepArrow.child), stepArrow.child);
 
             if (isParentArrow) return;
-
-            const childStep = getStep(stepArrow.child);
 
             childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
               columnIndex: childStepColumnIndex,

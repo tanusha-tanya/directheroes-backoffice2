@@ -6,7 +6,7 @@
       </symbol>
     </defs>
     <template v-for="path in pathes" v-if="path && path.line">
-      <g class="arrow-group" :fill="path.color" :style="{color: path.color}">
+      <g class="arrow-group" :fill="path.color" :style="{color: path.color}" @mouseover="$emit('mid-step-button', path)">
         <path class="arrow-path" :d="path.line"  fill="none" :stroke="path.color" :stroke-dasharray="path.arrowInfo.isExisting && '10 5'" :style="{'stroke-width': path.arrowInfo.hover ? 3 : 1}"></path>
         <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 12}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" :fill="path.color"/>
 
@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       pathes: [],
+      showMidStepButton: false,
     }
   },
 
@@ -137,6 +138,10 @@ export default {
 
       return element
     },
+
+    initAddMidStep(path) {
+      console.log(path);
+    }
   },
 
   mounted() {
@@ -145,29 +150,6 @@ export default {
     }, 10)
   },
 
-  // watch: {
-  //   '$store.state.newPoint'(newValue) {
-
-  //     if (newValue) {
-  //       this.recalcPathes()
-  //     } else {
-  //       const { arrows } = this.$store.state;
-  //       const connectArrow = arrows.find(arrow => arrow.child === 'toPoint')
-
-  //       if (connectArrow) {
-  //         arrows.splice(arrows.indexOf(connectArrow), 1);
-  //       }
-
-  //       this.recalcPathes()
-  //     }
-  //   },
-
-  //   '$store.state.arrowConnectData'(value) {
-  //     if (value) return;
-
-  //     this.recalcPathes()
-  //   },
-  // }
 }
 </script>
 <style lang="scss">
