@@ -2,7 +2,10 @@
   <div class="condition-items">
     <template v-for="element in elements">
       <div class='condition-item' :key="element.id">
-        <div class="condition-item-title">{{conditionTitle[element.displaySettings.type]}}</div>
+        <div class="condition-item-title">
+          {{conditionTitle[element.displaySettings.type]}}
+          <element-warning :element="element"></element-warning>
+        </div>
         <template v-if="element.displaySettings.type === 'timeout'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -519,9 +522,15 @@ export default {
       font-weight: bold;
       padding: 5px;
       border-bottom: 1px solid #D8D8D8;
+      position: relative;
 
       &::first-letter {
         text-transform: uppercase;
+      }
+
+      .element-warning {
+        top:5px;
+        right: 10px;
       }
     }
 
