@@ -56,7 +56,7 @@ export default new Vuex.Store({
         const { viewedBy } = data.response;
         const { accountList, dhAccount } = data.response.body;
 
-        dhAccount.isAdmin = !viewedBy || viewedBy.id !== dhAccount.id
+        dhAccount.isAdmin = !viewedBy || !viewedBy.parentUserId
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
