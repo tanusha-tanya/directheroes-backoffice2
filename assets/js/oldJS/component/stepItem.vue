@@ -18,7 +18,7 @@
       <div class="step-delete-button" v-if="(!isEntry && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="builder.deleteStep(step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
-      <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
+      <add-step-popup :available-list="availableList" @select="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
       <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
         <div class="existing-step-element">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
@@ -41,7 +41,7 @@
       bind
     </div>
   </div>
-  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" @add-step="addElementStep"></component>
+  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" :builder="builder"></component>
 </div>
 </template>
 
@@ -161,54 +161,18 @@ export default {
 
   methods: {
     createStep(element) {
-      const { elements } = this.step;
-      const step = {
+      const { step, linker, builder } = this;
+      const { elements } = step;
+      const newLinker ={
         id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
+        type: 'linker'
       }
 
-      if (element.type === 'linker') {
-        this.$nextTick(() => {
-          const { $store, step, stepRowIndex } = this;
+      builder.addStep(linker || newLinker, element);
 
-          element.id = (new ObjectId).toString(),
-
-          $store.commit('set', { path: 'existConnection', value: {
-            step,
-            element,
-            stepRowIndex
-          } })
-        });
-
-        return;
+      if (!linker) {
+        elements.push(newLinker);
       }
-
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-
-        if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
-          const { elements } = element;
-          const checkpoint = elements.find(element => element.type === 'checkpoint');
-          const action = elements.find(element => element.type === 'action');
-
-          action.body.checkpointId = checkpoint.id
-        }
-      }
-
-      elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: step.id
-      })
-
-      this.$emit('add-step', step);
     },
 
     goToStep() {
@@ -228,13 +192,9 @@ export default {
     },
 
     removeLinker() {
-       const { linker, step } = this;
+      const { linker, step } = this;
 
       step.elements.splice(step.elements.indexOf(linker), 1);
-    },
-
-    addElementStep(event, parentElement) {
-      this.$emit('add-step', event, parentElement);
     },
 
     toggleGlow(status) {

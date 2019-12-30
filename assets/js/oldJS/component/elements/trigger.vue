@@ -6,7 +6,7 @@
         :is-entry="isEntry"
         :key="element.id"
         @delete-trigger="deleteRule"
-        @create-step="createStep(element, $event)"
+        :builder="builder"
         @add-step="$emit('add-step', $event)"
         :elements="elements"
         v-if="element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings')"
@@ -30,7 +30,7 @@ import addTriggerPopup from '../addTriggerPopup';
 import elementsPermissions from '../../elements/permissions'
 
 export default {
-  props: ['elements', 'isEntry'],
+  props: ['elements', 'isEntry', 'builder'],
 
   components: {
     ruleItem,
@@ -56,34 +56,6 @@ export default {
         id: (new ObjectId).toString(),
         ...element
       })
-    },
-
-    createStep(rule, element) {
-      const { elements } =  this;
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-      }
-
-      const matchElement = utils.getOnMatchElement(rule);
-
-      Vue.set(matchElement, 'onMatch', {
-        action: 'goto',
-        target: step.id
-      });
-
-      this.$emit('add-step', step);
     },
 
     deleteRule(element) {

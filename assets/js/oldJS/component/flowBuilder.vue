@@ -29,8 +29,6 @@
             :class="{'entry-step': !rowIndex}"
             :step="stepRowItem"
             :flow-name="!rowIndex && entryItem.name"
-            @add-step="addStep"
-            @delete-step="deleteStep"
             :key="rowItemIndex"
             :campaign-type="entryItem.type"
             :step-row-index="rowIndex"
@@ -112,110 +110,6 @@ export default {
   },
 
   methods: {
-    addStep(step, parentElement) {
-      const { entryItem } = this;
-      const firstElementSettings = step.elements[0];
-
-      switch (firstElementSettings.displaySettings.subType) {
-        case 'message':
-          step.name = 'New message'
-
-          if (['delay', 'delayTill'].includes(firstElementSettings.displaySettings.type)) {
-            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-
-            action.body.checkpointId = checkpoint.id;
-          }
-          break;
-        case 'condition':
-          step.name = 'Condition'
-
-          if (['timeout', 'waitTillCondition'].includes(firstElementSettings.displaySettings.type)) {
-            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-
-            action.body.checkpointId = checkpoint.id;
-          } else if (firstElementSettings.displaySettings.type === 'scarcity') {
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-            const rule = firstElementSettings.elements.find(element => element.type === 'rule');
-
-            rule.condition.field = action.id;
-          }
-
-          break;
-        case 'action':
-          step.name = 'Action'
-          break;
-        case 'trigger':
-          step.name = 'Trigger';
-
-          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
-            step.elements.splice(0,0, {
-              type: 'checkpoint',
-              id: (new ObjectId).toString()
-            })
-          }
-
-          break;
-        case 'user-input':
-          step.name = 'User Input'
-
-          if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
-            step.elements[0].elements.splice(0,0, {
-              type: 'checkpoint',
-              id: (new ObjectId).toString()
-            })
-          }
-
-          break;
-        case 'sub-input':
-          step.name = 'Collect'
-          break;
-      }
-
-      entryItem.steps.push(step);
-    },
-
-    deleteStep(step) {
-      const { steps } = this.entryItem;
-      const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
-
-      steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
-        const actionElement = (matchElement) => {
-          if (!matchElement) return;
-
-          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-          const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
-
-          if ((target !== step.id) && (failTarget !== step.id)) return;
-
-
-          if (element.type == 'linker') {
-            stepItem.elements.splice(index, 1)
-          } else {
-            Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
-          }
-
-          return true;
-        };
-
-        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
-          element.elements.some(actionElement);
-        } else {
-          return actionElement(utils.getOnMatchElement(element));
-        }
-      }))
-
-      if (userInputElement) {
-        const matchElement = utils.getOnMatchElement(userInputElement);
-        const subStep = steps.find(step => step.id === matchElement.onMatch.target);
-
-        steps.splice(steps.indexOf(subStep), 1)
-      }
-
-      steps.splice(steps.indexOf(step), 1)
-    },
-
     initZoom() {
       const zoomTool = panzoom(this.$refs.builderArea, {
         maxZoom: 2,

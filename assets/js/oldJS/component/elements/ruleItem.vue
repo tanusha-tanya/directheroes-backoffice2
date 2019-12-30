@@ -20,7 +20,8 @@
     </template>
     <add-tag-popup
       :available-list="availableList"
-      @add-step="$emit('create-step', $event)"
+      :link-element="element"
+      :builder="builder"
       v-if="!hasOnMatch"
     ></add-tag-popup>
     <div
@@ -52,7 +53,7 @@ import { userInputSubscriber } from '../../elements/userInput'
 export default {
 
 
-  props:['element', 'isEntry', 'elements'],
+  props:['element', 'isEntry', 'elements', 'builder'],
 
   components: {
     keywords,
@@ -72,9 +73,10 @@ export default {
     },
 
     hasOnMatch() {
-      const matchElement = utils.getOnMatchElement(this.rule);
+      const { builder } = this;
+      const matches = builder.getAllMatchElements(this.rule)
 
-      return matchElement && matchElement.onMatch;
+      return matches.length && matches[0].onMatch;
     },
 
     ruleType() {

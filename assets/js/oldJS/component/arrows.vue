@@ -44,7 +44,6 @@ export default {
 
         if (!parent || !child) return;
 
-
         parent = parent[0] || parent;
         child = child[0] || child;
 

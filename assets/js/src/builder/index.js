@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import ObjectId from '../../oldJS/utils/ObjectId';
+import { userInputSubscriber } from '../../oldJS/elements/userInput'
 
 export default {
   create(campaign) {
@@ -63,7 +65,7 @@ export default {
                   })
                 };
 
-                if (stepElement.displaySettings && stepElement.displaySettings.type === 'followers') {
+                if (stepElement.displaySettings && ['followers', 'scarcity', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
                   stepElement.elements.forEach(matchesHandler);
                 } else {
                   matchesHandler(stepElement)
@@ -207,6 +209,16 @@ export default {
           return matches
         },
 
+        getElementByType(step, type) {
+          let foundElement = step.elements.find(element => element.type === type);
+
+          if (step.displaySettings.subType === 'trigger' && ['postShare', 'storyMention', 'storyShare'].includes(foundElement.condition.value)) {
+            foundElement = foundElement.onMatch.elements[0]
+          }
+
+          return foundElement;
+        },
+
         getStepArrows(stepId) {
           const { arrows, subArrows } = this;
           const stepArrows = [];
@@ -271,6 +283,107 @@ export default {
                 break;
             }
           })
+        },
+
+        addStep(parentElement, stepElement, isFail) {
+          const { steps, getElementByType, addStep, getAllMatchElements } = this;
+          const step = {
+            id: (new ObjectId).toString(),
+            elements: [
+              {
+                id: (new ObjectId).toString(),
+                ...stepElement
+              }
+            ]
+          }
+
+          if (stepElement.type === 'group') {
+            stepElement.elements.forEach(element => {
+              element.id = (new ObjectId).toString()
+            })
+          }
+
+          switch (stepElement.displaySettings.subType) {
+            case 'message':
+              step.name = 'New message'
+
+              if (['delay', 'delayTill'].includes(stepElement.displaySettings.type)) {
+                const checkpoint = getElementByType(stepElement, 'checkpoint');
+                const action = getElementByType(stepElement, 'action');
+
+                action.body.checkpointId = checkpoint.id;
+              }
+              break;
+
+            case 'condition':
+              step.name = 'Condition'
+
+              if (['timeout', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
+                const checkpoint = getElementByType(stepElement, 'checkpoint');
+                const action = getElementByType(stepElement, 'action');
+
+                action.body.checkpointId = checkpoint.id;
+              } else if (stepElement.displaySettings.type === 'scarcity') {
+                const action = getElementByType(stepElement, 'action');
+                const rule = getElementByType(stepElement, 'rule');
+
+                rule.condition.field = action.id;
+              }
+
+              break;
+            case 'user-input':
+              const rule = getElementByType(stepElement, 'rule');
+
+              step.name = 'User Input'
+
+              if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
+                step.elements[0].elements.splice(0,0, {
+                  type: 'checkpoint',
+                  id: (new ObjectId).toString()
+                })
+              }
+
+              addStep(rule, userInputSubscriber)
+
+              break;
+            case 'sub-input':
+              step.name = 'Collect'
+              break;
+          }
+
+          switch (parentElement.type) {
+            case 'linker':
+              parentElement.target = step.id
+              break;
+            default:
+              let rule = getElementByType(parentElement, 'rule');
+
+              const { onMatch, onFail } = rule;
+
+              if (isFail) {
+                if (onFail) {
+                  Vue.set(onFail, 'target', step.id)
+                } else {
+                  Vue.set(rule, 'onFail', {
+                   action: 'goto',
+                   target: step.id
+                  });
+                }
+              } else {
+                if (onMatch) {
+                  Vue.set(onMatch, 'target', step.id)
+                } else {
+                  Vue.set(rule, 'onMatch', {
+                   action: 'goto',
+                   target: step.id
+                  });
+                }
+              }
+
+              break;
+          }
+
+          steps.push(step)
         },
 
         deleteStep(step) {

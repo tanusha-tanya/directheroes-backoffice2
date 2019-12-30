@@ -1,5 +1,5 @@
 <template>
-  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" :trigger="triggerType || 'click'">
+  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow">
     <div class="add-step-button" slot="reference">
       <slot></slot>
     </div>
@@ -25,7 +25,7 @@
         </add-condition-popup>
       </div>
       <div class="type-of-element">
-        <span class="exist-step-connection" v-if="availableList.includes('existingStep')" @click="addExistStepConnection">
+        <span class="exist-step-connection" v-if="(availableList || []).includes('existingStep')" @click="addExistStepConnection">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
             viewBox="0 0 116.936 116.936" style="enable-background:new 0 0 116.936 116.936;"
             xml:space="preserve">
@@ -54,7 +54,7 @@ export default {
     }
   },
 
-  props:['availableList', 'triggerType'],
+  props:['availableList', 'builder', 'linkElement'],
 
   components: {
     addTriggerPopup,
@@ -65,8 +65,14 @@ export default {
 
   methods: {
     selectElement(element) {
-      this.$emit('add-step', JSON.parse(JSON.stringify(element)));
+      const { builder, linkElement } = this;
+
+      this.$emit('select', element);
       this.isShow = false;
+
+      if (!linkElement) return;
+
+      builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
     },
 
     addExistStepConnection() {

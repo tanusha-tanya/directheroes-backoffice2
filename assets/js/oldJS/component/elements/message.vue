@@ -54,28 +54,17 @@
       </template>
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
-      <template v-if="isBroadcast">
-        <add-step-popup @add-step="addElement" :available-list="broadcastAvailableList" >
-        </add-step-popup>
-      </template>
-      <template v-else>
-        <add-mid-step-popup v-if="linker"
-          :available-list="['delay', 'sendText', 'sendMedia']"
-          @add-step="addElement">
-        </add-mid-step-popup>
-        <add-element-popup @add-element="addElement" v-else>
-          <div class="message-add-event"></div>
-        </add-element-popup>
-      </template>
+      <add-step-popup :available-list="isBroadcast ? broadcastAvailableList : avaialbleList" @select="addElement">
+      </add-step-popup>
     </div>
     <linker :linker="linker" v-if="linker"></linker>
   </div>
 </template>
 
 <script>
+import elementsPermissions from '../../elements/permissions'
 import axios from 'axios';
 import Vue from 'vue';
-import addElementPopup from '../addElementPopup';
 import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
@@ -85,12 +74,11 @@ import elementWarning from '../elementWarning'
 import dragMixin from '../../../src/mixins/dragElements'
 
 export default {
-  props: ['elements', 'campaignType'],
+  props: ['elements', 'campaignType', 'builder'],
 
   mixins: [dragMixin],
 
   components: {
-    addElementPopup,
     elementWarning,
     linker,
     delay,
@@ -118,12 +106,19 @@ export default {
       const firstElement = this.elements[0];
 
       return firstElement.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
-    }
+    },
+
+    avaialbleList() {
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
+
+      return elementsPermissions.fromMessageStep.concat(triggers.messageTypes, elements)
+    },
+
   },
 
   methods: {
     addElement(element) {
-      const { elements, linker } = this;
+      const { elements, linker, builder } = this;
       const { displaySettings } = element;
 
       if (['group', 'action'].includes(element.type) && displaySettings && displaySettings.subType === 'message') {
@@ -153,49 +148,15 @@ export default {
           })
         }
       } else {
-        let subStep = null;
-        const step = {
+        const newLinker ={
           id: (new ObjectId).toString(),
-          elements: [
-            {
-              id: (new ObjectId).toString(),
-              ...element
-            }
-          ]
+          type: 'linker'
         }
 
-        if (element.type === 'group') {
-          element.elements.forEach(element => {
-            element.id = (new ObjectId).toString()
-          })
+        builder.addStep(linker || newLinker, element);
 
-          if (displaySettings.subType === 'user-input') {
-            const rule = element.elements.find(element => element.type === 'rule');
-
-            subStep = {
-              id: (new ObjectId).toString(),
-              elements: [
-                {
-                  id: (new ObjectId).toString(),
-                  ...userInputSubscriber
-                }
-              ]
-            }
-
-            rule.onMatch = {action: 'goto', target: subStep.id}
-          }
-        }
-
-        elements.push({
-          id: (new ObjectId).toString(),
-          type: 'linker',
-          target: step.id
-        })
-
-        this.$emit('add-step', step);
-
-        if (subStep) {
-          this.$emit('add-step', subStep);
+        if (!linker) {
+          elements.push(newLinker);
         }
       }
     },

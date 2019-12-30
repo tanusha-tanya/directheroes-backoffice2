@@ -8,7 +8,7 @@
   <div class="action-item" @click="addNewStep(addTagElement.template)">
     {{addTagElement.title}}
   </div>
-  <add-step-popup class="action-item" @add-step="addNewStep" :available-list="availableList">
+  <add-step-popup class="action-item" :builder="builder" :link-element="linkElement" :available-list="availableList" @select="selectHandler">
     <span>Skip Add tag</span>
   </add-step-popup>
 </el-popover>
@@ -30,7 +30,7 @@ export default {
     addStepPopup
   },
 
-  props: ['availableList'],
+  props: ['availableList', 'linkElement', 'builder'],
 
   computed: {
     addTagElement() {
@@ -42,9 +42,20 @@ export default {
 
   methods: {
     addNewStep(element) {
-      this.$emit('add-step', JSON.parse(JSON.stringify(element)));
+      const { builder, linkElement } = this;
+
+      this.$emit('select', element);
       this.isShow = false;
+
+      if (!linkElement) return;
+
+      builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
     },
+
+    selectHandler(element) {
+      this.$emit('select', element);
+      this.isShow = false;
+    }
   }
 }
 </script>

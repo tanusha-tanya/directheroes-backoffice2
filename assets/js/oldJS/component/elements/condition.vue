@@ -13,14 +13,13 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <!-- <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup> -->
                 <add-trigger-popup :has-user-input="true" :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
                   <div class="add-step-button"></div>
                 </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
-                <add-tag-popup :available-list="availableList.filter(item => item !== 'user-input')" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList.filter(item => item !== 'user-input')" @select="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -33,11 +32,11 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -50,11 +49,11 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -67,11 +66,11 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -85,7 +84,7 @@
               <template v-for="(subElement, index) in element.elements">
                 <div class="condition-item-match" v-if="subElement.type === 'rule'" :ref="element.id + index" :key="subElement.id" >
                   <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                  <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
+                  <add-tag-popup :available-list="availableList" @select="createStep(element, $event, null, subElement)" v-if="!subElement.onMatch"></add-tag-popup>
                   <div class="delete-condition-value" v-if="element.elements.length > 2" @click="deleteScarcityElement(subElement)">
                     <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -109,7 +108,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ lastScarcityRule.condition.value }}
-                <add-tag-popup :available-list="availableList" @add-step="createStep(lastScarcityRule, $event, true)" v-if="!lastScarcityRule.onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true, lastScarcityRule)" v-if="!lastScarcityRule.onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -123,14 +122,11 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id+'3'">
                 Then
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch"></add-tag-popup>
-                <!-- <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
-                  <div class="add-step-button"></div> -->
-                <!-- </add-trigger-popup> -->
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch"></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 If late
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getWaitTillRule(element, 'runtime').onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true)" v-if="!getWaitTillRule(element, 'runtime').onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -147,7 +143,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, null, subElement)" v-if="!subElement.onMatch"></add-tag-popup>
                 <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteFollowersElement(subElement)">
                   <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -170,7 +166,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ elseText }}
-                <add-tag-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-tag-popup>
+                <add-tag-popup :available-list="availableList" @select="createStep(element, $event, true, lastFollowersRule)" v-if="!lastFollowersRule.onFail"></add-tag-popup>
               </div>
             </div>
           </div>
@@ -213,7 +209,7 @@ export default {
     }
   },
 
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   components: {
     addConditionPopup,
@@ -266,10 +262,6 @@ export default {
   },
 
   methods: {
-    addCondition() {
-
-    },
-
     addScarcityCondition() {
       const { lastScarcityRule, scarcityElement } = this;
       const newScarcityElement = JSON.parse(JSON.stringify(lastScarcityRule));
@@ -298,63 +290,26 @@ export default {
       return element.elements.find(element => element.type === 'rule')
     },
 
-    createStep(condition, element, onFail) {
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-      let matchElement;
-      let subStep = null;
+    createStep(condition, element, onFail, currentRule) {
+      const { getWaitTillRule, builder } = this;
+      const { displaySettings } = condition;
+      let conditionElement = condition;
 
-      if (element.type === 'group') {
+      if (displaySettings.type === 'waitTillCondition') {
+        const waitTillRule = getWaitTillRule(condition, onFail ? 'runtime' : 'time')
 
-
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-
-        if (element.displaySettings.subType === 'user-input') {
-          const rule = element.elements.find(element => element.type === 'rule');
-
-          subStep = {
-            id: (new ObjectId).toString(),
-            elements: [
-              {
-                id: (new ObjectId).toString(),
-                ...userInputSubscriber
-              }
-            ]
-          }
-
-          rule.onMatch = {action: 'goto', target: subStep.id}
+        conditionElement = {
+          displaySettings,
+          elements:[waitTillRule]
+        }
+      } else if (['followers', 'scarcity'].includes(displaySettings.type)) {
+        conditionElement = {
+          displaySettings,
+          elements:[currentRule]
         }
       }
 
-      if (condition.type === 'rule') {
-        matchElement = condition;
-      } else {
-        if (condition.displaySettings.type === 'waitTillCondition') {
-          matchElement = this.getWaitTillRule(condition, onFail ? 'runtime' : 'time')
-        } else {
-          matchElement = condition.elements.find(element => element.type === 'rule');
-        }
-      }
-
-      Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
-        action: 'goto',
-        target: step.id
-      });
-
-      this.$emit('add-step', step, condition );
-
-      if (subStep) {
-        this.$emit('add-step', subStep);
-      }
+      builder.addStep(conditionElement, element, onFail)
     },
 
     setRulesOperand(value) {
