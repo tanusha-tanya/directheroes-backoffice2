@@ -126,7 +126,7 @@
                   ></thread-message>
                 </template>
               </template>
-              <div class="dh-conversation-divider dh-re-check-divider" v-if="false || canRecheckCampaigns">
+              <div class="dh-conversation-divider dh-re-check-divider" v-if="canRecheckCampaigns">
                   <div>
                     <div
                       @click="recheckCampaigns()"
@@ -400,10 +400,8 @@
       canRecheckCampaigns() {
         const { reverseThreadMessages, contactProfile, lastConversationEnd, currentThread } = this;
         const lastMessage = reverseThreadMessages[0];
-        const firstConversationItem = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
-        const noOpenConversation = !firstConversationItem || firstConversationItem.type === 'conversation_end'
 
-        return !currentThread.campaignsRechecked && noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
+        return !currentThread.campaignsRechecked && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
       }
     },
 
