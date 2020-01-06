@@ -233,6 +233,13 @@ export default {
                   ['Followers'].concat(followerCount.map(calcValues))
                 ]
               },
+              tooltip: {
+                format: {
+                  value(value, ratio, id, index) {
+                    return Math.floor(followerCount[index].value);
+                  }
+                }
+              },
               size: {
                 height: 80,
               },
@@ -272,6 +279,13 @@ export default {
               color: {
                 pattern: ['#6DD230']
               },
+              tooltip: {
+                format: {
+                  value(value, ratio, id, index) {
+                    return Math.floor(likeCount[index].value);
+                  }
+                }
+              },
               size: {
                 height: 80,
               },
@@ -307,6 +321,13 @@ export default {
               },
               size: {
                 height: 80,
+              },
+              tooltip: {
+                format: {
+                  value(value, ratio, id, index) {
+                    return Math.floor(commentCount[index].value);
+                  }
+                }
               },
               color: {
                 pattern: ['#FFAB2B']
