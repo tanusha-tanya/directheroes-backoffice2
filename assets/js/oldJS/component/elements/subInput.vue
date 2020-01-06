@@ -52,7 +52,7 @@ export default {
     },
 
     availableList() {
-      const { triggers, elements } = this.dhAccount.flowBuilderSettings.triggers;
+      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
 
       return elementsPermissions.fromUserInput.concat(triggers.messageTypes, elements);
     },

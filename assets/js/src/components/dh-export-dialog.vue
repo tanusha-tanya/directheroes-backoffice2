@@ -7,7 +7,7 @@
     class="dh-export-dialog"
   >
     <div class="dh-export-content">
-      <div class="dh-options-title">Campaigns:</div>
+      <div class="dh-options-title">Campaigns</div>
       <div class="dh-options">
         <div class="dh-option">entered any of</div>
         <div class="dh-select-wrapper">
@@ -22,7 +22,7 @@
           </el-select>
         </div>
       </div>
-      <div class="dh-options-title">Categories:</div>
+      <div class="dh-options-title">Categories</div>
       <div class="dh-options">
         <div class="dh-option">has any of</div>
         <div class="dh-select-wrapper">
