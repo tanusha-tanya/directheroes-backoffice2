@@ -18,10 +18,10 @@
           </div>
         </div>
       </div>
-      <div class="dh-dashboard-title" v-if="analyticInfo && hasThreeDays && isAdmin">
+      <div class="dh-dashboard-title" v-if="analyticInfo && hasThreeDays && (isAdmin || true)">
         Stats
       </div>
-      <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays && isAdmin">
+      <div class="dh-dashboard-analytics" v-if="analyticInfo && hasThreeDays && (isAdmin || true)">
         <div class="dh-dashboard-analytics-item" v-if="analyticInfo.followerCount">
           <div class="dh-analytics-item-info">
             <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
@@ -197,12 +197,24 @@ export default {
         }
       }).then(({ data }) => {
         const analyticInfo = data.reports;
-        const { followerCount, likeCount, commentCount } = analyticInfo;
+        let { followerCount, likeCount, commentCount } = analyticInfo;
+        const checkValues = (accumulator, currentValue, index) => {
+          const { value } = currentValue;
+          currentValue.value = !~value ? (accumulator[index - 1] || 0) : value;
+
+          accumulator.push(currentValue);
+
+          return accumulator;
+        }
         const calcValues = (item, index, array) => {
           if (!index) return 0;
 
           return (item.value - array[0].value).toFixed(0);
         }
+
+        followerCount = followerCount && followerCount.reduce(checkValues, []);
+        likeCount = likeCount && likeCount.reduce(checkValues, []);
+        commentCount = commentCount && commentCount.reduce(checkValues, []);
 
         if ( !followerCount && !likeCount && !commentCount) return;
 
