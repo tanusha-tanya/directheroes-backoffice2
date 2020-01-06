@@ -50,7 +50,7 @@ const campaignElementValidate = (element, isEntry, mainType) => {
           warning = 'Please specify at least one hashtag'
         }
       } else if (mainType === 'condition'){
-        if (element.condition.entity === 'time' && !(matchElement || matchElement.onMatch)) {
+        if (element.condition.entity === 'time' && (!matchElement || !matchElement.onMatch)) {
           warning = 'Please add the next element for the "reply" branch'
         }
       }
