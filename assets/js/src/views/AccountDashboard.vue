@@ -200,7 +200,8 @@ export default {
         let { followerCount, likeCount, commentCount } = analyticInfo;
         const checkValues = (accumulator, currentValue, index) => {
           const { value } = currentValue;
-          currentValue.value = !~value ? (accumulator[index - 1] || 0) : value;
+          const prevValue = accumulator[index - 1];
+          currentValue.value = !~value ? ((prevValue && prevValue.value) || 0) : value;
 
           accumulator.push(currentValue);
 
