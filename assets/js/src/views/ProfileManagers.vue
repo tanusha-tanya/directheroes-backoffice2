@@ -5,7 +5,7 @@
     </div>
     <div class="dh-settings-controls">
       <div class="dh-new-item-button" @click="isAddManager = true">
-        <plus/><span>Add manager</span>
+        <plus/><span>Add delegate</span>
       </div>
     </div>
     <loader v-if="loading"/>
@@ -17,7 +17,7 @@
             {{manager.username}}
           </div>
           <button class="dh-button dh-small" @click="managerToManage = manager">
-            Manage
+            Delegate
           </button>
           <div class="dh-manager-delete-button" @click="managerToDelete = manager">
             <trash />
@@ -27,12 +27,12 @@
     </div>
     <div class="dh-info" v-else>
       <span>
-        Click <strong>"Add manager"</strong> button to add one
+        Click <strong>"Add delegate"</strong> button to add one
       </span>
     </div>
     <el-dialog
       :visible.sync="isAddManager"
-      title="Add manager"
+      title="Add delegate"
       custom-class="dh-manager-add-dialog"
       append-to-body
       width="554px">
@@ -52,7 +52,7 @@
     <el-dialog
       :visible.sync="isManagePopup"
       v-if="isManagePopup"
-      title="Instagram accounts manager"
+      title="Instagram accounts delegate"
       custom-class="dh-manager-accounts-dialog"
       append-to-body
       width="554px">
@@ -76,8 +76,8 @@
       </template>
     </el-dialog>
     <confirm-dialog
-      :title="'Manager delete'"
-      :message="`Confirm delete manager ${ managerToDelete && managerToDelete.username }`"
+      :title="'Delegate delete'"
+      :message="`Confirm delete delegate ${ managerToDelete && managerToDelete.username }`"
       v-model="isMangerDelete"
       @success="deleteManager"
       @cancel="managerToDelete = null"/>
@@ -154,7 +154,7 @@ export default {
       this.isManagerProcess = true;
 
       axios({
-        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/child-user`,
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/delegate`,
         method: 'post',
         data: {
           email: newManagerEmail
@@ -178,7 +178,7 @@ export default {
     deleteManager() {
       const { managers, managerToDelete } = this;
 
-      axios.delete(`${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/child-user/${managerToDelete.id}`
+      axios.delete(`${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/delegate/${managerToDelete.id}`
       ).then(() => {
         managers.splice(managers.indexOf(managerToDelete), 1)
 
@@ -221,7 +221,7 @@ export default {
 
   created() {
     axios({
-      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/child-user`
+      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/delegate`
     }).then(({data}) => {
       this.managers = data.response.body.list || [];
       this.loading = false;

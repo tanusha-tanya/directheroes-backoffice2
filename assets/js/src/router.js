@@ -21,6 +21,8 @@ import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 
+import LoginForm from '../oldJS/routes/loginForm'
+
 Vue.use(Router)
 
 export default new Router({
