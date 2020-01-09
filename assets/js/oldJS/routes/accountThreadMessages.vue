@@ -79,7 +79,7 @@
         </router-link>
       </div>
       <loader v-else/>
-      <div class="dh-accounts-up" v-if="paging.page > 2" @click="setPage(1)">
+      <div class="dh-accounts-up" v-if="paging.page > 9" @click="setPage(1)">
         <up/>
       </div>
     </div>
@@ -126,7 +126,7 @@
                   ></thread-message>
                 </template>
               </template>
-              <div class="dh-conversation-divider dh-re-check-divider" v-if="false && canRecheckCampaigns">
+              <div class="dh-conversation-divider dh-re-check-divider" v-if="canRecheckCampaigns">
                   <div>
                     <div
                       @click="recheckCampaigns()"
@@ -394,16 +394,14 @@
         const { reverseThreadMessages } = this;
         const lastConversationDivider = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
 
-        return lastConversationDivider.type === 'conversation_end' && lastConversationDivider;
+        return lastConversationDivider && lastConversationDivider.type === 'conversation_end' && lastConversationDivider;
       },
 
       canRecheckCampaigns() {
         const { reverseThreadMessages, contactProfile, lastConversationEnd, currentThread } = this;
         const lastMessage = reverseThreadMessages[0];
-        const firstConversationItem = reverseThreadMessages.find(message => message.type && message.type.includes('conversation'))
-        const noOpenConversation = !firstConversationItem || firstConversationItem.type === 'conversation_end'
 
-        return !currentThread.campaignsRechecked && noOpenConversation && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
+        return !currentThread.campaignsRechecked && (lastMessage && lastMessage.senderUsername && (lastMessage.senderUsername === contactProfile.username))
       }
     },
 
@@ -633,8 +631,10 @@
         .then(({ data }) => {
           const { threadList, paging } = data.response.body
 
-          if (paging.page > 2) {
-            this.allThreads = this.allThreads.splice(-paging.perPage, paging.perPage).concat(threadList);
+          if (paging.page > 10) {
+            this.allThreads.splice(0, paging.perPage)
+
+            this.allThreads = this.allThreads.concat(threadList);
           } else if (paging.page === 1) {
             this.allThreads = threadList;
           } else {
@@ -653,7 +653,7 @@
 
               const last5ThreadEl = threads[threads.length - 5].$el;
 
-              if (paging.page > 2) {
+              if (paging.page > 10) {
                 const threadRect = last5ThreadEl.getBoundingClientRect()
                 const { threadScroll } = this.$refs
 
