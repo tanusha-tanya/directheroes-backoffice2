@@ -57,6 +57,9 @@
               <warning />Instagram Account<warning />
             </span>
           </div>
+          <div class="dh-account-owner-info">
+            Owned by <strong>{{account.owner.firstName}} {{account.owner.lastName}}</strong>
+          </div>
         </div>
       </div>
       <dh-confirm-dialog
@@ -330,6 +333,18 @@ export default {
     display: flex;
     align-items: flex-end;
     text-align: center;
+  }
+
+  .dh-account-owner-info {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+    color: $textColor;
+    margin-bottom: -20px;
+
+    strong {
+      margin-left: 5px;
+    }
   }
 }
 
