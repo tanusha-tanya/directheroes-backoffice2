@@ -56,7 +56,12 @@
       custom-class="dh-manager-accounts-dialog"
       append-to-body
       width="554px">
-      <div :class="{'dh-select-account-founded': true, 'dh-select-account-selected': isAccountChecked(managerToManage, account)}" v-for="account in igAccounts" @click="toggleManagerToAccount(managerToManage, account)">
+      <template v-if="igAccounts.length">
+      <div :class="{'dh-select-account-founded': true, 'dh-select-account-selected': isAccountChecked(managerToManage, account)}"
+        v-for="account in igAccounts"
+        @click="toggleManagerToAccount(managerToManage, account)"
+        :key="account.id"
+        >
         <div class="dh-select-account-userpic" :style="{ 'background-image': `url(${ account.profilePicUrl })` }">
         </div>
         <div class="dh-select-account-info">
@@ -70,6 +75,10 @@
             Click here, to attach/deatach account to manager.
           </div>
         </div>
+      </div>
+      </template>
+      <div v-else>
+        Add Instagram account to delegate it to <strong>{{managerToManage.username}}</strong>
       </div>
       <template slot="footer">
         <button class="dh-button" @click="isManagePopup = false">Ok</button>
@@ -140,9 +149,10 @@ export default {
     },
 
     igAccounts() {
+      const { dhAccount } = this;
       const { accounts } = this.$store.state;
 
-      return accounts
+      return accounts.filter(account => account.owner.id === dhAccount.id)
     },
   },
 
