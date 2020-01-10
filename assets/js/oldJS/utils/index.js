@@ -18,7 +18,7 @@ const getOnMatchElement = (element) => {
 
   return matchElement;
 }
-const campaignElementValidate = (element, isEntry) => {
+const campaignElementValidate = (element, isEntry, mainType) => {
   let warning = null;
 
   switch(element.type) {
@@ -41,19 +41,25 @@ const campaignElementValidate = (element, isEntry) => {
     case 'rule':
       const matchElement = getOnMatchElement(element);
 
-      if (!matchElement || !matchElement.onMatch) {
-        warning = 'Element has no target step'
-      }
+      if (mainType === 'trigger' || !mainType) {
+        if (!matchElement || !matchElement.onMatch) {
+          warning = 'Element has no target step'
+        }
 
-      if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
-        warning = 'Please specify at least one hashtag'
+        if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
+          warning = 'Please specify at least one hashtag'
+        }
+      } else if (mainType === 'condition'){
+        if (element.condition.entity === 'time' && (!matchElement || !matchElement.onMatch)) {
+          warning = 'Please add the next element for the "reply" branch'
+        }
       }
 
       break;
     case 'group':
-      if (element.displaySettings.subType === 'trigger') {
+      if (['trigger', 'condition'].includes(element.displaySettings.subType)) {
         element.elements.some(elementItem => {
-          warning = campaignElementValidate(elementItem, isEntry);
+          warning = campaignElementValidate(elementItem, isEntry, element.displaySettings.subType);
 
           return warning;
         })
