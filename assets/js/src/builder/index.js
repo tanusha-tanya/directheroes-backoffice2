@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import ObjectId from '../../oldJS/utils/ObjectId';
+import elementsPermissions from '../../oldJS/elements/permissions'
 import { userInputSubscriber } from '../../oldJS/elements/userInput'
 
 export default {
-  create(campaign) {
+  create(campaign, account) {
     return new Vue({
       data() {
         return {
           campaign,
+          account,
           arrows: [],
           subArrows: []
         }
@@ -118,10 +120,82 @@ export default {
           this.subArrows = subArrows;
 
           return stepsTree;
-        }
+        },
+
+        isBroadcast() {
+          const { campaign } = this;
+
+          return campaign.type === 'broadcast';
+        },
       },
 
       methods: {
+        availableListByElement(element = { displaySettings: {} }, isFail, isEntry) {
+          const { isBroadcast, account } = this;
+          const { elements, growthTools, triggers } = account.flowBuilderSettings;
+          const { type, subType } = element.displaySettings;
+
+          switch ( subType ) {
+            case 'trigger':
+              const { fromTrigger } = elementsPermissions;
+
+              return [].concat(fromTrigger, elements);
+            break;
+            case 'message':
+              const { fromMessageStep } = elementsPermissions;
+
+              if (isBroadcast) {
+                return element.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
+              } else {
+                return [].concat(triggers.messageTypes, fromMessageStep, elements);
+              }
+            break;
+            case 'action':
+              const { fromActionStep } = elementsPermissions;
+
+              return [].concat(triggers.messageTypes, fromActionStep, elements);
+            break;
+            case 'condition':
+              const { fromCondition } = elementsPermissions;
+
+              return [].concat(triggers.messageTypes, fromCondition, elements);
+            break;
+            default:
+              if (isBroadcast) {
+
+              } else {
+                return isEntry ? growthTools.messageTypes : triggers.messageTypes
+              }
+          }
+        },
+
+        connectStepToStepById(step, stepId) {
+          const { getElementByType } = this;
+          const firstElement = step.elements[0];
+
+          if (firstElement.type === 'action') {
+            step.elements.push({
+              id: (new ObjectId).toString(),
+              type: 'linker',
+              target: stepId
+            })
+          } else {
+            const matchElement = getElementByType(firstElement, 'rule');
+
+            if (firstElement.displaySettings.type === 'waitTillCondition') {
+              Vue.set(matchElement, 'onFail', {
+                action: 'goto',
+                target: stepId
+              });
+            } else {
+              Vue.set(matchElement, 'onMatch', {
+                action: 'goto',
+                target: stepId
+              });
+            }
+          }
+        },
+
         getStep(stepId) {
           const { steps } = this;
 
@@ -140,7 +214,7 @@ export default {
           return scheme.find(schemaColumn => schemaColumn.includes(step))
         },
 
-        getElementByTargetId(targetId) {
+        getMatchElementsByTargetId(targetId) {
           const { steps, getAllMatchElements } = this;
           const matchElement = [];
 
@@ -219,6 +293,22 @@ export default {
           return foundElement;
         },
 
+        getElementById(elementId) {
+          const { steps } = this;
+          let foundElement = null;
+
+          steps.some(step => {
+            return  step.elements.some( element => {
+              if (element.id !== elementId) return;
+
+              foundElement = element;
+              return true;
+            })
+          })
+
+          return foundElement;
+        },
+
         getStepArrows(stepId) {
           const { arrows, subArrows } = this;
           const stepArrows = [];
@@ -286,7 +376,7 @@ export default {
         },
 
         addStep(parentElement, stepElement, isFail) {
-          const { steps, getElementByType, addStep } = this;
+          const { steps, getElementByType, addStep, connectStepToStepById } = this;
           const step = {
             id: (new ObjectId).toString(),
             elements: [
@@ -350,6 +440,10 @@ export default {
 
           switch (parentElement.type) {
             case 'linker':
+              if (parentElement.target) {
+                connectStepToStepById(step, parentElement.target)
+              }
+
               parentElement.target = step.id
               break;
             default:
@@ -359,6 +453,10 @@ export default {
 
               if (isFail) {
                 if (onFail) {
+                  if (onFail.target) {
+                    connectStepToStepById(step, onFail.target)
+                  }
+
                   Vue.set(onFail, 'target', step.id)
                 } else {
                   Vue.set(rule, 'onFail', {
@@ -368,6 +466,10 @@ export default {
                 }
               } else {
                 if (onMatch) {
+                  if (onMatch.target) {
+                    connectStepToStepById(step, onMatch.target)
+                  }
+
                   Vue.set(onMatch, 'target', step.id)
                 } else {
                   Vue.set(rule, 'onMatch', {
@@ -384,7 +486,7 @@ export default {
         },
 
         deleteStep(step) {
-          const { getStepArrows, clearStepData, getStep, getElementByTargetId, getStepColumn, scheme, steps } = this;
+          const { getStepArrows, clearStepData, getStep, getMatchElementsByTargetId, getStepColumn, scheme, steps } = this;
           const stepArrows = getStepArrows(step.id);
           const stepColumn = getStepColumn(step);
           const stepColumnIndex = scheme.indexOf(stepColumn);
@@ -394,7 +496,7 @@ export default {
             const isParentArrow = stepArrow.child === step.id;
             const childStep = getStep(stepArrow.child);
 
-            clearStepData(getElementByTargetId(stepArrow.child), stepArrow.child);
+            clearStepData(getMatchElementsByTargetId(stepArrow.child), stepArrow.child);
 
             if (isParentArrow) return;
 
@@ -408,7 +510,7 @@ export default {
         },
 
         deleteLink({ arrowInfo }) {
-          const { clearStepData, getStep, getElementByTargetId, getStepColumn, scheme } = this;
+          const { clearStepData, getStep, getMatchElementsByTargetId, getStepColumn, scheme } = this;
           const childStep = getStep(arrowInfo.child);
           const childStepColumn = getStepColumn(childStep)
           const childStepColumnIndex = scheme.indexOf(childStepColumn);
@@ -418,7 +520,7 @@ export default {
             rowIndex: childStepColumn.indexOf(childStep)
           });
 
-          clearStepData(getElementByTargetId(arrowInfo.child), arrowInfo.child)
+          clearStepData(getMatchElementsByTargetId(arrowInfo.child), arrowInfo.child)
         }
       }
     })

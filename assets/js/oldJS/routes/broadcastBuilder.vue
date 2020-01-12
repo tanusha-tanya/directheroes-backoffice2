@@ -1,23 +1,5 @@
 <template>
   <div class="broadcast-builder">
-    <!-- <div class="broadcast-builder-controls">
-      <span>Broadcast Builder</span>
-      <div class="broadcast-warning" v-if="currentBroadcast && hasWarning"><img src="../assets/triangle.svg">This broadcast is incomplete</div>
-      <div class="info" v-if="currentBroadcast && isComplete">
-        <div>Broadcast complete</div>
-      </div>
-      <div class="info" v-else-if="currentBroadcast && !hasWarning">
-        <div class="start-message" v-if="timeToStart">{{ timeToStart }}</div>
-        <div class="fail-message" v-if="notStarted">Campaign didn't start</div>
-        <div class="start-message" v-else-if="!timeToStart && !isStarted && !notStarted && startAt">Prepare to start</div>
-        <div class="start-message" v-if="isStarted">Broadcast was started</div>
-        <div v-if="!startAt">Click to set broadcast</div>
-      </div>
-      <div class="broadcast-builder-divider" v-if="currentBroadcast"></div>
-      <div class="broadcast-builder-control gear" v-if="currentBroadcast" @click="isSettings = !isSettings">
-        <img src="../assets/svg/gear.svg"/>
-      </div>
-    </div> -->
     <div class="broadcast-first-step" v-if="currentBroadcast && !currentBroadcast.steps.length">
       <div class="broadcast-flow-choose">
         <div class="broadcast-choose-info">
@@ -25,11 +7,10 @@
         </div>
         <div class="broadcast-choose-buttons">
           <div class="broadcast-choose-button">
-            <add-step-popup @add-step="addStep" :available-list="availableElements">
+            <add-step-popup @select="addStep" :available-list="availableElements">
               <span>New flow</span>
             </add-step-popup>
           </div>
-          <!-- <div class="campaign-choose-button">Clone flow</div> -->
         </div>
         <div class="broadcast-choose-info">
           You can also create a block by double clicking on the canvas
@@ -370,6 +351,9 @@ export default {
         },
         elements: []
       }
+
+      console.log(element);
+
 
       if (element.type === 'group') {
         const { elements } = element;

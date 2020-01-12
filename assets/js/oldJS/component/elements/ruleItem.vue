@@ -19,7 +19,7 @@
       <keywords v-model="rule.onMatch.elements[0].condition.value" ></keywords>
     </template>
     <add-tag-popup
-      :available-list="availableList"
+      :available-list="availableList(element)"
       :link-element="element"
       :builder="builder"
       v-if="!hasOnMatch"
@@ -51,8 +51,6 @@ import { userInputSubscriber } from '../../elements/userInput'
 
 
 export default {
-
-
   props:['element', 'isEntry', 'elements', 'builder'],
 
   components: {
@@ -64,12 +62,6 @@ export default {
   computed: {
     account() {
       return this.$store.state.currentAccount;
-    },
-
-    availableList() {
-      const { elements } = this.dhAccount.flowBuilderSettings;
-
-      return elementsPermissions.fromTrigger.concat(elements);
     },
 
     hasOnMatch() {
@@ -114,7 +106,13 @@ export default {
 
         value.splice(index, 1, keyword.replace(/^#/, ''))
       })
-    }
+    },
+
+    availableList(element) {
+      const { builder, isEntry } = this;
+
+      return builder.availableListByElement(element, null, isEntry);
+    },
   }
 };
 </script>

@@ -39,7 +39,12 @@
       </div>
       <arrows ref="subArrows" class="sub-arrows" :refs="builderArea" :arrows="builder.subArrows" :scale="scaleValue"></arrows>
       <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue" @remove-link="builder.deleteLink" @mid-step-button="toggleMidStepButton"></arrows>
-      <addStepPopup class="dh-mid-campaign-button" v-if="midStepButtonData" :style="midStepButtonData.style" @mouseover.native="mouseOnButton = true" @mouseleave.native="mouseOnButton = false"/>
+      <add-step-popup
+        class="dh-mid-campaign-button"
+        v-if="midStepButtonData"
+        :style="midStepButtonData.style"
+        :available-list="availableList"
+        @select="addMidStep"/>
     </div>
   </div>
 </template>
@@ -53,6 +58,7 @@ import Builder from '../../src/builder';
 import addStepPopup from './addStepPopup'
 // import utils from '../utils';
 import ObjectId from '../utils/ObjectId';
+import stepItemVue from './stepItem.vue';
 
 // let zoomTimeout = null;
 
@@ -105,11 +111,34 @@ export default {
     },
 
     isBroadcast() {
-      return entryItem.type === 'broadcast';
+      const { builder, midStepButtonData } = this;
+
+
+      return builder.isBroadcast;
     },
 
     builderArea() {
       return this;
+    },
+
+    availableList() {
+      const { builder, midStepButtonData } = this;
+      const parentMatchElement = builder.getMatchElementsByTargetId(midStepButtonData.path.arrowInfo.child)[0]
+      let searchElement;
+
+      builder.steps.some(step => step.elements.some(element => {
+        const matchElements = builder.getAllMatchElements(element);
+
+        return matchElements.some(matchElement => {
+          if (parentMatchElement !== matchElement) return;
+
+          searchElement = element.type === 'linker'? step.elements[0] : element;
+
+          return true;
+        })
+      }))
+
+      return builder.availableListByElement(searchElement)
     }
   },
 
@@ -177,14 +206,41 @@ export default {
           left: `${path.begin.x + (path.arrow.x - path.begin.x) / 2 - 14}px`,
           position: 'absolute',
           'z-index': 20
+        },
+        path
+      }
+    },
+
+    addMidStep(element) {
+      const { builder, midStepButtonData } = this;
+      const { parent, child } = midStepButtonData.path.arrowInfo;
+      const postFix = parent.substr(24);
+      const isFail = /fail/.test(postFix);
+      let parentElement = builder.getElementById(parent.substr(0, 24));
+
+      if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
+        const matchRule = parentElement.elements[isFail ? parentElement.elements.length-1 : parseInt(postFix)];
+
+        parentElement = {
+          displaySettings: parentElement.displaySettings,
+          elements:[matchRule]
+        }
+      } else if (parentElement.displaySettings && parentElement.displaySettings.type === 'waitTillCondition') {
+        const matchRule = parentElement.elements.find(element => element.type === 'rule' && element.condition.entity === isFail ? 'runtime' : 'time')
+
+        parentElement = {
+          displaySettings: parentElement.displaySettings,
+          elements:[matchRule]
         }
       }
+
+      builder.addStep(parentElement, element, isFail)
     }
   },
 
   created() {
-    const { entryItem } = this;
-    const builder = Builder.create(entryItem);
+    const { entryItem, dhAccount } = this;
+    const builder = Builder.create(entryItem, dhAccount);
 
     this.builder = builder;
   },
@@ -209,6 +265,8 @@ export default {
   watch:{
     entryItem: {
       handler: function (entry, oldEntry) {
+
+        this.midStepButtonData = null;
 
         if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
         if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);

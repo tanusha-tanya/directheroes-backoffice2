@@ -18,8 +18,8 @@
       <div class="step-delete-button" v-if="(!isEntry && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="builder.deleteStep(step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
-      <add-step-popup :available-list="availableList" @select="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
-      <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
+      <add-step-popup :available-list="builder.availableListByElement(step.elements[0])" @select="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
+      <!-- <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
         <div class="existing-step-element">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
             viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
@@ -31,7 +31,7 @@
               z" fill="currentColor"/>
           </svg>
         </div>
-      </existing-step-popup>
+      </existing-step-popup> -->
     </span>
   </div>
   <div class="existin-step-connector" v-if="canConnectAsExist" @click="bindAsExistStep">
@@ -369,6 +369,8 @@ export default {
       border-radius: 50%;
       border: 1px solid #ccc;
       background-color: #fff;
+      right: -14px;
+      top: calc(50% - 14px);
     }
 
     .element-warning {

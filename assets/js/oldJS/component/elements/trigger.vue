@@ -13,7 +13,7 @@
         ></rule-item>
     </template>
     <div class="add-rule-button">
-      <add-trigger-popup @on-select="addTrigger" :available-list="availableTriggerList">
+      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry)">
         <span>+ Add rule item</span>
       </add-trigger-popup>
     </div>
@@ -27,7 +27,6 @@ import utils from '../../utils'
 import ruleItem from './ruleItem';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
-import elementsPermissions from '../../elements/permissions'
 
 export default {
   props: ['elements', 'isEntry', 'builder'],
@@ -35,15 +34,6 @@ export default {
   components: {
     ruleItem,
     addTriggerPopup,
-  },
-
-  computed: {
-    availableTriggerList() {
-      const { isEntry } = this;
-      const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
-
-      return elementsPermissions.fromTriggerStep.concat(messageTypes);
-    },
   },
 
   methods: {

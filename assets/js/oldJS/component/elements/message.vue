@@ -54,7 +54,7 @@
       </template>
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
-      <add-step-popup :available-list="isBroadcast ? broadcastAvailableList : avaialbleList" @select="addElement">
+      <add-step-popup :available-list="builder.availableListByElement(elements[0])" @select="addElement">
       </add-step-popup>
     </div>
     <linker :linker="linker" v-if="linker"></linker>
@@ -97,23 +97,10 @@ export default {
     },
 
     isBroadcast() {
-      const { campaignType } = this;
+      const { builder } = this;
 
-      return campaignType === 'broadcast';
-    },
-
-    broadcastAvailableList() {
-      const firstElement = this.elements[0];
-
-      return firstElement.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
-    },
-
-    avaialbleList() {
-      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
-
-      return elementsPermissions.fromMessageStep.concat(triggers.messageTypes, elements)
-    },
-
+      return builder.isBroadcast;
+    }
   },
 
   methods: {
@@ -148,7 +135,7 @@ export default {
           })
         }
       } else {
-        const newLinker ={
+        const newLinker = {
           id: (new ObjectId).toString(),
           type: 'linker'
         }
