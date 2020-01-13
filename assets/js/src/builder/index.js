@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import ObjectId from '../../oldJS/utils/ObjectId';
 import elementsPermissions from '../../oldJS/elements/permissions'
-import { userInputSubscriber } from '../../oldJS/elements/userInput'
+// import { userInputSubscriber } from '../../oldJS/elements/userInput'
 
 export default {
   create(campaign, account) {
@@ -11,7 +11,8 @@ export default {
           campaign,
           account,
           arrows: [],
-          subArrows: []
+          subArrows: [],
+          parentOfExistStep: null,
         }
       },
 
@@ -44,19 +45,29 @@ export default {
                     const match = matchElement.onMatch || matchElement;
                     const failTarget = matchElement.onFail && matchElement.onFail.target;
                     const { target } = match;
-                    const isExistingStepLink = matchElement.type === 'linker' && matchElement.displaySettings
+                    const isExistingStepLink = match.displaySettings || ( matchElement.onFail && matchElement.onFail.displaySettings)
 
                     if (!isExistingStepLink) {
                       linkElements.push(target);
                     }
 
                     if (failTarget) {
-                      arrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id});
-                      linkElements.push(failTarget);
+                      if (isExistingStepLink) {
+                        subArrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id, isExisting: true});
+                      } else {
+                        arrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id});
+                      }
+
+
+                      if (!isExistingStepLink) {
+                        linkElements.push(failTarget);
+                      }
                     }
 
                     if (target) {
                       const arrowObject = { parent: stepElement.id + suffix, child: target, stepId: step.id }
+
+                      console.log(match, isExistingStepLink);
 
                       if (isExistingStepLink) {
                         subArrows.push({ ...arrowObject, isExisting: true});
@@ -192,6 +203,61 @@ export default {
                 action: 'goto',
                 target: stepId
               });
+            }
+          }
+        },
+
+        connectExistingStep(stepToConnect) {
+          const { getMatchElementsByTargetId, getElementByType, parentOfExistStep } = this;
+          const { step, parentElement, isFail } = parentOfExistStep;
+          const isConnectedStep = Boolean(getMatchElementsByTargetId(stepToConnect.id).length)
+          const displaySettings = {
+            subType: 'existingStep'
+          }
+
+          if (parentElement.type === 'linker') {
+            Vue.set(parentElement, 'target', stepToConnect.id)
+
+            if (isConnectedStep) {
+              Vue.set(parentElement, 'displaySettings', displaySettings)
+            } else {
+              Vue.set(stepToConnect, 'displaySettings', null)
+            }
+          } else {
+            let rule = getElementByType(parentElement, 'rule');
+
+            const { onMatch, onFail } = rule;
+
+            if (isFail) {
+              if (onFail) {
+                Vue.set(onFail, 'target', stepToConnect.id)
+              } else {
+                Vue.set(rule, 'onFail', {
+                 action: 'goto',
+                 target: stepToConnect.id
+                });
+              }
+
+              if (isConnectedStep) {
+                Vue.set(rule.onFail, 'displaySettings', displaySettings)
+              } else {
+                Vue.set(stepToConnect, 'displaySettings', null)
+              }
+            } else {
+              if (onMatch) {
+                Vue.set(onMatch, 'target', stepToConnect.id)
+              } else {
+                Vue.set(rule, 'onMatch', {
+                 action: 'goto',
+                 target: stepToConnect.id
+                });
+              }
+
+              if (isConnectedStep) {
+                Vue.set(rule.onMatch, 'displaySettings', displaySettings)
+              } else {
+                Vue.set(stepToConnect, 'displaySettings', null)
+              }
             }
           }
         },
@@ -387,6 +453,16 @@ export default {
             ]
           }
 
+          if (stepElement.type === 'existingStep') {
+            this.parentOfExistStep = {
+              step: this.getStepByElement(parentElement),
+              parentElement,
+              isFail
+            }
+
+            return
+          }
+
           if (stepElement.type === 'group') {
             stepElement.elements.forEach(element => {
               element.id = (new ObjectId).toString()
@@ -431,7 +507,7 @@ export default {
                 })
               }
 
-              addStep(stepElement, userInputSubscriber)
+              // addStep(stepElement, userInputSubscriber)
               break;
             case 'sub-input':
               step.name = 'Collect'
@@ -496,6 +572,8 @@ export default {
             const isParentArrow = stepArrow.child === step.id;
             const childStep = getStep(stepArrow.child);
 
+            console.log(stepArrow);
+
             clearStepData(getMatchElementsByTargetId(stepArrow.child), stepArrow.child);
 
             if (isParentArrow) return;
@@ -521,6 +599,18 @@ export default {
           });
 
           clearStepData(getMatchElementsByTargetId(arrowInfo.child), arrowInfo.child)
+        }
+      },
+
+      watch: {
+        parentOfExistStep(newValue, oldValue) {
+          const isOldLinker = oldValue && oldValue.parentElement.type === 'linker'
+
+          if (newValue || !isOldLinker || (isOldLinker && oldValue.parentElement.target)) return;
+
+          const { parentElement, step} = oldValue;
+
+          step.elements.splice(step.elements.indexOf(parentElement), 1);
         }
       }
     })

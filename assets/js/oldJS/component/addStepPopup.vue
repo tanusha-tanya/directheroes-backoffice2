@@ -25,7 +25,7 @@
         </add-condition-popup>
       </div>
       <div class="type-of-element">
-        <span class="exist-step-connection" v-if="(availableList || []).includes('existingStep')" @click="addExistStepConnection">
+        <span class="exist-step-connection" v-if="(availableList || []).includes('existingStep')" @click="selectElement(existingStepObject)">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
             viewBox="0 0 116.936 116.936" style="enable-background:new 0 0 116.936 116.936;"
             xml:space="preserve">
@@ -51,6 +51,9 @@ export default {
   data() {
     return {
       isShow: false,
+      existingStepObject: {
+        type: "existingStep"
+      }
     }
   },
 
@@ -74,9 +77,6 @@ export default {
 
       builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
     },
-
-    addExistStepConnection() {
-    }
   }
 }
 </script>

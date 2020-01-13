@@ -47,7 +47,6 @@ import addTagPopup from '../addTagPopup';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
 import elementsPermissions from '../../elements/permissions'
-import { userInputSubscriber } from '../../elements/userInput'
 
 
 export default {

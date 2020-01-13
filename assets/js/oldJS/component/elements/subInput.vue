@@ -22,7 +22,7 @@ import axios from 'axios'
 import addTagPopup from '../addTagPopup';
 import zapier from '../zapier';
 import elementsPermissions from '../../elements/permissions'
-import { userInputSubscriber, userInputZapier } from '../../elements/userInput';
+// import { userInputSubscriber, userInputZapier } from '../../elements/userInput';
 
 export default {
   components: {

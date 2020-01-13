@@ -190,7 +190,6 @@ import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
 import keywords from '../keywords';
-import { userInputSubscriber } from '../../elements/userInput'
 
 export default {
   data() {

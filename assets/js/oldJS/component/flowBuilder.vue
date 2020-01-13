@@ -20,7 +20,7 @@
         </svg>
       </div>
     </div>
-    <div class="builder-area" ref="builderArea" @click="$store.commit('set', {path: 'existConnection', value: null })">
+    <div class="builder-area" ref="builderArea" @click="builder.parentOfExistStep = null">
       <div class="steps-row" v-for="(stepRow, rowIndex) in builder.scheme" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
           <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
@@ -60,7 +60,7 @@ import addStepPopup from './addStepPopup'
 import ObjectId from '../utils/ObjectId';
 import stepItemVue from './stepItem.vue';
 
-// let zoomTimeout = null;
+let zoomTimeout = null;
 
 export default {
   data() {
@@ -113,7 +113,6 @@ export default {
     isBroadcast() {
       const { builder, midStepButtonData } = this;
 
-
       return builder.isBroadcast;
     },
 
@@ -138,7 +137,7 @@ export default {
         })
       }))
 
-      return builder.availableListByElement(searchElement)
+      return builder.availableListByElement(searchElement).filter(element => element !== 'existingStep')
     }
   },
 
@@ -328,6 +327,10 @@ export default {
 
   .sub-arrows {
     z-index: -1;
+
+    path {
+      pointer-events: none;
+    }
   }
 
   input {

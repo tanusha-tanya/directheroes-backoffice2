@@ -19,7 +19,6 @@
 
 <script>
 import elementsPermissions from '../../elements/permissions'
-import { userInputSubscriber, userInputZapier } from '../../elements/userInput'
 import addTagPopup from '../addTagPopup'
 import Vue from 'vue';
 import ObjectId from '../../utils/ObjectId';

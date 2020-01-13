@@ -127,12 +127,12 @@ export default {
     },
 
     canConnectAsExist() {
-      const { $store, builder, step, isInBrokenBranch } = this;
-      const { existConnection } = $store.state;
+      const { builder, step, isInBrokenBranch } = this;
+      const { parentOfExistStep } = builder;
 
-      if (!existConnection || existConnection.step.id === step.id) return;
+      if (!parentOfExistStep || parentOfExistStep.step.id === step.id) return;
 
-      return !(builder.stepsInOneBranch(existConnection.step.id, step.id) || (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))))
+      return !(builder.stepsInOneBranch(parentOfExistStep.step.id, step.id) || (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))))
     },
 
     isInBrokenBranch() {
@@ -168,11 +168,11 @@ export default {
         type: 'linker'
       }
 
-      builder.addStep(linker || newLinker, element);
-
       if (!linker) {
         elements.push(newLinker);
       }
+
+      builder.addStep(linker || newLinker, element);
     },
 
     goToStep() {
@@ -182,13 +182,9 @@ export default {
     },
 
     bindAsExistStep() {
-      const { step, $store } = this;
-      const { existConnection } = $store.state;
+      const { step, builder } = this;
 
-      existConnection.element.target = step.id;
-      existConnection.step.elements.push(existConnection.element);
-
-      $store.commit('set', {path: 'existConnection', value: null })
+      builder.connectExistingStep(step)
     },
 
     removeLinker() {
@@ -231,6 +227,7 @@ export default {
       align-items: center;
       justify-content: center;
       border-radius: 5px;
+      pointer-events: all;
 
       div {
         text-align: center;
