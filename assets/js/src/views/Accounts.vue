@@ -57,7 +57,7 @@
               <warning />Instagram Account<warning />
             </span>
           </div>
-          <div class="dh-account-owner-info">
+          <div class="dh-account-owner-info" v-if="account.owner">
             Owned by <strong>{{account.owner.firstName}} {{account.owner.lastName}}</strong>
           </div>
         </div>
