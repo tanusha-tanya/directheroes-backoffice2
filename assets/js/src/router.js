@@ -16,10 +16,13 @@ import Trainings from './views/Trainings'
 import ProfileGeneral from './views/ProfileGeneral'
 import ProfileSecurity from './views/ProfileSecurity'
 import ProfileBilling from './views/ProfileBilling'
+import ProfileManagers from './views/ProfileManagers'
 import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
+
+import LoginForm from '../oldJS/routes/loginForm'
 
 Vue.use(Router)
 
@@ -34,6 +37,7 @@ export default new Router({
         { name: 'settings', path: '', component: ProfileGeneral },
         { name: 'security', path: 'security', component: ProfileSecurity },
         { name: 'billing', path: 'billing', component: ProfileBilling },
+        { name: 'assignment', path: 'assignment', component: ProfileManagers },
       ]
     },
     { name: 'addonBuy', path: '/addon-buy', component: AddonBuy },

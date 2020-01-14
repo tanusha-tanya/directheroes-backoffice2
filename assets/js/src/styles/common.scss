@@ -19,6 +19,19 @@
   pointer-events: none;
 }
 
+.dh-dialog-error {
+  height: 80px;
+  width: 100%;
+  background-color: #FE4D97;
+  border-radius: 4px;
+  margin-top: 20px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  font-size: 16px;
+}
+
 .dh-view {
   display: flex;
   flex-direction: column;
@@ -38,6 +51,7 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 17px;
+  color: #778CA2;
   cursor: pointer;
 
   svg {
