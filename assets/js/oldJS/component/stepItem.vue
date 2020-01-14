@@ -42,6 +42,11 @@
     </div>
   </div>
   <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" :builder="builder"></component>
+  <el-tooltip class="element-warning" effect="light"
+    content="Please reattach or delete this branch before you activate this campaign"
+    v-if="step.displaySettings && step.displaySettings.rowIndex">
+    <triangle />
+  </el-tooltip>
 </div>
 </template>
 
@@ -57,6 +62,7 @@ import subInput from './elements/subInput'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
 import addStepPopup from './addStepPopup';
+import triangle from '../assets/triangle.svg'
 import existingStepPopup from './existingStepPopup';
 
 export default {
@@ -76,7 +82,8 @@ export default {
     addStepPopup,
     userInput,
     subInput,
-    existingStepPopup
+    existingStepPopup,
+    triangle
   },
 
   computed: {
@@ -156,7 +163,7 @@ export default {
 
     builder() {
       return this.$parent.builder
-    }
+    },
   },
 
   methods: {
@@ -211,6 +218,13 @@ export default {
     margin: 30px 0;
     transition: box-shadow 1s;
     background-color: #fff;
+
+    & > .element-warning {
+      pointer-events: all;
+      width: 60px;
+      top: calc(50% - 30px) !important;
+      right: calc(50% - 30px) !important;
+    }
 
     .existin-step-connector {
       position: absolute;
