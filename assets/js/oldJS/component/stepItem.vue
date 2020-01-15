@@ -224,6 +224,7 @@ export default {
       width: 60px;
       top: calc(50% - 30px) !important;
       right: calc(50% - 30px) !important;
+      z-index: 1;
     }
 
     .existin-step-connector {

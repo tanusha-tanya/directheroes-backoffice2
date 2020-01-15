@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import ObjectId from '../../oldJS/utils/ObjectId';
 import elementsPermissions from '../../oldJS/elements/permissions'
+import actions from "../../oldJS/elements/actions";
+
+const addTagElement = actions.find(action => action.template.body.action === 'addCategory')
 // import { userInputSubscriber } from '../../oldJS/elements/userInput'
 
 export default {
@@ -66,8 +69,6 @@ export default {
 
                     if (target) {
                       const arrowObject = { parent: stepElement.id + suffix, child: target, stepId: step.id }
-
-                      console.log(match, isExistingStepLink);
 
                       if (isExistingStepLink) {
                         subArrows.push({ ...arrowObject, isExisting: true});
@@ -144,7 +145,7 @@ export default {
         availableListByElement(element = { displaySettings: {} }, isFail, isEntry) {
           const { isBroadcast, account } = this;
           const { elements, growthTools, triggers } = account.flowBuilderSettings;
-          const { type, subType } = element.displaySettings;
+          const { subType } = element.displaySettings;
 
           switch ( subType ) {
             case 'trigger':
@@ -160,6 +161,11 @@ export default {
               } else {
                 return [].concat(triggers.messageTypes, fromMessageStep, elements);
               }
+            break;
+            case 'user-input':
+              const { fromUserInputFails, fromUserInput } = elementsPermissions;
+
+              return [].concat(triggers.messageTypes, isFail ? fromUserInputFails : fromUserInput, elements);
             break;
             case 'action':
               const { fromActionStep } = elementsPermissions;
@@ -181,8 +187,20 @@ export default {
         },
 
         connectStepToStepById(step, stepId) {
-          const { getElementByType } = this;
-          const firstElement = step.elements[0];
+          const { getElementByType, getStep } = this;
+          let firstElement = step.elements[0];
+
+          if (firstElement.displaySettings && firstElement.displaySettings.subType == 'user-input') {
+            const rule = getElementByType(firstElement, 'rule');
+            const linker = getElementByType(rule.onMatch, 'linker');
+
+            const actionStep = getStep(linker.target);
+
+            step = actionStep;
+            firstElement = actionStep.elements[0]
+          }
+
+          console.log(firstElement);
 
           if (firstElement.type === 'action') {
             step.elements.push({
@@ -315,13 +333,28 @@ export default {
         },
 
         getAllMatchElements(element) {
-          const { getAllMatchElements } = this;
+          const { getAllMatchElements, getElementByType } = this;
           const { type } = element;
           let matches = [];
 
           switch (type) {
             case 'group':
               if (element.displaySettings.subType === 'settings') return matches;
+
+              if (element.displaySettings.subType === 'user-input') {
+                const rule = getElementByType(element, 'rule');
+                const linker = getElementByType(rule.onMatch, 'linker');
+
+                if (linker) {
+                  matches.push(linker)
+                }
+
+                if (rule.onFail) {
+                  matches.push(rule)
+                }
+
+                return matches;
+              }
 
               element.elements.forEach(subElement => {
                 matches = matches.concat(getAllMatchElements(subElement))
@@ -417,14 +450,31 @@ export default {
         },
 
         clearStepData(elementsList = [], childStepId) {
-          const { getStepByElement } = this;
+          const { getStepByElement, getAllMatchElements, getElementByType } = this;
 
           elementsList.forEach( element => {
             const { type } = element;
 
             switch (type) {
               case 'linker':
-                const linkerStep = getStepByElement(element)
+                const { steps } = this;
+                let linkerStep = getStepByElement(element);
+
+                /**
+                 * Find properly solution
+                 */
+
+                if(!linkerStep) {
+                  steps.some(step => step.elements.some(stepElement => {
+                    const matchElements = getAllMatchElements(stepElement);
+
+                    if (!matchElements.includes(element)) return;
+
+                    const rule = getElementByType(stepElement, 'rule')
+
+                    linkerStep = rule.onMatch
+                  }))
+                }
 
                 linkerStep.elements.splice(linkerStep.elements.indexOf(linkerStep), 1)
 
@@ -498,7 +548,15 @@ export default {
 
               break;
             case 'user-input':
+              const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
+              const newLinker = {
+                id: (new ObjectId).toString(),
+                type: 'linker'
+              };
+
               step.name = 'User Input'
+
+              step.elements[0].elements[0].onMatch.elements.push(newLinker);
 
               if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
                 step.elements[0].elements.splice(0,0, {
@@ -507,7 +565,9 @@ export default {
                 })
               }
 
-              // addStep(stepElement, userInputSubscriber)
+              addTagTemplate.body.name.push('Email collected');
+
+              addStep(newLinker, addTagTemplate)
               break;
             case 'sub-input':
               step.name = 'Collect'
@@ -571,8 +631,6 @@ export default {
           stepArrows.forEach((stepArrow, index) => {
             const isParentArrow = stepArrow.child === step.id;
             const childStep = getStep(stepArrow.child);
-
-            console.log(stepArrow);
 
             clearStepData(getMatchElementsByTargetId(stepArrow.child), stepArrow.child);
 
