@@ -22,6 +22,11 @@ export default {
     'followers',
     'zapier',
     'verified'],
+  fromLinkedMessageStep: [
+    'sendText',
+    'sendMedia',
+    'delay',
+  ],
   fromActionStep: [
     'sendText',
     'sendMedia',

@@ -154,12 +154,16 @@ export default {
               return [].concat(fromTrigger, elements);
             break;
             case 'message':
-              const { fromMessageStep } = elementsPermissions;
+              const { fromMessageStep, fromLinkedMessageStep } = elementsPermissions;
 
               if (isBroadcast) {
                 return element.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
               } else {
-                return [].concat(triggers.messageTypes, fromMessageStep, elements);
+                if (isFail) {
+                  return [].concat(fromLinkedMessageStep);
+                } else {
+                  return [].concat(triggers.messageTypes, fromMessageStep, elements);
+                }
               }
             break;
             case 'user-input':
@@ -200,7 +204,7 @@ export default {
             firstElement = actionStep.elements[0]
           }
 
-          if (firstElement.type === 'action') {
+          if (firstElement.type === 'action' || (firstElement.displaySettings && ['message', 'sub-input', 'action'].includes(firstElement.displaySettings.subType))) {
             step.elements.push({
               id: (new ObjectId).toString(),
               type: 'linker',
@@ -569,6 +573,9 @@ export default {
               break;
             case 'action':
               step.name = 'Action'
+              break;
+            case 'trigger':
+              step.name = 'Trigger'
               break;
           }
 

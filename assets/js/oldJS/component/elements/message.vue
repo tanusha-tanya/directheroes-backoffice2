@@ -54,7 +54,7 @@
       </template>
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
-      <add-step-popup :available-list="builder.availableListByElement(elements[0])" @select="addElement">
+      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement">
       </add-step-popup>
     </div>
     <linker :linker="linker" v-if="linker && linker.target"></linker>

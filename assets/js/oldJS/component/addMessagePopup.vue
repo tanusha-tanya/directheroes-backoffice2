@@ -1,7 +1,7 @@
 <template>
 <el-popover popper-class="add-message-popup" :disabled="!hasAvailableMessage" placement="right" v-model="isShow" trigger="hover">
   <template slot="reference">
-    <span :class="{'add-disabled-popup': !hasAvailableMessage}">
+    <span :class="{'add-step-item': true, 'add-disabled-popup': !hasAvailableMessage}">
       <slot></slot>
     </span>
   </template>
