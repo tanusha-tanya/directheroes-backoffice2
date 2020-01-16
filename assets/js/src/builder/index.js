@@ -56,9 +56,20 @@ export default {
 
                     if (failTarget) {
                       if (isExistingStepLink) {
-                        subArrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id, isExisting: true});
+                        subArrows.push({
+                          parent: `${stepElement.id}-fail`,
+                          child: failTarget,
+                          stepId: step.id,
+                          linkElement: matchElement.onFail,
+                          isExisting: true
+                        });
                       } else {
-                        arrows.push({parent: `${stepElement.id}-fail`, child: failTarget, stepId: step.id});
+                        arrows.push({
+                          parent: `${stepElement.id}-fail`,
+                          child: failTarget,
+                          linkElement: matchElement.onFail,
+                          stepId: step.id
+                        });
                       }
 
 
@@ -68,7 +79,12 @@ export default {
                     }
 
                     if (target) {
-                      const arrowObject = { parent: stepElement.id + suffix, child: target, stepId: step.id }
+                      const arrowObject = {
+                        parent: stepElement.id + suffix,
+                        child: target,
+                        stepId: step.id,
+                        linkElement: match
+                      }
 
                       if (isExistingStepLink) {
                         subArrows.push({ ...arrowObject, isExisting: true});
@@ -180,7 +196,11 @@ export default {
               const { fromCondition, fromConditionTimeout } = elementsPermissions;
 
               if (element.displaySettings.type === 'timeout') {
-                return [].concat(triggers.messageTypes, fromConditionTimeout);
+                if (isFail) {
+                  return [].concat(fromCondition, elements);
+                } else {
+                  return [].concat(triggers.messageTypes, fromConditionTimeout);
+                }
               } else {
                 return [].concat(triggers.messageTypes, fromCondition, elements);
               };
@@ -238,8 +258,6 @@ export default {
           const displaySettings = {
             subType: 'existingStep'
           }
-
-          console.log(stepToConnect);
 
           if (parentElement.type === 'linker') {
             Vue.set(parentElement, 'target', stepToConnect.id)
@@ -656,12 +674,24 @@ export default {
           const childStepColumn = getStepColumn(childStep)
           const childStepColumnIndex = scheme.indexOf(childStepColumn);
 
-          childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
-            columnIndex: childStepColumnIndex - 1,
-            rowIndex: childStepColumn.indexOf(childStep)
-          });
 
-          clearStepData(getMatchElementsByTargetId(arrowInfo.child), arrowInfo.child)
+          if (!arrowInfo.linkElement.displaySettings) {
+            childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
+              columnIndex: childStepColumnIndex - 1,
+              rowIndex: childStepColumn.indexOf(childStep)
+            });
+          }
+
+          const filteredElements = getMatchElementsByTargetId(arrowInfo.child).filter(element => {
+            switch(element.type) {
+              case 'linker':
+                return element === arrowInfo.linkElement
+              case 'rule':
+                return element.onMatch === arrowInfo.linkElement || element.onFail === arrowInfo.linkElement
+            }
+          })
+
+          clearStepData(filteredElements, arrowInfo.child)
         }
       },
 

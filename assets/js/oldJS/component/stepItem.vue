@@ -18,20 +18,12 @@
       <div class="step-delete-button" v-if="(!isEntry && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="builder.deleteStep(step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
-      <add-step-popup :available-list="builder.availableListByElement(step.elements[0])" @select="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
-      <!-- <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
-        <div class="existing-step-element">
-          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-            viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
-            <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
-              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
-              C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
-            <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
-              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
-              z" fill="currentColor"/>
-          </svg>
-        </div>
-      </existing-step-popup> -->
+      <add-step-popup
+        :available-list="builder.availableListByElement(step.elements[0])"
+        @select="createStep"
+        v-if="stepType === 'action'"
+        :existing-link="linker"
+        :builder="builder"></add-step-popup>
     </span>
   </div>
   <div class="existin-step-connector" v-if="canConnectAsExist" @click="bindAsExistStep">
@@ -63,7 +55,7 @@ import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
 import addStepPopup from './addStepPopup';
 import triangle from '../assets/triangle.svg'
-import existingStepPopup from './existingStepPopup';
+
 
 export default {
   data() {
@@ -82,7 +74,6 @@ export default {
     addStepPopup,
     userInput,
     subInput,
-    existingStepPopup,
     triangle
   },
 

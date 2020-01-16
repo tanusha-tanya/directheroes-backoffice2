@@ -238,8 +238,10 @@ export default {
   },
 
   created() {
-    const { entryItem, dhAccount } = this;
+    const { entryItem, dhAccount, findEntryStep } = this;
     const builder = Builder.create(entryItem, dhAccount);
+
+    builder.findEntryStep = findEntryStep;
 
     this.builder = builder;
   },

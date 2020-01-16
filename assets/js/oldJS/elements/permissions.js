@@ -18,7 +18,6 @@ export default {
     'addCategory',
     'timeout',
     'user-input',
-    'existingStep',
     'followers',
     'zapier',
     'verified'],

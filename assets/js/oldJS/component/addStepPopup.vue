@@ -1,5 +1,5 @@
 <template>
-  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow">
+  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" v-if="!existingLink">
     <div class="add-step-button" slot="reference">
       <slot></slot>
     </div>
@@ -39,6 +39,19 @@
       </div>
     </div>
   </el-popover>
+  <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-else-if="existingLink && existingLink.displaySettings">
+    <div class="existing-step-element">
+      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
+        <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
+          C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
+        <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
+          z" fill="currentColor"/>
+      </svg>
+    </div>
+  </existing-step-popup>
 </template>
 
 <script>
@@ -46,6 +59,7 @@ import addMessagePopup from './addMessagePopup';
 import addTriggerPopup from './addTriggerPopup';
 import addActionPopup from './addActionPopup';
 import addConditionPopup from './addConditionPopup';
+import existingStepPopup from './existingStepPopup';
 
 export default {
   data() {
@@ -57,13 +71,14 @@ export default {
     }
   },
 
-  props:['availableList', 'builder', 'linkElement'],
+  props:['availableList', 'builder', 'linkElement', 'existingLink'],
 
   components: {
     addTriggerPopup,
     addActionPopup,
     addMessagePopup,
-    addConditionPopup
+    addConditionPopup,
+    existingStepPopup
   },
 
   methods: {
@@ -77,6 +92,23 @@ export default {
 
       builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
     },
+
+    goToStep() {
+      const { existingLink, builder } = this;
+
+      console.log(builder);
+
+
+      builder.findEntryStep(existingLink.target, true)
+    },
+
+    removeLinker() {
+      const { builder, existingLink } = this;
+      const { subArrows } = builder;
+      const arrowInfo = subArrows.find(arrow => arrow.child === existingLink.target && arrow.linkElement === existingLink)
+
+      builder.deleteLink({ arrowInfo })
+    }
   }
 }
 </script>

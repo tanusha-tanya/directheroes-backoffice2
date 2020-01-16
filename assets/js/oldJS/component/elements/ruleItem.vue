@@ -22,7 +22,7 @@
       :available-list="availableList(element)"
       :link-element="element"
       :builder="builder"
-      v-if="!hasOnMatch"
+      :existing-link="hasOnMatch"
     ></add-tag-popup>
     <div
       class="rule-delete-button"
