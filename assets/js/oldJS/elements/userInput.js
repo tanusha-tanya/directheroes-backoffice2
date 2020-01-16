@@ -19,21 +19,21 @@ export let userInput = {
           value: '{{email}}'
         },
         onMatch: {
-          action: 'chain',
-          elements: [{
-            type: 'action',
-            body: {
-              action: 'collect',
-              source: {
-                entity: "message",
-                field: "text"
-              },
-              destination: {
-                entity: "subscriber",
-                field: "email"
-              }
-            }
-          }]
+          action: 'fallthrough',
+        }
+      },
+      {
+        type: 'action',
+        body: {
+          action: 'collect',
+          source: {
+            entity: "message",
+            field: "text"
+          },
+          destination: {
+            entity: "subscriber",
+            field: "email"
+          }
         }
       }
     ]

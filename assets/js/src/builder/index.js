@@ -345,7 +345,7 @@ export default {
 
               if (element.displaySettings.subType === 'user-input') {
                 const rule = getElementByType(element, 'rule');
-                const linker = getElementByType(rule.onMatch, 'linker');
+                const linker = getElementByType(element, 'linker');
 
                 if (linker) {
                   matches.push(linker)
@@ -558,7 +558,7 @@ export default {
 
               step.name = 'User Input'
 
-              step.elements[0].elements[0].onMatch.elements.push(newLinker);
+              step.elements[0].elements.push(newLinker);
 
               if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
                 step.elements[0].elements.splice(0,0, {

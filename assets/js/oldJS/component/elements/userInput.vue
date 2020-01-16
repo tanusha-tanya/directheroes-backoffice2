@@ -51,15 +51,15 @@ export default {
     },
 
     linker() {
-      const { inputElement, builder } = this;
+      const { element, builder } = this;
 
-      return builder.getElementByType(inputElement.onMatch, 'linker')
+      return builder.getElementByType(element, 'linker')
     }
   },
 
   methods: {
     createStep(linkElement, element, isFail) {
-      const { linker, builder, inputElement } = this;
+      const { linker, builder, element: userInputElement  } = this;
 
       if (isFail) {
         builder.addStep(linkElement, element, true)
@@ -70,7 +70,7 @@ export default {
         };
 
         if (!linker) {
-          inputElement.onMatch.elements.push(newLinker);
+          userInputElement.elements.push(newLinker);
         }
 
         builder.addStep(linker || newLinker, element);
