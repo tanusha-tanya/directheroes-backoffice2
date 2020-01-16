@@ -24,7 +24,7 @@
 
       .trigger-elements{
         &:before {
-          background-image: url(~@/../oldJS/assets/v5/triggers.png);
+          background-image: url(~@/assets/v5/triggers.png);
           background-size: 80% auto !important;
         }
 
@@ -36,7 +36,7 @@
       }
       .action-elements{
         &:before {
-          background-image: url(~@/../oldJS/assets/v5/actions.png);
+          background-image: url(~@/assets/v5/actions.png);
         }
 
         &:hover {
@@ -48,7 +48,7 @@
 
       .message-elements {
         &:before {
-          background-image: url(~@/../oldJS/assets/v5/messages.png);
+          background-image: url(~@/assets/v5/messages.png);
         }
 
         &:hover {
@@ -60,7 +60,7 @@
 
       .condition-elements{
         &:before {
-          background-image: url(~@/../oldJS/assets/v5/conditions.png);
+          background-image: url(~@/assets/v5/conditions.png);
         }
 
         &:hover {
