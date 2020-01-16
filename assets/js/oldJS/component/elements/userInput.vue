@@ -82,27 +82,10 @@ export default {
     },
 
     changeSubInput(value) {
-      const { inputElement, elements } = this;
-      const { currentAccountData } = this.$store.state;
-      const { campaignId } = this.$route.params;
-      const campaign = currentAccountData.campaigns.find(campaign => campaign.id === campaignId)
-      const subInput = campaign.steps.find(step => step.id === inputElement.onMatch.target);
-      const action = subInput.elements.find(element => element.type === 'action');
-      let newElement = JSON.parse(JSON.stringify(userInputSubscriber));
+      const { inputElement, element, builder } = this;
+      const action = builder.getElementByType(element, 'action');
 
-      value = /\{\{(\w*)\}\}/.exec(value)[1];
-
-      if (action.body.action === 'webhook') {
-        newElement = JSON.parse(JSON.stringify(userInputZapier));
-
-        newElement.body.data.field = value;
-      } else {
-        newElement.body.destination.field = value;
-      }
-
-      newElement.id = (new ObjectId).toString();
-
-      subInput.elements.splice(subInput.elements.indexOf(action), 1, newElement);
+      action.body.destination.field = /\{\{(\w*)\}\}/.exec(value)[1];
     }
   }
 }

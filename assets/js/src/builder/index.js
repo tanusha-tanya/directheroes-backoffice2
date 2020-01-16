@@ -195,8 +195,7 @@ export default {
           let firstElement = step.elements[0];
 
           if (firstElement.displaySettings && firstElement.displaySettings.subType == 'user-input') {
-            const rule = getElementByType(firstElement, 'rule');
-            const linker = getElementByType(rule.onMatch, 'linker');
+            const linker = getElementByType(firstElement, 'linker');
 
             const actionStep = getStep(linker.target);
 
@@ -462,19 +461,13 @@ export default {
                 const { steps } = this;
                 let linkerStep = getStepByElement(element);
 
-                /**
-                 * Find properly solution
-                 */
-
                 if(!linkerStep) {
                   steps.some(step => step.elements.some(stepElement => {
                     const matchElements = getAllMatchElements(stepElement);
 
                     if (!matchElements.includes(element)) return;
 
-                    const rule = getElementByType(stepElement, 'rule')
-
-                    linkerStep = rule.onMatch
+                    linkerStep = stepElement
                   }))
                 }
 
