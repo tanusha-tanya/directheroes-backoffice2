@@ -96,10 +96,7 @@ export default {
     goToStep() {
       const { existingLink, builder } = this;
 
-      console.log(builder);
-
-
-      builder.findEntryStep(existingLink.target, true)
+builder.findEntryStep(existingLink.target, true)
     },
 
     removeLinker() {

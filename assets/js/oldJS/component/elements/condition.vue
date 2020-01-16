@@ -354,18 +354,21 @@ export default {
 
     createStep(condition, element, onFail, currentRule) {
       const { getWaitTillRule, builder } = this;
-      const { displaySettings } = condition;
+      const { displaySettings, id } = condition;
+      const isExistingStep = element.type === 'existingStep';
       let conditionElement = condition;
 
       if (displaySettings.type === 'waitTillCondition') {
         const waitTillRule = getWaitTillRule(condition, onFail ? 'runtime' : 'time')
 
         conditionElement = {
+          id,
           displaySettings,
           elements:[waitTillRule]
         }
       } else if (['followers', 'scarcity'].includes(displaySettings.type)) {
         conditionElement = {
+          id,
           displaySettings,
           elements:[currentRule]
         }
