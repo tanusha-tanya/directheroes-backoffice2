@@ -46,6 +46,9 @@ export default {
     'existingStep',
     'zapier',
     'verified'],
+  fromConditionTimeout: [
+    'user-input',
+  ],
   fromUserInputFails: [
     'sendText',
     'sendMedia',

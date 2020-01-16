@@ -177,9 +177,14 @@ export default {
               return [].concat(triggers.messageTypes, fromActionStep, elements);
             break;
             case 'condition':
-              const { fromCondition } = elementsPermissions;
+              const { fromCondition, fromConditionTimeout } = elementsPermissions;
 
-              return [].concat(triggers.messageTypes, fromCondition, elements);
+              if (element.displaySettings.type === 'timeout') {
+                return [].concat(triggers.messageTypes, fromConditionTimeout);
+              } else {
+                return [].concat(triggers.messageTypes, fromCondition, elements);
+              };
+
             break;
             default:
               if (isBroadcast) {

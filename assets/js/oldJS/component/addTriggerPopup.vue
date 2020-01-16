@@ -14,13 +14,6 @@
           {{trigger.title}}
       </div>
     </template>
-    <template v-if="hasUserInput">
-      <div
-        class="trigger-item"
-        @click="selectTrigger(userInput)">
-          {{userInput.title}}
-      </div>
-    </template>
   </el-popover>
 </template>
 

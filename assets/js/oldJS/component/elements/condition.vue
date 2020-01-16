@@ -16,7 +16,7 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <add-trigger-popup :has-user-input="true" :available-list="availableList(element)" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                <add-trigger-popup :available-list="availableList(element)" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
                   <div class="add-step-button"></div>
                 </add-trigger-popup>
                </div>
