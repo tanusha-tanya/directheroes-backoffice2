@@ -55,7 +55,6 @@
                 <add-tag-popup
                   :available-list="availableList(element, true)"
                   @select="createStep(element, $event, true)"
-                  v-if="!getRule(element).onFail"
                   :existing-link="getRule(element).onFail"
                   :builder="builder"
                   ></add-tag-popup>
@@ -74,7 +73,7 @@
                 <add-tag-popup
                   :available-list="availableList(element)"
                   @select="createStep(element, $event)"
-                  :existing-link="element.onMatch"
+                  :existing-link="getRule(element).onMatch"
                   :builder="builder"
                 ></add-tag-popup>
                </div>
@@ -83,7 +82,7 @@
                 <add-tag-popup
                   :available-list="availableList(element, true)"
                   @select="createStep(element, $event, true)"
-                  :existing-link="element.onFail"
+                  :existing-link="getRule(element).onFail"
                   :builder="builder"
                 ></add-tag-popup>
               </div>
@@ -101,7 +100,7 @@
                 <add-tag-popup
                   :available-list="availableList(element)"
                   @select="createStep(element, $event)"
-                  :existing-link="element.onMatch"
+                  :existing-link="getRule(element).onMatch"
                   :builder="builder"
                 ></add-tag-popup>
                </div>
@@ -110,7 +109,7 @@
                 <add-tag-popup
                   :available-list="availableList(element, true)"
                   @select="createStep(element, $event, true)"
-                  :existing-link="element.onFail"
+                  :existing-link="getRule(element).onFail"
                   :builder="builder"
                 ></add-tag-popup>
               </div>

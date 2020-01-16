@@ -538,20 +538,20 @@ export default {
                   if (subElement.id !== ruleElement.id) return;
 
                   step = searchStep;
+
+                  return true;
                 })
               }))
             } else if (parentElement.displaySettings && parentElement.displaySettings.type === 'waitTillCondition') {
               const ruleElement = parentElement.elements[0];
 
               steps.some(searchStep => searchStep.elements.some(element => {
-                if (!element.displaySettings || !['followers', 'scarcity'].includes(element.displaySettings.type)) return;
-
-                return element.elements.some(subElement => {
-                  if (subElement.id !== ruleElement.id) return;
+                if (!element.displaySettings || element.displaySettings.type !== 'waitTillCondition' || !element.elements.includes(ruleElement)) return;
 
                   step = searchStep;
+                  return true;
                 })
-              }))
+              )
             }
 
             this.parentOfExistStep = {
