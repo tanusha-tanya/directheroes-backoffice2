@@ -1,3 +1,5 @@
+import { userInput } from './userInput'
+
 export default [
   {
     title: 'Keywords',
@@ -176,4 +178,5 @@ export default [
       ]
     },
   },
+  userInput
 ]

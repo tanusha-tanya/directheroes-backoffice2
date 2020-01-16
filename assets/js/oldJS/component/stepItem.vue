@@ -44,7 +44,7 @@
   <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" :builder="builder"></component>
   <el-tooltip class="element-warning" effect="light"
     content="Please reattach or delete this branch before you activate this campaign"
-    v-if="step.displaySettings && step.displaySettings.rowIndex">
+    v-if="step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex')">
     <triangle />
   </el-tooltip>
 </div>

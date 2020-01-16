@@ -200,8 +200,6 @@ export default {
             firstElement = actionStep.elements[0]
           }
 
-          console.log(firstElement);
-
           if (firstElement.type === 'action') {
             step.elements.push({
               id: (new ObjectId).toString(),
@@ -498,7 +496,7 @@ export default {
             elements: [
               {
                 id: (new ObjectId).toString(),
-                ...stepElement
+                ...JSON.parse(JSON.stringify(stepElement))
               }
             ]
           }
@@ -569,8 +567,8 @@ export default {
 
               addStep(newLinker, addTagTemplate)
               break;
-            case 'sub-input':
-              step.name = 'Collect'
+            case 'action':
+              step.name = 'Action'
               break;
           }
 
