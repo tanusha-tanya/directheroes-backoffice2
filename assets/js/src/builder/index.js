@@ -239,6 +239,8 @@ export default {
             subType: 'existingStep'
           }
 
+          console.log(stepToConnect);
+
           if (parentElement.type === 'linker') {
             Vue.set(parentElement, 'target', stepToConnect.id)
 

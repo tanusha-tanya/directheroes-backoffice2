@@ -144,6 +144,10 @@ export default {
 
     isInBrokenBranch() {
       const { builder, step } = this;
+      /**
+       * TODO: Fix it;
+       */
+      builder.stepInBrokenBranch(step.id)
 
       return (step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')) || builder.stepInBrokenBranch(step.id)
     },

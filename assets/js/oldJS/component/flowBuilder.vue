@@ -328,7 +328,7 @@ export default {
   .sub-arrows {
     z-index: -1;
 
-    path {
+    path, circle {
       pointer-events: none;
     }
   }
