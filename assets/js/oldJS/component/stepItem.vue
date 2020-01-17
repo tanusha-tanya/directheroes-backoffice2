@@ -132,10 +132,10 @@ export default {
       if (!parentOfExistStep || parentOfExistStep.step.id === step.id) return;
 
       const inOneBranch = builder.stepsInOneBranch(parentOfExistStep.step.id, step.id)
-      const isFirstElementInBrokenBranch = (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')))
+      const isFirstElementInBrokenBranch = (isInBrokenBranch && step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex'))
       const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.type || firstElement.displaySettings.subType)
 
-      return isInAvailableList &&(!inOneBranch || isFirstElementInBrokenBranch)
+      return isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch)
     },
 
     isInBrokenBranch() {

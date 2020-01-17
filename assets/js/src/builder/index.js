@@ -554,7 +554,7 @@ export default {
 
           if (stepElement.type === 'existingStep') {
             let step = this.getStepByElement(parentElement);
-            const firstElement = step.elements.find(element => element.type !== 'checkpoint')
+            const firstElement = step.elements.find(element => element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings'))
 
             if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
               const ruleElement = parentElement.elements[0];
