@@ -133,7 +133,10 @@ export default {
 
       const inOneBranch = builder.stepsInOneBranch(parentOfExistStep.step.id, step.id)
       const isFirstElementInBrokenBranch = (isInBrokenBranch && step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex'))
-      const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.type || firstElement.displaySettings.subType)
+      const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.subType)
+
+
+
 
       return isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch)
     },

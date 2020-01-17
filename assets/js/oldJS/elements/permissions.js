@@ -28,6 +28,7 @@ export default {
     'zapier',
     'message',
     'action',
+    'trigger',
     'verified'],
   fromLinkedMessageStep: [
     'sendText',
@@ -45,6 +46,7 @@ export default {
     'verified',
     'message',
     'action',
+    'trigger',
     'zapier'],
   fromCondition: [
     'sendText',
