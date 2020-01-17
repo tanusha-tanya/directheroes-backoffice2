@@ -522,8 +522,6 @@ export default {
           const childIsTrigger = childFirstElement.displaySettings && childFirstElement.displaySettings.subType === 'trigger';
           const childIsUserInput = childFirstElement.displaySettings && childFirstElement.displaySettings.subType === 'user-input';
 
-          console.log(parentIsCondition, childIsTrigger, childIsUserInput);
-
           if (parentIsCondition && (childIsTrigger || childIsUserInput)) {
             const searchContainer = childIsUserInput ? childStep.elements[0] : childStep
             const hasCheckpoint = searchContainer.elements.find(element => element.type === 'checkpoint');
