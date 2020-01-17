@@ -127,10 +127,15 @@ export default {
     canConnectAsExist() {
       const { builder, step, isInBrokenBranch } = this;
       const { parentOfExistStep } = builder;
+      const firstElement = step.elements.find(element => element.type !== 'checkpoint')
 
       if (!parentOfExistStep || parentOfExistStep.step.id === step.id) return;
 
-      return !(builder.stepsInOneBranch(parentOfExistStep.step.id, step.id) || (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))))
+      const inOneBranch = builder.stepsInOneBranch(parentOfExistStep.step.id, step.id)
+      const isFirstElementInBrokenBranch = (isInBrokenBranch && !(step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')))
+      const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.type || firstElement.displaySettings.subType)
+
+      return isInAvailableList &&(!inOneBranch || isFirstElementInBrokenBranch)
     },
 
     isInBrokenBranch() {

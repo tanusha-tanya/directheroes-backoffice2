@@ -205,7 +205,7 @@ export default {
                   return [].concat(triggers.messageTypes, fromConditionTimeout);
                 }
               } else {
-                return [].concat(triggers.messageTypes, fromCondition, elements);
+                return [].concat(fromCondition, elements);
               };
 
             break;
@@ -541,7 +541,7 @@ export default {
         addStep(parentElement, stepElement, isFail) {
           stepElement = JSON.parse(JSON.stringify(stepElement));
 
-          const { steps, getElementByType, addStep, connectStepToStepById } = this;
+          const { steps, getElementByType, addStep, connectStepToStepById, availableListByElement } = this;
           const step = {
             id: (new ObjectId).toString(),
             elements: [
@@ -584,6 +584,7 @@ export default {
             this.parentOfExistStep = {
               step,
               parentElement,
+              availableList: availableListByElement(parentElement, isFail),
               isFail
             }
 
