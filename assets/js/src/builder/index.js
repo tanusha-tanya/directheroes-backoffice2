@@ -624,6 +624,14 @@ export default {
               break;
             case 'trigger':
               step.name = 'Trigger'
+
+              if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+                step.elements.splice(0,0, {
+                  type: 'checkpoint',
+                  id: (new ObjectId).toString()
+                })
+              }
+
               break;
           }
 
