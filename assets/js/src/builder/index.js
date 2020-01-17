@@ -712,16 +712,8 @@ export default {
           const childStep = getStep(arrowInfo.child);
           const childStepColumn = getStepColumn(childStep)
           const childStepColumnIndex = scheme.indexOf(childStepColumn);
-
-
-          if (!arrowInfo.linkElement.displaySettings) {
-            childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
-              columnIndex: childStepColumnIndex - 1,
-              rowIndex: childStepColumn.indexOf(childStep)
-            });
-          }
-
-          const filteredElements = getMatchElementsByTargetId(arrowInfo.child).filter(element => {
+          const matchElements = getMatchElementsByTargetId(arrowInfo.child);
+          const filteredElement = matchElements.find(element => {
             switch(element.type) {
               case 'linker':
                 return element === arrowInfo.linkElement
@@ -730,7 +722,32 @@ export default {
             }
           })
 
-          clearStepData(filteredElements, arrowInfo.child)
+          if (!arrowInfo.linkElement.displaySettings && matchElements.length === 1) {
+            childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
+              columnIndex: childStepColumnIndex - 1,
+              rowIndex: childStepColumn.indexOf(childStep)
+            });
+          } else if (!arrowInfo.linkElement.displaySettings && matchElements.length > 1) {
+            matchElements.some(element => {
+              if (element === filteredElement) return;
+
+              let matchElement;
+
+              if (element.type === 'linker') {
+                matchElement = element
+              } else if (element.onMatch && element.onMatch.target === arrowInfo.child) {
+                matchElement = element.onMatch
+              } else {
+                matchElement = element.onFail
+              }
+
+              Vue.set(matchElement, 'displaySettings', null);
+
+              return true;
+            });
+          }
+
+          clearStepData([filteredElement], arrowInfo.child)
         }
       },
 
