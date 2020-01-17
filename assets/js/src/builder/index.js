@@ -61,6 +61,7 @@ export default {
                           child: failTarget,
                           stepId: step.id,
                           linkElement: matchElement.onFail,
+                          step,
                           isExisting: true
                         });
                       } else {
@@ -68,6 +69,7 @@ export default {
                           parent: `${stepElement.id}-fail`,
                           child: failTarget,
                           linkElement: matchElement.onFail,
+                          step,
                           stepId: step.id
                         });
                       }
@@ -83,6 +85,7 @@ export default {
                         parent: stepElement.id + suffix,
                         child: target,
                         stepId: step.id,
+                        step,
                         linkElement: match
                       }
 
@@ -512,6 +515,31 @@ export default {
           })
         },
 
+        checkChildStep(parentStep, childStep) {
+          const parenFirstElement = parentStep.elements.find(element => element.type !== 'checkpoint')
+          const childFirstElement = childStep.elements.find(element => element.type !== 'checkpoint')
+          const parentIsCondition = parenFirstElement.displaySettings && parenFirstElement.displaySettings.subType === 'condition';
+          const childIsTrigger = childFirstElement.displaySettings && childFirstElement.displaySettings.subType === 'trigger';
+          const childIsUserInput = childFirstElement.displaySettings && childFirstElement.displaySettings.subType === 'user-input';
+
+          console.log(parentIsCondition, childIsTrigger, childIsUserInput);
+
+          if (parentIsCondition && (childIsTrigger || childIsUserInput)) {
+            const searchContainer = childIsUserInput ? childStep.elements[0] : childStep
+            const hasCheckpoint = searchContainer.elements.find(element => element.type === 'checkpoint');
+
+            if (!hasCheckpoint) {
+              childStep.elements.splice(0,0, {
+                type: 'checkpoint',
+                id: (new ObjectId).toString()
+              })
+            }
+            // else {
+            //   childStep.elements.splice(childStep.elements.indexOf(childStep.elements))
+            // }
+          }
+        },
+
         addStep(parentElement, stepElement, isFail) {
           stepElement = JSON.parse(JSON.stringify(stepElement));
 
@@ -684,7 +712,7 @@ export default {
         },
 
         deleteStep(step) {
-          const { getStepArrows, clearStepData, getStep, getMatchElementsByTargetId, getStepColumn, scheme, steps } = this;
+          const { getStepArrows, clearStepData, checkChildStep, getStep, getMatchElementsByTargetId, getStepColumn, scheme, steps } = this;
           const stepArrows = getStepArrows(step.id);
           const stepColumn = getStepColumn(step);
           const stepColumnIndex = scheme.indexOf(stepColumn);
@@ -694,6 +722,7 @@ export default {
             const isParentArrow = stepArrow.child === step.id;
             const childStep = getStep(stepArrow.child);
 
+            checkChildStep(stepArrow.step, childStep);
             clearStepData(getMatchElementsByTargetId(stepArrow.child), stepArrow.child);
 
             if (isParentArrow) return;
@@ -708,7 +737,7 @@ export default {
         },
 
         deleteLink({ arrowInfo }) {
-          const { clearStepData, getStep, getMatchElementsByTargetId, getStepColumn, scheme } = this;
+          const { clearStepData, getStep, getMatchElementsByTargetId, getStepColumn, scheme, checkChildStep } = this;
           const childStep = getStep(arrowInfo.child);
           const childStepColumn = getStepColumn(childStep)
           const childStepColumnIndex = scheme.indexOf(childStepColumn);
@@ -727,6 +756,8 @@ export default {
               columnIndex: childStepColumnIndex - 1,
               rowIndex: childStepColumn.indexOf(childStep)
             });
+
+            checkChildStep(arrowInfo.step, childStep)
           } else if (!arrowInfo.linkElement.displaySettings && matchElements.length > 1) {
             matchElements.some(element => {
               if (element === filteredElement) return;
@@ -746,6 +777,7 @@ export default {
               return true;
             });
           }
+
 
           clearStepData([filteredElement], arrowInfo.child)
         }

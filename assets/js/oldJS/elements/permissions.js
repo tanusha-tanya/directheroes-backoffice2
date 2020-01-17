@@ -42,7 +42,7 @@ export default {
     'delay',
     'followers',
     'addCategory',
-    'existingStep',
+    // 'existingStep',
     'zapier',
     'verified'],
   fromConditionTimeout: [
