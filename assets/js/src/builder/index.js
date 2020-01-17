@@ -217,7 +217,7 @@ export default {
 
         connectStepToStepById(step, stepId) {
           const { getElementByType, getStep } = this;
-          let firstElement = step.elements[0];
+          let firstElement = step.elements.find(element => element.type !== 'checkpoint');
 
           if (firstElement.displaySettings && firstElement.displaySettings.subType == 'user-input') {
             const linker = getElementByType(firstElement, 'linker');
@@ -235,6 +235,7 @@ export default {
               target: stepId
             })
           } else {
+
             const matchElement = getElementByType(firstElement, 'rule');
 
             if (firstElement.displaySettings.type === 'waitTillCondition') {
