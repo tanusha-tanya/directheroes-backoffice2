@@ -554,6 +554,7 @@ export default {
 
           if (stepElement.type === 'existingStep') {
             let step = this.getStepByElement(parentElement);
+            const firstElement = step.elements.find(element => element.type !== 'checkpoint')
 
             if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
               const ruleElement = parentElement.elements[0];
@@ -584,7 +585,7 @@ export default {
             this.parentOfExistStep = {
               step,
               parentElement,
-              availableList: availableListByElement(parentElement, isFail),
+              availableList: availableListByElement(firstElement, isFail),
               isFail
             }
 
