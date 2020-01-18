@@ -48,14 +48,15 @@ export default {
                     const match = matchElement.onMatch || matchElement;
                     const failTarget = matchElement.onFail && matchElement.onFail.target;
                     const { target } = match;
-                    const isExistingStepLink = match.displaySettings || ( matchElement.onFail && matchElement.onFail.displaySettings)
+                    const isMatchExistingStepLink = match.displaySettings
+                    const isFailExistingStepLink = matchElement.onFail && matchElement.onFail.displaySettings
 
-                    if (!isExistingStepLink) {
+                    if (!isMatchExistingStepLink) {
                       linkElements.push(target);
                     }
 
                     if (failTarget) {
-                      if (isExistingStepLink) {
+                      if (isFailExistingStepLink) {
                         subArrows.push({
                           parent: `${stepElement.id}-fail`,
                           child: failTarget,
@@ -75,7 +76,7 @@ export default {
                       }
 
 
-                      if (!isExistingStepLink) {
+                      if (!isFailExistingStepLink) {
                         linkElements.push(failTarget);
                       }
                     }
@@ -89,7 +90,7 @@ export default {
                         linkElement: match
                       }
 
-                      if (isExistingStepLink) {
+                      if (isMatchExistingStepLink) {
                         subArrows.push({ ...arrowObject, isExisting: true});
                       } else {
                         arrows.push(arrowObject);
