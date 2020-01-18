@@ -122,7 +122,9 @@ export default {
 
     availableList() {
       const { builder, midStepButtonData } = this;
-      const parentMatchElement = builder.getMatchElementsByTargetId(midStepButtonData.path.arrowInfo.child)[0]
+      const { child } = midStepButtonData.path.arrowInfo;
+      const parentMatchElement = builder.getMatchElementsByTargetId(child)[0]
+      const isFailMatch = parentMatchElement.onFail && parentMatchElement.onFail.target === child
       let searchElement;
 
       builder.steps.some(step => step.elements.some(element => {
@@ -137,7 +139,7 @@ export default {
         })
       }))
 
-      return builder.availableListByElement(searchElement).filter(element => element !== 'existingStep')
+      return builder.availableListByElement(searchElement, isFailMatch).filter(element => element !== 'existingStep')
     }
   },
 

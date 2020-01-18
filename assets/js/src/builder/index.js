@@ -75,7 +75,6 @@ export default {
                         });
                       }
 
-
                       if (!isFailExistingStepLink) {
                         linkElements.push(failTarget);
                       }
@@ -579,8 +578,7 @@ export default {
 
                   step = searchStep;
                   return true;
-                })
-              )
+              }))
             }
 
             this.parentOfExistStep = {
