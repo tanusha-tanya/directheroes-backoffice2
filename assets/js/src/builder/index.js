@@ -541,7 +541,7 @@ export default {
         addStep(parentElement, stepElement, isFail) {
           stepElement = JSON.parse(JSON.stringify(stepElement));
 
-          const { steps, getElementByType, addStep, connectStepToStepById, availableListByElement } = this;
+          const { steps, checkChildStep, getStep, getElementByType, getStepByElement, addStep, connectStepToStepById, availableListByElement } = this;
           const step = {
             id: (new ObjectId).toString(),
             elements: [
@@ -692,6 +692,7 @@ export default {
               } else {
                 if (onMatch) {
                   if (onMatch.target) {
+                    checkChildStep(getStepByElement(parentElement), getStep(onMatch.target))
                     connectStepToStepById(step, onMatch.target)
                   }
 
