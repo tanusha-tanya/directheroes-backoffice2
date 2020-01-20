@@ -135,9 +135,6 @@ export default {
       const isFirstElementInBrokenBranch = (isInBrokenBranch && step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex'))
       const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.subType)
 
-
-
-
       return isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch)
     },
 

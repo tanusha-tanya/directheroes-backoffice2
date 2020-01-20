@@ -29,6 +29,7 @@ export default {
     'message',
     'action',
     'trigger',
+    'condition',
     'verified'],
   fromLinkedMessageStep: [
     'sendText',
@@ -47,6 +48,7 @@ export default {
     'message',
     'action',
     'trigger',
+    'condition',
     'zapier'],
   fromCondition: [
     'sendText',
@@ -58,6 +60,7 @@ export default {
     'zapier',
     'message',
     'action',
+    'condition',
     'verified'],
   fromConditionTimeout: [
     'user-input',
@@ -72,6 +75,7 @@ export default {
     'addCategory',
     'message',
     'action',
+    'condition',
     'verified'],
   fromUserInput: [
     'sendText',
@@ -84,6 +88,7 @@ export default {
     'removeCategory',
     'message',
     'action',
+    'condition',
     'verified'],
   fromBroadcastFlow: [
     'sendText',

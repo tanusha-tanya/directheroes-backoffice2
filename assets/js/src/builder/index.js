@@ -27,7 +27,7 @@ export default {
         },
 
         scheme() {
-          const { getAllMatchElements } = this;
+          const { getAllMatchElements, getStep } = this;
           const { steps } = this.campaign;
           const sprouts = steps
             .filter(step => step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex'))
@@ -94,6 +94,12 @@ export default {
                       } else {
                         arrows.push(arrowObject);
                       }
+                    }
+
+                    const childStep = getStep(failTarget || target);
+
+                    if (childStep.displaySettings) {
+                      Vue.set(childStep, 'displaySettings', null)
                     }
                   })
                 };
@@ -332,8 +338,8 @@ export default {
           const { steps, getAllMatchElements } = this;
           const matchElement = [];
 
-          steps.some(step => {
-            return step.elements.forEach(element => {
+          steps.forEach(step => {
+            step.elements.forEach(element => {
               const elementMatches = getAllMatchElements(element);
 
               elementMatches.forEach(elementMatched => {
@@ -346,7 +352,8 @@ export default {
                     }
 
                     break;
-                  case 'rule':
+                  // case 'rule':
+                  default:
                     if (elementMatched.onMatch && elementMatched.onMatch.target === targetId) {
                       matchElement.push(elementMatched);
                     } else if (elementMatched.onFail && elementMatched.onFail.target === targetId) {
@@ -554,7 +561,6 @@ export default {
 
           if (stepElement.type === 'existingStep') {
             let step = this.getStepByElement(parentElement);
-            const firstElement = step.elements.find(element => element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings'))
 
             if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
               const ruleElement = parentElement.elements[0];
@@ -580,6 +586,8 @@ export default {
                   return true;
               }))
             }
+
+            const firstElement = step.elements.find(element => element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings'))
 
             this.parentOfExistStep = {
               step,
