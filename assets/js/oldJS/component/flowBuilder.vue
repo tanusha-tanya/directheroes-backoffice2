@@ -124,7 +124,6 @@ export default {
       const { builder, midStepButtonData } = this;
       const { child } = midStepButtonData.path.arrowInfo;
       const parentMatchElement = builder.getMatchElementsByTargetId(child)[0]
-      console.log(child, parentMatchElement, builder.getMatchElementsByTargetId(child));
 
       const isFailMatch = parentMatchElement.onFail && parentMatchElement.onFail.target === child
       let searchElement;

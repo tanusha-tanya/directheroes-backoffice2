@@ -43,7 +43,7 @@ export default {
         let parent = getElement(arrow.parent);
         let child = getElement(arrow.child);
 
-        if (!parent || !child) return;
+        if (!parent || !child || !child.length) return;
 
         parent = parent[0] || parent;
         child = child[0] || child;

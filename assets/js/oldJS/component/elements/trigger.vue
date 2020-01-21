@@ -13,7 +13,7 @@
         ></rule-item>
     </template>
     <div class="add-rule-button">
-      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry)">
+      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry).filter(element => element !== 'user-input')">
         <span>+ Add rule item</span>
       </add-trigger-popup>
     </div>

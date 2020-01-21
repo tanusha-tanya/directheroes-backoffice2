@@ -48,7 +48,9 @@ export default {
       triggerType(element) {
         const { value, entity, operand } = element.template.elements.find(element => element.type === 'rule').condition;
 
-        if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
+        if (element.template.displaySettings && element.template.displaySettings.subType === 'user-input') {
+          return 'user-input'
+        } else if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
           return value;
         } else if (entity === 'message' && operand === 'contains') {
           return 'list'

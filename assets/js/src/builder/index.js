@@ -98,7 +98,7 @@ export default {
 
                     const childStep = getStep(failTarget || target);
 
-                    if (childStep.displaySettings) {
+                    if (childStep && childStep.displaySettings) {
                       Vue.set(childStep, 'displaySettings', null)
                     }
                   })
@@ -486,7 +486,7 @@ export default {
           }
         },
 
-        clearStepData(elementsList = [], childStepId) {
+        clearStepData(elementsList = [], childStepId, isFail) {
           const { getStepByElement, getAllMatchElements, getElementByType } = this;
 
           elementsList.forEach( element => {
@@ -510,10 +510,10 @@ export default {
                 linkerStep.elements.splice(linkerStep.elements.indexOf(linkerStep), 1)
 
                 break;
-              case 'rule':
-                if (element.onMatch && element.onMatch.target === childStepId) {
+              default: //case 'rule':
+                if (!isFail && element.onMatch && element.onMatch.target === childStepId) {
                   Vue.set(element, 'onMatch', undefined);
-                } else if (element.onFail && element.onFail.target === childStepId) {
+                } else if (isFail && element.onFail && element.onFail.target === childStepId) {
                   Vue.set(element, 'onFail', undefined);
                 }
 
@@ -523,6 +523,8 @@ export default {
         },
 
         checkChildStep(parentStep, childStep) {
+          if (!parentStep || !childStep) return;
+
           const parenFirstElement = parentStep.elements.find(element => element.type !== 'checkpoint')
           const childFirstElement = childStep.elements.find(element => element.type !== 'checkpoint')
           const parentIsCondition = parenFirstElement.displaySettings && parenFirstElement.displaySettings.subType === 'condition';
@@ -750,26 +752,45 @@ export default {
           const childStepColumn = getStepColumn(childStep)
           const childStepColumnIndex = scheme.indexOf(childStepColumn);
           const matchElements = getMatchElementsByTargetId(arrowInfo.child);
+          const connectionsCount = matchElements.reduce((count, element) => {
+            switch(element.type) {
+              case 'linker':
+                count++
+              default:
+                // case 'rule':
+                if (element.onMatch && element.onMatch.target === arrowInfo.child ) {
+                  count++
+                }
+
+                if (element.onFail && element.onFail.target === arrowInfo.child ) {
+                  count++
+                }
+            }
+
+            return count
+          }, 0);
           const filteredElement = matchElements.find(element => {
             switch(element.type) {
               case 'linker':
                 return element === arrowInfo.linkElement
-              case 'rule':
+              default:
+                // case 'rule':
                 return element.onMatch === arrowInfo.linkElement || element.onFail === arrowInfo.linkElement
             }
           })
 
-          if (!arrowInfo.linkElement.displaySettings && matchElements.length === 1) {
+          clearStepData([filteredElement], arrowInfo.child, filteredElement.onFail === arrowInfo.linkElement)
+
+          if (!arrowInfo.linkElement.displaySettings && connectionsCount === 1) {
             childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
               columnIndex: childStepColumnIndex - 1,
               rowIndex: childStepColumn.indexOf(childStep)
             });
 
             checkChildStep(arrowInfo.step, childStep)
-          } else if (!arrowInfo.linkElement.displaySettings && matchElements.length > 1) {
+          } else if (!arrowInfo.linkElement.displaySettings && connectionsCount > 1) {
             matchElements.some(element => {
-              if (element === filteredElement) return;
-
+              // if (element === filteredElement) return;
               let matchElement;
 
               if (element.type === 'linker') {
@@ -785,9 +806,6 @@ export default {
               return true;
             });
           }
-
-
-          clearStepData([filteredElement], arrowInfo.child)
         }
       },
 
