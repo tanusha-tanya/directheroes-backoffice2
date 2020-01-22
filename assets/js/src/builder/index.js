@@ -794,6 +794,9 @@ export default {
             }
           })
 
+          console.log(matchElements, connectionsCount);
+
+
           clearStepData([filteredElement], arrowInfo.child, filteredElement.onFail === arrowInfo.linkElement)
 
           if (!arrowInfo.linkElement.displaySettings && connectionsCount === 1) {
@@ -805,7 +808,6 @@ export default {
             checkChildStep(arrowInfo.step, childStep)
           } else if (!arrowInfo.linkElement.displaySettings && connectionsCount > 1) {
             matchElements.some(element => {
-              // if (element === filteredElement) return;
               let matchElement;
 
               if (element.type === 'linker') {
@@ -814,7 +816,7 @@ export default {
                 matchElement = element
               } else if (element.onMatch && element.onMatch.target === arrowInfo.child) {
                 matchElement = element.onMatch
-              } else {
+              } else if (element.onFail && element.onFail.target === arrowInfo.child) {
                 matchElement = element.onFail
               }
 
