@@ -809,12 +809,16 @@ export default {
               let matchElement;
 
               if (element.type === 'linker') {
+                if (element === filteredElement) return;
+
                 matchElement = element
               } else if (element.onMatch && element.onMatch.target === arrowInfo.child) {
                 matchElement = element.onMatch
               } else {
                 matchElement = element.onFail
               }
+
+              if (!matchElement) return;
 
               Vue.set(matchElement, 'displaySettings', null);
 
