@@ -134,7 +134,20 @@ export default {
                 sproutArray.splice(index, 1);
               })
 
-              if (!linkElements.length) return;
+              if (!linkElements.length) {
+                const hiddenStep = steps.find(step => !stepsTree.some(stepsColumn => stepsColumn.includes(step)));
+
+                if(!hiddenStep) return;
+
+                hiddenStep.displaySettings = {
+                  columnIndex: stepsTreeColumns - 1,
+                  rowIndex: 0
+                }
+
+                linkElements.push(hiddenStep.id)
+
+                if (!linkElements.length) return;
+              }
             }
 
             linkElements = linkElements.map(elementTarget => {
@@ -731,9 +744,11 @@ export default {
           stepArrows.forEach((stepArrow, index) => {
             const isParentArrow = stepArrow.child === step.id;
             const childStep = getStep(stepArrow.child);
+            const matchElement = getMatchElementsByTargetId(stepArrow.child);
+            const isFail = matchElement[0].onFail && matchElement[0].onFail === stepArrow.linkElement
 
             checkChildStep(stepArrow.step, childStep);
-            clearStepData(getMatchElementsByTargetId(stepArrow.child), stepArrow.child);
+            clearStepData(matchElement, stepArrow.child, isFail);
 
             if (isParentArrow) return;
 
