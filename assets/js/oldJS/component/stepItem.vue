@@ -128,14 +128,27 @@ export default {
       const { builder, step, isInBrokenBranch } = this;
       const { parentOfExistStep } = builder;
       const firstElement = step.elements.find(element => element.type !== 'checkpoint')
+      let stepType = firstElement.displaySettings && firstElement.displaySettings.type;
+
+      if (!stepType && firstElement.displaySettings) {
+        switch (firstElement.displaySettings.subType) {
+          case 'message':
+          case 'action':
+            stepType = firstElement.body.action;
+        }
+      }
+
+      if (stepType === 'keywords') {
+        stepType = 'list'
+      }
 
       if (!parentOfExistStep || parentOfExistStep.step.id === step.id) return;
 
       const inOneBranch = builder.stepsInOneBranch(parentOfExistStep.step.id, step.id)
       const isFirstElementInBrokenBranch = (isInBrokenBranch && step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex'))
-      const isInAvailableList = firstElement.displaySettings && parentOfExistStep.availableList.includes(firstElement.displaySettings.subType)
+      const isInAvailableList = stepType && parentOfExistStep.availableList.includes(stepType)
 
-      return isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch)
+      return Boolean(isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch))
     },
 
     isInBrokenBranch() {

@@ -13,8 +13,6 @@ export default {
     'existingStep',
     'followers',
     'zapier',
-    'message',
-    'action',
     'verified'],
   fromTriggerStep: [],
   fromMessageStep: [
@@ -27,10 +25,6 @@ export default {
     'followers',
     'existingStep',
     'zapier',
-    'message',
-    'action',
-    'trigger',
-    'condition',
     'verified'],
   fromLinkedMessageStep: [
     'sendText',
@@ -46,10 +40,6 @@ export default {
     'addCategory',
     'existingStep',
     'verified',
-    'message',
-    'action',
-    'trigger',
-    'condition',
     'zapier'],
   fromCondition: [
     'sendText',
@@ -59,9 +49,6 @@ export default {
     'addCategory',
     'existingStep',
     'zapier',
-    'message',
-    'action',
-    'condition',
     'verified'],
   fromConditionTimeout: [
     'user-input',
@@ -74,9 +61,6 @@ export default {
     'followers',
     'existingStep',
     'addCategory',
-    'message',
-    'action',
-    'condition',
     'verified'],
   fromUserInput: [
     'sendText',
@@ -87,9 +71,6 @@ export default {
     'existingStep',
     'addCategory',
     'removeCategory',
-    'message',
-    'action',
-    'condition',
     'verified'],
   fromBroadcastFlow: [
     'sendText',
