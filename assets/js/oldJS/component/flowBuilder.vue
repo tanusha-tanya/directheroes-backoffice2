@@ -29,7 +29,7 @@
             :class="{'entry-step': !rowIndex}"
             :step="stepRowItem"
             :flow-name="!rowIndex && entryItem.name"
-            :key="rowItemIndex"
+            :key="stepRowItem.id"
             :campaign-type="entryItem.type"
             :step-row-index="rowIndex"
             :ref="stepRowItem.id"

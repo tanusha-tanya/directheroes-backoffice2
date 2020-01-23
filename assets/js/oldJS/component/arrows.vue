@@ -124,6 +124,7 @@ export default {
 
     getElement(id) {
       const findElement = container => {
+
         if (container.$refs.hasOwnProperty(id)) {
           element = container.$refs[id];
           return true

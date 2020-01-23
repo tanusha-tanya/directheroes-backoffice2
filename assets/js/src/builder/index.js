@@ -794,9 +794,6 @@ export default {
             }
           })
 
-          console.log(matchElements, connectionsCount);
-
-
           clearStepData([filteredElement], arrowInfo.child, filteredElement.onFail === arrowInfo.linkElement)
 
           if (!arrowInfo.linkElement.displaySettings && connectionsCount === 1) {
