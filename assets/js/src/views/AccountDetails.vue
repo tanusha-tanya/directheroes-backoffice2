@@ -21,6 +21,8 @@ export default {
 
   data() {
     return {
+      requests: [],
+      requestPromise: null,
       pouchDB: null,
       revUpdate: false,
     }
@@ -90,17 +92,29 @@ export default {
         })
     },
 
-    saveAccountData: debounce(function (data) {
-      const { pouchDB } = this;
+    saveRequest() {
+      const { pouchDB, requests, saveRequest } = this;
+      console.log(requests, this.requestPromise);
 
-      if (!pouchDB) return;
 
-      pouchDB.put(data).then(record => {
+      if (!pouchDB || this.requestPromise || !requests.length) return;
+
+      const data = requests[0];
+
+      this.requestPromise = pouchDB.put(data);
+
+      this.requestPromise.then(record => {
         this.revUpdate = true;
 
-        console.log('Record', record);
-
         data._rev = record.rev;
+
+        requests.splice(0, 1)
+
+        this.requestPromise = null;
+
+        if (requests.length) {
+          saveRequest();
+        }
 
         console.log('Data', data);
       }).catch(error => {
@@ -115,6 +129,13 @@ export default {
         this.$store.commit('set', {path: 'globalError', value: 'true'})
         console.dir(data._rev, error)
       })
+    },
+
+    saveAccountData: debounce(function (data) {
+      const { saveRequest, requests } = this;
+
+      requests.push(data);
+      saveRequest();
     }, 1000)
   },
 
