@@ -57,7 +57,12 @@
       <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement">
       </add-step-popup>
     </div>
-    <linker :linker="linker" v-if="linker && linker.target"></linker>
+    <div class="message-linker">
+      <linker :linker="linker" v-if="linker && linker.target"></linker>
+      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement" :builder="builder" :existing-link="linker" v-if="linker && linker.displaySettings">
+      </add-step-popup>
+    </div>
+
   </div>
 </template>
 
@@ -383,6 +388,10 @@ export default {
     &:hover {
       color: #e74c49;
     }
+  }
+
+  .message-linker {
+    position: relative;
   }
 }
 </style>

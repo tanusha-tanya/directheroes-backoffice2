@@ -25,6 +25,7 @@ export default {
     'timeout',
     'user-input',
     'followers',
+    'existingStep',
     'zapier',
     'message',
     'action',
