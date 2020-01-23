@@ -686,6 +686,10 @@ export default {
               break;
           }
 
+          if (parentElement.type === 'group' && parentElement.displaySettings.type === 'user-input' && !isFail) {
+            parentElement = getElementByType(parentElement, 'linker');
+          }
+
           switch (parentElement.type) {
             case 'linker':
               if (parentElement.target) {
@@ -735,27 +739,11 @@ export default {
         },
 
         deleteStep(step) {
-          const { getStepArrows, clearStepData, checkChildStep, getStep, getMatchElementsByTargetId, getStepColumn, scheme, steps } = this;
+          const { getStepArrows, deleteLink, steps } = this;
           const stepArrows = getStepArrows(step.id);
-          const stepColumn = getStepColumn(step);
-          const stepColumnIndex = scheme.indexOf(stepColumn);
-          const childStepColumnIndex = stepColumn.length > 1 ? stepColumnIndex + 1 : stepColumnIndex;
 
-          stepArrows.forEach((stepArrow, index) => {
-            const isParentArrow = stepArrow.child === step.id;
-            const childStep = getStep(stepArrow.child);
-            const matchElement = getMatchElementsByTargetId(stepArrow.child);
-            const isFail = matchElement[0].onFail && matchElement[0].onFail === stepArrow.linkElement
-
-            checkChildStep(stepArrow.step, childStep);
-            clearStepData(matchElement, stepArrow.child, isFail);
-
-            if (isParentArrow) return;
-
-            childStep.displaySettings = Object.assign(childStep.displaySettings || {}, {
-              columnIndex: childStepColumnIndex,
-              rowIndex: stepColumn.indexOf(step) + index
-            });
+          stepArrows.forEach((stepArrow) => {
+            deleteLink({ arrowInfo: stepArrow})
           })
 
           steps.splice(steps.indexOf(step), 1)
