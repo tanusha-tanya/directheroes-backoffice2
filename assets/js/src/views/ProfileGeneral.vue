@@ -13,17 +13,97 @@
         <input type="text" class="dh-input" :value="dhAccount.lastName" readonly>
       </label>
     </div>
+    <div class="dh-settings-form-row">
+        <label class="dh-label">
+            <span>Account blacklist</span>
+            <vue-tags-input
+              placeholder="Print username"
+              v-model="blacklist"
+              :tags="accounts"
+              @tags-changed="newTags => tags = newTags"
+              @before-adding-tag="addAccount"
+            />
+        </label>
+    </div>
+    <div class="dh-notification" v-if="notification">
+      {{ notification }}
+    </div>
+    <div class="dh-spacer"></div>
+    <div class="dh-settings-form-footer">
+      <button :class="{'dh-button': true, 'dh-loading': loading}" @click="saveBlacklist">
+          Update
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
+import VueTagsInput from '@johmun/vue-tags-input';
+import axios from 'axios'
 
+export default {
+    data () {
+        return {
+            loading: false,
+            notification: null,
+            accounts: [],
+            blacklist: ""
+        }
+    },
+
+    components: {
+        VueTagsInput,
+    },
+
+    methods: {
+        addAccount(obj) {
+            this.blacklist = "";
+            this.accounts.push({'text': obj.tag.text, "tiClasses":["ti-valid"]});
+
+            obj.addTag();
+        },
+
+        fillAccountList() {
+            let accounts = [];
+
+            this.dhAccount.settings.forEach(function (setting) {
+                if (setting.type === 1) {
+                    setting.value.forEach(function(account){
+                        accounts.push({'text': account, "tiClasses":["ti-valid"]})
+                    });
+                }
+            });
+
+            this.accounts = accounts
+        },
+        saveBlacklist() {
+            this.loading = true;
+
+            let settingValue = [];
+            this.accounts.forEach(function(account){
+               settingValue.push(account.text)
+            });
+
+            axios({
+                url: `${ dh.apiUrl }/api/1.0.0/${ this.dhAccount.username }/settings/update`,
+                method: 'post',
+                data: {
+                    userId: this.dhAccount.id,
+                    type: 1,
+                    value: settingValue
+                }
+            }).then(({data}) => {
+                this.notification = "Blacklist successfully saved";
+                this.loading = false;
+            }).catch(({response}) => {
+                this.error = response.data.request.statusMessage;
+                this.loading = false;
+            })
+        }
+    },
+
+    created() {
+        this.fillAccountList()
+    },
 }
 </script>
-
-<style lang="scss">
-.dh-profile-general {
-
-}
-</style>
