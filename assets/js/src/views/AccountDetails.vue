@@ -94,8 +94,6 @@ export default {
 
     saveRequest() {
       const { pouchDB, requests, saveRequest } = this;
-      console.log(requests, this.requestPromise);
-
 
       if (!pouchDB || this.requestPromise || !requests.length) return;
 
