@@ -47,6 +47,16 @@ Vue.mixin({
       event.preventDefault();
       event.stopPropagation();
       return false;
+    },
+
+    getTariffParameter(codeName) {
+      const { dhAccount } = this;
+
+      if (!dhAccount) return;
+
+      const { tariffParameters } = dhAccount.subscription;
+
+      return tariffParameters && tariffParameters.find(parameter => parameter.code === codeName)
     }
   },
 

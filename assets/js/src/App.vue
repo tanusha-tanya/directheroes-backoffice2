@@ -20,7 +20,7 @@
         </div>
         Broadcast
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id, 'dh-disabled-by-tariff': isLiveChatInTariff }" :to="isLiveChatInTariff ? { name: 'livechat', params: { accountId: account.id}} : {name: 'addonBuy'}">
         <div class="dh-navigation-button-ico">
           <livechat/>
         </div>
@@ -171,6 +171,13 @@ export default {
 
       return dhAccount && accessList.includes(dhAccount.username);
     },
+
+    isLiveChatInTariff() {
+      const { getTariffParameter } = this;
+      const liveChatTariff = getTariffParameter('live_chat')
+
+      return liveChatTariff && liveChatTariff.enabled
+    }
   },
 
   methods: {

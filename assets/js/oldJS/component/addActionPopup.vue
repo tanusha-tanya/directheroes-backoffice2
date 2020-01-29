@@ -6,12 +6,24 @@
     </span>
   </template>
   <template v-for="action in actions">
-    <div
-      :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
-      :key="action.title"
-      @click="selectAction(action)">
-      {{action.title}}
-    </div>
+    <template v-if="isEnabledByTariff(actionType(action))">
+      <div
+        :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
+        :key="action.title"
+        @click="selectAction(action)">
+        {{action.title}}
+      </div>
+    </template>
+    <template v-else>
+      <router-link
+        tag="div"
+        class="action-item action-disabled-by-tariff"
+        :key="action.title"
+        :to="{name: 'addonBuy'}"
+        >
+        {{action.title}}
+      </router-link>
+    </template>
   </template>
 </el-popover>
 </template>
@@ -24,6 +36,7 @@ export default {
     return {
       isShow: false,
       actions,
+      tariffsAction: ['addCategory', 'zapier']
     }
   },
 
@@ -38,6 +51,27 @@ export default {
       return actions.some(action => {
         return availableList.includes(actionType(action))
       })
+    },
+
+    isAddTagInTariff() {
+      const { getTariffParameter } = this;
+      const addTagTariff = getTariffParameter('subscriber_categories')
+
+      return addTagTariff && addTagTariff.enabled
+    },
+
+    isAddTagInTariff() {
+      const { getTariffParameter } = this;
+      const addTagTariff = getTariffParameter('subscriber_categories')
+
+      return addTagTariff && addTagTariff.enabled
+    },
+
+    isZapierInTariff() {
+      const { getTariffParameter } = this;
+      const zapierTariff = getTariffParameter('flow_zapier_element')
+
+      return zapierTariff && zapierTariff.enabled
     }
   },
 
@@ -51,6 +85,22 @@ export default {
       const { template } = element;
 
       return template.displaySettings.type || template.body.action;
+    },
+
+    isEnabledByTariff(actionType) {
+      const { isAddTagInTariff, isZapierInTariff } = this;
+
+      switch (actionType) {
+        case 'addCategory':
+          return isAddTagInTariff
+          break;
+        case 'zapier':
+          return isZapierInTariff
+          break;
+        default:
+          return true
+          break;
+      }
     }
   }
 }
@@ -72,6 +122,23 @@ export default {
     &.action-disabled {
       opacity: .3;
       pointer-events: none;
+    }
+
+    &.action-disabled-by-tariff {
+      opacity: .6;
+      display: flex;
+      justify-content: space-between;
+
+      &:after {
+        content: 'PRO';
+        font-size: 12px;
+        font-weight: bold;
+        background-color: #828282;
+        color: #fff;
+        padding: 0 5px;
+        border-radius: 5px;
+        line-height: 18px;
+      }
     }
   }
 }
