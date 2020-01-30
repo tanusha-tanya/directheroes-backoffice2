@@ -2,19 +2,19 @@
   <div class="dh-view dh-dashboard-view">
     <dh-header title="Dashboard"></dh-header>
     <div class="dh-view-content">
-      <div class="dh-dashboard-ig-account" v-if="currentAccount">
-        <div class="dh-dashboard-userpic" :style="{'background-image': `url(${ currentAccount.profilePicUrl  })`}">
+      <div class="dh-ig-account" v-if="currentAccount">
+        <div class="dh-ig-account-userpic" :style="{'background-image': `url(${ currentAccount.profilePicUrl  })`}">
         </div>
-        <div class="dh-dashboard-ig-account-info">
-          <div class="dh-dashboard-ig-account-main">
-            <div class="dh-dashboard-ig-account-name">{{ currentAccount.login }}</div>
-            <div class="dh-dashboard-ig-account-data">
+        <div class="dh-ig-account-info">
+          <div class="dh-ig-account-main">
+            <div class="dh-ig-account-name">{{ currentAccount.login }}</div>
+            <div class="dh-ig-account-data">
               <span><strong>{{ currentAccount.postCount || 0 }}</strong> posts</span>
               <span><strong>{{ currentAccount.followerCount || 0 }}</strong> followers</span>
               <span><strong>{{ currentAccount.followingCount || 0 }}</strong> following</span>
             </div>
           </div>
-          <div class="dh-dashboard-ig-account-bio" v-html="currentAccount.bio && currentAccount.bio.replace(/\n/g, '<br>')">
+          <div class="dh-ig-account-bio" v-html="currentAccount.bio && currentAccount.bio.replace(/\n/g, '<br>')">
           </div>
         </div>
       </div>
