@@ -127,10 +127,6 @@ export default {
   },
 
   computed:{
-    account() {
-      return this.$store.state.currentAccount;
-    },
-
     startAt: {
       get() {
         const { startAt } = this.currentBroadcast.settings;
@@ -138,7 +134,7 @@ export default {
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
-        const { account, currentBroadcast } = this
+        const { currentAccount, currentBroadcast } = this
         const { settings } = this.currentBroadcast;
         const startAtDate = moment(value);
 
@@ -160,7 +156,7 @@ export default {
     },
 
     subscriberMainCategory() {
-      const { subscriberCategoryList, campaignList, broadcastList } = this.account;
+      const { subscriberCategoryList, campaignList, broadcastList } = this.currentAccount;
       const subscriberMainCategories = []
 
       subscriberCategoryList.forEach((item, index) => {
@@ -282,7 +278,7 @@ export default {
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
         method: 'post',
-        data: { categories:categoryList.map(category => category.id), accountId: this.account.id }
+        data: { categories:categoryList.map(category => category.id), accountId: this.currentAccount.id }
       }).then(({ data }) => {
         const { count } = data.response.body
 
@@ -296,7 +292,7 @@ export default {
     },
 
     setBroadcastStart() {
-      const { account, currentBroadcast } = this
+      const { currentAccount, currentBroadcast } = this
       const { settings } = this.currentBroadcast;
 
       clearTimeout(this.broadcastStartTimeout);
@@ -306,7 +302,7 @@ export default {
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/${ currentBroadcast.id }/runtime-info`,
           method: 'post',
           data: {
-            accountId: account.id,
+            accountId: currentAccount.id,
             startAt: settings.startAt
           }
         }).then(({ data }) => {

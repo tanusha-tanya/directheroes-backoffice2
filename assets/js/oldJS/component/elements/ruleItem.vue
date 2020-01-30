@@ -1,7 +1,7 @@
 <template>
   <div class="rule-item" :ref="element.id">
     <element-warning :element="rule" :is-entry="isEntry"></element-warning>
-    <div class="rule-item-title">{{ ruleTitles[ruleType] }} <span v-if="ruleType === 'storyMention'">@{{account.login}}</span></div>
+    <div class="rule-item-title">{{ ruleTitles[ruleType] }} <span v-if="ruleType === 'storyMention'">@{{currentAccount.login}}</span></div>
     <template v-if="ruleType == 'list'">
       <keywords v-model="rule.condition.value"></keywords>
     </template>
@@ -67,10 +67,6 @@ export default {
   },
 
   computed: {
-    account() {
-      return this.$store.state.currentAccount;
-    },
-
     availableList() {
       const { elements } = this.dhAccount.flowBuilderSettings;
 

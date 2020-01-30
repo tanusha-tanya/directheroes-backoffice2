@@ -20,11 +20,13 @@
         </div>
         Broadcast
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id, 'dh-disabled-by-tariff': isLiveChatInTariff }" :to="isLiveChatInTariff ? { name: 'livechat', params: { accountId: account.id}} : {name: 'addonBuy'}">
-        <div class="dh-navigation-button-ico">
-          <livechat/>
-        </div>
+      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
+        <tariff-wrapper :is-enabled="isLiveChatInTariff">
+          <div class="dh-navigation-button-ico">
+            <livechat/>
+          </div>
         Live chat
+        </tariff-wrapper>
       </router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'audience', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
@@ -111,6 +113,7 @@ import training from './assets/training.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
+import TariffWrapper from './components/dh-tariff-wrapper'
 import easywebinar from '../oldJS/assets/svg/youtube.svg'
 
 export default {
@@ -133,7 +136,8 @@ export default {
     loader,
     affiliate,
     training,
-    easywebinar
+    easywebinar,
+    TariffWrapper
   },
 
   computed: {
@@ -244,12 +248,27 @@ body {
     letter-spacing: .3px;
     line-height: 17px;
 
+
+
     &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
       font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
     }
 
+    .dh-enabled-by-tariff {
+      display: flex;
+      align-items: center;
+    }
+
+    .dh-disabled-by-tariff {
+      width: 100%;
+      justify-content: flex-start;
+
+      &:after {
+        margin-left: auto;
+      }
+    }
   }
 
   .dh-easy-webinar {

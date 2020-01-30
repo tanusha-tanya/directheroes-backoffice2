@@ -6,30 +6,20 @@
     </span>
   </template>
   <template v-for="action in actions">
-    <template v-if="isEnabledByTariff(actionType(action))">
-      <div
-        :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
-        :key="action.title"
-        @click="selectAction(action)">
-        {{action.title}}
-      </div>
-    </template>
-    <template v-else>
-      <router-link
-        tag="div"
-        class="action-item action-disabled-by-tariff"
-        :key="action.title"
-        :to="{name: 'addonBuy'}"
-        >
-        {{action.title}}
-      </router-link>
-    </template>
+    <tariff-wrapper
+      :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
+      :is-enabled="isEnabledByTariff(actionType(action))"
+      :key="action.title"
+      @click.native="selectAction(action)">
+      {{action.title}}
+    </tariff-wrapper>
   </template>
 </el-popover>
 </template>
 
 <script>
 import actions from '../elements/actions';
+import TariffWrapper from '../../src/components/dh-tariff-wrapper';
 
 export default {
   data() {
@@ -41,6 +31,10 @@ export default {
   },
 
   props: ['availableList'],
+
+  components: {
+    TariffWrapper
+  },
 
   computed: {
     hasAvailableAction() {
@@ -122,23 +116,6 @@ export default {
     &.action-disabled {
       opacity: .3;
       pointer-events: none;
-    }
-
-    &.action-disabled-by-tariff {
-      opacity: .6;
-      display: flex;
-      justify-content: space-between;
-
-      &:after {
-        content: 'PRO';
-        font-size: 12px;
-        font-weight: bold;
-        background-color: #828282;
-        color: #fff;
-        padding: 0 5px;
-        border-radius: 5px;
-        line-height: 18px;
-      }
     }
   }
 }

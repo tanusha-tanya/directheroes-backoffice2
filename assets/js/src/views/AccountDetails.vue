@@ -26,12 +26,6 @@ export default {
     }
   },
 
-  computed: {
-    account() {
-      return this.$store.state.currentAccount;
-    },
-  },
-
   methods: {
     selectAccount(route) {
       const { $store, dhAccount } = this
@@ -120,7 +114,7 @@ export default {
 
   watch: {
     '$store.state.accounts'() {
-      if (this.account) return;
+      if (this.currentAccount) return;
 
       this.selectAccount(this.$route);
     },

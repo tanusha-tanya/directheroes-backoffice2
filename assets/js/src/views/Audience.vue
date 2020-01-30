@@ -24,7 +24,7 @@
         <div class="dh-divider"></div>
         <div class="dh-filter dh-campaign-filter">
           <el-popover placement="bottom" trigger="click" popper-class="dh-campaign-filter-popover" :width="300">
-            <div class="dh-options" v-if="account">
+            <div class="dh-options" v-if="currentAccount">
               <div class="dh-option">entered any of</div>
               <div class="dh-select-wrapper">
                 <el-select v-model="filters.campaigns.in" multiple placeholder="Select campaign">
@@ -48,7 +48,7 @@
         </div>
         <div class="dh-filter">
           <el-popover placement="bottom" trigger="click" popper-class="dh-category-filter-popover" :width="300">
-            <div class="dh-options" v-if="account">
+            <div class="dh-options" v-if="currentAccount">
               <div class="dh-option">has any of</div>
               <div class="dh-select-wrapper">
                 <el-select v-model="filters.categories.in" multiple placeholder="Select category">
@@ -175,10 +175,6 @@ export default {
   },
 
   computed: {
-    account() {
-      return this.$store.state.currentAccount
-    },
-
     subscribedText() {
       const { subscribed } = this.filters;
 
@@ -234,7 +230,7 @@ export default {
     },
 
     categories() {
-      const { subscriberCategoryList } = this.account;
+      const { subscriberCategoryList } = this.currentAccount;
 
       return subscriberCategoryList;
     }
@@ -242,14 +238,14 @@ export default {
 
   methods: {
     getAudience() {
-      const { account, status, paging, filters } = this;
+      const { currentAccount, status, paging, filters } = this;
 
-      if (!account) return;
+      if (!currentAccount) return;
 
       this.threads = null;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/${ status }`,
         method: 'post',
         data: { paging,  ...filters }
       })

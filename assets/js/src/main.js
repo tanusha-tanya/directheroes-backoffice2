@@ -32,14 +32,22 @@ Vue.config.productionTip = false
 Vue.mixin({
   computed: {
     dhAccount() {
-      return this.$store.state.dhAccount
+      const { dhAccount } = this.$store.state;
+
+      return dhAccount
     },
 
     isAdmin() {
       const { isViewedByAdmin } = this.dhAccount;
 
       return isViewedByAdmin;
-    }
+    },
+
+    currentAccount() {
+      const { currentAccount } = this.$store.state;
+
+      return currentAccount
+    },
   },
 
   methods: {
@@ -50,13 +58,13 @@ Vue.mixin({
     },
 
     getTariffParameter(codeName) {
-      const { dhAccount } = this;
+      const { currentAccount } = this;
 
-      if (!dhAccount) return;
+      if (!currentAccount) return;
 
-      const { tariffParameters } = dhAccount.subscription;
+      const { subscriptionCapabilities } = currentAccount;
 
-      return tariffParameters && tariffParameters.find(parameter => parameter.code === codeName)
+      return subscriptionCapabilities && subscriptionCapabilities.find && subscriptionCapabilities.find(parameter => parameter.code === codeName)
     }
   },
 
