@@ -1,5 +1,5 @@
 <template>
-  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" :trigger="triggerType || 'click'">
+  <el-popover popper-class="add-step-popup" placement="right" v-model="isShow" v-if="!existingLink">
     <div class="add-step-button" slot="reference">
       <slot></slot>
     </div>
@@ -25,7 +25,7 @@
         </add-condition-popup>
       </div>
       <div class="type-of-element">
-        <span class="exist-step-connection" v-if="availableList.includes('existingStep')" @click="addExistStepConnection">
+        <span class="exist-step-connection" v-if="(availableList || []).includes('existingStep')" @click="selectElement(existingStepObject)">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
             viewBox="0 0 116.936 116.936" style="enable-background:new 0 0 116.936 116.936;"
             xml:space="preserve">
@@ -39,6 +39,19 @@
       </div>
     </div>
   </el-popover>
+  <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-else-if="existingLink && existingLink.displaySettings">
+    <div class="existing-step-element">
+      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
+        <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
+          C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
+        <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
+          z" fill="currentColor"/>
+      </svg>
+    </div>
+  </existing-step-popup>
 </template>
 
 <script>
@@ -46,150 +59,57 @@ import addMessagePopup from './addMessagePopup';
 import addTriggerPopup from './addTriggerPopup';
 import addActionPopup from './addActionPopup';
 import addConditionPopup from './addConditionPopup';
+import existingStepPopup from './existingStepPopup';
 
 export default {
   data() {
     return {
       isShow: false,
-      existingStepElement: {
-        type: 'linker',
-        displaySettings: {
-          subType: 'existingStep'
-        }
+      existingStepObject: {
+        type: "existingStep"
       }
     }
   },
 
-  props:['availableList', 'triggerType'],
+  props:['availableList', 'builder', 'linkElement', 'existingLink'],
 
   components: {
     addTriggerPopup,
     addActionPopup,
     addMessagePopup,
-    addConditionPopup
+    addConditionPopup,
+    existingStepPopup
   },
 
   methods: {
     selectElement(element) {
-      this.$emit('add-step', JSON.parse(JSON.stringify(element)));
+      const { builder, linkElement } = this;
+
+      this.$emit('select', element);
       this.isShow = false;
+
+      if (!linkElement) return;
+
+      builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
     },
 
-    addExistStepConnection() {
-      const { selectElement, existingStepElement } = this;
+    goToStep() {
+      const { existingLink, builder } = this;
 
-      selectElement(existingStepElement);
+      builder.findEntryStep(existingLink.target, true)
+    },
+
+    removeLinker() {
+      const { builder, existingLink } = this;
+      const { subArrows } = builder;
+      const arrowInfo = subArrows.find(arrow => arrow.child === existingLink.target && arrow.linkElement === existingLink)
+
+      builder.deleteLink({ arrowInfo })
     }
   }
 }
 </script>
 
 <style lang="scss">
-  .add-step-popup {
-    .types-of-elements {
-      .type-of-element {
-        width: 100%;
-        text-align: center;
-        font-size: 12px;
-        color: #828282;
-        cursor: pointer;
 
-        .el-popover__reference span:before {
-          content: '';
-          display: inline-block;
-          width: 25px;
-          height: 25px;
-          background-position: center;
-          background-size: contain;
-          background-repeat: no-repeat;
-          margin-right: 9px;
-        }
-
-        &:not(:last-child) {
-          margin-bottom: 4px;
-        }
-
-        .trigger-elements{
-          &:before {
-            background-image: url(../assets/v5/triggers.png);
-            background-size: 80% auto !important;
-          }
-
-          &:hover {
-            border-color: #7EC6C6;
-            color: #7EC6C6;
-            background-color: #F8F8F8;
-          }
-        }
-        .action-elements{
-          &:before {
-            background-image: url(../assets/v5/actions.png);
-          }
-
-          &:hover {
-            border-color: #F4B109;
-            color: #F4B109;
-            background-color: #F8F8F8;
-          }
-        }
-
-        .message-elements {
-          &:before {
-            background-image: url(../assets/v5/messages.png);
-          }
-
-          &:hover {
-            border-color: #6A12CB;
-            color: #6A12CB;
-            background-color: #F8F8F8;
-          }
-        }
-
-        .condition-elements{
-          &:before {
-            background-image: url(../assets/v5/conditions.png);
-          }
-
-          &:hover {
-            border-color: #FF9B71;
-            color: #FF9B71;
-            background-color: #F8F8F8;
-          }
-        }
-
-        .exist-step-connection {
-          border-radius: 5px;
-          display: flex;
-          align-items: center;
-          padding: 8px 16px;
-          border: 1px solid #D8D8D8;
-
-          svg {
-            color: #6A12CB;
-            width: 20px;
-            margin-right: 9px;
-          }
-
-          &:hover {
-            border-color: #6A12CB;
-            color: #6A12CB;
-            background-color: #F8F8F8;
-          }
-        }
-
-        .el-popover__reference {
-          display: block;
-          width: 100%;
-
-          & > span {
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-            border: 1px solid #D8D8D8;
-          }
-        }
-      }
-    }
-  }
 </style>

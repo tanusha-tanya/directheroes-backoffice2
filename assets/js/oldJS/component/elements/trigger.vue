@@ -6,14 +6,14 @@
         :is-entry="isEntry"
         :key="element.id"
         @delete-trigger="deleteRule"
-        @create-step="createStep(element, $event)"
+        :builder="builder"
         @add-step="$emit('add-step', $event)"
         :elements="elements"
         v-if="element.type !== 'checkpoint' && (element.displaySettings && element.displaySettings.subType !== 'settings')"
         ></rule-item>
     </template>
     <div class="add-rule-button">
-      <add-trigger-popup @on-select="addTrigger" :available-list="availableTriggerList">
+      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry).filter(element => element !== 'user-input')">
         <span>+ Add rule item</span>
       </add-trigger-popup>
     </div>
@@ -27,23 +27,13 @@ import utils from '../../utils'
 import ruleItem from './ruleItem';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
-import elementsPermissions from '../../elements/permissions'
 
 export default {
-  props: ['elements', 'isEntry'],
+  props: ['elements', 'isEntry', 'builder'],
 
   components: {
     ruleItem,
     addTriggerPopup,
-  },
-
-  computed: {
-    availableTriggerList() {
-      const { isEntry } = this;
-      const { messageTypes } = this.dhAccount.flowBuilderSettings[isEntry ? 'growthTools': 'triggers'];
-
-      return elementsPermissions.fromTriggerStep.concat(messageTypes);
-    },
   },
 
   methods: {
@@ -56,34 +46,6 @@ export default {
         id: (new ObjectId).toString(),
         ...element
       })
-    },
-
-    createStep(rule, element) {
-      const { elements } =  this;
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-      }
-
-      const matchElement = utils.getOnMatchElement(rule);
-
-      Vue.set(matchElement, 'onMatch', {
-        action: 'goto',
-        target: step.id
-      });
-
-      this.$emit('add-step', step);
     },
 
     deleteRule(element) {

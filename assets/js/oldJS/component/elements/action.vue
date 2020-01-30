@@ -78,12 +78,19 @@ export default {
 
   methods: {
     addElement(element) {
-      const { elements } = this;
+      const { elements, linker } = this;
 
-      elements.push({
-        id: (new ObjectId).toString(),
-        ...element
-      });
+      if (linker)
+        elements.splice(elements.indexOf(linker), 0,{
+          id: (new ObjectId).toString(),
+          ...element
+        })
+      else {
+        elements.push({
+          id: (new ObjectId).toString(),
+          ...element
+        })
+      }
     },
 
     elementClass(classType) {

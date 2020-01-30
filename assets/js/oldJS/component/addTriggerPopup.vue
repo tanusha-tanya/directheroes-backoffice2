@@ -1,7 +1,7 @@
 <template>
   <el-popover popper-class="add-trigger-popup" :disabled="!hasAvailableTriggers" placement="right" v-model="isShow" trigger="hover">
     <template slot="reference">
-      <span :class="{'add-disabled-popup': !hasAvailableTriggers}">
+      <span :class="{'add-step-item': true, 'add-disabled-popup': !hasAvailableTriggers}">
         <slot></slot>
       </span>
     </template>
@@ -12,13 +12,6 @@
         :key="trigger.title"
         @click="selectTrigger(trigger)">
           {{trigger.title}}
-      </div>
-    </template>
-    <template v-if="hasUserInput">
-      <div
-        class="trigger-item"
-        @click="selectTrigger(userInput)">
-          {{userInput.title}}
       </div>
     </template>
   </el-popover>
@@ -55,7 +48,9 @@ export default {
       triggerType(element) {
         const { value, entity, operand } = element.template.elements.find(element => element.type === 'rule').condition;
 
-        if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
+        if (element.template.displaySettings && element.template.displaySettings.subType === 'user-input') {
+          return 'user-input'
+        } else if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
           return value;
         } else if (entity === 'message' && operand === 'contains') {
           return 'list'

@@ -1,7 +1,7 @@
 <template>
 <el-popover popper-class="add-condition-popup" :disabled="!hasAvailableCondition" placement="right" v-model="isShow" trigger="hover">
   <template slot="reference">
-    <span :class="{'add-disabled-popup': !hasAvailableCondition}">
+    <span :class="{'add-step-item': true, 'add-disabled-popup': !hasAvailableCondition}">
       <slot></slot>
     </span>
   </template>

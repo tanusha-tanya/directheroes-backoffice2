@@ -1,22 +1,36 @@
 <template>
-<el-popover popper-class="add-tag-popup" placement="right" v-model="isShow" trigger="click">
-  <template slot="reference">
-    <span class="add-step-button">
-      <slot></slot>
-    </span>
-  </template>
-  <div class="action-item" @click="addNewStep(addTagElement.template)">
-    {{addTagElement.title}}
-  </div>
-  <add-step-popup class="action-item" @add-step="addNewStep" :available-list="availableList">
-    <span>Skip Add tag</span>
-  </add-step-popup>
-</el-popover>
+  <el-popover popper-class="add-tag-popup" placement="right" v-model="isShow" trigger="click" v-if="!existingLink">
+    <template slot="reference">
+      <span class="add-step-button">
+        <slot></slot>
+      </span>
+    </template>
+    <div class="action-item" @click="addNewStep(addTagElement.template)">
+      {{addTagElement.title}}
+    </div>
+    <add-step-popup class="action-item" :builder="builder" :link-element="linkElement" :available-list="availableList" @select="selectHandler">
+      <span>Skip Add tag</span>
+    </add-step-popup>
+  </el-popover>
+  <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-else-if="existingLink && existingLink.displaySettings">
+    <div class="existing-step-element">
+      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
+        <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
+          C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
+        <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
+          l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
+          z" fill="currentColor"/>
+      </svg>
+    </div>
+  </existing-step-popup>
 </template>
 
 <script>
 import addStepPopup from './addStepPopup';
 import actions from '../elements/actions';
+import existingStepPopup from './existingStepPopup';
 
 export default {
   data() {
@@ -27,10 +41,11 @@ export default {
   },
 
   components: {
-    addStepPopup
+    addStepPopup,
+    existingStepPopup
   },
 
-  props: ['availableList'],
+  props: ['availableList', 'linkElement', 'builder', 'existingLink'],
 
   computed: {
     addTagElement() {
@@ -42,10 +57,35 @@ export default {
 
   methods: {
     addNewStep(element) {
-      this.$emit('add-step', JSON.parse(JSON.stringify(element)));
+      const { builder, linkElement } = this;
+
+      this.$emit('select', element);
+      this.isShow = false;
+
+      if (!linkElement) return;
+
+      builder.addStep(linkElement,  JSON.parse(JSON.stringify(element)));
+    },
+
+    selectHandler(element) {
+      this.$emit('select', element);
       this.isShow = false;
     },
-  }
+
+    goToStep() {
+      const { existingLink, builder } = this;
+
+      builder.findEntryStep(existingLink.target, true)
+    },
+
+    removeLinker() {
+      const { builder, existingLink } = this;
+      const { subArrows } = builder;
+      const arrowInfo = subArrows.find(arrow => arrow.child === existingLink.target && arrow.linkElement === existingLink)
+
+      builder.deleteLink({ arrowInfo })
+    }
+  },
 }
 </script>
 

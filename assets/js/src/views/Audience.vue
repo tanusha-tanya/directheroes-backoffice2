@@ -79,15 +79,18 @@
         <button class="dh-button dh-small" @click="isExportData = true">Export</button>
       </div>
       <div class="dh-list" v-if="threads">
-        <div class="dh-list-item" v-for="thread in threads" :key="thread.id">
+        <router-link class="dh-list-item" :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" v-for="thread in threads" :key="thread.id">
+        <!-- <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id"> -->
           <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
           <div class="dh-thread-data-item dh-thread-username">
             <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
             {{thread.contactProfile.username}}
           </div>
           <div class="dh-thread-data-item">
-            <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
-            Subscribed
+            <template v-if="fromNowDate(thread.subscribedAt)">
+              <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
+              Subscribed
+            </template>
           </div>
           <div class="dh-thread-data-item">
             <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
@@ -98,10 +101,10 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" class="dh-thread-controls">
+          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
             <livechat/>
           </router-link>
-        </div>
+        </router-link>
       </div>
       <loader v-else/>
       <div class="dh-audience-thread-controls" v-if="threads">
@@ -258,7 +261,9 @@ export default {
     },
 
     fromNowDate(date) {
-      return moment(new Date(date * 1000)).fromNow();
+      const momentDate = moment(new Date(date * 1000))
+
+      return momentDate.isValid() && moment(new Date(date * 1000)).fromNow();
     },
 
     changePage(page) {

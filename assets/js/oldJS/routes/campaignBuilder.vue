@@ -1,50 +1,13 @@
 <template>
   <div class="campaign-builder" v-if="currentCampaign">
-    <!-- <div class="campaign-builder-controls">
-      <span>Campaign Builder</span>
-      <div class="campaign-warning" v-if="currentCampaign && hasWarning" @click="findWarningStep"><img src="../assets/triangle.svg">This flow is incomplete</div>
-      <div class="campaign-builder-control" v-if="currentCampaign" >
-        Activate
-        <template v-if="hasWarning">
-          <el-tooltip
-            effect="light"
-            content="Please clear all warnings first"
-            >
-            <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="true"></el-switch>
-          </el-tooltip>
-        </template>
-        <template v-else>
-          <el-switch v-model="currentCampaign.isEnabled" :width="22" :disabled="hasWarning"></el-switch>
-        </template>
-      </div>
-      <el-popover class="campaign-builder-control" placement="bottom" trigger="hover" v-if="currentCampaign">
-        <div class="campaign-builder-settings">
-          <div class="campaign-builder-option" v-if="hasSteps">
-            <el-switch v-model="allowReEnter" :width="22"></el-switch> Allow Re-entering campaign
-          </div>
-          <div class="campaign-builder-option" v-if="hasSteps">
-            <el-switch v-model="messageRequestOnly" :width="22"></el-switch> Trigger message request only
-          </div>
-          <div class="campaign-builder-option" v-if="hasSteps">
-            <el-switch v-model="nonSubscribersOnly" :width="22"></el-switch> Non-subscribers only
-          </div>
-          <div class="campaign-builder-option trash" @click="isDeleteDialog = true">
-            <img src="../assets/svg/trash.svg"/> Delete campaign
-          </div>
-        </div>
-        <div class="gear" slot="reference">
-          <img src="../assets/svg/gear.svg"/>
-        </div>
-      </el-popover>
-    </div> -->
-    <div class="campaign-first-step" v-if="currentCampaign && !currentCampaign.steps.length">
+      <div class="campaign-first-step" v-if="currentCampaign && !currentCampaign.steps.length">
       <div class="campaign-flow-choose">
         <div class="campaign-choose-info">
           Create
         </div>
         <div class="campaign-choose-buttons">
           <div class="campaign-choose-button">
-            <add-step-popup @add-step="addStep" :available-list="availableElements">
+            <add-step-popup @select="addStep" :available-list="availableElements">
               <span>New flow</span>
             </add-step-popup>
           </div>

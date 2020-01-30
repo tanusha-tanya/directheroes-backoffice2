@@ -4,6 +4,7 @@
     'step-item': true,
     'step-founded': findAnimation,
     'step-to-bind': canConnectAsExist,
+    'step-is-broken': isInBrokenBranch,
     'step-not-bind': canConnectAsExist === false },
     `step-${ stepType }-type`]"
   @mousedown.stop="" @transitionend="findAnimation = false"
@@ -14,23 +15,15 @@
       {{flowName || step.name || '&nbsp;'}}
     </span>
     <span>
-      <div class="step-delete-button" v-if="(!isEntry && !hasChilds && stepType !== 'sub-input') || (stepType === 'user-input' && !hasUserInputMatch)" @click="$emit('delete-step', step)">
+      <div class="step-delete-button"  @click="builder.deleteStep(step)">
         <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.35 16h2.1V8h-2.1v8zm4.2 0h2.1V8h-2.1v8zm-6.3 2h10.5V6H5.25v12zm2.1-14h6.3V2h-6.3v2zm8.4 0V0H5.25v4H0v2h3.15v14h14.7V6H21V4h-5.25z" fill="currentColor" fill-rule="evenodd"/></svg>
       </div>
-      <add-step-popup :available-list="availableList" @add-step="createStep" v-if="stepType === 'action' && !linker"></add-step-popup>
-      <existing-step-popup @find-step="goToStep" @unbind-step="removeLinker" v-if="linker && linker.displaySettings">
-        <div class="existing-step-element">
-          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-            viewBox="0 0 192.689 192.689" style="enable-background:new 0 0 192.689 192.689;" xml:space="preserve">
-            <path d="M188.527,87.755l-83.009-84.2c-4.692-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.54,75.61
-              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179c4.704,4.74,12.319,4.74,17.011,0l82.997-84.2
-              C193.05,100.375,193.062,92.327,188.527,87.755z" fill="currentColor"/>
-            <path d="M104.315,87.755l-82.997-84.2c-4.704-4.74-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l74.528,75.61
-              l-74.54,75.61c-4.704,4.74-4.704,12.439,0,17.179s12.319,4.74,17.011,0l82.997-84.2C108.838,100.375,108.85,92.327,104.315,87.755
-              z" fill="currentColor"/>
-          </svg>
-        </div>
-      </existing-step-popup>
+      <add-step-popup
+        :available-list="builder.availableListByElement(step.elements[0])"
+        @select="createStep"
+        v-if="stepType === 'action'"
+        :existing-link="linker"
+        :builder="builder"></add-step-popup>
     </span>
   </div>
   <div class="existin-step-connector" v-if="canConnectAsExist" @click="bindAsExistStep">
@@ -40,7 +33,12 @@
       bind
     </div>
   </div>
-  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" @add-step="addElementStep"></component>
+  <component :is="stepType" :is-entry="isEntry" :elements="step.elements" :campaign-type="campaignType" :builder="builder"></component>
+  <el-tooltip class="element-warning" effect="light"
+    content="Please reattach or delete this branch before you activate this campaign"
+    v-if="step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex')">
+    <triangle />
+  </el-tooltip>
 </div>
 </template>
 
@@ -56,7 +54,8 @@ import subInput from './elements/subInput'
 import utils from '../utils'
 import ObjectId from '../utils/ObjectId';
 import addStepPopup from './addStepPopup';
-import existingStepPopup from './existingStepPopup';
+import triangle from '../assets/triangle.svg'
+
 
 export default {
   data() {
@@ -75,7 +74,7 @@ export default {
     addStepPopup,
     userInput,
     subInput,
-    existingStepPopup
+    triangle
   },
 
   computed: {
@@ -126,12 +125,40 @@ export default {
     },
 
     canConnectAsExist() {
-      const { stepRowIndex, $store, builder, step } = this;
-      const { existConnection } = $store.state;
+      const { builder, step, isInBrokenBranch } = this;
+      const { parentOfExistStep } = builder;
+      const firstElement = step.elements.find(element => element.type !== 'checkpoint')
+      let stepType = firstElement.displaySettings && firstElement.displaySettings.type;
 
-      if (!existConnection || existConnection.step.id === step.id) return;
+      if (!stepType && firstElement.displaySettings) {
+        switch (firstElement.displaySettings.subType) {
+          case 'message':
+          case 'action':
+            stepType = firstElement.body.action;
+        }
+      }
 
-      return !builder.stepsInOneBranch(existConnection.step.id, step.id)
+      if (stepType === 'keywords') {
+        stepType = 'list'
+      }
+
+      if (!parentOfExistStep || parentOfExistStep.step.id === step.id) return;
+
+      const inOneBranch = builder.stepsInOneBranch(parentOfExistStep.step.id, step.id)
+      const isFirstElementInBrokenBranch = (isInBrokenBranch && step.displaySettings && step.displaySettings.hasOwnProperty('columnIndex'))
+      const isInAvailableList = stepType && parentOfExistStep.availableList.includes(stepType)
+
+      return Boolean(isInAvailableList && ((!inOneBranch && !isInBrokenBranch) || isFirstElementInBrokenBranch))
+    },
+
+    isInBrokenBranch() {
+      const { builder, step } = this;
+      /**
+       * TODO: Fix it;
+       */
+      builder.stepInBrokenBranch(step.id)
+
+      return (step.displaySettings && step.displaySettings.hasOwnProperty('rowIndex')) || builder.stepInBrokenBranch(step.id)
     },
 
     hasUserInputMatch() {
@@ -148,60 +175,24 @@ export default {
     },
 
     builder() {
-      return this.$parent
-    }
+      return this.$parent.builder
+    },
   },
 
   methods: {
     createStep(element) {
-      const { elements } = this.step;
-      const step = {
+      const { step, linker, builder } = this;
+      const { elements } = step;
+      const newLinker ={
         id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
+        type: 'linker'
       }
 
-      if (element.type === 'linker') {
-        this.$nextTick(() => {
-          const { $store, step, stepRowIndex } = this;
-
-          element.id = (new ObjectId).toString(),
-
-          $store.commit('set', { path: 'existConnection', value: {
-            step,
-            element,
-            stepRowIndex
-          } })
-        });
-
-        return;
+      if (!linker) {
+        elements.push(newLinker);
       }
 
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-
-        if (['delay', 'delayTill'].includes(element.displaySettings.type)) {
-          const { elements } = element;
-          const checkpoint = elements.find(element => element.type === 'checkpoint');
-          const action = elements.find(element => element.type === 'action');
-
-          action.body.checkpointId = checkpoint.id
-        }
-      }
-
-      elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: step.id
-      })
-
-      this.$emit('add-step', step);
+      builder.addStep(linker || newLinker, element);
     },
 
     goToStep() {
@@ -211,23 +202,15 @@ export default {
     },
 
     bindAsExistStep() {
-      const { step, $store } = this;
-      const { existConnection } = $store.state;
+      const { step, builder } = this;
 
-      existConnection.element.target = step.id;
-      existConnection.step.elements.push(existConnection.element);
-
-      $store.commit('set', {path: 'existConnection', value: null })
+      builder.connectExistingStep(step)
     },
 
     removeLinker() {
-       const { linker, step } = this;
+      const { linker, step } = this;
 
       step.elements.splice(step.elements.indexOf(linker), 1);
-    },
-
-    addElementStep(event, parentElement) {
-      this.$emit('add-step', event, parentElement);
     },
 
     toggleGlow(status) {
@@ -249,6 +232,14 @@ export default {
     transition: box-shadow 1s;
     background-color: #fff;
 
+    & > .element-warning {
+      pointer-events: all;
+      width: 60px;
+      top: calc(50% - 30px) !important;
+      right: calc(50% - 30px) !important;
+      z-index: 1;
+    }
+
     .existin-step-connector {
       position: absolute;
       cursor: pointer;
@@ -264,6 +255,7 @@ export default {
       align-items: center;
       justify-content: center;
       border-radius: 5px;
+      pointer-events: all;
 
       div {
         text-align: center;
@@ -282,6 +274,16 @@ export default {
       opacity: .3;
     }
 
+    &.step-is-broken {
+      opacity: .7;
+      pointer-events: none;
+      filter: grayscale(.5);
+
+      .step-delete-button {
+        pointer-events: all;
+      }
+    }
+
     .step-item-header {
       padding: 10px;
       background-color: #E7E7E7;
@@ -292,38 +294,6 @@ export default {
       justify-content: space-between;
       align-items: center;
       position: relative;
-    }
-
-    .add-step-button {
-      position: absolute;
-      right: -14px;
-      top: calc(50% - 14px);
-
-      &:after {
-        content: '';
-        position: absolute;
-        top: calc(50% - 1px);
-        left: calc(50% - 7px);
-        height: 2px;
-        background-color: #ccc;
-        width: 14px;
-      }
-
-      &:before {
-        content: '';
-        position: absolute;
-        top: calc(50% - 7px);
-        left: calc(50% - 1px);
-        height: 14px;
-        background-color: #ccc;
-        width: 2px;
-      }
-
-      &:hover {
-        &:after, &:before {
-          background-color: #6A12CB;
-        }
-      }
     }
 
     &.step-founded {
@@ -424,6 +394,8 @@ export default {
       border-radius: 50%;
       border: 1px solid #ccc;
       background-color: #fff;
+      right: -14px;
+      top: calc(50% - 14px);
     }
 
     .element-warning {

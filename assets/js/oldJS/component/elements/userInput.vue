@@ -8,10 +8,11 @@
     <div class="user-input-matches">
       <div class="user-input-match" :ref="element.id">
         Collect
+        <add-tag-popup :available-list="builder.availableListByElement(element)" @select="createStep(element, $event)" v-if="!linker"></add-tag-popup>
       </div>
       <div class="user-input-fail" :ref="`${element.id}-fail`">
         Doesn't Collect
-        <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-tag-popup>
+        <add-tag-popup :available-list="builder.availableListByElement(element, true)" @select="createStep(element, $event, true)" v-if="!hasOnFail(element)"></add-tag-popup>
       </div>
     </div>
   </div>
@@ -19,7 +20,6 @@
 
 <script>
 import elementsPermissions from '../../elements/permissions'
-import { userInputSubscriber, userInputZapier } from '../../elements/userInput'
 import addTagPopup from '../addTagPopup'
 import Vue from 'vue';
 import ObjectId from '../../utils/ObjectId';
@@ -31,7 +31,7 @@ export default {
     }
   },
 
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   components: {
     addTagPopup
@@ -45,72 +45,47 @@ export default {
     },
 
     inputElement() {
-      const { element } = this;
+      const { element, builder } = this;
 
-      return element.elements.find(element => element.type == 'rule')
+      return builder.getElementByType(element, 'rule')
     },
 
-    availableList() {
-      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
+    linker() {
+      const { element, builder } = this;
 
-      return elementsPermissions.fromUserInputFails.concat(triggers.messageTypes, elements)
+      return builder.getElementByType(element, 'linker')
     }
   },
 
   methods: {
+    createStep(linkElement, element, isFail) {
+      const { linker, builder, element: userInputElement  } = this;
+
+      if (isFail) {
+        builder.addStep(linkElement, element, true)
+      } else {
+         const newLinker = {
+          id: (new ObjectId).toString(),
+          type: 'linker'
+        };
+
+        if (!linker) {
+          userInputElement.elements.push(newLinker);
+        }
+
+        builder.addStep(linker || newLinker, element);
+      }
+    },
+
     hasOnFail(element) {
       return element.elements.find(element => element.type === 'rule').onFail
     },
 
-    createStep(userInput, element, onFail) {
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-      }
-
-      const matchElement = userInput.elements.find(element => element.type === 'rule');
-
-      Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
-        action: 'goto',
-        target: step.id
-      });
-
-      this.$emit('add-step', step);
-    },
-
     changeSubInput(value) {
-      const { inputElement, elements } = this;
-      const { currentAccountData } = this.$store.state;
-      const { campaignId } = this.$route.params;
-      const campaign = currentAccountData.campaigns.find(campaign => campaign.id === campaignId)
-      const subInput = campaign.steps.find(step => step.id === inputElement.onMatch.target);
-      const action = subInput.elements.find(element => element.type === 'action');
-      let newElement = JSON.parse(JSON.stringify(userInputSubscriber));
+      const { inputElement, element, builder } = this;
+      const action = builder.getElementByType(element, 'action');
 
-      value = /\{\{(\w*)\}\}/.exec(value)[1];
-
-      if (action.body.action === 'webhook') {
-        newElement = JSON.parse(JSON.stringify(userInputZapier));
-
-        newElement.body.data.field = value;
-      } else {
-        newElement.body.destination.field = value;
-      }
-
-      newElement.id = (new ObjectId).toString();
-
-      subInput.elements.splice(subInput.elements.indexOf(action), 1, newElement);
+      action.body.destination.field = /\{\{(\w*)\}\}/.exec(value)[1];
     }
   }
 }
@@ -141,15 +116,16 @@ export default {
     }
 
     .user-input-matches {
+
       & > div {
         padding: 13px 24px;
         text-align: right;
+        position: relative;
         font-weight: bold;
       }
 
       .user-input-fail {
         color: #E06250;
-        position: relative;
         border-top: 1px dashed #D8D8D8;
       }
     }

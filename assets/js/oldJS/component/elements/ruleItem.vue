@@ -19,15 +19,11 @@
       <keywords v-model="rule.onMatch.elements[0].condition.value" ></keywords>
     </template>
     <add-tag-popup
-      :available-list="availableList"
-      @add-step="$emit('create-step', $event)"
-      v-if="!hasOnMatch"
+      :available-list="availableList(element)"
+      :link-element="element"
+      :builder="builder"
+      :existing-link="hasOnMatch"
     ></add-tag-popup>
-    <add-mid-step-popup
-      :available-list="['addCategory', 'sendText', 'sendMedia']"
-      @add-step="addMidStep($event)"
-      v-else
-    ></add-mid-step-popup>
     <div
       class="rule-delete-button"
       @click="$emit('delete-trigger', element)"
@@ -48,35 +44,26 @@
 import utils from '../../utils';
 import ObjectId from '../../utils/ObjectId';
 import addTagPopup from '../addTagPopup';
-import addMidStepPopup from '../addMidStep';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
 import elementsPermissions from '../../elements/permissions'
 
 
 export default {
-
-
-  props:['element', 'isEntry', 'elements'],
+  props:['element', 'isEntry', 'elements', 'builder'],
 
   components: {
     keywords,
     addTagPopup,
     elementWarning,
-    addMidStepPopup
   },
 
   computed: {
-    availableList() {
-      const { elements } = this.dhAccount.flowBuilderSettings;
-
-      return elementsPermissions.fromTrigger.concat(elements);
-    },
-
     hasOnMatch() {
-      const matchElement = utils.getOnMatchElement(this.rule);
+      const { builder } = this;
+      const matches = builder.getAllMatchElements(this.rule)
 
-      return matchElement && matchElement.onMatch;
+      return matches.length && matches[0].onMatch;
     },
 
     ruleType() {
@@ -108,36 +95,19 @@ export default {
   },
 
   methods: {
-    addMidStep(element) {
-      const { hasOnMatch } = this;
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-
-      step.elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: hasOnMatch.target
-      })
-
-      hasOnMatch.target = step.id;
-
-      this.$emit('add-step', step);
-    },
-
     checkHashTags(value) {
       value.forEach((keyword, index) => {
         if(!/^#/.test(keyword)) return;
 
         value.splice(index, 1, keyword.replace(/^#/, ''))
       })
-    }
+    },
+
+    availableList(element) {
+      const { builder, isEntry } = this;
+
+      return builder.availableListByElement(element, null, isEntry);
+    },
   }
 };
 </script>

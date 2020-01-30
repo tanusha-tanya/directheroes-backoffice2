@@ -38,7 +38,7 @@
             <div class="send-media-upload">
               <input type="file" accept="image/jpeg,image/png,image/gif" @change="uploadImage($event, element)"/>
               <svg width="23" height="14" viewBox="0 0 23 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.7953 5.89167C18.7953 5.83333 18.8056 5.775 18.8056 5.71667C18.8056 2.55694 16.1462 0 12.8656 0C10.4989 0 8.46585 1.33194 7.51094 3.25694C7.09509 3.05764 6.6279 2.94097 6.13504 2.94097C4.62054 2.94097 3.35759 4.00556 3.11629 5.39583C1.29888 5.98889 0 7.63681 0 9.57639C0 12.0167 2.05871 14 4.59487 14H9.85714V10.1111H7.38259L11.5 6.04236L15.6174 10.1062H13.1429V13.9951H18.8056C21.1261 13.9951 23 12.1722 23 9.94097C23 7.70972 21.1158 5.89653 18.7953 5.89167Z" fill="currentColor"/>
+                <path d="M18.7953 5.89167C18.7953 5.83333 18.8056 5.775 18.8056 5.71667C18.8056 2.55694 16.1462 0 12.8656 0C10.4989 0 8.46585 1.33194 7.51094 3.25694C7.09509 3.05764 6.6279 2.94097 6.13504 2.94097C4.62054 2.94097 3.35759 4.00556 3.11629 5.39583C1.29888 5.98889 0 7.63681 0 9.57639C0 12.0167 2.05871 14 4.59487 14H9.85714V10.1111H7.38259L11.5 6.04236L15.6174 10.1062H13.1429V13.9951H18.8056C21.1261 13.9951 23 12.1722 23 9.94097C23 7.70972 21.1158 5.89653 18.7953 5.89167Z" fill="currentColor"/>
               </svg>
             </div>
           </template>
@@ -54,49 +54,39 @@
       </template>
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
-      <template v-if="isBroadcast">
-        <add-step-popup @add-step="addElement" :available-list="broadcastAvailableList" >
-        </add-step-popup>
-      </template>
-      <template v-else>
-        <add-mid-step-popup v-if="linker"
-          :available-list="['delay', 'sendText', 'sendMedia']"
-          @add-step="addElement">
-        </add-mid-step-popup>
-        <add-element-popup @add-element="addElement" v-else>
-          <div class="message-add-event"></div>
-        </add-element-popup>
-      </template>
+      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement">
+      </add-step-popup>
     </div>
-    <linker :linker="linker" v-if="linker"></linker>
+    <div class="message-linker">
+      <linker :linker="linker" v-if="linker && linker.target"></linker>
+      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement" :builder="builder" :existing-link="linker" v-if="linker && linker.displaySettings">
+      </add-step-popup>
+    </div>
+
   </div>
 </template>
 
 <script>
+import elementsPermissions from '../../elements/permissions'
 import axios from 'axios';
 import Vue from 'vue';
-import addElementPopup from '../addElementPopup';
-import addMidStepPopup from '../addMidStep';
 import addStepPopup from '../addStepPopup';
 import delay from './delay';
 import linker from '../linker'
-import { userInputSubscriber } from '../../elements/userInput'
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
 import dragMixin from '../../../src/mixins/dragElements'
 
 export default {
-  props: ['elements', 'campaignType'],
+  props: ['elements', 'campaignType', 'builder'],
 
   mixins: [dragMixin],
 
   components: {
-    addElementPopup,
     elementWarning,
     linker,
     delay,
     addStepPopup,
-    addMidStepPopup
   },
 
   computed: {
@@ -111,21 +101,15 @@ export default {
     },
 
     isBroadcast() {
-      const { campaignType } = this;
+      const { builder } = this;
 
-      return campaignType === 'broadcast';
-    },
-
-    broadcastAvailableList() {
-      const firstElement = this.elements[0];
-
-      return firstElement.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
+      return builder.isBroadcast;
     }
   },
 
   methods: {
     addElement(element) {
-      const { elements, linker } = this;
+      const { elements, linker, builder } = this;
       const { displaySettings } = element;
 
       if (['group', 'action'].includes(element.type) && displaySettings && displaySettings.subType === 'message') {
@@ -155,50 +139,16 @@ export default {
           })
         }
       } else {
-        let subStep = null;
-        const step = {
+        const newLinker = {
           id: (new ObjectId).toString(),
-          elements: [
-            {
-              id: (new ObjectId).toString(),
-              ...element
-            }
-          ]
+          type: 'linker'
+        };
+
+        if (!linker) {
+          elements.push(newLinker);
         }
 
-        if (element.type === 'group') {
-          element.elements.forEach(element => {
-            element.id = (new ObjectId).toString()
-          })
-
-          if (displaySettings.subType === 'user-input') {
-            const rule = element.elements.find(element => element.type === 'rule');
-
-            subStep = {
-              id: (new ObjectId).toString(),
-              elements: [
-                {
-                  id: (new ObjectId).toString(),
-                  ...userInputSubscriber
-                }
-              ]
-            }
-
-            rule.onMatch = {action: 'goto', target: subStep.id}
-          }
-        }
-
-        elements.push({
-          id: (new ObjectId).toString(),
-          type: 'linker',
-          target: step.id
-        })
-
-        this.$emit('add-step', step);
-
-        if (subStep) {
-          this.$emit('add-step', subStep);
-        }
+        builder.addStep(linker || newLinker, element);
       }
     },
 
@@ -438,6 +388,10 @@ export default {
     &:hover {
       color: #e74c49;
     }
+  }
+
+  .message-linker {
+    position: relative;
   }
 }
 </style>

@@ -7,7 +7,7 @@
       </el-select>
       <add-tag-popup
         :available-list="availableList"
-        @add-step="createStep"
+        @select="createStep"
         v-if="!linker"
       ></add-tag-popup>
     </div>
@@ -22,7 +22,7 @@ import axios from 'axios'
 import addTagPopup from '../addTagPopup';
 import zapier from '../zapier';
 import elementsPermissions from '../../elements/permissions'
-import { userInputSubscriber, userInputZapier } from '../../elements/userInput';
+// import { userInputSubscriber, userInputZapier } from '../../elements/userInput';
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
     zapier
   },
 
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   computed: {
     element() {
@@ -55,9 +55,6 @@ export default {
       const { triggers, elements } = this.dhAccount.flowBuilderSettings;
 
       return elementsPermissions.fromUserInput.concat(triggers.messageTypes, elements);
-    },
-    selectedValue() {
-
     }
   },
 
@@ -83,30 +80,17 @@ export default {
     },
 
     createStep(element) {
-      const { elements } = this;
-      const step = {
+      const { elements, linker, builder } = this;
+      const newLinker = {
         id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
+        type: 'linker'
       }
 
-      if (element.type === 'group') {
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
+      builder.addStep(linker || newLinker, element);
+
+      if (!linker) {
+        elements.push(newLinker);
       }
-
-      elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: step.id
-      })
-
-      this.$emit('add-step', step);
     },
   }
 }
@@ -141,32 +125,6 @@ export default {
       position: absolute;
       right: -14px;
       top: calc(50% - 14px);
-
-      &:after {
-        content: '';
-        position: absolute;
-        top: calc(50% - 1px);
-        left: calc(50% - 7px);
-        height: 2px;
-        background-color: #ccc;
-        width: 14px;
-      }
-
-      &:before {
-        content: '';
-        position: absolute;
-        top: calc(50% - 7px);
-        left: calc(50% - 1px);
-        height: 14px;
-        background-color: #ccc;
-        width: 2px;
-      }
-
-      &:hover {
-        &:after, &:before {
-          background-color: #6A12CB;
-        }
-      }
     }
   }
 

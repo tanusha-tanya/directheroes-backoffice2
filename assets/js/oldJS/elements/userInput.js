@@ -17,30 +17,47 @@ export let userInput = {
           field: 'text',
           operand: 'contains',
           value: '{{email}}'
+        },
+        onMatch: {
+          action: 'fallthrough',
+        }
+      },
+      {
+        type: 'action',
+        body: {
+          action: 'collect',
+          source: {
+            entity: "message",
+            field: "text"
+          },
+          destination: {
+            entity: "subscriber",
+            field: "email"
+          }
         }
       }
     ]
   }
 }
 
-export let userInputSubscriber = {
-  displaySettings: {
-    subType: 'sub-input',
-    type: 'subscriber'
-  },
-  type: 'action',
-  body: {
-    action: 'collect',
-    source: {
-      entity: "message",
-      field: "text"
-    },
-    destination: {
-      entity: "subscriber",
-      field: "email"
-    }
-  }
-}
+// export let userInputSubscriber = {
+//   displaySettings: {
+//     subType: 'sub-input',
+//     type: 'subscriber'
+//   },
+//   type: 'action',
+//   body: {
+//     action: 'collect',
+//     source: {
+//       entity: "message",
+//       field: "text"
+//     },
+//     destination: {
+//       entity: "subscriber",
+//       field: "email"
+//     }
+//   }
+// }
 
 export let userInputZapier = {
   displaySettings: {
@@ -55,8 +72,8 @@ export let userInputZapier = {
         action: 'webhook',
         url: '',
         data: {
-          entity: 'subscriber',
-          field: 'email',
+          // entity: 'subscriber',
+          // field: 'email',
           status: null
         }
       }

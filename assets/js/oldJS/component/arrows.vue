@@ -1,10 +1,21 @@
 <template>
   <svg class="arrows" width="100%" height="100%">
+    <defs>
+      <symbol id="arrow-delete" width="20" height="20">
+        <text x="10" y="10" text-anchor="middle" font-size="20px" font-family="Arial" dy=".3em" fill="currenColor">&times</text>
+      </symbol>
+    </defs>
     <template v-for="path in pathes" v-if="path && path.line">
-      <circle :cx="path.begin.x" :cy="path.begin.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
-      <path :d="path.line"  fill="none" :stroke="path.color" :stroke-dasharray="path.arrowInfo.isExisting && '10 5'" :style="{'stroke-width': path.arrowInfo.hover ? 3 : 1}"></path>
-      <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 12}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" :fill="path.color"/>
-      <circle :cx="path.arrow.x" :cy="path.arrow.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color"/>
+      <g class="arrow-group" :fill="path.color" :style="{color: path.color}" @mouseover="$emit('mid-step-button', path)">
+        <path class="arrow-path" :d="path.line"  fill="none" :stroke="path.color" :stroke-dasharray="path.arrowInfo.isExisting && '10 5'" :style="{'stroke-width': path.arrowInfo.hover ? 3 : 1}"></path>
+        <path fill-rule="evenodd" :transform="`rotate(${path.arrow.angle}, ${path.arrow.x}, ${path.arrow.y}) translate(${path.arrow.x - 12}, ${path.arrow.y - 7})`" clip-rule="evenodd" d="M8 7L0 14L0 0L8 7Z" :fill="path.color"/>
+
+        <circle :cx="path.begin.x" :cy="path.begin.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color" @click="$emit('remove-link', path)"/>
+        <use class="arrow-times" :x="path.begin.x - 10" :y="path.begin.y - 10" xlink:href = "#arrow-delete"/>
+
+        <circle :cx="path.arrow.x" :cy="path.arrow.y" r="4" stroke-width="2" fill="#fff" :stroke="path.color" @click="$emit('remove-link', path)"/>
+        <use class="arrow-times" :x="path.arrow.x - 10" :y="path.arrow.y - 10" xlink:href = "#arrow-delete"/>
+      </g>
     </template>
   </svg>
 </template>
@@ -15,6 +26,7 @@ export default {
   data() {
     return {
       pathes: [],
+      showMidStepButton: false,
     }
   },
 
@@ -29,10 +41,9 @@ export default {
         const isToPoint = arrow.child == 'toPoint';
         let color = '#B2B2B2';
         let parent = getElement(arrow.parent);
-        let child = isToPoint ? this.$store.state.newPoint : getElement(arrow.child);
+        let child = getElement(arrow.child);
 
-        if (!parent || !child) return;
-
+        if (!parent || !child || !child.length) return;
 
         parent = parent[0] || parent;
         child = child[0] || child;
@@ -113,6 +124,7 @@ export default {
 
     getElement(id) {
       const findElement = container => {
+
         if (container.$refs.hasOwnProperty(id)) {
           element = container.$refs[id];
           return true
@@ -126,6 +138,10 @@ export default {
       findElement(refs);
 
       return element
+    },
+
+    initAddMidStep(path) {
+      console.log(path);
     }
   },
 
@@ -135,29 +151,6 @@ export default {
     }, 10)
   },
 
-  // watch: {
-  //   '$store.state.newPoint'(newValue) {
-
-  //     if (newValue) {
-  //       this.recalcPathes()
-  //     } else {
-  //       const { arrows } = this.$store.state;
-  //       const connectArrow = arrows.find(arrow => arrow.child === 'toPoint')
-
-  //       if (connectArrow) {
-  //         arrows.splice(arrows.indexOf(connectArrow), 1);
-  //       }
-
-  //       this.recalcPathes()
-  //     }
-  //   },
-
-  //   '$store.state.arrowConnectData'(value) {
-  //     if (value) return;
-
-  //     this.recalcPathes()
-  //   },
-  // }
 }
 </script>
 <style lang="scss">
@@ -168,5 +161,31 @@ export default {
     right: 0;
     z-index: 1;
     pointer-events: none;
+
+    .arrow-group {
+      pointer-events: all;
+
+      &:hover {
+        .arrow-path {
+          stroke-width: 3 !important;
+        }
+
+        circle {
+          r: 15 !important;
+          z-index: 2;
+          cursor: pointer;
+        }
+
+        .arrow-times {
+          opacity: 1;
+        }
+      }
+    }
+
+    .arrow-times {
+      opacity: 0;
+      cursor: pointer;
+      pointer-events: none;
+    }
   }
 </style>

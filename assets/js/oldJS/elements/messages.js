@@ -1,5 +1,4 @@
 import conditions from './conditions';
-import { userInput } from './userInput'
 
 let timeout = conditions.find(condition => condition.title === 'Timeout');
 
@@ -9,8 +8,6 @@ if (timeout) {
   timeout.template.displaySettings.type ='delay';
   timeout.template.displaySettings.subType ='message';
 }
-
-console.log(timeout.template);
 
 
 export default [
@@ -80,6 +77,5 @@ export default [
         },
       ]
     }
-  },
-  userInput
+  }
 ]
