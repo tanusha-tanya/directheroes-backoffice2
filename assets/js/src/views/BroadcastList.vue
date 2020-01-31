@@ -5,9 +5,9 @@
     <template v-if="currentAccountData">
       <div class="dh-campaigns-controls">
         <span></span>
-        <div class="dh-new-item-button" @click="isAddBroadcast = true">
+        <tariff-wrapper class="dh-new-item-button" @click.native="isAddBroadcast = true" :is-enabled="limitIsAvailable">
           <plus/><span>New broadcast</span>
-        </div>
+        </tariff-wrapper>
       </div>
       <div class="dh-list" v-if="broadcasts && broadcasts.length">
         <router-link :to="{ name: 'accountBroadcast', params:{ campaignId: campaign.id }}" class="dh-list-item" v-for="campaign in broadcasts" :key="campaign.id">
@@ -70,6 +70,8 @@ import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
 import loader from '../components/dh-loader'
+import TariffWrapper from '../components/dh-tariff-wrapper'
+import axios from 'axios'
 
 import ObjectId from '../../oldJS/utils/ObjectId'
 import triangle from '../../oldJS/assets/triangle.svg'
@@ -93,7 +95,8 @@ export default {
     dhConfirmDialog,
     loader,
     nocampaign,
-    triangle
+    triangle,
+    TariffWrapper
   },
 
   computed: {
@@ -123,11 +126,18 @@ export default {
       set(value) {
         this.broadcastToDelete = value;
       }
+    },
+
+    limitIsAvailable() {
+      const { getTariffParameter } = this;
+      const broadcastLimitTariff = getTariffParameter('broadcast_runtime_limit');
+
+      return broadcastLimitTariff && broadcastLimitTariff.remain
     }
   },
 
   methods: {
-     createBroadcast() {
+    createBroadcast() {
       const { newBroadcastName, $store, currentAccountData } = this;
       const { currentAccount } = $store.state;
 
@@ -164,6 +174,34 @@ export default {
       broadcastToDelete.isArchived = true;
       this.broadcastToDelete = false;
     },
+
+    updatePermissions() {
+      const { currentAccount } = this;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
+      }).then(({ data }) => {
+        currentAccount.subscriptionCapabilities = data.response.body;
+      })
+    }
+  },
+
+  created() {
+    const { currentAccount, updatePermissions } = this;
+
+    if (!currentAccount) return;
+
+    updatePermissions();
+  },
+
+  watch: {
+    currentAccount(account) {
+      const { updatePermissions } = this;
+
+      if (!account) return;
+
+      updatePermissions();
+    }
   }
 }
 </script>

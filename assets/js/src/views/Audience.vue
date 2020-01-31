@@ -101,8 +101,11 @@
             Campaigns
           </div>
           <div class="dh-spacer"></div>
+
           <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
-            <livechat/>
+            <tariff-wrapper :is-enabled="isLiveChatInTariff">
+              <livechat/>
+            </tariff-wrapper>
           </router-link>
         </router-link>
       </div>
@@ -134,6 +137,7 @@ import livechat from '../assets/livechat.svg'
 import search from '../assets/search.svg'
 import axios from 'axios';
 import loader from '../components/dh-loader'
+import TariffWrapper from '../components/dh-tariff-wrapper'
 import moment from 'moment';
 
 export default {
@@ -174,7 +178,8 @@ export default {
     dhExportDialog,
     livechat,
     loader,
-    search
+    search,
+    TariffWrapper
   },
 
   computed: {
@@ -236,6 +241,13 @@ export default {
       const { subscriberCategoryList } = this.currentAccount;
 
       return subscriberCategoryList;
+    },
+
+    isLiveChatInTariff() {
+      const { getTariffParameter } = this;
+      const liveChatTariff = getTariffParameter('live_chat')
+
+      return liveChatTariff && liveChatTariff.enabled
     }
   },
 

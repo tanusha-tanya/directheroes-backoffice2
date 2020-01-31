@@ -63,6 +63,9 @@
         <span v-if="inGetCount" class="broadcast-esimating">estimating...</span>
         <span v-else-if="totalSubscribers == null" class="broadcast-count-error">Failed to calculate</span>
         <span v-else>{{ totalSubscribers }}</span>
+        <tariff-wrapper :is-enabled="totalSubscribers <= reachLimitTariff">
+          <triangle/> This broadcast is set up to reach {{totalSubscribers}} subscribers, but your plan only allows up to {{reachLimitTariff}}. Last {{totalSubscribers - reachLimitTariff}} won't get the message <span v-if="false">Do you want to expand reach for ${plan.extraBroadcastParticipantPrice * (broadcast.totalSubscribers - plan.broadcastMaxReach)}?</span>
+        </tariff-wrapper>
       </div>
     </div>
   </div>
@@ -77,6 +80,8 @@ import axios from 'axios'
 import flowBuilder from '../component/flowBuilder.vue'
 import addStepPopup from '../component/addStepPopup.vue'
 import checkBoxBranch from '../component/checkBoxBranch.vue'
+import TariffWrapper from '../../src/components/dh-tariff-wrapper'
+import triangle from '../assets/triangle.svg'
 import moment from 'moment'
 
 let countTimeout = null;
@@ -104,7 +109,9 @@ export default {
   components: {
     flowBuilder,
     checkBoxBranch,
-    addStepPopup
+    addStepPopup,
+    TariffWrapper,
+    triangle
   },
 
   computed:{
@@ -242,6 +249,13 @@ export default {
       if (!broadcastRuntime) return true;
 
       return ['running', 'completed'].includes(broadcastRuntime.status);
+    },
+
+    reachLimitTariff() {
+      const { getTariffParameter } = this;
+      const broadcastReachLimitTariff = getTariffParameter('broadcast_runtime_limit');
+
+      return broadcastReachLimitTariff && broadcastReachLimitTariff.remain
     }
   },
 
@@ -249,12 +263,12 @@ export default {
     getTotalSubscribers() {
       const { categoryList } = this.currentBroadcast.settings;
 
-      if (!categoryList.length) {
-        this.totalSubscribers = 0
-        this.inGetCount = false;
+      // if (!categoryList.length) {
+      //   this.totalSubscribers = 0
+      //   this.inGetCount = false;
 
-        return;
-      }
+      //   return;
+      // }
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
@@ -348,9 +362,6 @@ export default {
         elements: []
       }
 
-      console.log(element);
-
-
       if (element.type === 'group') {
         const { elements } = element;
 
@@ -387,7 +398,8 @@ export default {
     'currentBroadcast'(broadcast) {
       if (!broadcast) return;
 
-      this.updateBroadcastStatus()
+      this.updateBroadcastStatus();
+      this.getTotalSubscribers()
     }
   }
 }
@@ -452,6 +464,25 @@ export default {
 
   .broadcast-additional-info {
     padding: 10px;
+
+    svg {
+      width: 15px;
+      margin-right: 3px;
+    }
+
+    .dh-disabled-by-tariff {
+      display: inline-flex;
+      margin-left: 10px;
+      cursor: pointer;
+
+      &:after {
+        display: none;
+      }
+    }
+
+    .dh-enabled-by-tariff {
+      display: none;
+    }
   }
 
   .broadcast-settings-info {
