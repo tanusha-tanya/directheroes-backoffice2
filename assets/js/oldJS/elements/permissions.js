@@ -24,6 +24,7 @@ export default {
     'user-input',
     'followers',
     'existingStep',
+    'removeCategory',
     'zapier',
     'verified'],
   fromLinkedMessageStep: [
@@ -39,6 +40,7 @@ export default {
     'timeout',
     'addCategory',
     'existingStep',
+    'removeCategory',
     'verified',
     'zapier'],
   fromCondition: [
@@ -48,6 +50,7 @@ export default {
     'followers',
     'addCategory',
     'existingStep',
+    'removeCategory',
     'zapier',
     'verified'],
   fromConditionTimeout: [
@@ -60,6 +63,7 @@ export default {
     'timeout',
     'followers',
     'existingStep',
+    'removeCategory',
     'addCategory',
     'verified'],
   fromUserInput: [
