@@ -10,11 +10,11 @@
   </div>
   <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
     <div class="dh-wizzard-step-body">
-      Please ask your colleagues to do not use the account while you're getting it connected, it might take up to 15 minutes.
+      Please ask your colleagues not to use the account while you're getting it connected, it might take up to 15 minutes.
     </div>
     <div class="el-dialog__footer">
       <button class="dh-button dh-reset-button" @click="currentState = 'checkpoint'">No one is using it</button>
-      <button class="dh-button" @click="$emit('close-wizzard')">It's in use, I have to waitt</button>
+      <button class="dh-button" @click="$emit('close-wizzard')">It's in use, I have to wait</button>
     </div>
   </div>
   <checkpoint v-else-if="currentState === 'checkpoint'" @re-login="relogin($event)"></checkpoint>
@@ -128,6 +128,14 @@ export default {
       //     })
       //   })
       // })
+    }
+  },
+
+  watch: {
+    currentState(newState) {
+      if (newState !== 'checkpoint') return;
+
+      this.$emit('set-title', 'Clear previous attempt')
     }
   }
 }
