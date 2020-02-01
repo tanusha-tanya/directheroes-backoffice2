@@ -314,6 +314,7 @@ export default {
 
   .dh-audience-controls {
     display: flex;
+    flex-wrap: wrap;
 
     & > span {
       flex-grow: 1;
