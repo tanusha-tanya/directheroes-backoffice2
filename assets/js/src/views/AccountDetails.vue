@@ -57,46 +57,43 @@ export default {
       const localDB = new PouchDB(`pouch-local-${ account.id}`)
       const remoteDB = new PouchDB(account.couchDbUrl);
 
-      localDB.replicate.from(remoteDB);
+      localDB.replicate.from(remoteDB).on('complete', () => {
+        localDB.get(String(accountId)).catch(error => {
+          if (error.status !== 404) return;
 
-      const syncDB = PouchDB.sync(localDB, remoteDB, {
-        live: true,
-        retry: true
-      }).on('change', result => {
-        const { currentAccountData } = this.$store.state
-        const resultDoc = result.change.docs[0];
-
-        if (currentAccountData._rev === resultDoc._rev) return;
-
-        delete resultDoc._revisions;
-
-        const delta = jsondiffpatch.diff(currentAccountData, resultDoc);
-
-        this.revUpdate = true
-
-        jsondiffpatch.patch(currentAccountData, delta);
-
-        console.log(update);
-      })
-
-      localDB.get(String(accountId)).catch(error => {
-        if (error.status !== 404) return;
-
-        return localDB.put({
-          _id: String(accountId),
-          campaigns: [],
+          return localDB.put({
+            _id: String(accountId),
+            campaigns: [],
+          })
         })
-      })
-      .then(record => {
-        if (record && record.ok) {
-          return localDB.get(String(accountId))
-        }
+        .then(record => {
+          if (record && record.ok) {
+            return localDB.get(String(accountId))
+          }
 
-        return record;
-      }).then(record => {
-        $store.commit('set', {path: 'currentAccountData', value: record})
-      })
+          return record;
+        }).then(record => {
+          $store.commit('set', {path: 'currentAccountData', value: record})
+        });
 
+        const syncDB = PouchDB.sync(localDB, remoteDB, {
+          live: true,
+          retry: true
+        }).on('change', result => {
+          const { currentAccountData } = this.$store.state
+          const resultDoc = result.change.docs[0];
+
+          if (currentAccountData._rev === resultDoc._rev) return;
+
+          delete resultDoc._revisions;
+
+          const delta = jsondiffpatch.diff(currentAccountData, resultDoc);
+
+          this.revUpdate = true
+
+          jsondiffpatch.patch(currentAccountData, delta);
+        })
+      });
 
       this.localDB = localDB;
     },
