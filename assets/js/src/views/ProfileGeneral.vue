@@ -22,6 +22,7 @@
               :tags="accounts"
               @tags-changed="newTags => tags = newTags"
               @before-adding-tag="addAccount"
+              @before-deleting-tag="deleteAccount"
             />
         </label>
     </div>
@@ -61,6 +62,11 @@ export default {
             this.accounts.push({'text': obj.tag.text, "tiClasses":["ti-valid"]});
 
             obj.addTag();
+        },
+
+        deleteAccount(obj) {
+            let index = this.accounts.findIndex(x => x.text === obj.tag.text);
+            this.accounts.splice(index, 1);
         },
 
         fillAccountList() {
