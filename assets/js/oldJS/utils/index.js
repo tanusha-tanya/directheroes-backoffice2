@@ -152,7 +152,7 @@ export default {
     const { campaignElementValidate } = this;
 
     return campaign.steps.find((step, stepIndex) => {
-      return step.elements.some(element => campaignElementValidate(element, !Boolean(stepIndex)))
+      return (step.displaySettings && step.displaySettings.rowIndex) || step.elements.some(element => campaignElementValidate(element, !Boolean(stepIndex)))
     });
   },
 

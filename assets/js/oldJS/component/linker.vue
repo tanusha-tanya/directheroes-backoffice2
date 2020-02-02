@@ -22,6 +22,9 @@ export default {
 
     linkerType() {
       const { linkerChild } = this;
+
+      if (!linkerChild) return;
+
       const firstElement = linkerChild.elements.find(element => !['checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
 
       return firstElement.displaySettings.subType || firstElement.type

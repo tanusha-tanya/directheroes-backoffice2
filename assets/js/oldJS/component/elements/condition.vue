@@ -16,19 +16,21 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Reply
-                <!-- <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getRule(element).onMatch"></add-tag-popup> -->
-                <add-trigger-popup :has-user-input="true" :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getRule(element).onMatch">
+                <add-trigger-popup
+                  :available-list="availableList(element)"
+                  @on-select="createStep(element, $event)"
+                  v-if="!getRule(element).onMatch">
                   <div class="add-step-button"></div>
                 </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 NO Reply
-                <add-tag-popup :available-list="availableList.filter(item => item !== 'user-input')" @add-step="createStep(element, $event, true)" v-if="!getRule(element).onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true)"
+                  :existing-link="getRule(element).onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -41,21 +43,21 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event)"
+                  :existing-link="getRule(element).onMatch"
+                  :builder="builder"
+                  ></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true)"
+                  :existing-link="getRule(element).onFail"
+                  :builder="builder"
+                  ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -68,21 +70,21 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event)"
+                  :existing-link="getRule(element).onMatch"
+                  :builder="builder"
+                ></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true)"
+                  :existing-link="getRule(element).onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -95,21 +97,21 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
                 Yes
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!element.onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event)"
+                  :existing-link="getRule(element).onMatch"
+                  :builder="builder"
+                ></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 No
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!element.onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true)"
+                  :existing-link="getRule(element).onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -123,12 +125,12 @@
               <template v-for="(subElement, index) in element.elements">
                 <div class="condition-item-match" v-if="subElement.type === 'rule'" :ref="element.id + index" :key="subElement.id" >
                   <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                  <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
-                  <add-mid-step-popup
-                    :available-list="availableList"
-                    @add-step="addMidStep($event, subElement)"
-                    v-else
-                  ></add-mid-step-popup>
+                  <add-tag-popup
+                    :available-list="availableList(element)"
+                    @select="createStep(element, $event, null, subElement)"
+                    :existing-link="subElement.onMatch"
+                    :builder="builder"
+                  ></add-tag-popup>
                   <div class="delete-condition-value" v-if="element.elements.length > 2" @click="deleteScarcityElement(subElement)">
                     <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -152,12 +154,12 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ lastScarcityRule.condition.value }}
-                <add-tag-popup :available-list="availableList" @add-step="createStep(lastScarcityRule, $event, true)" v-if="!lastScarcityRule.onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, lastScarcityRule, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true, lastScarcityRule)"
+                  :existing-link="lastScarcityRule.onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -171,19 +173,21 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id+'3'">
                 Then
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch"></add-tag-popup>
-                <!-- <add-trigger-popup :available-list="availableList" @on-select="createStep(element, $event)" v-if="!getWaitTillRule(element, 'time').onMatch">
-                  <div class="add-step-button"></div> -->
-                <!-- </add-trigger-popup> -->
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event)"
+                  :existing-link="getWaitTillRule(element, 'time').onMatch"
+                  :builder="builder"
+                ></add-tag-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 If late
-                <add-tag-popup :available-list="availableList" @add-step="createStep(element, $event, true)" v-if="!getWaitTillRule(element, 'runtime').onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, element, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true)"
+                  :existing-link="getWaitTillRule(element, 'runtime').onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
@@ -200,12 +204,12 @@
             <div class="condition-item-matches">
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
                 <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
-                <add-tag-popup :available-list="availableList" @add-step="createStep(subElement, $event)" v-if="!subElement.onMatch"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, subElement)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event, null, subElement)"
+                  :existing-link="subElement.onMatch"
+                  :builder="builder"
+                ></add-tag-popup>
                 <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteFollowersElement(subElement)">
                   <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -228,23 +232,18 @@
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
                 {{ elseText }}
-                <add-tag-popup :available-list="availableList" @add-step="createStep(lastFollowersRule, $event, true)" v-if="!lastFollowersRule.onFail"></add-tag-popup>
-                <add-mid-step-popup
-                  :available-list="availableList"
-                  @add-step="addMidStep($event, lastFollowersRule, true)"
-                  v-else
-                ></add-mid-step-popup>
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true, lastFollowersRule)"
+                  :existing-link="lastFollowersRule.onFail"
+                  :builder="builder"
+                ></add-tag-popup>
               </div>
             </div>
           </div>
         </template>
       </div>
     </template>
-    <div class="add-condition-button" v-if="false">
-      <add-condition-popup @on-select="addCondition" :available-list="availableConditionList">
-        <span>+ Add condition item</span>
-      </add-condition-popup>
-    </div>
   </div>
 </template>
 
@@ -254,13 +253,11 @@ import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
 import addTriggerPopup from '../addTriggerPopup';
 import addTagPopup from '../addTagPopup';
-import addMidStepPopup from '../addMidStep';
 import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning';
 import inputAutosize from '../inputAutosize';
 import keywords from '../keywords';
-import { userInputSubscriber } from '../../elements/userInput'
 
 export default {
   data() {
@@ -277,7 +274,7 @@ export default {
     }
   },
 
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   components: {
     addConditionPopup,
@@ -285,28 +282,17 @@ export default {
     addTagPopup,
     timeout,
     inputAutosize,
-    addMidStepPopup,
     addTriggerPopup,
     keywords
   },
 
   computed: {
-    availableConditionList() {
-      return []
-    },
-
     elseText() {
       const { lastFollowersRule, followersElement } = this;
       const countMethod = lastFollowersRule.condition.operand === 'gt' ? Math.min : Math.max;
       let countElement = followersElement.elements.reduce((accumulator, element) => countMethod(accumulator, element.condition.value), lastFollowersRule.condition.value) ;
 
       return `${countElement} or ${ lastFollowersRule.condition.operand === 'gt' ? 'less' : 'greater' }`;
-    },
-
-    availableList() {
-      const { triggers, elements } = this.dhAccount.flowBuilderSettings;
-
-      return elementsPermissions.fromCondition.concat(triggers.messageTypes, elements)
     },
 
     lastFollowersRule() {
@@ -331,8 +317,10 @@ export default {
   },
 
   methods: {
-    addCondition() {
+    availableList(element, isFail) {
+      const { builder } = this;
 
+      return builder.availableListByElement(element, isFail)
     },
 
     addScarcityCondition() {
@@ -363,63 +351,29 @@ export default {
       return element.elements.find(element => element.type === 'rule')
     },
 
-    createStep(condition, element, onFail) {
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-      let matchElement;
-      let subStep = null;
+    createStep(condition, element, onFail, currentRule) {
+      const { getWaitTillRule, builder } = this;
+      const { displaySettings, id } = condition;
+      const isExistingStep = element.type === 'existingStep';
+      let conditionElement = condition;
 
-      if (element.type === 'group') {
+      if (displaySettings.type === 'waitTillCondition') {
+        const waitTillRule = getWaitTillRule(condition, onFail ? 'runtime' : 'time')
 
-
-        element.elements.forEach(element => {
-          element.id = (new ObjectId).toString()
-        })
-
-        if (element.displaySettings.subType === 'user-input') {
-          const rule = element.elements.find(element => element.type === 'rule');
-
-          subStep = {
-            id: (new ObjectId).toString(),
-            elements: [
-              {
-                id: (new ObjectId).toString(),
-                ...userInputSubscriber
-              }
-            ]
-          }
-
-          rule.onMatch = {action: 'goto', target: subStep.id}
+        conditionElement = {
+          id,
+          displaySettings,
+          elements:[waitTillRule]
+        }
+      } else if (['followers', 'scarcity'].includes(displaySettings.type)) {
+        conditionElement = {
+          id,
+          displaySettings,
+          elements:[currentRule]
         }
       }
 
-      if (condition.type === 'rule') {
-        matchElement = condition;
-      } else {
-        if (condition.displaySettings.type === 'waitTillCondition') {
-          matchElement = this.getWaitTillRule(condition, onFail ? 'runtime' : 'time')
-        } else {
-          matchElement = condition.elements.find(element => element.type === 'rule');
-        }
-      }
-
-      Vue.set(matchElement, onFail ? 'onFail' : 'onMatch', {
-        action: 'goto',
-        target: step.id
-      });
-
-      this.$emit('add-step', step, condition );
-
-      if (subStep) {
-        this.$emit('add-step', subStep);
-      }
+      builder.addStep(conditionElement, element, onFail)
     },
 
     setRulesOperand(value) {
@@ -452,40 +406,6 @@ export default {
       }
 
       scarcityElement.elements.splice(scarcityElement.elements.indexOf(element), 1);
-    },
-
-    addMidStep(element, condition, onFail) {
-      const step = {
-        id: (new ObjectId).toString(),
-        elements: [
-          {
-            id: (new ObjectId).toString(),
-            ...element
-          }
-        ]
-      }
-      let rule = condition;
-      let link;
-
-      if (condition.type !== 'rule') {
-        rule = this.getRule(condition);
-      }
-
-      if (onFail) {
-        link = rule.onFail;
-      } else {
-        link = rule.onMatch;
-      }
-
-      step.elements.push({
-        id: (new ObjectId).toString(),
-        type: 'linker',
-        target: link.target
-      })
-
-      link.target = step.id;
-
-      this.$emit('add-step', step);
     },
 
     getWaitTillRule(element, entityType) {

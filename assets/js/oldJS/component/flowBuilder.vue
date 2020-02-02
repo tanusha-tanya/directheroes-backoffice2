@@ -20,8 +20,8 @@
         </svg>
       </div>
     </div>
-    <div class="builder-area" ref="builderArea" @click="$store.commit('set', {path: 'existConnection', value: null })">
-      <div class="steps-row" v-for="(stepRow, rowIndex) in stepRows" :key="rowIndex">
+    <div class="builder-area" ref="builderArea" @click="builder.parentOfExistStep = null">
+      <div class="steps-row" v-for="(stepRow, rowIndex) in builder.scheme" :key="rowIndex">
         <template v-for="(stepRowItem, rowItemIndex) in stepRow">
           <div class="step-item empty-blank" v-if="!stepRowItem" :key="rowItemIndex"></div>
           <step-item
@@ -29,9 +29,7 @@
             :class="{'entry-step': !rowIndex}"
             :step="stepRowItem"
             :flow-name="!rowIndex && entryItem.name"
-            @add-step="addStep"
-            @delete-step="deleteStep"
-            :key="rowItemIndex"
+            :key="stepRowItem.id"
             :campaign-type="entryItem.type"
             :step-row-index="rowIndex"
             :ref="stepRowItem.id"
@@ -39,8 +37,14 @@
             ></step-item>
         </template>
       </div>
-      <arrows ref="subArrows" class="sub-arrows" :refs="builder" :arrows="subArrows" :scale="scaleValue"></arrows>
-      <arrows ref="arrows" :refs="builder" :arrows="arrows" :scale="scaleValue"></arrows>
+      <arrows ref="subArrows" class="sub-arrows" :refs="builderArea" :arrows="builder.subArrows" :scale="scaleValue"></arrows>
+      <arrows ref="arrows" :refs="builderArea" :arrows="builder.arrows" :scale="scaleValue" @remove-link="builder.deleteLink" @mid-step-button="toggleMidStepButton"></arrows>
+      <add-step-popup
+        class="dh-mid-campaign-button"
+        v-if="midStepButtonData"
+        :style="midStepButtonData.style"
+        :available-list="availableList"
+        @select="addMidStep"/>
     </div>
   </div>
 </template>
@@ -50,8 +54,11 @@ import panzoom from 'panzoom';
 import stepItem from './stepItem';
 import arrows from './arrows';
 import Vue from 'vue';
-import utils from '../utils';
+import Builder from '../../src/builder';
+import addStepPopup from './addStepPopup'
+// import utils from '../utils';
 import ObjectId from '../utils/ObjectId';
+import stepItemVue from './stepItem.vue';
 
 let zoomTimeout = null;
 
@@ -62,6 +69,8 @@ export default {
       scaleValue: 1,
       arrows: [],
       subArrows: [],
+      builder: null,
+      midStepButtonData: null,
     }
   },
 
@@ -70,80 +79,10 @@ export default {
   components: {
     stepItem,
     arrows,
+    addStepPopup
   },
 
   computed: {
-    stepRows() {
-      const { steps } = this.entryItem;
-      const stepRows = [[steps[0]]];
-      const arrows = [];
-      const subArrows = [];
-      const getLinkElements = (row) => {
-        let linkElements = [];
-
-        row.forEach(stepRow => {
-          if (!stepRow) return;
-
-          stepRow.elements.filter(element => (element.type === 'group' && element.displaySettings.subType !== 'settings') || element.type === 'rule' || element.type === 'linker').forEach(element => {
-            const elementAction = (matchElement, suffix = '') => {
-              const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-              const failTarget = matchElement.onFail && matchElement.onFail.target;
-
-              if (matchElement.type === 'linker' && matchElement.displaySettings) {
-
-              } else {
-                linkElements.push(target || null);
-              }
-
-              if (matchElement.type !== 'linker' && failTarget) {
-                arrows.push({parent: `${element.id}-fail`, child: failTarget, stepId: stepRow.id});
-                linkElements.push(failTarget)
-              }
-
-              if (target) {
-                const arrowObject = { parent: element.id + suffix, child: target, stepId: stepRow.id }
-
-                if (matchElement.type === 'linker' && matchElement.displaySettings) {
-                  subArrows.push({ ...arrowObject, isExisting: true});
-                } else {
-                  arrows.push(arrowObject);
-                }
-              }
-            };
-
-            if (element.displaySettings && ['followers', 'scarcity', 'waitTillCondition'].includes(element.displaySettings.type)) {
-              element.elements.forEach(elementAction);
-            } else {
-              elementAction(utils.getOnMatchElement(element));
-            }
-          })
-        });
-
-        if (!linkElements.length || !linkElements.some(elementTarget => elementTarget)) return;
-
-        linkElements = linkElements.map(elementTarget => {
-          if (!elementTarget) return elementTarget;
-
-          return steps.find(step => step.id === elementTarget)
-        });
-
-        stepRows.push(linkElements);
-
-        getLinkElements(linkElements);
-      };
-
-      getLinkElements(stepRows[0])
-
-      this.arrows = arrows;
-      this.subArrows = subArrows;
-
-      return stepRows
-    },
-
-    builder() {
-      return this
-    },
-
     globalError() {
       const { globalError } = this.$store.state;
 
@@ -172,115 +111,40 @@ export default {
     },
 
     isBroadcast() {
-      return entryItem.type === 'broadcast';
+      const { builder, midStepButtonData } = this;
+
+      return builder.isBroadcast;
+    },
+
+    builderArea() {
+      return this;
+    },
+
+    availableList() {
+      const { builder, midStepButtonData } = this;
+      const { child } = midStepButtonData.path.arrowInfo;
+      const parentMatchElement = builder.getMatchElementsByTargetId(child)[0]
+
+      const isFailMatch = parentMatchElement.onFail && parentMatchElement.onFail.target === child
+      let searchElement;
+
+      builder.steps.some(step => step.elements.some(element => {
+        const matchElements = builder.getAllMatchElements(element);
+
+        return matchElements.some(matchElement => {
+          if (parentMatchElement !== matchElement) return;
+
+          searchElement = element.type === 'linker'? step.elements[0] : element;
+
+          return true;
+        })
+      }))
+
+      return builder.availableListByElement(searchElement, isFailMatch).filter(element => element !== 'existingStep')
     }
   },
 
   methods: {
-    addStep(step, parentElement) {
-      const { entryItem } = this;
-      const firstElementSettings = step.elements[0];
-
-      switch (firstElementSettings.displaySettings.subType) {
-        case 'message':
-          step.name = 'New message'
-
-          if (['delay', 'delayTill'].includes(firstElementSettings.displaySettings.type)) {
-            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-
-            action.body.checkpointId = checkpoint.id;
-          }
-          break;
-        case 'condition':
-          step.name = 'Condition'
-
-          if (['timeout', 'waitTillCondition'].includes(firstElementSettings.displaySettings.type)) {
-            const checkpoint = firstElementSettings.elements.find(element => element.type === 'checkpoint');
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-
-            action.body.checkpointId = checkpoint.id;
-          } else if (firstElementSettings.displaySettings.type === 'scarcity') {
-            const action = firstElementSettings.elements.find(element => element.type === 'action');
-            const rule = firstElementSettings.elements.find(element => element.type === 'rule');
-
-            rule.condition.field = action.id;
-          }
-
-          break;
-        case 'action':
-          step.name = 'Action'
-          break;
-        case 'trigger':
-          step.name = 'Trigger';
-
-          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
-            step.elements.splice(0,0, {
-              type: 'checkpoint',
-              id: (new ObjectId).toString()
-            })
-          }
-
-          break;
-        case 'user-input':
-          step.name = 'User Input'
-
-          if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
-            step.elements[0].elements.splice(0,0, {
-              type: 'checkpoint',
-              id: (new ObjectId).toString()
-            })
-          }
-
-          break;
-        case 'sub-input':
-          step.name = 'Collect'
-          break;
-      }
-
-      entryItem.steps.push(step);
-    },
-
-    deleteStep(step) {
-      const { steps } = this.entryItem;
-      const userInputElement = step.elements.find(element => element.displaySettings && element.displaySettings.subType == "user-input")
-
-      steps.forEach(stepItem => stepItem.elements.forEach( (element, index) => {
-        const actionElement = (matchElement) => {
-          if (!matchElement) return;
-
-          const target = matchElement.target || (matchElement.onMatch && matchElement.onMatch.target);
-          const failTarget = matchElement.target || (matchElement.onFail && matchElement.onFail.target);
-
-          if ((target !== step.id) && (failTarget !== step.id)) return;
-
-
-          if (element.type == 'linker') {
-            stepItem.elements.splice(index, 1)
-          } else {
-            Vue.set(matchElement, failTarget === step.id ? 'onFail' : 'onMatch', undefined);
-          }
-
-          return true;
-        };
-
-        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
-          element.elements.some(actionElement);
-        } else {
-          return actionElement(utils.getOnMatchElement(element));
-        }
-      }))
-
-      if (userInputElement) {
-        const matchElement = utils.getOnMatchElement(userInputElement);
-        const subStep = steps.find(step => step.id === matchElement.onMatch.target);
-
-        steps.splice(steps.indexOf(subStep), 1)
-      }
-
-      steps.splice(steps.indexOf(step), 1)
-    },
-
     initZoom() {
       const zoomTool = panzoom(this.$refs.builderArea, {
         maxZoom: 2,
@@ -337,31 +201,52 @@ export default {
       zoomTool.moveTo(positionX, positionY);
     },
 
-    stepsInOneBranch(endStepId, searchStepId) {
-      const { arrows, stepsInOneBranch } = this;
-      const endStepConnection = arrows.find(arrow => arrow.child === endStepId);
-
-      if (!endStepConnection) return;
-
-      if (endStepConnection.stepId === searchStepId) {
-        return true
-      } else {
-        return stepsInOneBranch(endStepConnection.stepId, searchStepId)
+    toggleMidStepButton(path) {
+      this.midStepButtonData = {
+        style: {
+          top: `${path.begin.y + (path.arrow.y - path.begin.y) / 2 - 14}px`,
+          left: `${path.begin.x + (path.arrow.x - path.begin.x) / 2 - 14}px`,
+          position: 'absolute',
+          'z-index': 20
+        },
+        path
       }
     },
 
-    getStepArrows(stepId) {
-      const { arrows, subArrows } = this;
-      const stepArrows = [];
+    addMidStep(element) {
+      const { builder, midStepButtonData } = this;
+      const { parent, child } = midStepButtonData.path.arrowInfo;
+      const postFix = parent.substr(24);
+      const isFail = /fail/.test(postFix);
+      let parentElement = builder.getElementById(parent.substr(0, 24));
 
-      arrows.concat(subArrows).forEach(arrow => {
-        if (arrow.stepId !== stepId && arrow.child !== stepId) return;
+      if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
+        const matchRule = parentElement.elements[isFail ? parentElement.elements.length-1 : parseInt(postFix)];
 
-        stepArrows.push(arrow);
-      })
+        parentElement = {
+          displaySettings: parentElement.displaySettings,
+          elements:[matchRule]
+        }
+      } else if (parentElement.displaySettings && parentElement.displaySettings.type === 'waitTillCondition') {
+        const matchRule = parentElement.elements.find(element => element.type === 'rule' && element.condition.entity === isFail ? 'runtime' : 'time')
 
-      return stepArrows;
+        parentElement = {
+          displaySettings: parentElement.displaySettings,
+          elements:[matchRule]
+        }
+      }
+
+      builder.addStep(parentElement, element, isFail)
     }
+  },
+
+  created() {
+    const { entryItem, dhAccount, findEntryStep } = this;
+    const builder = Builder.create(entryItem, dhAccount);
+
+    builder.findEntryStep = findEntryStep;
+
+    this.builder = builder;
   },
 
   mounted() {
@@ -370,14 +255,14 @@ export default {
 
     if (!builderArea || !entryItem) return;
 
+    this.initZoom();
+    this.findEntryStep();
+
     this.$nextTick(() => {
-      const { builderArea } = this.$refs
+      const { builderArea } = this.$refs;
 
-      builderArea.style.width = `${builderArea.scrollWidth + builderArea.scrollLeft}px`;
+      builderArea.style.width = `${builderArea.scrollWidth}px`;
       builderArea.style.height = `${builderArea.scrollHeight}px`
-
-      this.initZoom();
-      this.findEntryStep();
     });
   },
 
@@ -385,26 +270,28 @@ export default {
     entryItem: {
       handler: function (entry, oldEntry) {
 
+        this.midStepButtonData = null;
+
+        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
+        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
+
         if (entry) {
-          if (this._isMounted) {
-            this.$nextTick(() => {
-              const { builderArea } = this.$refs;
-
-              builderArea.style.width = `${builderArea.scrollWidth + builderArea.scrollLeft}px`;
-              builderArea.style.height = `${builderArea.scrollHeight}px`
-            });
-          }
-
           if (!oldEntry && this._isMounted) {
             this.$nextTick(() => {
               this.initZoom();
               this.findEntryStep();
             });
           };
-        }
 
-        if (this.$refs.arrows) this.$nextTick(this.$refs.arrows.recalcPathes);
-        if (this.$refs.subArrows) this.$nextTick(this.$refs.subArrows.recalcPathes);
+          if (this._isMounted) {
+            this.$nextTick(() => {
+              const { builderArea } = this.$refs;
+
+              builderArea.style.width = `${builderArea.scrollWidth}px`;
+              builderArea.style.height = `${builderArea.scrollHeight}px`
+            });
+          }
+        }
 
         if (!oldEntry || !entry || entry.id !== oldEntry.id) {
           return;
@@ -445,6 +332,10 @@ export default {
 
   .sub-arrows {
     z-index: -1;
+
+    path, circle {
+      pointer-events: none;
+    }
   }
 
   input {
@@ -503,6 +394,41 @@ export default {
 
     .el-input__suffix {
       display: none;
+    }
+  }
+
+  .add-step-button {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: calc(50% - 1px);
+      left: calc(50% - 7px);
+      height: 2px;
+      background-color: #ccc;
+      width: 14px;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 7px);
+      left: calc(50% - 1px);
+      height: 14px;
+      background-color: #ccc;
+      width: 2px;
+    }
+
+    &:hover {
+      &:after, &:before {
+        background-color: #6A12CB;
+      }
     }
   }
 }

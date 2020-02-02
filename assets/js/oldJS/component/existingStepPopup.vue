@@ -4,7 +4,7 @@
     <slot></slot>
   </template>
     <div class="action-item" @click="emitAction('find-step')">
-      Go to existing step
+      Show target step
     </div>
     <div class="action-item" @click="emitAction('unbind-step')">
       Unbind

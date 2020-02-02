@@ -24,7 +24,7 @@
                   </el-select>
                 </div>
                 <template v-if="!isInbox">
-                  <div :class="{'dh-select':true, 'dh-is-selected': filters.verified}">
+                  <div :class="{'dh-select':true, 'dh-is-selected': filters.verified}" >
                     <div class="dh-select-title">Verified</div>
                     <el-select v-model="filters.verified" size="small" popper-class="dh-select-popper">
                       <el-option label="All" :value="null"></el-option>
@@ -32,7 +32,7 @@
                       <el-option label="Not Verified" :value="false"></el-option>
                     </el-select>
                   </div>
-                  <div class="dh-option" v-if="$route.query.sub !== 'ignored'"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
+                  <div class="dh-option"><el-checkbox v-model="isCategoryFilters">Categories</el-checkbox></div>
                   <div class="dh-search-input-campaigns-list" v-if="isCategoryFilters">
                     <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="filters.categories"></check-box-branch>
                   </div>

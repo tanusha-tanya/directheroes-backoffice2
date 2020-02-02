@@ -2,19 +2,19 @@
   <div class="dh-view dh-dashboard-view">
     <dh-header title="Dashboard"></dh-header>
     <div class="dh-view-content">
-      <div class="dh-dashboard-ig-account" v-if="account">
-        <div class="dh-dashboard-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
+      <div class="dh-ig-account" v-if="account">
+        <div class="dh-ig-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
         </div>
-        <div class="dh-dashboard-ig-account-info">
-          <div class="dh-dashboard-ig-account-main">
-            <div class="dh-dashboard-ig-account-name">{{ account.login }}</div>
-            <div class="dh-dashboard-ig-account-data">
+        <div class="dh-ig-account-info">
+          <div class="dh-ig-account-main">
+            <div class="dh-ig-account-name">{{ account.login }}</div>
+            <div class="dh-ig-account-data">
               <span><strong>{{ account.postCount || 0 }}</strong> posts</span>
               <span><strong>{{ account.followerCount || 0 }}</strong> followers</span>
               <span><strong>{{ account.followingCount || 0 }}</strong> following</span>
             </div>
           </div>
-          <div class="dh-dashboard-ig-account-bio" v-html="account.bio && account.bio.replace(/\n/g, '<br>')">
+          <div class="dh-ig-account-bio" v-html="account.bio && account.bio.replace(/\n/g, '<br>')">
           </div>
         </div>
       </div>
@@ -379,54 +379,6 @@ export default {
 
 <style lang="scss">
 .dh-dashboard-view {
-  .dh-dashboard-ig-account {
-    padding: 31px 36px 35px 27px;
-    border-radius: 4px;
-    background-color: $sectionBG;
-    min-height: 198px;
-    display: flex;
-    align-items: flex-start;
-  }
-
-  .dh-dashboard-title {
-    font-size: 18px;
-    line-height: 22px;
-    color: #778CA2;
-    margin-top: 46px;
-  }
-
-  .dh-dashboard-userpic {
-    width: 110px;
-    height: 110px;
-    background-color: rgba($borderColor, .5);
-    border-radius: 50%;
-    background-position: center;
-    background-size: cover;
-    flex-shrink: 0;
-    margin-right: 42px;
-  }
-
-  .dh-dashboard-ig-account-info {
-    flex-grow: 1;
-  }
-
-  .dh-dashboard-ig-account-main {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .dh-dashboard-ig-account-name {
-    line-height: 22px;
-    font-size: 18px
-  }
-
-  .dh-dashboard-ig-account-data  span {
-    font-weight: 300;
-    margin-left: 15px;
-  }
-
   .dh-campaigns {
     margin-top: 46px;
   }

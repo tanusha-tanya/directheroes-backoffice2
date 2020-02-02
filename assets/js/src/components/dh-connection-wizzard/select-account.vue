@@ -105,7 +105,6 @@ export default {
         this.$emit('set-account', account_info)
       })
     }
-
   }
 }
 </script>

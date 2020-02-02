@@ -1,3 +1,7 @@
+/**
+ * ToDo:
+ * Next version: Remove all permission except for Condition
+ */
 export default {
   fromFlow: [],
   fromTrigger: [
@@ -6,6 +10,7 @@ export default {
     'delay',
     'addCategory',
     'removeCategory',
+    'existingStep',
     'followers',
     'zapier',
     'verified'],
@@ -18,8 +23,15 @@ export default {
     'timeout',
     'user-input',
     'followers',
+    'existingStep',
+    'removeCategory',
     'zapier',
     'verified'],
+  fromLinkedMessageStep: [
+    'sendText',
+    'sendMedia',
+    'delay',
+  ],
   fromActionStep: [
     'sendText',
     'sendMedia',
@@ -28,6 +40,7 @@ export default {
     'timeout',
     'addCategory',
     'existingStep',
+    'removeCategory',
     'verified',
     'zapier'],
   fromCondition: [
@@ -36,14 +49,21 @@ export default {
     'delay',
     'followers',
     'addCategory',
+    'existingStep',
+    'removeCategory',
     'zapier',
     'verified'],
+  fromConditionTimeout: [
+    'user-input',
+  ],
   fromUserInputFails: [
     'sendText',
     'sendMedia',
     'delay',
     'timeout',
     'followers',
+    'existingStep',
+    'removeCategory',
     'addCategory',
     'verified'],
   fromUserInput: [
@@ -52,6 +72,7 @@ export default {
     'delay',
     'followers',
     'zapier',
+    'existingStep',
     'addCategory',
     'removeCategory',
     'verified'],
