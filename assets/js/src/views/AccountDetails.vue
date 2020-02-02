@@ -55,7 +55,9 @@ export default {
       }
 
       const localDB = new PouchDB(`pouch-local-${ account.id}`)
-      const remoteDB = new PouchDB(account.couchDbUrl)
+      const remoteDB = new PouchDB(account.couchDbUrl);
+
+      localDB.replicate.from(remoteDB);
 
       const syncDB = PouchDB.sync(localDB, remoteDB, {
         live: true,
@@ -64,13 +66,17 @@ export default {
         const { currentAccountData } = this.$store.state
         const resultDoc = result.change.docs[0];
 
-        delete resultDoc._revisions
+        if (currentAccountData._rev === resultDoc._rev) return;
+
+        delete resultDoc._revisions;
 
         const delta = jsondiffpatch.diff(currentAccountData, resultDoc);
 
         this.revUpdate = true
 
         jsondiffpatch.patch(currentAccountData, delta);
+
+        console.log(update);
       })
 
       localDB.get(String(accountId)).catch(error => {
@@ -98,7 +104,11 @@ export default {
     saveAccountData: debounce(function (data) {
       const { localDB } = this;
 
-      localDB.put(data);
+      localDB.put(data).then(result => {
+        this.revUpdate = true;
+
+        data._rev = result.rev;
+      });
     }, 500)
   },
 
