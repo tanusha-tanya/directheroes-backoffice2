@@ -42,6 +42,10 @@
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
+              <div class="dh-option" v-if="account.isBusinessAccount">
+                <span>Approve message requests <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message" v-if="false"></dh-question-mark></span>
+                <el-switch v-model="approvePendingToGeneral" :disabled="isPreview"  active-text="To General" inactive-text="To Primary"></el-switch>
+              </div>
               <div class="dh-option" v-if="false">
                 <div class="dh-half-size">Schedule campaign start</div>
                 <div class="dh-option-controls dh-half-size">
@@ -178,6 +182,12 @@ export default {
   },
 
   computed: {
+    account() {
+      const { currentAccount } = this.$store.state;
+
+      return currentAccount
+    },
+
     hasWarning() {
       const { currentCampaign } = this;
 
@@ -306,6 +316,24 @@ export default {
         campaignSettings.closeAtSetAt = moment().utc().format();
       }
     },
+
+    approvePendingToGeneral: {
+      get() {
+        const { currentCampaign } = this;
+
+        if(!currentCampaign.settings) {
+          Vue.set(currentCampaign, 'settings', {});
+        }
+
+        return Boolean(currentCampaign.settings.approvePendingToGeneral);
+      },
+
+      set(value) {
+        const { currentCampaign } = this;
+
+        Vue.set(currentCampaign.settings, 'approvePendingToGeneral', value);
+      }
+    }
   },
 
   methods: {
@@ -471,7 +499,7 @@ export default {
   .dh-option {
     padding: 0;
     margin-bottom: 10px;
-    align-items: flex-start;
+    align-items: center;
 
     .dh-half-size {
       max-width: 50%;
@@ -486,6 +514,15 @@ export default {
     .dh-one-third-size {
       max-width: 30%;
       flex-grow: 1;
+    }
+
+    .el-switch {
+      width: 50%;
+      justify-content: center;
+    }
+
+    & > span {
+      width: 50%;
     }
   }
 

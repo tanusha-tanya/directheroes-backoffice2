@@ -197,6 +197,20 @@ div.el-switch.is-checked .el-switch__core {
   background-color: $elementActiveColor;
 }
 
+span.el-switch__label {
+  span {
+    font-size: 10px;
+    color: #606266;
+  }
+
+  &.is-active {
+    span {
+      color: #9E4CF9;
+    }
+  }
+}
+
+
 .el-slider__bar {
   height: 6px;
   background-color: #9E4CF9;
