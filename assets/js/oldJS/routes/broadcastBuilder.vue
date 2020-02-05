@@ -287,7 +287,7 @@ export default {
     },
 
     setBroadcastStart() {
-      const { currentAccount, currentBroadcast } = this
+      const { currentAccount, currentBroadcast, totalSubscribers } = this
       const { settings } = this.currentBroadcast;
 
       clearTimeout(this.broadcastStartTimeout);
@@ -298,7 +298,8 @@ export default {
           method: 'post',
           data: {
             accountId: currentAccount.id,
-            startAt: settings.startAt
+            startAt: settings.startAt,
+            expectedReach: totalSubscribers
           }
         }).then(({ data }) => {
           this.broadcastRuntime = data.response.body.broadcastRuntime
