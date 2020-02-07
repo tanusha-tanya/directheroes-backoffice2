@@ -3,14 +3,17 @@
     <el-select
       :value="value"
       :placeholder="placeholder || 'Matches any text, click to edit'"
-      popper-class="keywords-dropdown"
+      :popper-class="list ? '' : 'keywords-dropdown'"
       multiple
       filterable
-      allow-create
+      :allow-create="isAllowCreate"
       default-first-option
       @change="keywordsChange"
       @keydown.native="keywordsKeydown"
     >
+      <template v-if="list">
+        <el-option v-for="item in list" :key="item.id" :value="item.name" :label="item.name"></el-option>
+      </template>
     </el-select>
   </div>
 </template>
@@ -20,20 +23,23 @@ export default {
     return {
       intermediateValue: '',
       isActionRename: false,
+      newValue: '',
     }
   },
 
-  props: ['value', 'placeholder'],
+  props: ['value', 'placeholder', 'list', 'isAllowCreate'],
 
   methods: {
     keywordsChange(value) {
       this.$emit('change', value);
-      this.$emit('input', value.filter(keyword => keyword.trim()))
+      this.$emit('input', value.filter(keyword => keyword.trim()));
+
+      this.newValue = '';
     },
 
     keywordsKeydown(event) {
       const { target } = event;
-      const { value } = this;
+      const { value, isAllowCreate } = this;
 
       if ([188, 9].includes(event.keyCode)) {
 
@@ -53,6 +59,10 @@ export default {
         target.value = '';
 
         return false;
+      }
+
+      if (isAllowCreate) {
+        this.newValue = target.value;
       }
     }
   }

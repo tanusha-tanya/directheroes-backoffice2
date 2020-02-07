@@ -383,6 +383,13 @@ export default {
     margin-top: 46px;
   }
 
+  .dh-dashboard-title {
+    font-size: 18px;
+    line-height: 22px;
+    margin-top: 46px;
+    color: #778CA2;
+  }
+
   .dh-dashboard-analytics {
     display: flex;
     max-width: 100%;
