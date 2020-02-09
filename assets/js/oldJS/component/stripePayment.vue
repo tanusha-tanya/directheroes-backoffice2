@@ -238,7 +238,7 @@ export default {
     const referrer = /ref=([^&]*)/.exec(location.search);
 
     if (referrer && referrer[1]) {
-      document.cookie = 'referrer=' + referrer[1] + '; path=/'
+      document.cookie = 'referrer=' + referrer[1] + '; path=/; max-age=2592000'
     }
 
     if (stripePk) {
