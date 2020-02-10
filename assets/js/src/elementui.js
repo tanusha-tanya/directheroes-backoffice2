@@ -16,7 +16,9 @@ import {
   Tooltip,
   DatePicker,
   Radio,
-  Progress
+  Progress,
+  TabPane,
+  Tabs
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -37,6 +39,8 @@ import 'element-ui/lib/theme-chalk/checkbox.css';
 import 'element-ui/lib/theme-chalk/radio.css';
 import 'element-ui/lib/theme-chalk/date-picker.css';
 import 'element-ui/lib/theme-chalk/progress.css';
+import 'element-ui/lib/theme-chalk/tabs.css';
+import 'element-ui/lib/theme-chalk/tab-pane.css';
 
 
 Vue.use(Select);
@@ -56,3 +60,5 @@ Vue.use(DatePicker);
 Vue.use(Checkbox);
 Vue.use(Radio);
 Vue.use(Progress);
+Vue.use(Tabs);
+Vue.use(TabPane);

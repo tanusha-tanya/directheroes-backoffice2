@@ -50,6 +50,9 @@
               <div class="dh-option" @click="prepareToClone(campaign)">
                 <duplicated  /> Clone
               </div>
+              <div class="dh-option" @click="$router.push({ name: 'accountCampaignStatistics', params: { campaignId: campaign.id } })">
+                <duplicated  /> Campaign perfomance
+              </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
               <ellipsis />
