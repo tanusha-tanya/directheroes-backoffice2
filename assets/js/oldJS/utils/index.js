@@ -32,7 +32,7 @@ const campaignElementValidate = (element, isEntry, mainType) => {
           }
           break;
         case 'sendText':
-          if (!text) {
+          if (!text.trim()) {
             warning = 'Enter text'
           }
           break;

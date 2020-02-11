@@ -352,9 +352,6 @@ export default {
         elements: []
       }
 
-      console.log(element);
-
-
       if (element.type === 'group') {
         const { elements } = element;
 
