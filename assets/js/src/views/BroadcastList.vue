@@ -169,10 +169,12 @@ export default {
     },
 
     deleteCampaign() {
-      const { broadcastToDelete } = this;
+      const { broadcastToDelete, updatePermissions } = this;
 
       broadcastToDelete.isArchived = true;
       this.broadcastToDelete = false;
+
+      updatePermissions();
     },
 
     updatePermissions() {

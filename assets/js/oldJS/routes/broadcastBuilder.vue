@@ -253,7 +253,7 @@ export default {
 
     reachLimitTariff() {
       const { getTariffParameter } = this;
-      const broadcastReachLimitTariff = getTariffParameter('broadcast_runtime_limit');
+      const broadcastReachLimitTariff = getTariffParameter('broadcast_reach_limit');
 
       return broadcastReachLimitTariff && broadcastReachLimitTariff.remain
     }

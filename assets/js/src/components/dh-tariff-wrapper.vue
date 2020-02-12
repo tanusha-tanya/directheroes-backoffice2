@@ -2,7 +2,7 @@
   <div class="dh-enabled-by-tariff" v-if="isEnabled">
     <slot ></slot>
   </div>
-  <div class="dh-disabled-by-tariff" v-else @click.stop.prevent="showPopup">
+  <div class="dh-disabled-by-tariff" v-else @click="showPopup" :key="'disabled'">
     <slot></slot>
     <el-dialog
       :visible.sync="isPopupShown"
@@ -33,6 +33,8 @@ export default {
   methods: {
     showPopup(event) {
       event.stopImmediatePropagation();
+      event.stopPropagation();
+      event.preventDefault();
 
       this.isPopupShown = true;
     }
