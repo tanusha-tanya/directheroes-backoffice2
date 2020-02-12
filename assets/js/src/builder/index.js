@@ -2,6 +2,7 @@ import Vue from 'vue'
 import ObjectId from '../../oldJS/utils/ObjectId';
 import elementsPermissions from '../../oldJS/elements/permissions'
 import actions from "../../oldJS/elements/actions";
+import store from '../store';
 
 const addTagElement = actions.find(action => action.template.body.action === 'addCategory')
 // import { userInputSubscriber } from '../../oldJS/elements/userInput'
@@ -22,6 +23,8 @@ export default {
       computed: {
         steps() {
           const { steps } = this.campaign;
+
+          console.log(this.allCategories);
 
           return steps;
         },
@@ -177,6 +180,37 @@ export default {
 
           return campaign.type === 'broadcast';
         },
+
+        allCategories() {
+          const { currentAccountData, currentAccount } = store.state;
+          let categories = [];
+
+          currentAccountData.campaigns.forEach(campaign => {
+            campaign.steps.forEach(step => {
+              step.elements.some(element => {
+                if (!element.displaySettings || !['action', 'sub-input'].includes(element.displaySettings.subType)) return true;
+
+                if (!element.body || element.body.action !== 'addCategory') return;
+
+                if (!element.body.name) return;
+
+                element.body.name.forEach(nameItem => {
+                  if (categories.includes(nameItem)) return;
+
+                  categories.push(nameItem);
+                });
+              })
+            })
+          })
+
+          currentAccount.subscriberCategoryList.forEach(category => {
+            if (categories.includes(category.name)) return;
+
+            categories.push(category.name);
+          })
+
+          return categories;
+        }
       },
 
       methods: {

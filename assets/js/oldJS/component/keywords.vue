@@ -12,7 +12,7 @@
       @keydown.native="keywordsKeydown"
     >
       <template v-if="list">
-        <el-option v-for="item in list" :key="item.id" :value="item.name" :label="item.name"></el-option>
+        <el-option v-for="(item, index) in list" :key="index" :value="item" :label="item"></el-option>
       </template>
     </el-select>
   </div>

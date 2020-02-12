@@ -44,7 +44,7 @@ import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
 
 export default {
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   data() {
     return {
@@ -76,11 +76,9 @@ export default {
     },
 
     categories() {
-      const { subscriberCategoryList } = this.$store.state.currentAccount;
+      const { allCategories } = this.builder;
 
-      console.log(subscriberCategoryList);
-
-      return subscriberCategoryList;
+      return allCategories;
     }
   },
 
