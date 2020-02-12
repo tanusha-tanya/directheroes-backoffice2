@@ -96,7 +96,7 @@
                   <div>
                     Conversation
                     <router-link
-                      :to="{ name: 'accountCampaign', params:{ campaignId: message.body.conversation.campaign.id }}"
+                      :to="{ name: message.body.conversation.campaign.type === 'broadcast' ? 'accountBroadcast' : 'accountCampaign', params:{ campaignId: message.body.conversation.campaign.id }}"
                       target= '_blank'>
                       {{message.body.conversation.campaign.name}}
                     </router-link>

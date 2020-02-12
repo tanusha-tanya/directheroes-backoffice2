@@ -14,6 +14,7 @@
                 <div class="start-message" v-if="builder.broadcastRuntime.status === 'scheduled'">{{timeToStart(builder.startAt)}}</div>
                 <!-- <div class="fail-message" v-else-if="builder.notStarted">Campaign didn't start</div> -->
                 <!-- <div class="start-message" v-else-if="!builder.timeToStart && !builder.isStarted && !builder.notStarted && builder.startAt">Prepare to start</div> -->
+                <div class="start-message" v-else-if="builder.broadcastRuntime.status === 'running' && !builder.broadcastRuntime.sentMessages">Preparing to start</div>
                 <div class="start-message" v-else-if="builder.broadcastRuntime.status === 'running'">Broadcast was started</div>
               </template>
               <div v-if="!builder.startAt">Click to set broadcast</div>

@@ -12,7 +12,7 @@ export default [
           type: 'action',
           body: {
             action: 'registerTimeout',
-            delta: 1
+            delta: 14400
           }
         },
         {
@@ -24,7 +24,7 @@ export default [
             entity: 'time',
             field: 'delta',
             operand: 'eq',
-            value: 1
+            value: 14400
           }
         },
       ]

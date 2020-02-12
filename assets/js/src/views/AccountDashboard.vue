@@ -195,7 +195,7 @@ export default {
         const checkValues = (accumulator, currentValue, index) => {
           const { value } = currentValue;
           const prevValue = accumulator[index - 1];
-          currentValue.value = !~value ? ((prevValue && prevValue.value) || 0) : value;
+          currentValue.value = [-1, '-1', null].includes(value) ? ((prevValue && prevValue.value) || 0) : value;
 
           accumulator.push(currentValue);
 
