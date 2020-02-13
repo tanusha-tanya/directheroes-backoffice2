@@ -5,7 +5,7 @@
         <div class="action-item-title">{{ actionTitles[action.displaySettings.type || getAction(action)] }}</div>
         <element-warning :element="action"></element-warning>
         <template v-if="['addCategory', 'removeCategory'].includes(getAction(action))">
-          <keywords v-model="action.body.name" :placeholder="getAction(action) === 'addCategory' ? 'Click to specify tags to add' : 'Click to specify tags to remove'"></keywords>
+          <keywords v-model="action.body.name" :placeholder="getAction(action) === 'addCategory' ? 'Click to specify tags to add' : 'Click to specify tags to remove'" :list="categories" :is-allow-create="getAction(action) === 'addCategory'"></keywords>
         </template>
         <template v-else-if="action.displaySettings.type === 'zapier'">
           <zapier :element="action"></zapier>
@@ -44,7 +44,7 @@ import ObjectId from '../../utils/ObjectId';
 import elementWarning from '../elementWarning'
 
 export default {
-  props: ['elements'],
+  props: ['elements', 'builder'],
 
   data() {
     return {
@@ -73,6 +73,12 @@ export default {
       const { elements } = this;
 
       return elements.find(element => element.type === 'linker');
+    },
+
+    categories() {
+      const { allCategories } = this.builder;
+
+      return allCategories;
     }
   },
 

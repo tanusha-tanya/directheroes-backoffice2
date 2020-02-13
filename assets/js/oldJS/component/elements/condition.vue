@@ -92,7 +92,7 @@
         <template v-else-if="element.displaySettings.type === 'hasTag'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              <keywords v-model="element.elements[0].condition.value"></keywords>
+              <keywords v-model="element.elements[0].condition.value" :list="categories"></keywords>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
@@ -314,6 +314,12 @@ export default {
 
       return scarcityElement.elements[scarcityElement.elements.length - 1]
     },
+
+    categories() {
+      const { allCategories } = this.builder;
+
+      return allCategories;
+    }
   },
 
   methods: {
