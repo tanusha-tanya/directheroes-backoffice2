@@ -633,7 +633,11 @@ export default {
               break;
 
             case 'condition':
-              step.name = 'Condition'
+              if (stepElement.displaySettings.type === 'timeout') {
+                step.name = 'Wait for'
+              } else {
+                step.name = 'Condition'
+              }
 
               if (['timeout', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
                 const checkpoint = getElementByType(stepElement, 'checkpoint');
@@ -646,6 +650,8 @@ export default {
 
                 rule.condition.field = action.id;
               }
+
+
 
               break;
             case 'user-input':

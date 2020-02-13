@@ -7,15 +7,13 @@
           <element-warning :element="element"></element-warning>
         </div>
         <template v-if="element.displaySettings.type === 'timeout'">
-          <div class="condition-item-controls">
+          <div class="condition-item-controls timeout-item">
             <div class="condition-item-control">
-              IF,<br>
-              within: <timeout :element="element"></timeout><br>
-              the user:
+              For <timeout :element="element"></timeout>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
-                Reply
+                Replied
                 <add-trigger-popup
                   :available-list="availableList(element)"
                   @on-select="createStep(element, $event)"
@@ -24,7 +22,7 @@
                 </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                NO Reply
+                No Response
                 <add-tag-popup
                   :available-list="availableList(element, true)"
                   @select="createStep(element, $event, true)"
@@ -263,7 +261,7 @@ export default {
   data() {
     return {
       conditionTitle: {
-        timeout: 'Timeout',
+        timeout: 'The contact to reply',
         followers: 'Followers',
         verified: 'Is Verified',
         topCategory: 'Is Majority Member',
@@ -463,6 +461,12 @@ export default {
 
         .condition-item-control {
           padding: 13px;
+        }
+      }
+
+      &.timeout-item {
+        .condition-item-control {
+          width: 50%;
         }
       }
     }
