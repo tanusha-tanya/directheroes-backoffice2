@@ -24,6 +24,6 @@ export default {
 
 <style lang="scss">
 .dh-profile-general {
-
+  overflow: auto;
 }
 </style>
