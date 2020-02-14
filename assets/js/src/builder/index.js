@@ -138,11 +138,7 @@ export default {
               })
 
               if (!linkElements.length) {
-                const hiddenStep = steps.find(step => !stepsTree.some(stepsColumn => {
-                  // stepsColumn.some(stepColumn => console.log(stepColumn && stepColumn.id, step && step.id, stepColumn, step))
-
-                  return stepsColumn.includes(step)
-                }));
+                const hiddenStep = steps.find(step => !stepsTree.some(stepsColumn => stepsColumn.includes(step)));
 
                 if(!hiddenStep || (hiddenStep.displaySettings && hiddenStep.displaySettings.columnIndex)) return;
 
@@ -160,11 +156,7 @@ export default {
             linkElements = linkElements.map(elementTarget => {
               if (!elementTarget) return elementTarget;
 
-              const isDuplicate = stepsTree.some(stepsColumn => stepsColumn.some(step => step.id === elementTarget));
-
-              if (isDuplicate) return;
-
-              return steps.find(step => step.id === elementTarget) || null
+              return getStep(elementTarget) || null
             });
 
             stepsTree.push(linkElements);
