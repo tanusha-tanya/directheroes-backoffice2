@@ -239,9 +239,10 @@ export default {
     interval: [],
     granularity: {
       options: {
+        month: 2592000,
+        week: 604800,
         day: 86400,
-        hour: 3600,
-        five_minutes: 300
+        hour: 3600
       }
     },
     debounce: -1
@@ -306,6 +307,37 @@ export default {
       }
     },
 
+    messagesRangeDiff() {
+      const [begin, end] = this.messagesAt;
+      const diff = moment(end).diff(begin);
+      return moment.duration(diff).asDays() + 1 / 30;
+    },
+
+    granularityValue() {
+      const days = this.messagesRangeDiff;
+
+      const { options } = this.granularity;
+
+      let granularity = null;
+      if (days <= 2) {
+        granularity = options.hour / 4;
+      } else if (days < 4) {
+        granularity = options.hour;
+      } else if (days < 7) {
+        granularity = options.day / 4;
+      } else if (days <= 14) {
+        granularity = options.day / 2;
+      } else if (days <= 30) {
+        granularity = options.day;
+      } else if (days <= 90) {
+        granularity = options.week;
+      } else {
+        granularity = options.month;
+      }
+
+      return granularity;
+    },
+
     subscribedText() {
       const { subscribed } = this.filters;
 
@@ -354,11 +386,6 @@ export default {
               ["Replied"].concat(replied.map(c => c.value))
             ]
           });
-
-          chart.zoom([
-            new Date(Math.min.apply(null, dates)),
-            new Date(Math.max.apply(null, dates))
-          ]);
         });
       });
     },
@@ -368,40 +395,107 @@ export default {
         const { sent, seen, replied } = data.response.body;
 
         this.$nextTick(() => {
-          this.messagesChart.$emit(
-            "init",
-            this.chartModel(() => {
-              return {
-                x: ["x"].concat(sent.map(c => moment(c.dateTime).toDate())),
-                sent: ["Sent"].concat(sent.map(c => c.value)),
-                seen: ["Seen"].concat(seen.map(c => c.value)),
-                replied: ["Replied"].concat(replied.map(c => c.value))
-              };
-            })
-          );
+          const [begin, end] = this.messagesAt;
+          let ranges = [begin, end];
+
+          this.messagesChart.$emit("init", {
+            padding: {
+              right: 10,
+              left: 10
+            },
+            data: {
+              x: "x",
+              xFormat: "%Y-%m-%d",
+              type: "line",
+              labels: true,
+              columns: [
+                ["x"].concat(sent.map(c => moment(c.dateTime).toDate())),
+                ["Sent"].concat(sent.map(c => c.value)),
+                ["Seen"].concat(seen.map(c => c.value)),
+                ["Replied"].concat(replied.map(c => c.value))
+              ]
+            },
+            tooltip: {
+              format: {
+                value(value, ratio, id, index) {
+                  return value;
+                }
+              }
+            },
+            axis: {
+              y: {
+                show: false
+              },
+              x: {
+                show: true,
+                type: "timeseries",
+                tick: {
+                  culling: {
+                    max: 20
+                  },
+                  format: function(e) {
+                    const [begin, end] = ranges;
+                    if (
+                      begin.getDate() === end.getDate() &&
+                      begin.getMonth() == end.getMonth()
+                    ) {
+                      if (begin.getHours() === end.getHours()) {
+                        return moment(e).format("HH:MM:SS");
+                      }
+                      return moment(e).format("HH:MM:SS");
+                    }
+                    if (begin.getMonth() === end.getMonth()) {
+                      return moment(e).format("MM-DD-ddd");
+                    }
+                    return moment(e).format("YYYY-MM-DD");
+                  }
+                }
+              }
+            },
+            legend: {
+              hide: false
+            },
+            zoom: {
+              enabled: true,
+              rescale: true,
+              onzoom: function(domain) {
+                ranges = domain;
+              }
+            },
+            transition: {
+              duration: 1000
+            }
+          });
+        });
+
+        this.messagesChart.$emit("dispatch", chart => {
+          chart.zoom([min, max]);
         });
       });
     },
 
     chartFetch(onSuccess) {
       this.chartFetching = true;
-      const { options } = this.granularity;
+      const granularity = this.granularityValue;
+
       const { campaignId, accountId } = this.$route.params;
       const [begin, end] = this.messagesAt;
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
           igAccountId: accountId,
-          granularity: options.day,
+          granularity: granularity,
           dateTimeSince: moment(begin).toISOString(),
           dateTimeTill: moment(end).toISOString(),
           campaignId
         }
-      }).then(({ data }) => {
+      })
+        .then(({ data }) => {
           if (onSuccess) {
             onSuccess(data);
           }
-        }).finally(_ => {
+        })
+        .finally(_ => {
           this.chartFetching = false;
         });
     },
@@ -435,76 +529,6 @@ export default {
       let d_max = new Date(Math.max.apply(null, dateTimes));
       d_max = d_max < max ? d_max : max;
       return d_max;
-    },
-
-    chartModel(builder) {
-      const b = builder();
-      const [begin, end] = this.messagesAt;
-      let ranges = [begin, end];
-
-      return {
-        padding: {
-          right: 10,
-          left: 10
-        },
-        data: {
-          x: "x",
-          xFormat: "%Y-%m-%d",
-          type: "line",
-          labels: true,
-          columns: [b.x, b.sent, b.seen, b.replied]
-        },
-        tooltip: {
-          format: {
-            value(value, ratio, id, index) {
-              return value;
-            }
-          }
-        },
-        axis: {
-          y: {
-            show: false
-          },
-          x: {
-            show: true,
-            type: "timeseries",
-            tick: {
-              culling: {
-                max: 20
-              },
-              format: function(e) {
-                const [begin, end] = ranges;
-                if (
-                  begin.getDate() === end.getDate() &&
-                  begin.getMonth() == end.getMonth()
-                ) {
-                  if (begin.getHours() === end.getHours()) {
-                    return moment(e).format("HH:MM:SS");
-                  }
-                  return moment(e).format("HH:MM:SS");
-                }
-                if (begin.getMonth() === end.getMonth()) {
-                  return moment(e).format("MM-DD-ddd");
-                }
-                return moment(e).format("YYYY-MM-DD");
-              }
-            }
-          }
-        },
-        legend: {
-          hide: false
-        },
-        zoom: {
-          enabled: true,
-          rescale: true,
-          onzoom: function(domain) {
-            ranges = domain;
-          }
-        },
-        transition: {
-          duration: 1000
-        }
-      };
     }
   }
 };
