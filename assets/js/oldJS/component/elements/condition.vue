@@ -66,6 +66,7 @@
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Is Majority Member?
+              <keywords v-model="element.elements[0].condition.value.constraint" :list="categories"></keywords>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">

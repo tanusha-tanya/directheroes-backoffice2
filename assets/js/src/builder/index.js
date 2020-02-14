@@ -24,8 +24,6 @@ export default {
         steps() {
           const { steps } = this.campaign;
 
-          console.log(this.allCategories);
-
           return steps;
         },
 
