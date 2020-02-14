@@ -123,9 +123,6 @@
               <div class="dh-thread-data-item">
                 <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>Last campaign activity
               </div>
-              <div class="dh-thread-data-item" v-if="thread.campaignList.length">
-                <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>Campaigns
-              </div>
               <div class="dh-spacer"></div>
               <router-link
                 :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}"
