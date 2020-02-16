@@ -362,14 +362,12 @@ export default {
     granularityValue(days) {
       days = Math.floor(days);
       const { options } = this.granularity;
-      let granularity = null;
+      let granularity = options.month;
 
       if (days < 7) {
         granularity = options.hour;
       } else if (days < 30) {
         granularity = options.day;
-      } else {
-        granularity = options.month;
       }
 
       return granularity;
@@ -390,12 +388,8 @@ export default {
           });
 
           chart.zoom([
-            moment(new Date(Math.min.apply(null, dates)))
-              .subtract(2, "hours")
-              .toDate(),
-            moment(new Date(Math.max.apply(null, dates)))
-              .add(2, "hours")
-              .toDate()
+            new Date(Math.min.apply(null, dates)),
+            new Date(Math.max.apply(null, dates))
           ]);
           chart.flush();
         });
@@ -408,9 +402,6 @@ export default {
         const self = this;
 
         this.$nextTick(() => {
-          const [begin, end] = this.messagesAt;
-          let ranges = [begin, end];
-
           this.messagesChart.$emit("init", {
             padding: {
               right: 10,
@@ -447,10 +438,11 @@ export default {
                 type: "timeseries",
                 tick: {
                   culling: {
-                    max: 20
+                    max: 10
                   },
                   format: function(e) {
-                    const [begin, end] = ranges;
+                    const [begin, end] = self.messagesAt;
+                    let ranges = [begin, end];
                     const { options } = self.granularity;
                     const granularity = self.granularityValue(
                       self.dataRangeDifference(ranges)
@@ -473,13 +465,6 @@ export default {
             },
             legend: {
               hide: false
-            },
-            zoom: {
-              enabled: true,
-              rescale: true,
-              onzoom: function(domain) {
-                ranges = domain;
-              }
             },
             transition: {
               duration: 1000
@@ -563,8 +548,6 @@ export default {
   padding: 0 10px 0 0;
 
   .dh-chart {
-    background-color: #fff;
-    border-radius: 4px;
     width: 100%;
     min-width: 350px;
     margin-bottom: 15px;
@@ -579,6 +562,9 @@ export default {
 
     .dh-chart-item-wrapper {
       opacity: 0.2;
+      margin-top: 5px;
+      background-color: #fff;
+      border-radius: 4px;
 
       &.active {
         opacity: 1;
