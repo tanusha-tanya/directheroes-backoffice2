@@ -2,6 +2,7 @@ import Vue from 'vue';
 import {
   Select,
   Option,
+  OptionGroup,
   Input,
   InputNumber,
   Slider,
@@ -41,6 +42,7 @@ import 'element-ui/lib/theme-chalk/progress.css';
 
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(OptionGroup);
 Vue.use(Input);
 Vue.use(InputNumber);
 Vue.use(Slider);
