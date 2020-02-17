@@ -14,7 +14,7 @@
                 start-placeholder="date since"
                 end-placeholder="date till"
                 class="dh-chart-time-picker"
-                range-separator="To"
+                range-separator="to"
                 :picker-options="pickerOptions"
               ></el-date-picker>
               <div class="dh-chart-item-wrapper" v-bind:class="{ active :!chartFetching }">
@@ -137,6 +137,17 @@
             </router-link>
           </div>
           <loader v-else />
+          <div class="dh-statistic-thread-controls" v-if="threads">
+            <div class="dh-statistic-thread-info">Total subscribers: {{ paging.totalResultCount }}</div>
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :current-page="paging.page"
+              :page-count="paging.totalPageCount"
+              @current-change="changePage"
+              v-if="threads && paging && paging.totalPageCount > 1"
+            ></el-pagination>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -353,6 +364,11 @@ export default {
       return momentDate.isValid() && moment(new Date(date * 1000)).fromNow();
     },
 
+    changePage(page) {
+      this.paging.page = page;
+      this.getStatistics();
+    },
+
     dataRangeDifference(range) {
       const [begin, end] = range;
       const diff = moment(end).diff(begin);
@@ -556,12 +572,8 @@ export default {
       stroke-width: 2px;
     }
 
-    .dh-chart-time-picker {
-      width: 100%;
-    }
-
     .dh-chart-item-wrapper {
-      opacity: 0.2;
+      opacity: 0.8;
       margin-top: 5px;
       background-color: #fff;
       border-radius: 4px;
@@ -587,6 +599,12 @@ export default {
 }
 
 .dh-tab-pane {
+  .dh-statistic-thread-controls {
+    padding: 30px 0 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
   .dh-campaign-controls {
     display: flex;
     flex-wrap: wrap;

@@ -555,9 +555,64 @@ div.el-date-editor {
     right: 5px;
     color: $elementActiveColor;
   }
+
+  &.el-range-editor {
+    .el-range__icon,
+    .el-range__close-icon {
+      color: $elementActiveColor;
+    }
+
+    .el-range-separator {
+      width: 6%;
+    }
+
+    &.is-active,
+    &.is-active:hover {
+      border-color: $elementActiveColor;
+    }
+  }
 }
 
 div.el-picker-panel {
+  &.el-date-range-picker tr.el-date-table__row {
+    td.available {
+
+      &.in-range:not(.start-date):not(.end-date) span {
+        color: $elementActiveColor;
+        align-self: center;
+      }
+
+      &.in-range div {
+        display: flex;
+
+        &:before {
+          content: "";
+          background: $elementActiveColor;
+          width: 100%;
+          opacity: 0.2;
+          height: 30px;
+          text-align: center;
+          display: flex;
+          align-self: center;
+          box-sizing: border-box;
+        }
+      }
+
+      &.start-date,
+      &.end-date {
+        span {
+          width: 30px;
+          height: 30px;
+          border-radius: unset;
+          background-color: $elementActiveColor;
+          color: $mainBGColor;
+          bottom: 4px;
+          line-height: 30px;
+        }
+      }
+    }
+  }
+
   .el-date-picker__header {
     background-color: $mainBGColor;
     margin: 0;
@@ -565,7 +620,7 @@ div.el-picker-panel {
   }
 
   .el-date-table {
-    td.today span {
+    td.today:not(.end-date) span {
       color: $elementActiveColor !important;
     }
 
@@ -577,7 +632,7 @@ div.el-picker-panel {
 
     td.available{
       &:not(.current):hover span{
-        color: $elementActiveColor !important;
+        color: $elementActiveColor;
       }
 
       span {
@@ -615,3 +670,5 @@ div.el-picker-panel {
     }
   }
 }
+
+
