@@ -22,13 +22,17 @@
           :class="{
             'dh-account-card': true,
             'dh-account-fail-status': !account.isLoggedIn,
-            'dh-account-success-status': account.isLoggedIn
+            'dh-account-success-status': account.isLoggedIn,
+            'dh-account-frozen': isFrozen(account)
           }"
           @click="accountClick(account, $event)"
           v-for="account in accounts"
           :key="account.id">
           <el-popover placement="bottom" trigger="click">
             <div class="dh-options">
+              <div class="dh-option" @click="toggleFreez(account)">
+                <snowflake /> {{isFrozen(account) ? 'Unfreez' : 'Freez'}}
+              </div>
               <div class="dh-option" @click="accountToDelete = account">
                 <trash /> Delete
               </div>
@@ -51,7 +55,12 @@
             <span><strong>{{account.followerCount || 0}}</strong> followers</span>
             <span><strong>{{account.followingCount || 0}}</strong> following</span>
           </div>
-          <div class="dh-account-connect-error" v-if="!account.isLoggedIn">
+          <div class="dh-account-frozen-info" v-if="isFrozen(account)">
+            <span>
+             <snowflake />Account is frozen<snowflake />
+            </span>
+          </div>
+          <div class="dh-account-connect-error" v-else-if="!account.isLoggedIn">
             <span>
               Click Here To Reconnect<br/>
               <warning />Instagram Account<warning />
@@ -89,6 +98,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhConnectionWizzard from '../components/dh-connection-wizzard'
@@ -98,6 +108,7 @@ import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
+import snowflake from '../assets/snowflake.svg'
 import extraAccount from '../../oldJS/assets/svg/extra-account.svg'
 
 export default {
@@ -118,6 +129,7 @@ export default {
     status,
     warning,
     ellipsis,
+    snowflake,
     trash,
     extraAccount,
     dhConnectionWizzard
@@ -197,10 +209,18 @@ export default {
       });
     },
 
-    overleyClassToggle(className) {
-      this.$nextTick(() => {
-        document.querySelector('.v-modal').classList.add(className);
+    toggleFreez(account) {
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/stripe/ig-account/${ account.id }/freeze`,
+        method: 'post'
+      }).then(({ data }) => {
+        console.log(data);
+
       })
+    },
+
+    isFrozen(account) {
+      return true
     }
   }
 }
@@ -267,12 +287,30 @@ export default {
         background-color: $sectionBG;
       }
     }
+
+    &.dh-account-frozen {
+      border: 1px solid #2CE5F6;
+      background-color: rgba($sectionBG, .1);
+
+      .dh-account-userpic {
+        border-color: #2CE5F6;
+      }
+
+      .dh-account-status {
+        border-color: #2CE5F6;
+      }
+
+    }
   }
 
   .dh-account-options-icon {
     position: absolute;
-    right:21px;
-    top: 17px;
+    right:14px;
+    top: 9px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
   }
 
   .dh-account-userpic {
@@ -333,6 +371,20 @@ export default {
     display: flex;
     align-items: flex-end;
     text-align: center;
+  }
+
+  .dh-account-frozen-info {
+    color: #2CE5F6;
+
+    span{
+      display: flex;
+      align-items: center;
+    }
+
+    svg {
+      width: 20px;
+      margin: 15px 5px;
+    }
   }
 
   .dh-account-owner-info {
