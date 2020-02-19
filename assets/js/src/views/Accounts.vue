@@ -211,7 +211,7 @@ export default {
 
     toggleFreez(account) {
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/stripe/ig-account/${ account.id }/freeze`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/stripe/subscription/${ account.id }/freeze`,
         method: 'post'
       }).then(({ data }) => {
         console.log(data);
@@ -220,7 +220,7 @@ export default {
     },
 
     isFrozen(account) {
-      return true
+      return Math.floor(Math.random() * Math.floor(2))
     }
   }
 }
