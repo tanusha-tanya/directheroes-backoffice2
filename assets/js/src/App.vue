@@ -35,7 +35,7 @@
         </div>
       </div>
       <router-link v-if="account.id" class="dh-navigation-button dh-dashboard-button" :to="{ name: 'accountHome', params: { accountId: account.id}}">
-        <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
+        <div :class="{ 'dh-account-userpic': true, 'dh-account-logged': account.isLoggedIn }" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
         </div>
         <span>
           {{account.fullName}}
@@ -275,6 +275,16 @@ body {
     padding: 20px 35px 11px 35px;
   }
 
+  .dh-account-userpic {
+    flex-shrink: 0;
+    margin-right: 12px;
+    box-shadow: 0 0 0px 2px $failColor;
+
+    &.dh-account-logged {
+      box-shadow: 0 0 0px 2px $successColor;
+    }
+  }
+
   .dh-navigation-button, .dh-accounts-tool-button {
     display: flex;
     align-items: center;
@@ -290,8 +300,6 @@ body {
     .dh-account-userpic {
       width: 25px;
       height: 25px;
-      flex-shrink: 0;
-      margin-right: 12px;
     }
 
     &.router-link-exact-active, &.router-link-active:not(.dh-dashboard-button) {
@@ -359,13 +367,7 @@ body {
     .dh-account-userpic {
       width: 19px;
       height: 19px;
-      flex-shrink: 0;
       margin-right: 14px;
-      box-shadow: 0 0 0px 2px $failColor;
-
-      &.dh-account-logged {
-        box-shadow: 0 0 0px 2px $successColor;
-      }
     }
   }
 
