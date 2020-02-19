@@ -299,6 +299,10 @@ body {
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
     }
+  }
+
+  .dh-dashboard-button {
+    font-size: 12px;
 
     .dh-account-login {
       font-weight: normal;
