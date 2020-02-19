@@ -2,31 +2,67 @@
   <div class="dh-application">
     <div class="dh-navigation">
       <router-link class="dh-logo" :to="{ name: 'accounts'}"></router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
-        <div class="dh-navigation-button-ico">
-          <dashboard/>
+      <div class="dh-accounts-tool" @click="isShowList = !isShowList">
+        <div class="dh-accounts-tool-button">
+          <div class="dh-accounts-tool-ico">
+            <instagram/>
+          </div>
+          Instagram accounts
         </div>
-        Dashboard
+        <div class="dh-accounts-wrapper" v-if="isShowList" @click.stop="">
+          <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" class="dh-account-item" v-for="accountItem in accountList" :key="accountItem.id">
+            <div :class="{ 'dh-account-userpic': true, 'dh-account-logged': accountItem.isLoggedIn }" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
+            </div>
+            <span>
+              {{accountItem.fullName}}
+              <div class="dh-account-login">
+                @{{accountItem.login}}
+              </div>
+            </span>
+          </router-link>
+          <router-link class="dh-account-button" :to="{ name: 'accounts'}">
+            <div class="dh-account-button-ico">
+              <users/>
+            </div>
+            All Accounts
+          </router-link>
+          <router-link class="dh-account-button" :to="{ name: 'accounts', query:{ action: 'new' }}">
+            <div class="dh-account-button-ico">
+              <userplus/>
+            </div>
+            Connect account
+          </router-link>
+        </div>
+      </div>
+      <router-link v-if="account.id" class="dh-navigation-button dh-dashboard-button" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+        <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
+        </div>
+        <span>
+          {{account.fullName}}
+          <div class="dh-account-login">
+            @{{account.login}}
+          </div>
+        </span>
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
+      <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <campaigns/>
         </div>
         Campaigns
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountBroadcastList', params: { accountId: account.id}}">
+      <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'accountBroadcastList', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <broadcast/>
         </div>
         Broadcast
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
+      <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'livechat', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <livechat/>
         </div>
         Live chat
       </router-link>
-      <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'audience', params: { accountId: account.id}}">
+      <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'audience', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
           <audience/>
         </div>
@@ -106,8 +142,11 @@ import broadcast from './assets/broadcast.svg'
 import livechat from './assets/livechat.svg'
 import audience from './assets/audience.svg'
 import schedule from './assets/schedule.svg'
+import instagram from './assets/instagram.svg'
 import tutorials from './assets/tutorials.svg'
 import training from './assets/training.svg'
+import users from './assets/users.svg'
+import userplus from './assets/userplus.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
@@ -116,7 +155,8 @@ import easywebinar from '../oldJS/assets/svg/youtube.svg'
 export default {
   data() {
     return {
-      showWebinarPopup: !localStorage.getItem('webinarInfoViewed')
+      showWebinarPopup: !localStorage.getItem('webinarInfoViewed'),
+      isShowList: false,
     }
   },
 
@@ -126,6 +166,7 @@ export default {
     campaigns,
     broadcast,
     livechat,
+    instagram,
     audience,
     schedule,
     tutorials,
@@ -133,7 +174,9 @@ export default {
     loader,
     affiliate,
     training,
-    easywebinar
+    easywebinar,
+    users,
+    userplus
   },
 
   computed: {
@@ -171,6 +214,12 @@ export default {
 
       return dhAccount && accessList.includes(dhAccount.username);
     },
+
+    accountList() {
+      const { accounts } = this.$store.state;
+
+      return accounts
+    }
   },
 
   methods: {
@@ -226,7 +275,7 @@ body {
     padding: 20px 35px 11px 35px;
   }
 
-  .dh-navigation-button {
+  .dh-navigation-button, .dh-accounts-tool-button {
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -236,18 +285,102 @@ body {
     padding: 21px 28px 22px 26px;
     letter-spacing: .3px;
     line-height: 17px;
+    max-height: 65px;
 
-    &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
+    .dh-account-userpic {
+      width: 25px;
+      height: 25px;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+
+    &.router-link-exact-active, &.router-link-active:not(.dh-dashboard-button) {
       font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
     }
 
+    .dh-account-login {
+      font-weight: normal;
+      font-size: 9px;
+      line-height: normal;
+    }
   }
 
   .dh-easy-webinar {
     svg {
       width: 19px;
+    }
+  }
+
+  .dh-accounts-tool {
+    .dh-accounts-tool-button {
+      padding: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .dh-accounts-tool-ico {
+      margin: 0 11px 0 5px;
+
+      svg {
+        width: 24px;
+      }
+    }
+  }
+
+  .dh-accounts-wrapper {
+    background-color: #F8FAFB;
+    border-bottom: 1px solid #E8ECEF;
+    padding: 5px 0;
+  }
+
+  .dh-account-item {
+    color: $elementsColor;
+    letter-spacing: .3px;
+    line-height: 17px;
+    font-size: 12px;
+    padding: 7px 25px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    .dh-account-login {
+      font-size: 8px;
+      line-height: 8px;
+    }
+
+    .dh-account-userpic {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      margin-right: 14px;
+      box-shadow: 0 0 0px 2px $failColor;
+
+      &.dh-account-logged {
+        box-shadow: 0 0 0px 2px $successColor;
+      }
+    }
+  }
+
+  .dh-account-button {
+    color: $elementsColor;
+    letter-spacing: .3px;
+    line-height: 17px;
+    font-size: 12px;
+    padding: 7px 25px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+
+    .dh-account-button-ico {
+      width: 19px;
+      height: 19px;
+      margin-right: 15px;
     }
   }
 
