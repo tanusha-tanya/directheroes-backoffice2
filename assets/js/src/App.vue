@@ -3,9 +3,9 @@
     <div class="dh-navigation">
       <router-link class="dh-logo" :to="{ name: 'accounts'}"></router-link>
       <div class="dh-navigation-scroll">
-        <div class="dh-navigation-scroll-up" v-if="canScrollUp"><arrow /></div>
+        <div class="dh-navigation-scroll-up" v-if="canScrollUp" @click="scrollMenu('up')"><arrow /></div>
         <span></span>
-        <div class="dh-navigation-scroll-down" v-if="canScrollDown"><arrow /></div>
+        <div class="dh-navigation-scroll-down" v-if="canScrollDown" @click="scrollMenu('down')"><arrow /></div>
       </div>
       <div class="dh-navigation-menu" ref="menuNavigation" @scroll="checkScrollButtons">
         <div class="dh-accounts-tool" @click="isShowList = !isShowList">
@@ -15,7 +15,7 @@
             </div>
             Instagram accounts
           </div>
-          <div :class="{'dh-accounts-wrapper': true,  'dh-accounts-show': isShowList }" @click.stop="">
+          <div :class="{'dh-accounts-wrapper': true,  'dh-accounts-show': isShowList }" @click.stop="" @transitionend="checkScrollButtons">
             <div class="dh-accounts-tool-list">
               <div class="dh-search-input" v-if="accountList.length > 5">
                 <search />
@@ -24,11 +24,8 @@
               <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" class="dh-account-item" v-for="accountItem in filteredAccountList" :key="accountItem.id">
                 <div class="dh-account-userpic" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
                 </div>
-                <span>
-                  {{accountItem.fullName}}
-                  <div :class="{'dh-account-login': true, 'dh-account-logged': accountItem.isLoggedIn}">
-                    @{{accountItem.login}}
-                  </div>
+                <span :class="{'dh-account-logged': accountItem.isLoggedIn}">
+                  @{{accountItem.login}}
                 </span>
               </router-link>
               <router-link class="dh-account-button" :to="{ name: 'accounts'}">
@@ -50,10 +47,7 @@
           <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
           </div>
           <span>
-            {{account.fullName}}&nbsp;
-            <div :class="{'dh-account-login': true, 'dh-account-logged': account.isLoggedIn}">
-              @{{account.login}}
-            </div>
+            @{{account.login}}
           </span>
         </router-link>
         <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
@@ -248,8 +242,6 @@ export default {
 
       return accountList.filter(account => account.login.toLowerCase().includes(searchName) || account.fullName.toLowerCase().includes(searchName)).slice(0,5)
     },
-
-
   },
 
   methods: {
@@ -263,11 +255,25 @@ export default {
 
       if (!menuNavigation) return;
 
-      this.canScrollUp = menuNavigation.scrollLeft;
-      this.canScrollDown = menuNavigation.scrollWidth > menuNavigation.offsetWidth &&
-      menuNavigation.scrollLeft < menuNavigation.scrollWidth - menuNavigation.offsetWidth;
+      this.canScrollUp = menuNavigation.scrollTop;
+      this.canScrollDown = menuNavigation.scrollHeight > menuNavigation.offsetHeight &&
+      menuNavigation.scrollTop < menuNavigation.scrollHeight - menuNavigation.offsetHeight;
+    },
 
-      console.log(menuNavigation);
+    scrollMenu(direction) {
+      const { menuNavigation } = this.$refs;
+
+      if(direction == 'up') {
+        menuNavigation.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
+      } else {
+        menuNavigation.scrollTo({
+          top: menuNavigation.scrollHeight,
+          behavior: "smooth"
+        })
+      }
     }
   },
 
@@ -352,6 +358,8 @@ body {
           background-color: $successColor;
         }
       }
+
+
     }
   }
 
@@ -450,11 +458,6 @@ body {
 
   .dh-dashboard-button {
     font-size: 12px;
-
-    .dh-account-login {
-      font-weight: normal;
-      font-size: 9px;
-    }
   }
 
   .dh-easy-webinar {
@@ -509,10 +512,6 @@ body {
 
     cursor: pointer;
 
-    .dh-account-login {
-      font-size: 8px;
-    }
-
     .dh-account-userpic {
       width: 19px;
       height: 19px;
@@ -523,6 +522,25 @@ body {
     span {
       overflow: hidden;
       text-overflow: ellipsis;
+
+      &:after {
+        content: 'not logged';
+        font-size: 7px;
+        color: #F8FAFB;
+        background-color: $failColor;
+        display: block;
+        width: 55px;
+        height: 9px;
+        line-height: normal;
+        text-align: center;
+        border-radius: 3px;
+      }
+
+      &.dh-account-logged:after {
+        content: 'logged';
+        background-color: $successColor;
+        width: 40px;
+      }
     }
   }
 
