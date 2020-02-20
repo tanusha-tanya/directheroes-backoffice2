@@ -249,8 +249,19 @@ export default {
       return accountList.filter(account => account.login.toLowerCase().includes(searchName) || account.fullName.toLowerCase().includes(searchName)).slice(0,5)
     },
 
+
+  },
+
+  methods: {
+    hidePopup() {
+      this.showWebinarPopup = false;
+      localStorage.setItem('webinarInfoViewed', true)
+    },
+
     checkScrollButtons() {
       const { menuNavigation } = this.$refs;
+
+      if (!menuNavigation) return;
 
       this.canScrollUp = menuNavigation.scrollLeft;
       this.canScrollDown = menuNavigation.scrollWidth > menuNavigation.offsetWidth &&
@@ -260,17 +271,24 @@ export default {
     }
   },
 
-  methods: {
-    hidePopup() {
-      this.showWebinarPopup = false;
-      localStorage.setItem('webinarInfoViewed', true)
-    }
-  },
-
   mounted() {
     const { checkScrollButtons } = this;
 
     this.$nextTick(checkScrollButtons);
+  },
+
+  watch: {
+    isShowList() {
+      const { checkScrollButtons } = this;
+
+      this.$nextTick(checkScrollButtons);
+    },
+
+    '$route.name'() {
+      const { checkScrollButtons } = this;
+
+      this.$nextTick(checkScrollButtons);
+    }
   }
 }
 </script>
