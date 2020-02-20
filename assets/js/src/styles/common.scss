@@ -548,9 +548,10 @@ label.el-checkbox {
 .dh-account-userpic {
   position: relative;
   background-color: rgba($borderColor, .5);
-  border-radius: 50%;
+  border-radius: 100%;
   background-position: center;
   background-size: cover;
   border: 2px solid transparent;
   flex-shrink: 0;
+  background-repeat: no-repeat;
 }
