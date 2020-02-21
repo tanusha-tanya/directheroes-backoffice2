@@ -138,8 +138,12 @@ export default {
 
   methods: {
     createBroadcast() {
+      const { getTariffParameter } = this;
+      const broadcastLimitTariff = getTariffParameter('broadcast_runtime_limit');
       const { newBroadcastName, $store, currentAccountData } = this;
       const { currentAccount } = $store.state;
+
+      broadcastLimitTariff.remain--
 
       const newBroadcast = {
         id: (new ObjectId).toString(),
