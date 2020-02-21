@@ -174,7 +174,9 @@ export default {
       broadcastToDelete.isArchived = true;
       this.broadcastToDelete = false;
 
-      updatePermissions();
+      console.log('Timeout is set');
+
+      setTimeout(updatePermissions, 1500);
     },
 
     updatePermissions() {
