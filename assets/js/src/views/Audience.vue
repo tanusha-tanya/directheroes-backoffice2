@@ -80,33 +80,35 @@
       </div>
       <div class="dh-list" v-if="threads">
         <router-link class="dh-list-item" :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" v-for="thread in threads" :key="thread.id">
-        <!-- <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id"> -->
-          <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
-          <div class="dh-thread-data-item dh-thread-username">
-            <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
-            {{thread.contactProfile.username}}
-          </div>
-          <div class="dh-thread-data-item">
-            <template v-if="fromNowDate(thread.subscribedAt)">
-              <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
-              Subscribed
-            </template>
-          </div>
-          <div class="dh-thread-data-item">
-            <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
-            Last Message
-          </div>
-          <div class="dh-thread-data-item" v-if="thread.campaignList.length">
-            <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
-            Campaigns
-          </div>
-          <div class="dh-spacer"></div>
+          <tariff-wrapper :is-enabled="isLiveChatInTariff">
+          <!-- <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id"> -->
+            <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
+            <div class="dh-thread-data-item dh-thread-username">
+              <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
+              {{thread.contactProfile.username}}
+            </div>
+            <div class="dh-thread-data-item">
+              <template v-if="fromNowDate(thread.subscribedAt)">
+                <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
+                Subscribed
+              </template>
+            </div>
+            <div class="dh-thread-data-item">
+              <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
+              Last Message
+            </div>
+            <div class="dh-thread-data-item" v-if="thread.campaignList.length">
+              <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
+              Campaigns
+            </div>
+            <div class="dh-spacer"></div>
 
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
-            <tariff-wrapper :is-enabled="isLiveChatInTariff">
-              <livechat/>
-            </tariff-wrapper>
-          </router-link>
+            <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
+              <tariff-wrapper :is-enabled="isLiveChatInTariff">
+                <livechat/>
+              </tariff-wrapper>
+            </router-link>
+          </tariff-wrapper>
         </router-link>
       </div>
       <loader v-else/>
@@ -414,6 +416,16 @@ export default {
 
     &.dh-campaign-filter {
       margin-right: 20px;
+    }
+  }
+
+  .dh-disabled-by-tariff {
+    width: 100%;
+
+    .dh-disabled-by-tariff {
+      &:after {
+        display: none;
+      }
     }
   }
 }
