@@ -4,7 +4,6 @@
 
 <script>
 import PouchDB from 'pouchdb';
-import debounce from 'lodash/debounce';
 
 const jsondiffpatch = require('jsondiffpatch').create({
   objectHash: function(obj) {
@@ -28,6 +27,7 @@ export default {
   data() {
     return {
       localDB: null,
+      requestTimeout: null,
     }
   },
 
@@ -74,8 +74,16 @@ export default {
           live: true,
           retry: true
         }).on('change', result => {
-          const { currentAccountData } = this.$store.state
+          const { currentAccountData, onSaveHandler } = this.$store.state
           const resultDoc = result.change.docs[0];
+
+          // console.log(result);
+
+          if (onSaveHandler) {
+            onSaveHandler();
+            this.$store.commit('set', { path: 'onSaveHandler', value: null });
+          };
+
 
           if (currentAccountData._rev === resultDoc._rev) return;
 
@@ -85,6 +93,8 @@ export default {
 
           this.revUpdate = true
 
+          // console.log('delta', delta);
+
           jsondiffpatch.patch(currentAccountData, delta);
         })
       });
@@ -92,15 +102,23 @@ export default {
       this.localDB = localDB;
     },
 
-    saveAccountData: debounce(function (data) {
-      const { localDB } = this;
+    saveAccountData(data) {
+      const { localDB, requestTimeout, $store } = this;
+      const { saveTimeout } = $store.state;
+      const saveHandler = () => {
+        localDB.put(data).then(result => {
+          this.revUpdate = true;
 
-      localDB.put(data).then(result => {
-        this.revUpdate = true;
+          data._rev = result.rev;
+        });
 
-        data._rev = result.rev;
-      });
-    }, 500)
+        $store.commit('set', { path: 'saveTimeout', value: 1000 })
+      }
+
+      clearTimeout(requestTimeout);
+
+      this.requestTimeout = setTimeout(saveHandler, saveTimeout)
+    }
   },
 
   watch: {

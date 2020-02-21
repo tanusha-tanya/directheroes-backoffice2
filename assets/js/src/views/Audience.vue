@@ -419,7 +419,14 @@ export default {
     }
   }
 
+  .dh-enabled-by-tariff {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
   .dh-disabled-by-tariff {
+    opacity: 1;
     width: 100%;
 
     .dh-disabled-by-tariff {

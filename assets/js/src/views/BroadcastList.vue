@@ -140,10 +140,13 @@ export default {
     createBroadcast() {
       const { getTariffParameter } = this;
       const broadcastLimitTariff = getTariffParameter('broadcast_runtime_limit');
-      const { newBroadcastName, $store, currentAccountData } = this;
+      const { newBroadcastName, $store, currentAccountData, updatePermissions } = this;
       const { currentAccount } = $store.state;
 
       broadcastLimitTariff.remain--
+
+      $store.commit('set', { path: 'onSaveHandler', value: updatePermissions });
+      $store.commit('set', { path: 'saveTimeout', value: 0 });
 
       const newBroadcast = {
         id: (new ObjectId).toString(),
@@ -173,12 +176,13 @@ export default {
     },
 
     deleteCampaign() {
-      const { broadcastToDelete, updatePermissions } = this;
+      const { broadcastToDelete, updatePermissions, $store } = this;
+
+      $store.commit('set', { path: 'onSaveHandler', value: updatePermissions });
+      $store.commit('set', { path: 'saveTimeout', value: 0 });
 
       broadcastToDelete.isArchived = true;
       this.broadcastToDelete = false;
-
-      setTimeout(updatePermissions, 1500);
     },
 
     updatePermissions() {
@@ -191,24 +195,6 @@ export default {
       })
     }
   },
-
-  created() {
-    const { currentAccount, updatePermissions } = this;
-
-    if (!currentAccount) return;
-
-    updatePermissions();
-  },
-
-  watch: {
-    currentAccount(account) {
-      const { updatePermissions } = this;
-
-      if (!account) return;
-
-      updatePermissions();
-    }
-  }
 }
 </script>
 
