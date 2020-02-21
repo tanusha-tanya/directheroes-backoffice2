@@ -9,22 +9,25 @@
       </div>
       <div class="dh-navigation-menu" ref="menuNavigation" @scroll="checkScrollButtons">
         <div class="dh-accounts-tool" @click="isShowList = !isShowList">
-          <div :class="{'dh-accounts-tool-button': true , 'dh-disabled': isFirstLoad }">
+          <div :class="{'dh-accounts-tool-button': true, 'dh-disabled': isFirstLoad, 'dh-accounts-open': isShowList }">
+            <div class="dh-accounts-arrow">
+              <arrow/>
+            </div>
             <div class="dh-accounts-tool-ico">
               <instagram/>
             </div>
             Instagram accounts
           </div>
-          <div :class="{'dh-accounts-wrapper': true,  'dh-accounts-show': isShowList }" @click.stop="" @transitionend="checkScrollButtons">
+          <div :class="{'dh-accounts-wrapper': true, 'dh-accounts-show': isShowList }" @click.stop="" @transitionend="checkScrollButtons">
             <div class="dh-accounts-tool-list">
               <div class="dh-search-input" v-if="accountList.length > 5">
                 <search />
                 <input type="text" class="dh-input" placeholder="Type name to search"  v-model="searchName">
               </div>
-              <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" class="dh-account-item" v-for="accountItem in filteredAccountList" :key="accountItem.id">
+              <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" :class="{'dh-account-item': true, 'dh-account-logged': accountItem.isLoggedIn}" v-for="accountItem in filteredAccountList" :key="accountItem.id">
                 <div class="dh-account-userpic" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
                 </div>
-                <span :class="{'dh-account-logged': accountItem.isLoggedIn}">
+                <span>
                   @{{accountItem.login}}
                 </span>
               </router-link>
@@ -43,7 +46,7 @@
             </div>
           </div>
         </div>
-        <router-link v-if="account.id" class="dh-navigation-button dh-dashboard-button" :to="{ name: 'accountHome', params: { accountId: account.id}}">
+        <router-link v-if="account.id" :class="{'dh-navigation-button': true, 'dh-dashboard-button': true, 'dh-account-logged': account.isLoggedIn}" :to="{ name: 'accountHome', params: { accountId: account.id}}">
           <div class="dh-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
           </div>
           <span>
@@ -168,7 +171,8 @@ export default {
       isShowList: false,
       searchName: '',
       canScrollUp: false,
-      canScrollDown: false
+      canScrollDown: false,
+      filteredAccountList: [],
     }
   },
 
@@ -234,14 +238,6 @@ export default {
 
       return accounts
     },
-
-    filteredAccountList() {
-      let { accountList, searchName } = this;
-
-      searchName = searchName.toLowerCase()
-
-      return accountList.filter(account => account.login.toLowerCase().includes(searchName) || account.fullName.toLowerCase().includes(searchName)).slice(0,5)
-    },
   },
 
   methods: {
@@ -274,7 +270,28 @@ export default {
           behavior: "smooth"
         })
       }
-    }
+    },
+
+    filterAccountList() {
+      let sortedList = JSON.parse(localStorage.getItem(`${ this.dhAccount.id }-igs`) || '[]') ;
+      let { accountList, searchName } = this;
+
+      sortedList = sortedList.filter(sortedAccount => accountList.find(account => account.id === sortedAccount))
+
+      accountList.forEach(account => {
+        if (sortedList.includes(account.id)) return;
+
+        sortedList.push(account.id)
+      })
+
+      searchName = searchName.toLowerCase();
+
+      accountList = sortedList.map(sortedAccount => accountList.find(account => account.id === sortedAccount));
+
+      localStorage.setItem(`${ this.dhAccount.id }-igs`, JSON.stringify(sortedList));
+
+      this.filteredAccountList = accountList.filter(account => account.login.toLowerCase().includes(searchName)).slice(0,5)
+    },
   },
 
   mounted() {
@@ -285,15 +302,19 @@ export default {
 
   watch: {
     isShowList() {
-      const { checkScrollButtons } = this;
+      const { checkScrollButtons, filterAccountList } = this;
+
+      filterAccountList()
 
       this.$nextTick(checkScrollButtons);
     },
 
     '$route.name'() {
-      const { checkScrollButtons } = this;
+      const { filterAccountList } = this;
 
-      this.$nextTick(checkScrollButtons);
+      filterAccountList()
+
+      this.isShowList = false;
     }
   }
 }
@@ -337,30 +358,6 @@ body {
       margin-right: 12px;
       box-shadow: 0 0 3px 0#778CA2;
     }
-
-    .dh-account-login {
-      display: flex;
-      align-items: center;
-      line-height: normal;
-
-      &:before {
-        display: inline-block;
-        content: '';
-        height: 5px;
-        width: 5px;
-        background-color: $failColor;
-        border-radius: 100%;
-        margin-right: 3px;
-      }
-
-      &.dh-account-logged {
-        &:before {
-          background-color: $successColor;
-        }
-      }
-
-
-    }
   }
 
   .dh-navigation-scroll {
@@ -371,6 +368,7 @@ body {
     top: 64px;
     bottom: 0;
     width: 0;
+    z-index: 45;
 
     div {
       width: 242px;
@@ -449,15 +447,28 @@ body {
       border: none;
     }
 
+    &:hover {
+      color: #9E4CF9;
+    }
+
     &.router-link-exact-active, &.router-link-active:not(.dh-dashboard-button) {
-      font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
+      color: #9E4CF9;
     }
   }
 
   .dh-dashboard-button {
     font-size: 12px;
+
+    &.dh-account-logged {
+      .dh-account-userpic {
+        &:after {
+          bottom: -1px !important;
+          right: -1px !important;
+        }
+      }
+    }
   }
 
   .dh-easy-webinar {
@@ -469,8 +480,28 @@ body {
   .dh-accounts-tool {
     .dh-accounts-tool-button {
       padding: 20px;
+      position: relative;
       cursor: pointer;
       white-space: nowrap;
+
+      .dh-accounts-arrow {
+        width: 10px;
+        flex-shrink: 0;
+        position: absolute;
+        left: 10px;
+        top: calc(50% - 2px);
+        margin-top: -9px;
+        transform: rotate(-90deg);
+        color: #778CA2;
+        transition: transform .4s linear;
+      }
+
+      &.dh-accounts-open {
+        .dh-accounts-arrow {
+          transform: rotate(0);
+          color: $elementActiveColor;
+        }
+      }
     }
 
     .dh-accounts-tool-ico {
@@ -509,7 +540,6 @@ body {
     text-decoration: none;
     align-items: center;
     white-space: nowrap;
-
     cursor: pointer;
 
     .dh-account-userpic {
@@ -519,27 +549,46 @@ body {
       border: none;
     }
 
+    &:hover {
+      color: #9E4CF9;
+    }
+  }
+
+  .dh-dashboard-button, .dh-account-item {
     span {
       overflow: hidden;
       text-overflow: ellipsis;
+    }
 
-      &:after {
-        content: 'not logged';
-        font-size: 7px;
-        color: #F8FAFB;
-        background-color: $failColor;
-        display: block;
-        width: 55px;
-        height: 9px;
-        line-height: normal;
-        text-align: center;
-        border-radius: 3px;
+    &:not(.dh-account-logged) {
+      span {
+        &:after {
+          content: 'disconnected';
+          font-size: 7px;
+          color: #F8FAFB;
+          background-color: #fe4d4d;
+          display: block;
+          width: 60px;
+          height: 9px;
+          line-height: normal;
+          text-align: center;
+          border-radius: 3px;
+        }
       }
+    }
 
-      &.dh-account-logged:after {
-        content: 'logged';
-        background-color: $successColor;
-        width: 40px;
+    &.dh-account-logged {
+      .dh-account-userpic {
+        &:after {
+          content: '';
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 100%;
+          background-color: $successColor;
+          bottom: -2px;
+          right: -2px;
+        }
       }
     }
   }
@@ -561,6 +610,10 @@ body {
       width: 19px;
       height: 19px;
       margin-right: 15px;
+    }
+
+    &:hover {
+      color: #9E4CF9;
     }
   }
 

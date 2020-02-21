@@ -36,11 +36,17 @@ export default {
 
   methods: {
     selectAccount(route) {
+      const sortedList = JSON.parse(localStorage.getItem(`${ this.dhAccount.id }-igs`) || '[]') ;
       const { $store, dhAccount } = this
       const { accounts } = $store.state
       const { accountId } = route.params
 
       if (!accountId) return;
+
+      sortedList.splice(sortedList.indexOf(accountId), 1);
+      sortedList.unshift(accountId)
+
+      localStorage.setItem(`${ this.dhAccount.id }-igs`, JSON.stringify(sortedList));
 
       const account = accounts.find(account => account.id == accountId);
 
