@@ -248,6 +248,13 @@ body {
     letter-spacing: .3px;
     line-height: 17px;
 
+    &.dh-disabled {
+      .dh-disabled-by-tariff {
+        &:after {
+          display: none;
+        }
+      }
+    }
 
 
     &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
