@@ -429,13 +429,6 @@ export default {
 
     }
 
-    .hidden-select {
-      .el-input__inner {
-        width: 42px !important;
-        text-align: center;
-      }
-    }
-
     .timeout input{
       font-weight: bold;
     }
