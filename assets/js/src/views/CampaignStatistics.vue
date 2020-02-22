@@ -4,10 +4,12 @@
     <div class="dh-view-content">
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
-          <div class="dh-perfomance-title">Stats</div>
-          <div class="dh-charts-container">
-            <div class="dh-chart dh-messages-sent">
-              <el-date-picker
+          <div class="dh-chart">
+            <div class="dh-controls">
+              <div class="dh-control">
+                <div class="dh-control-title">Dates</div>
+              </div>
+                <el-date-picker
                 v-model="messagesAt"
                 size="small"
                 type="daterange"
@@ -17,9 +19,10 @@
                 range-separator="to"
                 :picker-options="pickerOptions"
               ></el-date-picker>
-              <div class="dh-chart-item-wrapper" v-bind:class="{ active :!chartFetching }">
-                <vue-c3 class="dh-chart-item" :handler="messagesChart"></vue-c3>
-              </div>
+            </div>
+
+            <div class="dh-chart-item-wrapper" v-bind:class="{ active :!chartFetching }">
+              <vue-c3 class="dh-chart-item" :handler="messagesChart"></vue-c3>
             </div>
           </div>
           <div class="dh-campaign-controls">
@@ -557,12 +560,7 @@ export default {
 </script>
 
 <style lang="scss" >
-.dh-charts-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 0 10px 0 0;
-
+.dh-campaign-perfomance-view {
   .dh-chart {
     width: 100%;
     min-width: 350px;
@@ -574,7 +572,7 @@ export default {
 
     .dh-chart-item-wrapper {
       opacity: 0.8;
-      margin-top: 5px;
+      margin-top: 22px;
       background-color: #fff;
       border-radius: 4px;
 
@@ -596,113 +594,105 @@ export default {
       }
     }
   }
-}
 
-.dh-tab-pane {
-  .dh-statistic-thread-controls {
-    padding: 30px 0 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .dh-campaign-controls {
-    display: flex;
-    flex-wrap: wrap;
-
-    & > span {
-      flex-grow: 1;
+  .dh-tab-pane {
+    .dh-statistic-thread-controls {
+      padding: 30px 0 10px;
+      display: flex;
+      justify-content: space-between;
     }
 
-    .dh-campaign-subscription {
-      margin-right: 20px;
+    .dh-campaign-controls {
+      display: flex;
+      flex-wrap: wrap;
 
-      .el-select {
-        width: 140px;
+      & > span {
+        flex-grow: 1;
+      }
+
+      .dh-campaign-subscription {
+        margin-right: 20px;
+
+        .el-select {
+          width: 140px;
+        }
       }
     }
-  }
 
-  .dh-thread-userpic {
-    width: 40px;
-    height: 40px;
-    background-color: rgba($borderColor, 0.5);
-    border-radius: 50%;
-    background-position: center;
-    background-size: cover;
-    flex-shrink: 0;
-  }
-
-  .dh-thread-data-item {
-    width: 17%;
-    flex-shrink: 0;
-    color: $textColor;
-  }
-
-  .dh-thread-username {
-    margin-left: 24px;
-    width: 25%;
-  }
-
-  .dh-thread-data-item-main {
-    font-size: 18px;
-    line-height: 22px;
-    color: $mainTextColor;
-  }
-
-  .dh-campaign-controls {
-    display: flex;
-    flex-wrap: wrap;
-
-    & > span {
-      flex-grow: 1;
+    .dh-thread-userpic {
+      width: 40px;
+      height: 40px;
+      background-color: rgba($borderColor, 0.5);
+      border-radius: 50%;
+      background-position: center;
+      background-size: cover;
+      flex-shrink: 0;
     }
 
-    .dh-filter {
-      display: flex;
-      align-items: center;
+    .dh-thread-data-item {
+      width: 17%;
+      flex-shrink: 0;
+      color: $textColor;
+    }
 
-      .dh-filter-wrapper {
+    .dh-thread-username {
+      margin-left: 24px;
+      width: 25%;
+    }
+
+    .dh-thread-data-item-main {
+      font-size: 18px;
+      line-height: 22px;
+      color: $mainTextColor;
+    }
+
+    .dh-campaign-controls {
+      display: flex;
+      flex-wrap: wrap;
+
+      & > span {
+        flex-grow: 1;
+      }
+
+      .dh-filter {
         display: flex;
         align-items: center;
-        text-transform: uppercase;
-        font-weight: 500;
-        font-size: 12px;
-        cursor: pointer;
+
+        .dh-filter-wrapper {
+          display: flex;
+          align-items: center;
+          text-transform: uppercase;
+          font-weight: 500;
+          font-size: 12px;
+          cursor: pointer;
+        }
+
+        .dh-filter-title {
+          color: #98a9bc;
+          margin-right: 12px;
+        }
       }
 
-      .dh-filter-title {
-        color: #98a9bc;
-        margin-right: 12px;
+      .dh-divider {
+        border-right: 1px solid rgba($textColor, 0.5);
+        height: 36px;
+        margin: 0 15px;
       }
-    }
-
-    .dh-divider {
-      border-right: 1px solid rgba($textColor, 0.5);
-      height: 36px;
-      margin: 0 15px;
     }
   }
-}
 
-.dh-perfomance-title {
-  color: $elementsColor;
-  font-size: 18px;
-  padding: 26px 0 24px 0;
-}
-</style>
+  path.domain {
+    stroke: #778ca2;
+  }
 
-<style >
-path.domain {
-  stroke: #778ca2;
-}
-
-g.c3-axis.c3-axis-x {
-  fill: #778ca2;
-}
-.tick line {
-  stroke: #98a9bc;
-}
-.c3-line {
-  stroke-width: 3px;
+  g.c3-axis.c3-axis-x {
+    fill: #778ca2;
+  }
+  .tick line {
+    stroke: #98a9bc;
+  }
+  .c3-line {
+    stroke-width: 3px;
+  }
 }
 </style>
