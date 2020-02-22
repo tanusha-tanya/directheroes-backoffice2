@@ -21,6 +21,7 @@ import AddonBuy from './views/AddonBuy'
 import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
+import CampaignStatistics from './views/CampaignStatistics'
 
 import LoginForm from '../oldJS/routes/loginForm'
 
@@ -47,6 +48,7 @@ export default new Router({
         { name: 'accountHome', path: '', component: AccountDashboard },
         { name: 'accountCampaignList', path: 'campaigns', component: CampaignList },
         { name: 'accountCampaign', path: 'campaigns/:campaignId', component: CampaignBuilder },
+        { name: 'accountCampaignStatistics', path: 'campaigns/:campaignId/statistics', component: CampaignStatistics },
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: BroadcastBuilder },
         { name: 'subscriber', path: 'audience/:threadId', component: SubscriberInfo },

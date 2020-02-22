@@ -1,0 +1,25 @@
+$tab-active-font-size: 14px;
+
+.dh-tab {
+  .el-tabs__nav-wrap::after {
+    width: inherit;
+  }
+
+  .el-tabs__nav {
+    .el-tabs__active-bar {
+      background-color: $elementActiveColor;
+    }
+
+    .el-tabs__item {
+      font-size: $tab-active-font-size;
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 500;
+      color: $elementsColor;
+
+      &.is-active {
+        color: $elementActiveColor;
+      }
+    }
+  }
+}

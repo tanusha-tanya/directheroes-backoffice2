@@ -50,6 +50,9 @@
               <div class="dh-option" @click="prepareToClone(campaign)">
                 <duplicated  /> Clone
               </div>
+              <div class="dh-option" @click="$router.push({ name: 'accountCampaignStatistics', params: { campaignId: campaign.id } })">
+                <chart  /> Campaign perfomance
+              </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
               <ellipsis />
@@ -103,6 +106,7 @@ import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import task from '../assets/task.svg'
 import duplicated from '../assets/duplicated.svg'
+import chart from '../assets/chart.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
 
@@ -134,6 +138,7 @@ export default {
     nocampaign,
     triangle,
     task,
+    chart,
     duplicated
   },
 
