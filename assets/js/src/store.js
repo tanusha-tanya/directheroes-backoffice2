@@ -22,7 +22,7 @@ export default new Vuex.Store({
     loading: false,
     existConnection: null,
     globalError: false,
-    saveTimeout: 1000,
+    saveTimeout: 500,
     onSaveHandler: null,
   },
   mutations: {

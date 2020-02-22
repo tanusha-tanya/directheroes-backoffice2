@@ -195,6 +195,17 @@ export default {
       })
     }
   },
+
+  watch: {
+    broadcasts() {
+      const { updatePermissions, $store } = this;
+      const { onSaveHandler } = $store.state;
+
+      if (onSaveHandler === updatePermissions) return;
+
+      updatePermissions();
+    }
+  }
 }
 </script>
 

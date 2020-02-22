@@ -77,13 +77,10 @@ export default {
           const { currentAccountData, onSaveHandler } = this.$store.state
           const resultDoc = result.change.docs[0];
 
-          // console.log(result);
-
           if (onSaveHandler) {
             onSaveHandler();
             this.$store.commit('set', { path: 'onSaveHandler', value: null });
           };
-
 
           if (currentAccountData._rev === resultDoc._rev) return;
 
@@ -92,8 +89,6 @@ export default {
           const delta = jsondiffpatch.diff(currentAccountData, resultDoc);
 
           this.revUpdate = true
-
-          // console.log('delta', delta);
 
           jsondiffpatch.patch(currentAccountData, delta);
         })
@@ -112,7 +107,7 @@ export default {
           data._rev = result.rev;
         });
 
-        $store.commit('set', { path: 'saveTimeout', value: 1000 })
+        $store.commit('set', { path: 'saveTimeout', value: 500 })
       }
 
       clearTimeout(requestTimeout);
