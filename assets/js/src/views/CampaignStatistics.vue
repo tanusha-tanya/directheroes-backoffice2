@@ -423,6 +423,7 @@ export default {
         this.$nextTick(() => {
           this.messagesChart.$emit("init", {
             padding: {
+              top: 10,
               right: 10,
               left: 10
             },
@@ -575,6 +576,7 @@ export default {
       margin-top: 22px;
       background-color: #fff;
       border-radius: 4px;
+      border: 1px solid #E8ECEF;
 
       &.active {
         opacity: 1;
