@@ -446,7 +446,7 @@ export default {
                 labels: false,
                 columns: [
                   ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
-                  ['Commemts'].concat(commentCount.map(calcValues))
+                  ['Comments'].concat(commentCount.map(calcValues))
                 ]
               },
               tooltip: {
