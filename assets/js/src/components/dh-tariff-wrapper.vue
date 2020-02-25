@@ -1,5 +1,5 @@
 <template>
-  <div class="dh-enabled-by-tariff" v-if="isEnabled">
+  <div class="dh-enabled-by-tariff" v-if="true || isEnabled">
     <slot ></slot>
   </div>
   <div class="dh-disabled-by-tariff" v-else @click="showPopup" :key="'disabled'">
