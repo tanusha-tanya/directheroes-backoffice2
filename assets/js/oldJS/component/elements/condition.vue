@@ -22,7 +22,7 @@
                 </add-trigger-popup>
                </div>
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                No Response
+                No response
                 <add-tag-popup
                   :available-list="availableList(element, true)"
                   @select="createStep(element, $event, true)"
