@@ -441,10 +441,6 @@ export default {
       border-bottom: 1px solid #D8D8D8;
       position: relative;
 
-      &::first-letter {
-        text-transform: uppercase;
-      }
-
       .element-warning {
         top:5px;
         right: 10px;
