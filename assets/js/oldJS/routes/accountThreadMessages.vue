@@ -641,7 +641,7 @@
             this.$nextTick(() => {
               const { threads } = this.$refs;
 
-              if (!threads.length) return;
+              if (!threads || !threads.length) return;
 
               const last5ThreadEl = threads[threads.length - 5].$el;
 
