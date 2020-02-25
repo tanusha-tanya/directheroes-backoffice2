@@ -111,6 +111,18 @@ export default {
       }
     }
 
+    &:hover {
+      color: $elementActiveColor;
+
+      .dh-profile-settings-title {
+        color: $elementActiveColor;
+      }
+
+      .dh-profile-settings-info {
+        color: $textColor;
+      }
+    }
+
     svg {
       width: 14px;
       max-height: 16px;
