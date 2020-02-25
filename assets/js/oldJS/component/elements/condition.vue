@@ -9,7 +9,7 @@
         <template v-if="element.displaySettings.type === 'timeout'">
           <div class="condition-item-controls timeout-item">
             <div class="condition-item-control">
-              For <timeout :element="element"></timeout>
+              for <timeout :element="element"></timeout>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
@@ -261,7 +261,7 @@ export default {
   data() {
     return {
       conditionTitle: {
-        timeout: 'The contact to reply',
+        timeout: 'the contact to reply',
         followers: 'Followers',
         verified: 'Is Verified',
         topCategory: 'Is Majority Member',
