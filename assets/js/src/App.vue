@@ -375,6 +375,20 @@ body {
       margin-right: 12px;
       box-shadow: 0 0 3px 0#778CA2;
     }
+
+    .dh-enabled-by-tariff {
+      display: flex;
+      align-items: center;
+    }
+
+    .dh-disabled-by-tariff {
+      width: 100%;
+      justify-content: flex-start;
+
+      &:after {
+        margin-left: auto;
+      }
+    }
   }
 
   .dh-navigation-scroll {
@@ -480,20 +494,6 @@ body {
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
       color: #9E4CF9;
-    }
-  }
-
-  .dh-enabled-by-tariff {
-    display: flex;
-    align-items: center;
-  }
-
-  .dh-disabled-by-tariff {
-    width: 100%;
-    justify-content: flex-start;
-
-    &:after {
-      margin-left: auto;
     }
   }
 

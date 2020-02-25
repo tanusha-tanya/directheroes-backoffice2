@@ -39,7 +39,7 @@
               </el-tooltip>
             </template>
           </div>
-          <el-popover placement="bottom" trigger="click">
+          <el-popover popper-class="dh-campaign-action-popover" placement="bottom" trigger="click">
             <div class="dh-options">
               <div class="dh-option" @click="campaignToDelete = campaign">
                 <trash /> Delete
@@ -360,6 +360,14 @@ export default {
   .dh-campaign-add-input {
     input {
       width: 100%;
+    }
+  }
+}
+
+.dh-campaign-action-popover {
+  .dh-disabled-by-tariff {
+    &:after {
+      margin-left: auto;
     }
   }
 }
