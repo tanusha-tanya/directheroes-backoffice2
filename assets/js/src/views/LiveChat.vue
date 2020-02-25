@@ -18,7 +18,7 @@ export default {
     next(liveChatComponent => {
       const { isLiveChatInTariff, $router } = liveChatComponent;
 
-      if (isLiveChatInTariff) return
+      if (true || isLiveChatInTariff) return
 
       $router.replace({name: 'accountHome'})
     })
