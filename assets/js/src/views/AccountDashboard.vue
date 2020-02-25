@@ -2,19 +2,19 @@
   <div class="dh-view dh-dashboard-view">
     <dh-header title="Dashboard"></dh-header>
     <div class="dh-view-content">
-      <div class="dh-ig-account" v-if="account">
-        <div class="dh-ig-account-userpic" :style="{'background-image': `url(${ account.profilePicUrl  })`}">
+      <div class="dh-ig-account" v-if="currentAccount">
+        <div class="dh-ig-account-userpic" :style="{'background-image': `url(${ currentAccount.profilePicUrl  })`}">
         </div>
         <div class="dh-ig-account-info">
           <div class="dh-ig-account-main">
-            <div class="dh-ig-account-name">{{ account.login }}</div>
+            <div class="dh-ig-account-name">{{ currentAccount.login }}</div>
             <div class="dh-ig-account-data">
-              <span><strong>{{ account.postCount || 0 }}</strong> posts</span>
-              <span><strong>{{ account.followerCount || 0 }}</strong> followers</span>
-              <span><strong>{{ account.followingCount || 0 }}</strong> following</span>
+              <span><strong>{{ currentAccount.postCount || 0 }}</strong> posts</span>
+              <span><strong>{{ currentAccount.followerCount || 0 }}</strong> followers</span>
+              <span><strong>{{ currentAccount.followingCount || 0 }}</strong> following</span>
             </div>
           </div>
-          <div class="dh-ig-account-bio" v-html="account.bio && account.bio.replace(/\n/g, '<br>')">
+          <div class="dh-ig-account-bio" v-html="currentAccount.bio && currentAccount.bio.replace(/\n/g, '<br>')">
           </div>
         </div>
       </div>
@@ -138,12 +138,6 @@ export default {
   },
 
   computed: {
-    account() {
-      const { currentAccount } = this.$store.state;
-
-      return currentAccount
-    },
-
     hasThreeDays() {
       const { followerCount } = this.analyticInfo;
 
@@ -231,19 +225,19 @@ export default {
     },
 
     getAnalyticInfo() {
-      const { followersGraph, 
-              likeGraph, 
-              commentGraph, 
-              account, 
-              granularityDay, 
-              defaultDateTimeBegin, 
-              defaultDateTimeEnd 
+      const { followersGraph,
+              likeGraph,
+              commentGraph,
+              currentAccount,
+              granularityDay,
+              defaultDateTimeBegin,
+              defaultDateTimeEnd
             } = this;
 
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
-          igAccountId: account.id,
+          igAccountId: currentAccount.id,
           granularity: granularityDay,
           dateTimeSince: moment(defaultDateTimeBegin).toISOString(),
           dateTimeTill: moment(defaultDateTimeEnd).toISOString()
@@ -313,7 +307,7 @@ export default {
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
         params: {
-          username: account.login
+          username: currentAccount.login
         }
       }).then(({ data }) => {
         const analyticInfo = data.reports;
@@ -482,16 +476,17 @@ export default {
   },
 
   mounted() {
-    const { analyticInfo, $nextTick, getAnalyticInfo, account } = this;
+    const { analyticInfo, $nextTick, getAnalyticInfo, currentAccount } = this;
 
-    if (!analyticInfo || !account) return;
+    if (!analyticInfo || !currentAccount) return;
+
     $nextTick(() => {
       getAnalyticInfo();
     })
   },
 
   watch: {
-    account(value) {
+    currentAccount(value) {
       const { getAnalyticInfo, _isMounted } = this;
 
       if (!value || !_isMounted) return;

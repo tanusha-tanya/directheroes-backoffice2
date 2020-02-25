@@ -3,9 +3,9 @@
     <template v-if="currentAccountData">
       <div class="dh-campaigns-controls">
         <div class="dh-campaigns-title">{{title}}</div>
-        <div class="dh-new-item-button" @click="isAddCampaign = true">
+        <tariff-wrapper class="dh-new-item-button" @click.native="isAddCampaign = true" :is-enabled="limitIsAvailable">
           <plus/><span>New campaign</span>
-        </div>
+        </tariff-wrapper>
       </div>
       <div class="dh-list" v-if="campaigns && campaigns.length">
         <router-link :to="{ name: 'accountCampaign', params:{ campaignId: campaign.id }}" class="dh-list-item" v-for="campaign in campaigns" :key="campaign.id">
@@ -39,7 +39,7 @@
               </el-tooltip>
             </template>
           </div>
-          <el-popover placement="bottom" trigger="click">
+          <el-popover popper-class="dh-campaign-action-popover" placement="bottom" trigger="click">
             <div class="dh-options">
               <div class="dh-option" @click="campaignToDelete = campaign">
                 <trash /> Delete
@@ -47,9 +47,9 @@
               <div class="dh-option" @click="prepareToRename(campaign)">
                 <task /> Rename
               </div>
-              <div class="dh-option" @click="prepareToClone(campaign)">
-                <duplicated  /> Clone
-              </div>
+              <tariff-wrapper class="dh-option" @click.native="prepareToClone(campaign)" :is-enabled="limitIsAvailable">
+                <duplicated /> Clone
+              </tariff-wrapper>
               <div class="dh-option" @click="$router.push({ name: 'accountCampaignStatistics', params: { campaignId: campaign.id } })">
                 <chart  /> Campaign perfomance
               </div>
@@ -109,6 +109,7 @@ import duplicated from '../assets/duplicated.svg'
 import chart from '../assets/chart.svg'
 import calendar from '../assets/schedule.svg'
 import loader from './dh-loader'
+import TariffWrapper from './dh-tariff-wrapper'
 
 import ObjectId from '../../oldJS/utils/ObjectId'
 import utils from '../../oldJS/utils'
@@ -139,23 +140,28 @@ export default {
     triangle,
     task,
     chart,
-    duplicated
+    duplicated,
+    TariffWrapper
   },
 
   props: ['title', 'limit'],
 
   computed: {
-    account() {
-      return this.$store.state.currentAccount
-    },
-
-    campaigns() {
-      const { limit, currentAccountData } = this;
-      let campaigns = null;
+    allCampaigns() {
+      const { currentAccountData } = this;
 
       if (!currentAccountData) return null;
 
-      campaigns = currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
+      return currentAccountData.campaigns.filter(campaign => campaign.type == 'regular' && !campaign.isArchived);
+    },
+
+    campaigns() {
+      const { limit, allCampaigns } = this;
+      let campaigns = null;
+
+      if (!allCampaigns) return null;
+
+      campaigns = allCampaigns;
 
       campaigns.reverse();
 
@@ -225,6 +231,13 @@ export default {
       set(value) {
         this.campaignToDeactivate = value;
       }
+    },
+
+    limitIsAvailable() {
+      const { getTariffParameter, allCampaigns } = this;
+      const liveChatTariff = getTariffParameter('campaign_flow_limit');
+
+      return liveChatTariff && allCampaigns.length < liveChatTariff.total
     }
   },
 
@@ -347,6 +360,14 @@ export default {
   .dh-campaign-add-input {
     input {
       width: 100%;
+    }
+  }
+}
+
+.dh-campaign-action-popover {
+  .dh-disabled-by-tariff {
+    &:after {
+      margin-left: auto;
     }
   }
 }
