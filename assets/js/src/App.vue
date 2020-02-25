@@ -290,7 +290,7 @@ export default {
 
       localStorage.setItem(`${ this.dhAccount.id }-igs`, JSON.stringify(sortedList));
 
-      this.filteredAccountList = accountList.filter(account => account.login.toLowerCase().includes(searchName)).slice(0,5)
+      this.filteredAccountList = accountList.filter(account => account.login.toLowerCase().includes(searchName.toLowerCase())).slice(0,5)
     },
   },
 
@@ -315,6 +315,12 @@ export default {
       filterAccountList()
 
       this.isShowList = false;
+    },
+
+    searchName() {
+      const { filterAccountList } = this;
+
+      filterAccountList()
     }
   }
 }
