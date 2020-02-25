@@ -14,6 +14,16 @@ import dhFooter from '../components/dh-footer'
 import oldLiveChat from '../../oldJS/routes/accountThreadMessages'
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next(liveChatComponent => {
+      const { isLiveChatInTariff, $router } = liveChatComponent;
+
+      if (isLiveChatInTariff) return
+
+      $router.replace({name: 'accountHome'})
+    })
+  },
+
   beforeRouteUpdate(to, from, next) {
     const { liveChat } = this.$refs;
 
@@ -28,6 +38,14 @@ export default {
     oldLiveChat
   },
 
+  computed: {
+    isLiveChatInTariff() {
+      const { getTariffParameter } = this;
+      const liveChatTariff = getTariffParameter('live_chat')
+
+      return liveChatTariff && liveChatTariff.enabled
+    }
+  }
 }
 </script>
 

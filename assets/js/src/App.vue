@@ -21,10 +21,12 @@
         Broadcast
       </router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'livechat', params: { accountId: account.id}}">
-        <div class="dh-navigation-button-ico">
-          <livechat/>
-        </div>
+        <tariff-wrapper :is-enabled="isLiveChatInTariff">
+          <div class="dh-navigation-button-ico">
+            <livechat/>
+          </div>
         Live chat
+        </tariff-wrapper>
       </router-link>
       <router-link :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'audience', params: { accountId: account.id}}">
         <div class="dh-navigation-button-ico">
@@ -111,6 +113,7 @@ import training from './assets/training.svg'
 import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
+import TariffWrapper from './components/dh-tariff-wrapper'
 import easywebinar from '../oldJS/assets/svg/youtube.svg'
 
 export default {
@@ -133,7 +136,8 @@ export default {
     loader,
     affiliate,
     training,
-    easywebinar
+    easywebinar,
+    TariffWrapper
   },
 
   computed: {
@@ -171,6 +175,13 @@ export default {
 
       return dhAccount && accessList.includes(dhAccount.username);
     },
+
+    isLiveChatInTariff() {
+      const { getTariffParameter } = this;
+      const liveChatTariff = getTariffParameter('live_chat')
+
+      return liveChatTariff && liveChatTariff.enabled
+    }
   },
 
   methods: {
@@ -237,12 +248,34 @@ body {
     letter-spacing: .3px;
     line-height: 17px;
 
+    &.dh-disabled {
+      .dh-disabled-by-tariff {
+        &:after {
+          display: none;
+        }
+      }
+    }
+
+
     &.router-link-exact-active, &.router-link-active:not(:nth-child(2)) {
       font-weight: 500;
       border-color: $elementActiveColor;
       background-color: $mainBGColor;
     }
 
+    .dh-enabled-by-tariff {
+      display: flex;
+      align-items: center;
+    }
+
+    .dh-disabled-by-tariff {
+      width: 100%;
+      justify-content: flex-start;
+
+      &:after {
+        margin-left: auto;
+      }
+    }
   }
 
   .dh-easy-webinar {

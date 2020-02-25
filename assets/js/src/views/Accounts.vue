@@ -93,7 +93,6 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhConnectionWizzard from '../components/dh-connection-wizzard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
-import addAccountDialog from '../../oldJS/component/addAccountDialog'
 import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
@@ -114,7 +113,6 @@ export default {
     dhHeader,
     dhFooter,
     dhConfirmDialog,
-    addAccountDialog,
     status,
     warning,
     ellipsis,
