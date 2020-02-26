@@ -113,7 +113,7 @@ export default {
           data._rev = result.rev;
         });
 
-        $store.commit('set', { path: 'saveTimeout', value: 500 })
+        $store.commit('set', { path: 'saveTimeout', value: 1000 })
       }
 
       clearTimeout(requestTimeout);
