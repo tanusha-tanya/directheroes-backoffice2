@@ -84,10 +84,6 @@ export default {
       }
     },
 
-    account() {
-      return this.$store.state.currentAccount
-    },
-
     campaignsList() {
       const { currentAccountData } = this.$store.state;
 
@@ -97,7 +93,7 @@ export default {
     },
 
     categoriesList() {
-      const { subscriberCategoryList } = this.account;
+      const { subscriberCategoryList } = this.currentAccount;
 
       return subscriberCategoryList;
     },
@@ -105,15 +101,15 @@ export default {
 
   methods: {
     getAudience() {
-      const { account, paging, filters } = this;
+      const { currentAccount, paging, filters } = this;
 
-      if (!account) return;
+      if (!currentAccount) return;
 
       this.loading = true;
       this.threads = null;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/audience`,
         method: 'post',
         data: { paging,  ...filters }
       })
@@ -127,12 +123,12 @@ export default {
     },
 
     getCSV() {
-      const { account, paging, filters } = this;
+      const { currentAccount, paging, filters } = this;
 
       this.loading = true;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/audience`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/audience`,
         data: { paging,  ...filters,  contentFormat: 'csv'},
         responseType: 'blob',
         method: 'post'

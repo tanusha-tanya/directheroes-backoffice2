@@ -24,7 +24,7 @@
         <div class="dh-divider"></div>
         <div class="dh-filter dh-campaign-filter">
           <el-popover placement="bottom" trigger="click" popper-class="dh-campaign-filter-popover" :width="300">
-            <div class="dh-options" v-if="account">
+            <div class="dh-options" v-if="currentAccount">
               <div class="dh-option">entered any of</div>
               <div class="dh-select-wrapper">
                 <el-select v-model="filters.campaigns.in" multiple placeholder="Select campaign">
@@ -48,7 +48,7 @@
         </div>
         <div class="dh-filter">
           <el-popover placement="bottom" trigger="click" popper-class="dh-category-filter-popover" :width="300">
-            <div class="dh-options" v-if="account">
+            <div class="dh-options" v-if="currentAccount">
               <div class="dh-option">has any of</div>
               <div class="dh-select-wrapper">
                 <el-select v-model="filters.categories.in" multiple placeholder="Select category">
@@ -80,30 +80,35 @@
       </div>
       <div class="dh-list" v-if="threads">
         <router-link class="dh-list-item" :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" v-for="thread in threads" :key="thread.id">
-        <!-- <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id"> -->
-          <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
-          <div class="dh-thread-data-item dh-thread-username">
-            <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
-            {{thread.contactProfile.username}}
-          </div>
-          <div class="dh-thread-data-item">
-            <template v-if="fromNowDate(thread.subscribedAt)">
-              <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
-              Subscribed
-            </template>
-          </div>
-          <div class="dh-thread-data-item">
-            <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
-            Last Message
-          </div>
-          <div class="dh-thread-data-item" v-if="thread.campaignList.length">
-            <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
-            Campaigns
-          </div>
-          <div class="dh-spacer"></div>
-          <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
-            <livechat/>
-          </router-link>
+          <tariff-wrapper :is-enabled="isLiveChatInTariff">
+          <!-- <router-link class="dh-list-item" :to="{ name: 'subscriber', params: { threadId: thread.id }}" v-for="thread in threads" :key="thread.id"> -->
+            <div class="dh-thread-userpic" :style="{'background-image': `url(${ thread.contactProfile.profilePicUrl  })`}"></div>
+            <div class="dh-thread-data-item dh-thread-username">
+              <div class="dh-thread-data-item-main">{{thread.contactProfile.fullName}}</div>
+              {{thread.contactProfile.username}}
+            </div>
+            <div class="dh-thread-data-item">
+              <template v-if="fromNowDate(thread.subscribedAt)">
+                <div class="dh-thread-data-item-main">{{fromNowDate(thread.subscribedAt)}}</div>
+                Subscribed
+              </template>
+            </div>
+            <div class="dh-thread-data-item">
+              <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>
+              Last Message
+            </div>
+            <div class="dh-thread-data-item" v-if="thread.campaignList.length">
+              <div class="dh-thread-data-item-main">{{thread.campaignList.length}}</div>
+              Campaigns
+            </div>
+            <div class="dh-spacer"></div>
+
+            <router-link :to="{ name: 'livechat', params: { threadId: thread.id }, query: {p: paging.page, q: filters.usernameQuery, sub: subscribedText }}" tag="div" class="dh-thread-controls">
+              <tariff-wrapper :is-enabled="isLiveChatInTariff">
+                <livechat/>
+              </tariff-wrapper>
+            </router-link>
+          </tariff-wrapper>
         </router-link>
       </div>
       <loader v-else/>
@@ -134,6 +139,7 @@ import livechat from '../assets/livechat.svg'
 import search from '../assets/search.svg'
 import axios from 'axios';
 import loader from '../components/dh-loader'
+import TariffWrapper from '../components/dh-tariff-wrapper'
 import moment from 'moment';
 
 export default {
@@ -174,14 +180,11 @@ export default {
     dhExportDialog,
     livechat,
     loader,
-    search
+    search,
+    TariffWrapper
   },
 
   computed: {
-    account() {
-      return this.$store.state.currentAccount
-    },
-
     subscribedText() {
       const { subscribed } = this.filters;
 
@@ -237,22 +240,29 @@ export default {
     },
 
     categories() {
-      const { subscriberCategoryList } = this.account;
+      const { subscriberCategoryList } = this.currentAccount;
 
       return subscriberCategoryList;
+    },
+
+    isLiveChatInTariff() {
+      const { getTariffParameter } = this;
+      const liveChatTariff = getTariffParameter('live_chat')
+
+      return liveChatTariff && liveChatTariff.enabled
     }
   },
 
   methods: {
     getAudience() {
-      const { account, status, paging, filters } = this;
+      const { currentAccount, status, paging, filters } = this;
 
-      if (!account) return;
+      if (!currentAccount) return;
 
       this.threads = null;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/${ status }`,
         method: 'post',
         data: { paging,  ...filters }
       })
@@ -406,6 +416,23 @@ export default {
 
     &.dh-campaign-filter {
       margin-right: 20px;
+    }
+  }
+
+  .dh-enabled-by-tariff {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .dh-disabled-by-tariff {
+    opacity: 1;
+    width: 100%;
+
+    .dh-disabled-by-tariff {
+      &:after {
+        display: none;
+      }
     }
   }
 }

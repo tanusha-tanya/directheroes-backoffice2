@@ -11,6 +11,7 @@
 
 ###> symfony/webpack-encore-pack ###
 /assets/js/node_modules/
+/assets/js/package-lock.json
 /node_modules/
 /public/build/
 /assets/js/npm-debug.log

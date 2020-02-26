@@ -12,7 +12,7 @@
   @mouseout="toggleGlow(false)">
   <div class="step-item-header" :ref="stepType === 'action' && linker && linker.id">
     <span>
-      {{flowName || step.name || '&nbsp;'}}
+      {{flowName || stepName || step.name || '&nbsp;'}}
     </span>
     <span>
       <div class="step-delete-button"  @click="builder.deleteStep(step)">
@@ -78,12 +78,32 @@ export default {
   },
 
   computed: {
-    stepType() {
+    firstElement() {
       const { step } = this;
-      const firstElement = step.elements.find(element => !['group', 'checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
-      const { displaySettings } = firstElement;
+
+      return step.elements.find(element => !['group', 'checkpoint'].includes(element.type) || (element.displaySettings && element.displaySettings.subType !== 'settings'));
+    },
+
+    stepType() {
+      const { displaySettings } = this.firstElement;
 
       return (displaySettings && displaySettings.subType) || firstElement.type
+    },
+
+    stepName() {
+      const { stepType, firstElement } = this;
+      const typeNames = {
+        message: 'New message',
+        trigger: 'Trigger',
+        action: 'Action',
+        condition: 'Condition'
+      }
+
+      if (stepType === 'condition' && firstElement.displaySettings.type === 'timeout') {
+        return 'Wait for'
+      }
+
+      return typeNames[stepType]
     },
 
     hasChilds() {

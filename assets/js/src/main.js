@@ -32,14 +32,22 @@ Vue.config.productionTip = false
 Vue.mixin({
   computed: {
     dhAccount() {
-      return this.$store.state.dhAccount
+      const { dhAccount } = this.$store.state;
+
+      return dhAccount
     },
 
     isAdmin() {
       const { isViewedByAdmin } = this.dhAccount;
 
       return isViewedByAdmin;
-    }
+    },
+
+    currentAccount() {
+      const { currentAccount } = this.$store.state;
+
+      return currentAccount
+    },
   },
 
   methods: {
@@ -47,6 +55,16 @@ Vue.mixin({
       event.preventDefault();
       event.stopPropagation();
       return false;
+    },
+
+    getTariffParameter(codeName) {
+      const { currentAccount } = this;
+
+      if (!currentAccount) return;
+
+      const { subscriptionCapabilities } = currentAccount;
+
+      return subscriptionCapabilities && subscriptionCapabilities.find && subscriptionCapabilities.find(parameter => parameter.code === codeName)
     }
   },
 
