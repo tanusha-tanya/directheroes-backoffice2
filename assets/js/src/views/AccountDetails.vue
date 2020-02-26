@@ -4,7 +4,12 @@
 
 <script>
 import PouchDB from 'pouchdb';
-import debounce from 'lodash/debounce';
+
+const jsondiffpatch = require('jsondiffpatch').create({
+  objectHash: function(obj) {
+      return obj.name;
+  }
+})
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -21,26 +26,24 @@ export default {
 
   data() {
     return {
-      requests: [],
-      requestPromise: null,
-      pouchDB: null,
-      revUpdate: false,
+      localDB: null,
+      requestTimeout: null,
     }
-  },
-
-  computed: {
-    account() {
-      return this.$store.state.currentAccount;
-    },
   },
 
   methods: {
     selectAccount(route) {
+      const sortedList = JSON.parse(localStorage.getItem(`${ this.dhAccount.id }-igs`) || '[]') ;
       const { $store, dhAccount } = this
       const { accounts } = $store.state
       const { accountId } = route.params
 
       if (!accountId) return;
+
+      sortedList.splice(sortedList.indexOf(accountId), 1);
+      sortedList.unshift(accountId)
+
+      localStorage.setItem(`${ this.dhAccount.id }-igs`, JSON.stringify(sortedList));
 
       const account = accounts.find(account => account.id == accountId);
 
@@ -51,95 +54,77 @@ export default {
         return;
       }
 
-      const db = new PouchDB(account.couchDbUrl);
-      // const db = new PouchDB({name: dhAccount.userCode});
-      // const db = new PouchDB(`e9b53febd06c403c8cb7ba4fd9d3533a`);
-      db.info().then(console.log)
+      const localDB = new PouchDB(`pouch-local-${ account.id}`)
+      const remoteDB = new PouchDB(account.couchDbUrl);
 
-      this.pouchDB = db;
-
-      db.changes({ live: true }).on('change', (a) => {
-        const { currentAccountData } = this.$store.state;
-
-        // console.log('Db Changes',currentAccountData, a);
-
-        // if (!currentAccountData) return;
-
-        // console.log(currentAccountData);
-
-
-        // db.put(currentAccountData);
-      });
-
-      db.get(String(accountId))
-        .catch(error => {
+      localDB.replicate.from(remoteDB).on('complete', () => {
+        localDB.get(String(accountId)).catch(error => {
           if (error.status !== 404) return;
 
-          return db.put({
+          return localDB.put({
             _id: String(accountId),
             campaigns: [],
           })
         })
         .then(record => {
           if (record && record.ok) {
-           return db.get(String(accountId))
+            return localDB.get(String(accountId))
           }
 
           return record;
-        })
-        .then(record => {
+        }).then(record => {
           $store.commit('set', {path: 'currentAccountData', value: record})
+        });
+
+        const syncDB = PouchDB.sync(localDB, remoteDB, {
+          live: true,
+          retry: true
+        }).on('change', result => {
+          const { currentAccountData, onSaveHandler } = this.$store.state
+          const resultDoc = result.change.docs[0];
+
+          if (onSaveHandler) {
+            onSaveHandler();
+            this.$store.commit('set', { path: 'onSaveHandler', value: null });
+          };
+
+          if (currentAccountData._rev === resultDoc._rev) return;
+
+          delete resultDoc._revisions;
+
+          const delta = jsondiffpatch.diff(currentAccountData, resultDoc);
+
+          this.revUpdate = true
+
+          jsondiffpatch.patch(currentAccountData, delta);
         })
+      });
+
+      this.localDB = localDB;
     },
 
-    saveRequest() {
-      const { pouchDB, requests, saveRequest } = this;
+    saveAccountData(data) {
+      const { localDB, requestTimeout, $store } = this;
+      const { saveTimeout } = $store.state;
+      const saveHandler = () => {
+        localDB.put(data).then(result => {
+          this.revUpdate = true;
 
-      if (!pouchDB || this.requestPromise || !requests.length) return;
+          data._rev = result.rev;
+        });
 
-      const data = requests[0];
+        $store.commit('set', { path: 'saveTimeout', value: 1000 })
+      }
 
-      this.requestPromise = pouchDB.put(data);
+      clearTimeout(requestTimeout);
 
-      this.requestPromise.then(record => {
-        this.revUpdate = true;
-
-        data._rev = record.rev;
-
-        requests.splice(0, 1)
-
-        this.requestPromise = null;
-
-        if (requests.length) {
-          saveRequest();
-        }
-
-        console.log('Data', data);
-      }).catch(error => {
-        this.$notify({
-          message: 'Failed to save your changes,\n please reload the page',
-          duration: 0,
-          showClose: false,
-          offset: 70,
-          customClass: 'dh-global-error'
-        })
-
-        this.$store.commit('set', {path: 'globalError', value: 'true'})
-        console.dir(data._rev, error)
-      })
-    },
-
-    saveAccountData: debounce(function (data) {
-      const { saveRequest, requests } = this;
-
-      requests.push(data);
-      saveRequest();
-    }, 1000)
+      this.requestTimeout = setTimeout(saveHandler, saveTimeout)
+    }
   },
 
   watch: {
     '$store.state.accounts'() {
-      if (this.account) return;
+      if (this.currentAccount) return;
 
       this.selectAccount(this.$route);
     },

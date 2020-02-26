@@ -63,6 +63,9 @@
         <span v-if="inGetCount" class="broadcast-esimating">estimating...</span>
         <span v-else-if="totalSubscribers == null" class="broadcast-count-error">Failed to calculate</span>
         <span v-else>{{ totalSubscribers }}</span>
+        <tariff-wrapper :is-enabled="totalSubscribers <= reachLimitTariff">
+          <triangle/> This broadcast is set up to reach {{totalSubscribers}} subscribers, but your plan only allows up to {{reachLimitTariff}}. Last {{totalSubscribers - reachLimitTariff}} won't get the message <span v-if="false">Do you want to expand reach for ${plan.extraBroadcastParticipantPrice * (broadcast.totalSubscribers - plan.broadcastMaxReach)}?</span>
+        </tariff-wrapper>
       </div>
     </div>
   </div>
@@ -77,6 +80,8 @@ import axios from 'axios'
 import flowBuilder from '../component/flowBuilder.vue'
 import addStepPopup from '../component/addStepPopup.vue'
 import checkBoxBranch from '../component/checkBoxBranch.vue'
+import TariffWrapper from '../../src/components/dh-tariff-wrapper'
+import triangle from '../assets/triangle.svg'
 import moment from 'moment'
 
 let countTimeout = null;
@@ -104,14 +109,12 @@ export default {
   components: {
     flowBuilder,
     checkBoxBranch,
-    addStepPopup
+    addStepPopup,
+    TariffWrapper,
+    triangle
   },
 
   computed:{
-    account() {
-      return this.$store.state.currentAccount;
-    },
-
     startAt: {
       get() {
         const { startAt } = this.currentBroadcast.settings;
@@ -119,7 +122,7 @@ export default {
         return typeof startAt == 'number' ? startAt * 1000 : startAt
       },
       set(value) {
-        const { account, currentBroadcast } = this
+        const { currentAccount, currentBroadcast } = this
         const { settings } = this.currentBroadcast;
         const startAtDate = moment(value);
 
@@ -141,7 +144,7 @@ export default {
     },
 
     subscriberMainCategory() {
-      const { subscriberCategoryList, campaignList, broadcastList } = this.account;
+      const { subscriberCategoryList, campaignList, broadcastList } = this.currentAccount;
       const subscriberMainCategories = []
 
       subscriberCategoryList.forEach((item, index) => {
@@ -246,6 +249,13 @@ export default {
       if (!broadcastRuntime) return true;
 
       return ['running', 'completed'].includes(broadcastRuntime.status);
+    },
+
+    reachLimitTariff() {
+      const { getTariffParameter } = this;
+      const broadcastReachLimitTariff = getTariffParameter('broadcast_reach_limit');
+
+      return broadcastReachLimitTariff && broadcastReachLimitTariff.remain
     }
   },
 
@@ -253,17 +263,17 @@ export default {
     getTotalSubscribers() {
       const { categoryList } = this.currentBroadcast.settings;
 
-      if (!categoryList.length) {
-        this.totalSubscribers = 0
-        this.inGetCount = false;
+      // if (!categoryList.length) {
+      //   this.totalSubscribers = 0
+      //   this.inGetCount = false;
 
-        return;
-      }
+      //   return;
+      // }
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
         method: 'post',
-        data: { categories:categoryList.map(category => category.id), accountId: this.account.id }
+        data: { categories:categoryList.map(category => category.id), accountId: this.currentAccount.id }
       }).then(({ data }) => {
         const { count } = data.response.body
 
@@ -277,7 +287,7 @@ export default {
     },
 
     setBroadcastStart() {
-      const { account, currentBroadcast } = this
+      const { currentAccount, currentBroadcast, totalSubscribers } = this
       const { settings } = this.currentBroadcast;
 
       clearTimeout(this.broadcastStartTimeout);
@@ -287,8 +297,9 @@ export default {
           url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/${ currentBroadcast.id }/runtime-info`,
           method: 'post',
           data: {
-            accountId: account.id,
-            startAt: settings.startAt
+            accountId: currentAccount.id,
+            startAt: settings.startAt,
+            expectedReach: totalSubscribers
           }
         }).then(({ data }) => {
           this.broadcastRuntime = data.response.body.broadcastRuntime
@@ -388,7 +399,8 @@ export default {
     'currentBroadcast'(broadcast) {
       if (!broadcast) return;
 
-      this.updateBroadcastStatus()
+      this.updateBroadcastStatus();
+      this.getTotalSubscribers()
     }
   }
 }
@@ -453,6 +465,25 @@ export default {
 
   .broadcast-additional-info {
     padding: 10px;
+
+    svg {
+      width: 15px;
+      margin-right: 3px;
+    }
+
+    .dh-disabled-by-tariff {
+      display: inline-flex;
+      margin-left: 10px;
+      cursor: pointer;
+
+      &:after {
+        display: none;
+      }
+    }
+
+    .dh-enabled-by-tariff {
+      display: none;
+    }
   }
 
   .broadcast-settings-info {

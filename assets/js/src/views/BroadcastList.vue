@@ -5,9 +5,9 @@
     <template v-if="currentAccountData">
       <div class="dh-campaigns-controls">
         <span></span>
-        <div class="dh-new-item-button" @click="isAddBroadcast = true">
+        <tariff-wrapper class="dh-new-item-button" @click.native="isAddBroadcast = true" :is-enabled="limitIsAvailable">
           <plus/><span>New broadcast</span>
-        </div>
+        </tariff-wrapper>
       </div>
       <div class="dh-list" v-if="broadcasts && broadcasts.length">
         <router-link :to="{ name: 'accountBroadcast', params:{ campaignId: campaign.id }}" class="dh-list-item" v-for="campaign in broadcasts" :key="campaign.id">
@@ -70,6 +70,8 @@ import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
 import loader from '../components/dh-loader'
+import TariffWrapper from '../components/dh-tariff-wrapper'
+import axios from 'axios'
 
 import ObjectId from '../../oldJS/utils/ObjectId'
 import triangle from '../../oldJS/assets/triangle.svg'
@@ -93,7 +95,8 @@ export default {
     dhConfirmDialog,
     loader,
     nocampaign,
-    triangle
+    triangle,
+    TariffWrapper
   },
 
   computed: {
@@ -123,13 +126,27 @@ export default {
       set(value) {
         this.broadcastToDelete = value;
       }
+    },
+
+    limitIsAvailable() {
+      const { getTariffParameter } = this;
+      const broadcastLimitTariff = getTariffParameter('broadcast_runtime_limit');
+
+      return broadcastLimitTariff && broadcastLimitTariff.remain
     }
   },
 
   methods: {
-     createBroadcast() {
-      const { newBroadcastName, $store, currentAccountData } = this;
+    createBroadcast() {
+      const { getTariffParameter } = this;
+      const broadcastLimitTariff = getTariffParameter('broadcast_runtime_limit');
+      const { newBroadcastName, $store, currentAccountData, updatePermissions } = this;
       const { currentAccount } = $store.state;
+
+      broadcastLimitTariff.remain--
+
+      $store.commit('set', { path: 'onSaveHandler', value: updatePermissions });
+      $store.commit('set', { path: 'saveTimeout', value: 0 });
 
       const newBroadcast = {
         id: (new ObjectId).toString(),
@@ -159,11 +176,35 @@ export default {
     },
 
     deleteCampaign() {
-      const { broadcastToDelete } = this;
+      const { broadcastToDelete, updatePermissions, $store } = this;
+
+      $store.commit('set', { path: 'onSaveHandler', value: updatePermissions });
+      $store.commit('set', { path: 'saveTimeout', value: 0 });
 
       broadcastToDelete.isArchived = true;
       this.broadcastToDelete = false;
     },
+
+    updatePermissions() {
+      const { currentAccount } = this;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
+      }).then(({ data }) => {
+        currentAccount.subscriptionCapabilities = data.response.body;
+      })
+    }
+  },
+
+  watch: {
+    broadcasts() {
+      const { updatePermissions, $store } = this;
+      const { onSaveHandler } = $store.state;
+
+      if (onSaveHandler === updatePermissions) return;
+
+      updatePermissions();
+    }
   }
 }
 </script>

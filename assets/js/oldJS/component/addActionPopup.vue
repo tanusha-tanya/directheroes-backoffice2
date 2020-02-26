@@ -6,28 +6,35 @@
     </span>
   </template>
   <template v-for="action in actions">
-    <div
+    <tariff-wrapper
       :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
+      :is-enabled="isEnabledByTariff(actionType(action))"
       :key="action.title"
-      @click="selectAction(action)">
+      @click.native="selectAction(action)">
       {{action.title}}
-    </div>
+    </tariff-wrapper>
   </template>
 </el-popover>
 </template>
 
 <script>
 import actions from '../elements/actions';
+import TariffWrapper from '../../src/components/dh-tariff-wrapper';
 
 export default {
   data() {
     return {
       isShow: false,
       actions,
+      tariffsAction: ['addCategory', 'zapier']
     }
   },
 
   props: ['availableList'],
+
+  components: {
+    TariffWrapper
+  },
 
   computed: {
     hasAvailableAction() {
@@ -38,6 +45,27 @@ export default {
       return actions.some(action => {
         return availableList.includes(actionType(action))
       })
+    },
+
+    isAddTagInTariff() {
+      const { getTariffParameter } = this;
+      const addTagTariff = getTariffParameter('subscriber_categories')
+
+      return addTagTariff && addTagTariff.enabled
+    },
+
+    isAddTagInTariff() {
+      const { getTariffParameter } = this;
+      const addTagTariff = getTariffParameter('subscriber_categories')
+
+      return addTagTariff && addTagTariff.enabled
+    },
+
+    isZapierInTariff() {
+      const { getTariffParameter } = this;
+      const zapierTariff = getTariffParameter('flow_zapier_element')
+
+      return zapierTariff && zapierTariff.enabled
     }
   },
 
@@ -51,6 +79,22 @@ export default {
       const { template } = element;
 
       return template.displaySettings.type || template.body.action;
+    },
+
+    isEnabledByTariff(actionType) {
+      const { isAddTagInTariff, isZapierInTariff } = this;
+
+      switch (actionType) {
+        case 'addCategory':
+          return isAddTagInTariff
+          break;
+        case 'zapier':
+          return isZapierInTariff
+          break;
+        default:
+          return true
+          break;
+      }
     }
   }
 }

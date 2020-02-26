@@ -5,9 +5,12 @@
         <slot></slot>
       </span>
     </template>
-    <div class="action-item" @click="addNewStep(addTagElement.template)">
+     <tariff-wrapper
+      class="action-item"
+      :is-enabled="isAddTagInTariff"
+      @click.native="addNewStep(addTagElement.template)">
       {{addTagElement.title}}
-    </div>
+    </tariff-wrapper>
     <add-step-popup class="action-item" :builder="builder" :link-element="linkElement" :available-list="availableList" @select="selectHandler">
       <span>Skip Add tag</span>
     </add-step-popup>
@@ -31,6 +34,7 @@
 import addStepPopup from './addStepPopup';
 import actions from '../elements/actions';
 import existingStepPopup from './existingStepPopup';
+import TariffWrapper from '../../src/components/dh-tariff-wrapper';
 
 export default {
   data() {
@@ -42,7 +46,8 @@ export default {
 
   components: {
     addStepPopup,
-    existingStepPopup
+    existingStepPopup,
+    TariffWrapper
   },
 
   props: ['availableList', 'linkElement', 'builder', 'existingLink'],
@@ -52,7 +57,14 @@ export default {
       const { actions } = this;
 
       return actions.find(action => action.template.body.action === 'addCategory')
-    }
+    },
+
+    isAddTagInTariff() {
+      const { getTariffParameter } = this;
+      const addTagTariff = getTariffParameter('subscriber_categories')
+
+      return addTagTariff && addTagTariff.enabled
+    },
   },
 
   methods: {

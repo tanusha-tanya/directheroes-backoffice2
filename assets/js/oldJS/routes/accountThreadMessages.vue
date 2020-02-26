@@ -13,7 +13,7 @@
           <search />
           <input type="text" class="dh-input" placeholder="Type to search"  v-model="filters.username_query" @keypress.enter="getAudience">
           <el-popover placement="bottom" trigger="click" popper-class="dh-search-filter-popover" :width="300">
-            <div class="dh-options" v-if="account">
+            <div class="dh-options" v-if="currentAccount">
               <div class="dh-search-input-campaigns">
                 <div :class="{'dh-select':true, 'dh-is-selected': filters.favoured}" v-if="$route.query.sub !== 'favorites'">
                   <div class="dh-select-title">Favorite</div>
@@ -118,7 +118,7 @@
                   <thread-message
                     :key="message.id"
                     :message="message"
-                    :owner="account"
+                    :owner="currentAccount"
                     :prev-message="threadMessages[index - 1]"
                     :next-message="threadMessages[index + 1]"
                     :contact-profile="contactProfile"
@@ -220,10 +220,6 @@
   import checkBoxBranch from '../component/checkBoxBranch.vue'
 
   export default {
-    beforeRouteUpdate(to,from, next) {
-
-    },
-
     data() {
       const { query } = this.$route;
 
@@ -290,10 +286,6 @@
         return this.$route.params.accountId
       },
 
-      account() {
-        return this.$store.state.currentAccount;
-      },
-
       currentThread() {
         const { allThreads, contactProfile } = this;
         const { threadId } = this.$route.params;
@@ -328,7 +320,7 @@
       },
 
       subscriberMainCategory() {
-        const { subscriberCategoryList } = this.account;
+        const { subscriberCategoryList } = this.currentAccount;
         const { campaigns } = this;
 
         const subscriberMainCategories = []
@@ -460,7 +452,7 @@
 
       sendMessage(retryMessage) {
         const { threadId } = this.$route.params;
-        const { uuidv4, threadMessages, account } = this;
+        const { uuidv4, threadMessages, currentAccount } = this;
         const textUUID = uuidv4();
         const messageData = retryMessage || {
           text: this.messageText,
@@ -474,7 +466,7 @@
           this.media.forEach(media => {
             threadMessages.push({
               clientContext: media.clientContext,
-              senderUsername: account.login,
+              senderUsername: currentAccount.login,
               previewUrl: media.previewUrl,
               media
             })
@@ -483,7 +475,7 @@
           if (this.messageText) {
             threadMessages.push({
               clientContext: textUUID,
-              senderUsername: account.login,
+              senderUsername: currentAccount.login,
               text: this.messageText
             })
           }
@@ -607,16 +599,16 @@
       getAudience(beforeQuery) {
         const { query } = this.$route;
         const subscribed = this.subscribed(beforeQuery)
-        const { account, status, filters , paging, infinityPageObserver } = this;
+        const { currentAccount, status, filters , paging, infinityPageObserver } = this;
 
-        if (!account) return;
+        if (!currentAccount) return;
 
         if (paging.page === 1) {
           this.audienceLoading = true;
         }
 
         axios({
-          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ account.id }/${ status }`,
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/thread/list/ig_account/${ currentAccount.id }/${ status }`,
           method: 'post',
           // data: { ...filters, subscribed, paging },
           data: {
@@ -649,7 +641,7 @@
             this.$nextTick(() => {
               const { threads } = this.$refs;
 
-              if (!threads.length) return;
+              if (!threads || !threads.length) return;
 
               const last5ThreadEl = threads[threads.length - 5].$el;
 
