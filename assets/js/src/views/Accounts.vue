@@ -22,7 +22,8 @@
           :key="account.id"
           @click.native="accountClick(account, $event)"
           @delete-account="accountToDelete = $event"
-          @toggle-freez="toggleFreez(account)"
+          @toggle-freez="toggleFreez"
+          ref="accountCards"
           ></dh-account-card>
       </div>
       <dh-confirm-dialog
@@ -172,12 +173,30 @@ export default {
     },
 
     toggleFreez(account) {
+      const { subscriptions } = this.dhAccount;
+      const accountCard = this.$refs.accountCards.find(accountCard => accountCard.account === account);
+
+      if (!accountCard) return;
+
+      accountCard.updating = true;
+
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/stripe/subscription/${ account.subscriptionId }/freeze`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/stripe/subscription/${ account.subscriptionId }/${accountCard.isFrozen ? 'unfreeze' : 'freeze'}`,
         method: 'post'
       }).then(({ data }) => {
-        console.log(data);
+        const { subscription } = data.response.body;
+        const { subscription: accountSubscription } = accountCard;
 
+        subscriptions.splice(subscriptions.indexOf(accountSubscription), 1, subscription);
+
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ account.id }/subscription-capabilities`,
+        }).then(({ data }) => {
+          account.subscriptionCapabilities = data.response.body;
+          accountCard.updating = false;
+        })
+      }).catch(() => {
+        accountCard.updating = false;
       })
     },
 

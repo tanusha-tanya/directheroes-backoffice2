@@ -4,7 +4,8 @@
       'dh-account-card': true,
       'dh-account-fail-status': !account.isLoggedIn,
       'dh-account-success-status': account.isLoggedIn,
-      'dh-account-frozen': isFrozen
+      'dh-account-frozen': isFrozen,
+      'dh-account-updating': updating,
     }">
     <el-popover v-model="showActionsPopup" placement="bottom" trigger="click">
       <div class="dh-options">
@@ -60,6 +61,7 @@ export default {
   data() {
     return {
       showActionsPopup: false,
+      updating: false,
     }
   },
 
@@ -95,9 +97,9 @@ export default {
 
   methods: {
     accountAction(actionName) {
-      const { account } = this;
+      const { account, isFrozen } = this;
 
-      this.$emit(actionName, account);
+      this.$emit(actionName, account, isFrozen);
       this.showActionsPopup = false;
     }
   }
@@ -172,6 +174,37 @@ export default {
       border-color: #2CE5F6;
     }
 
+  }
+
+  &.dh-account-updating {
+    position: relative;
+    pointer-events: none;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(#FFF, .8);
+      z-index: 3;
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: calc(50% - 23px);
+      left: calc(50% - 23px);
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      border: 5px solid $elementActiveColor;
+      border-bottom-color: transparent;
+      animation: rotation .8s infinite linear;
+      z-index: 4;
+    }
   }
 
   .dh-account-options-icon {

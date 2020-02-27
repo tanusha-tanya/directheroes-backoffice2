@@ -171,7 +171,7 @@ export default {
         border-radius: 40px;
         border: 5px solid $elementActiveColor;
         border-bottom-color: transparent;
-        animation: rotation  .8s infinite linear;
+        animation: rotation .8s infinite linear;
       }
     }
   }
