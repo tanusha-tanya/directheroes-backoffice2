@@ -42,7 +42,7 @@
                 <span>Non-subscribers only <dh-question-mark :title="helpTriggerText.nonSubscribersOnly.title" :message="helpTriggerText.nonSubscribersOnly.message"></dh-question-mark></span>
                 <el-switch v-model="nonSubscribersOnly" :disabled="isPreview"></el-switch>
               </div>
-              <div class="dh-option" v-if="account.isBusinessAccount || account.isVerified">
+              <div class="dh-option">
                 <span>Approve message requests <dh-question-mark :title="helpTriggerText.allowReEnter.title" :message="helpTriggerText.allowReEnter.message" v-if="false"></dh-question-mark></span>
                 <el-switch v-model="approvePendingToGeneral" :disabled="isPreview"  active-text="To General" inactive-text="To Primary"></el-switch>
               </div>

@@ -2,9 +2,9 @@
   <div class="timeout">
     <input-autosize :value="timeValue" @input.native="checkTime" only-numbers></input-autosize>
     <el-select class="hidden-select" v-model="timeType" size="mini" popper-class="small-dropdown">
-      <el-option label="Hours" value="hours"></el-option>
-      <el-option label="Minutes" value="minutes"></el-option>
-      <el-option label="Seconds" value="seconds"></el-option>
+      <el-option label="hours" value="hours"></el-option>
+      <el-option label="minutes" value="minutes"></el-option>
+      <el-option label="seconds" value="seconds"></el-option>
     </el-select>
   </div>
 </template>

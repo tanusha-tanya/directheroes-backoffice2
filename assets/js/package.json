@@ -13,6 +13,7 @@
     "element-ui": "^2.11.1",
     "global": "^4.4.0",
     "intersection-observer": "^0.7.0",
+    "jsondiffpatch": "^0.4.1",
     "libsodium-wrappers": "^0.7.5",
     "moment": "^2.22.2",
     "panzoom": "^8.1.0",

@@ -93,7 +93,6 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhConnectionWizzard from '../components/dh-connection-wizzard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
-import addAccountDialog from '../../oldJS/component/addAccountDialog'
 import status from '../assets/plus.svg'
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
@@ -101,6 +100,22 @@ import trash from '../assets/trash.svg'
 import extraAccount from '../../oldJS/assets/svg/extra-account.svg'
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next((component) => {
+      const { checkAction } = component;
+
+      checkAction(to, from);
+    })
+
+  },
+
+  beforeRouteUpdate(to, from, next) {
+    const { checkAction } = this;
+
+    checkAction(to, from, next);
+  },
+
+
   data() {
     return {
       accountToAuth: null,
@@ -114,7 +129,6 @@ export default {
     dhHeader,
     dhFooter,
     dhConfirmDialog,
-    addAccountDialog,
     status,
     warning,
     ellipsis,
@@ -201,6 +215,32 @@ export default {
       this.$nextTick(() => {
         document.querySelector('.v-modal').classList.add(className);
       })
+    },
+
+    checkAction(to, from, next) {
+      const { accounts, accountClick, addAccount } = this;
+      const { action } = to.query;
+
+      if (!action) {
+        if (next) next();
+        return;
+      }
+
+      if (action === 'new') {
+        addAccount();
+
+        if (from.name !== 'accounts') {
+          this.$router.replace({ name: 'accounts'})
+        }
+      } else {
+        const actionAccount = accounts.find(account => account.id == action);
+
+        accountClick(actionAccount);
+
+        if (!actionAccount.isLoggedIn && from.name !== 'accounts') {
+          this.$router.replace({ name: 'accounts'})
+        }
+      }
     }
   }
 }
@@ -276,15 +316,8 @@ export default {
   }
 
   .dh-account-userpic {
-    position: relative;
     width: 112px;
     height: 112px;
-    background-color: rgba($borderColor, .5);
-    border-radius: 50%;
-    background-position: center;
-    background-size: cover;
-    border: 2px solid transparent;
-    flex-shrink: 0;
   }
 
   .dh-account-status {
