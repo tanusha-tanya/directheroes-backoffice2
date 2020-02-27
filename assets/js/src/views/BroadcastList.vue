@@ -143,7 +143,7 @@ export default {
       const { newBroadcastName, $store, currentAccountData, updatePermissions } = this;
       const { currentAccount } = $store.state;
 
-      broadcastLimitTariff.remain--
+      if (broadcastLimitTariff) broadcastLimitTariff.remain--
 
       $store.commit('set', { path: 'onSaveHandler', value: updatePermissions });
       $store.commit('set', { path: 'saveTimeout', value: 0 });
