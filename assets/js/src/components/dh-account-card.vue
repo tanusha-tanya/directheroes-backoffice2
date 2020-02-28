@@ -10,7 +10,7 @@
     <el-popover v-model="showActionsPopup" placement="bottom" trigger="click">
       <div class="dh-options">
         <div class="dh-option" @click="accountAction('toggle-freez')" v-if="canBeFrozen">
-          <snowflake /> {{isFrozen ? 'Unfreez' : 'Freez'}}
+          <snowflake /> {{isFrozen ? 'Unfreeze' : 'Freeze'}}
         </div>
         <div class="dh-option" @click="accountAction('delete-account')">
           <trash /> Delete
