@@ -24,69 +24,118 @@
       <div class="dh-dashboard-analytics">
         <el-tabs class="dh-tab" v-model="activeTab" @tab-click="onTabClick">
           <el-tab-pane class="dh-tab-pane" :label="tabs.Messages" :name="tabs.Messages">
-            <div class="dh-dashboard-analytics-item" v-if="messagesRates">
-              <div class="dh-analytics-item-graph dh-full-chart">
-                <vue-c3 class="dh-chart-item" :handler="messagesChart"></vue-c3>
-              </div>
+            <div class="dh-tab-content">
+              <dhRangePicker
+                :fromto="messagesAt"
+                :onChange="getMessagesRates"
+                :granularity="true"
+              />
+              <dhChart
+                :columns="messagesRatesColumns"
+                :colors="['#9E4CF9', '#6DD230', '#FFAB2B']"
+                :active="!messagesRatesFetching"
+                :granularity="granularity"
+                :ref="tabs.Messages"
+                :xsMapping="{
+                  [tabs.Sent]: 'x1',
+                  [tabs.Seen]: 'x2',
+                  [tabs.Replied]: 'x3'
+                }"
+              />
             </div>
-            <loader class="dh-dashboard-analytics-item" v-else />
           </el-tab-pane>
           <el-tab-pane class="dh-tab-pane" :label="tabs.Followers" :name="tabs.Followers">
-            <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.followerCount">
-              <div class="dh-analytics-item-info" >
-                <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
-                  {{deltaFollowerCount.toLocaleString()}}
-                  <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
-                    <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
-                  </svg>
-                </div>
-                </div>
-                <div class="dh-analytics-item-graph">
-                  <vue-c3 class="dh-chart-item" :handler="followersGraph"></vue-c3>
-                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
-                    {{followerCountProgress.toFixed(2)}}%
+            <div class="dh-tab-content">
+              <!-- <dhRangePicker // Disabled until api 2.0 will not be released
+                :fromto="messagesAt"
+                :onChange="(dates) => console.log(dates)"
+              /> -->
+              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.followerCount">
+                <div class="dh-analytics-item-info" >
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
+                    {{deltaFollowerCount.toLocaleString()}}
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
+                      <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+                    </svg>
                   </div>
-                </div>
+                  </div>
+                  <div class="dh-analytics-item-graph">
+                    <dhChart
+                      :columns="followersRatesColumns"
+                      :colors="['#9E4CF9']"
+                      :active="followersRatesColumns !== null"
+                      flat
+                      :ref="tabs.Followers"
+                    />
+                    <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
+                      {{followerCountProgress.toFixed(2)}}%
+                    </div>
+                  </div>
+              </div>
+              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
-            <loader class="dh-dashboard-analytics-item" v-else />
           </el-tab-pane>
           <el-tab-pane class="dh-tab-pane" :label="tabs.Likes" :name="tabs.Likes">
-            <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.likeCount">
-              <div class="dh-analytics-item-info">
-                <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
-                  {{deltaLikeCount.toLocaleString()}}
-                  <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
-                    <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
-                  </svg>
+            <div class="dh-tab-content">
+              <!-- <dhRangePicker // Disabled until api 2.0 will not be released
+                :fromto="messagesAt"
+                :onChange="(dates) => console.log(dates)"
+              /> -->
+              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.likeCount">
+                <div class="dh-analytics-item-info">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
+                    {{deltaLikeCount.toLocaleString()}}
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
+                      <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="dh-analytics-item-graph">
+                  <dhChart
+                    :columns="likeRatesColumns"
+                    :colors="['#6DD230']"
+                    :active="likeRatesColumns !== null"
+                    flat
+                    :ref="tabs.Likes"
+                  />
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
+                    {{likeCountProgress.toFixed(2)}}%
+                  </div>
                 </div>
               </div>
-              <div class="dh-analytics-item-graph">
-                <vue-c3 class="dh-chart-item" :handler="likeGraph"></vue-c3>
-                <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
-                  {{likeCountProgress.toFixed(2)}}%
-                </div>
-              </div>
+              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
-            <loader class="dh-dashboard-analytics-item" v-else />
           </el-tab-pane>
           <el-tab-pane class="dh-tab-pane" :label="tabs.Comments" :name="tabs.Comments">
-            <div class="dh-dashboard-analytics-item" v-if="analyticInfo && hasThreeDays && analyticInfo.commentCount">
-              <div class="dh-analytics-item-info">
-                <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
-                  {{deltaCommentCount.toLocaleString()}}
-                  <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
-                    <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
-                  </svg>
+            <div class="dh-tab-content">
+              <!-- <dhRangePicker // Disabled until api 2.0 will not be released
+                :fromto="messagesAt"
+                :onChange="(dates) => console.log(dates)"
+              /> -->
+              <div class="dh-dashboard-analytics-item" v-if="analyticInfo && hasThreeDays && analyticInfo.commentCount">
+                <div class="dh-analytics-item-info">
+                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
+                    {{deltaCommentCount.toLocaleString()}}
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
+                      <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="dh-analytics-item-graph">
+                  <dhChart
+                    :columns="commentRatesColumns"
+                    :colors="['#FFAB2B']"
+                    :active="commentRatesColumns !== null"
+                    flat
+                    :ref="tabs.Comments"
+                  />
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
+                    {{commentCountProgress.toFixed(2)}}%
+                  </div>
                 </div>
               </div>
-              <div class="dh-analytics-item-graph">
-                <vue-c3 class="dh-chart-item" :handler="commentGraph"></vue-c3>
-                <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
-                  {{commentCountProgress.toFixed(2)}}%
-                </div>
-              </div>
+              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
-            <loader class="dh-dashboard-analytics-item" v-else />
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -102,39 +151,43 @@ import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
 import dhCampaigns from '../components/dh-campaigns'
 import moment from 'moment'
-import Vue from 'vue'
 import axios from 'axios'
-import VueC3 from 'vue-c3'
+import dhChart from "../components/dh-chart";
+import dhRangePicker from "../components/dh-range-picker";
 import loader from "../components/dh-loader";
 
 export default {
   data() {
     return {
-      followersGraph: new Vue(),
-      likeGraph: new Vue(),
-      commentGraph: new Vue(),
-      messagesChart: new Vue(),
       tabs: {
         Messages: "Messages",
         Followers: "Followers",
         Likes: "Likes",
         Comments: "Comments",
+        Sent: "Reports",
+        Seen: "Seen",
+        Replied: "Replied"
       },
       activeTab: "Messages",
-      granularityDay: 86400,
-      defaultDateTimeBegin: new Date(moment().subtract(7, "days")),
-      defaultDateTimeEnd: new Date(),
+      granularity: 86400,
+      messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
       analyticInfo: null,
-      messagesRates: null
-    }
+      messagesRatesColumns: null,
+      followersRatesColumns: null,
+      likeRatesColumns: null,
+      commentRatesColumns: null,
+      interval: [],
+      messagesRatesFetching: false
+    };
   },
 
   components: {
     dhHeader,
     dhFooter,
     dhCampaigns,
-    VueC3,
-    loader
+    loader,
+    dhChart,
+    dhRangePicker
   },
 
   computed: {
@@ -201,109 +254,55 @@ export default {
       const { deltaCommentCount } = this;
 
       return deltaCommentCount * 100 / lastElement.value
-    },
+    }
   },
 
   methods: {
     onTabClick(tab) {
       const { name } = tab;
-      const { messagesChart, followersGraph, likeGraph, commentGraph, tabs } = this;
-
-      let chart = messagesChart;
-      if (name === tabs.Followers) {
-        chart = followersGraph;
-      } else if (name === tabs.Likes) {
-        chart = likeGraph;
-      } else if (name === tabs.Comments) {
-        chart = commentGraph;
+      const chart = this.$refs[name];
+      if (chart) {
+        chart.resize();
       }
-      this.$nextTick(() => {
-        chart.$emit("dispatch", c => {
-          c.resize();
-        })
-      });
     },
 
-    getAnalyticInfo() {
-      const { followersGraph,
-              likeGraph,
-              commentGraph,
-              currentAccount,
-              granularityDay,
-              defaultDateTimeBegin,
-              defaultDateTimeEnd
+    getMessagesRates(interval, granularity) {
+      const { currentAccount,
+              tabs
             } = this;
+      this.granularity = granularity;
+      this.messagesRatesFetching = true;
+      const [begin, end] = interval;
 
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
           igAccountId: currentAccount.id,
-          granularity: granularityDay,
-          dateTimeSince: moment(defaultDateTimeBegin).toISOString(),
-          dateTimeTill: moment(defaultDateTimeEnd).toISOString()
+          granularity: granularity,
+          dateTimeSince: moment(begin).toISOString(),
+          dateTimeTill: moment(end).toISOString()
         }
       }).then(({ data }) => {
         const { sent, seen, replied } = data.response.body;
-        this.messagesRates = {
-          sent,
-          seen,
-          replied
-        };
-          this.$nextTick(() => {
-            this.messagesChart.$emit("init", {
-              padding: {
-                left: 15,
-                right: 15
-              },
-              data: {
-                x: "x",
-                xFormat: "%Y-%m-%d",
-                type: "line",
-                labels: false,
-                columns: [
-                  ["x"].concat(sent.map(c => moment(c.dateTime).toDate())),
-                  ["Sent"].concat(sent.map(c => c.value)),
-                  ["Seen"].concat(seen.map(c => c.value)),
-                  ["Replied"].concat(replied.map(c => c.value))
-                ]
-              },
-              tooltip: {
-                format: {
-                  value(value, ratio, id, index) {
-                    return value;
-                  }
-                }
-              },
-              color: {
-                pattern: ["#9E4CF9", "#6DD230", "#FFAB2B"]
-              },
-              axis: {
-                y: {
-                  show: false
-                },
-                x: {
-                  show: true,
-                  type: "timeseries",
-                  tick: {
-                    culling: {
-                      max: 10
-                    },
-                    format: function(e) {
-                      return moment(e).format("YYYY-MM-DD");
-                    }
-                  }
-                }
-              },
-              legend: {
-                hide: false
-              },
-              transition: {
-                duration: 1000
-              }
-            });
-        });
-      })
+        this.messagesRatesColumns = [
+          ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
+          ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
+          ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
+          [tabs.Sent].concat(sent.map(c => c.value)),
+          [tabs.Seen].concat(seen.map(c => c.value)),
+          [tabs.Replied].concat(replied.map(c => c.value))
+        ];
+        this.messagesRatesFetching = false;
+      });
+    },
 
+    getAnalyticInfoData(options) {
+      const { followersGraph,
+              likeGraph,
+              commentGraph,
+              currentAccount,
+              tabs } = this;
+       
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
         params: {
@@ -334,144 +333,47 @@ export default {
         if ( !followerCount && !likeCount && !commentCount) return;
 
         this.analyticInfo = analyticInfo;
+        if (followerCount) {
+          this.followersRatesColumns = [
+            ["x"].concat(
+              followerCount.map(followerItem =>
+                moment(followerItem.time).toDate()
+              )
+            ),
+            [tabs.Followers].concat(followerCount.map(calcValues))
+          ];
+        }
+        if (likeCount) {
+          this.likeRatesColumns = [
+              ["x"].concat(
+                likeCount.map(likeItem => moment(likeItem.time).toDate())
+              ),
+              [tabs.Likes].concat(likeCount.map(calcValues))
+          ]
+        }
 
-        this.$nextTick(() => {
-          if (followerCount) {
-            followersGraph.$emit('init', {
-              padding: {
-                top: 10,
-                right: 15,
-                left: 15
-              },
-              data: {
-                x: 'x',
-                xFormat: '%Y-%m-%d',
-                type: 'area',
-                labels: false,
-                columns: [
-                  ['x'].concat(followerCount.map(followerItem => moment(followerItem.time).toDate())),
-                  ['Followers'].concat(followerCount.map(calcValues))
-                ]
-              },
-              tooltip: {
-                format: {
-                  value(value, ratio, id, index) {
-                    return Math.floor(followerCount[index].value);
-                  }
-                }
-              },
-              color: {
-                pattern: ['#9E4CF9']
-              },
-              axis: {
-                y: {
-                  show: false
-                },
-                x: {
-                  show: true,
-                  type: 'timeseries',
-                  tick: {
-                    format: '%Y-%m-%d'
-                  }
-                }
-              },
-              legend: {
-                hide: false
-              }
-            });
-          }
+        if (commentCount) {
+          this.commentRatesColumns = [
+            ["x"].concat(
+              commentCount.map(commentItem =>
+                moment(commentItem.time).toDate()
+              )
+            ),
+            [tabs.Comments].concat(commentCount.map(calcValues))
+          ]
+        }
+      });
+    },
 
-          if (likeCount) {
-            likeGraph.$emit('init', {
-              padding: {
-                top: 10,
-                right: 15,
-                left: 15
-              },
-              data: {
-                x: 'x',
-                xFormat: '%Y-%m-%d',
-                type: 'area',
-                labels: false,
-                columns: [
-                  ['x'].concat(likeCount.map(likeItem => moment(likeItem.time).toDate())),
-                  ['Likes'].concat(likeCount.map(calcValues))
-                ]
-              },
-              color: {
-                pattern: ['#6DD230']
-              },
-              tooltip: {
-                format: {
-                  value(value, ratio, id, index) {
-                    return Math.floor(likeCount[index].value);
-                  }
-                }
-              },
-              axis: {
-                y: {
-                  show: false
-                },
-                x: {
-                  show: true,
-                  type: 'timeseries',
-                  tick: {
-                    format: '%Y-%m-%d'
-                  }
-                }
-              },
-              legend: {
-                hide: false
-              }
-            });
-          }
+    getAnalyticInfo() {
+      const { getMessagesRates,
+              getAnalyticInfoData,
+              messagesAt, 
+              granularity
+            } = this;
 
-          if (commentCount) {
-            commentGraph.$emit('init', {
-              padding: {
-                top: 10,
-                right: 15,
-                left: 15
-              },
-              data: {
-                x: 'x',
-                xFormat: '%Y-%m-%d',
-                type: 'area',
-                labels: false,
-                columns: [
-                  ['x'].concat(commentCount.map(commentItem => moment(commentItem.time).toDate())),
-                  ['Comments'].concat(commentCount.map(calcValues))
-                ]
-              },
-              tooltip: {
-                format: {
-                  value(value, ratio, id, index) {
-                    return Math.floor(commentCount[index].value);
-                  }
-                }
-              },
-              color: {
-                pattern: ['#FFAB2B']
-              },
-              axis: {
-                y: {
-                  show: false
-                },
-                x: {
-                  show: true,
-                  type: 'timeseries',
-                  tick: {
-                    format: '%Y-%m-%d'
-                  }
-                }
-              },
-              legend: {
-                hide: false
-              }
-            })
-          }
-        })
-      })
+      getMessagesRates(messagesAt, granularity);
+      getAnalyticInfoData();
     }
   },
 
@@ -530,6 +432,7 @@ export default {
   }
 
   .dh-dashboard-analytics-item {
+    margin-top: 22px;
     background: #FFFFFF;
     border-radius: 4px;
     border: 1px solid #E8ECEF;

@@ -5,25 +5,19 @@
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
           <div class="dh-chart">
-            <div class="dh-controls">
-              <div class="dh-control">
-                <div class="dh-control-title">Dates</div>
-              </div>
-                <el-date-picker
-                v-model="messagesAt"
-                size="small"
-                type="daterange"
-                start-placeholder="date since"
-                end-placeholder="date till"
-                class="dh-chart-time-picker"
-                range-separator="to"
-                :picker-options="pickerOptions"
-              ></el-date-picker>
-            </div>
+            <dhRangePicker :fromto="messagesAt" :onChange="chartFetch" :granularity="true" />
 
-            <div class="dh-chart-item-wrapper" v-bind:class="{ active :!chartFetching }">
-              <vue-c3 class="dh-chart-item" :handler="messagesChart"></vue-c3>
-            </div>
+            <dhChart
+              :columns="messagesChartColumns"
+              :colors="['#9E4CF9', '#6DD230', '#FFAB2B']"
+              :active="!chartFetching"
+              :granularity="granularity"
+              :xsMapping="{
+                [graphs.Sent]: 'x1',
+                [graphs.Seen]: 'x2',
+                [graphs.Replied]: 'x3'
+              }"
+            />
           </div>
           <div class="dh-campaign-controls">
             <div class="dh-select dh-campaign-subscription">
@@ -170,11 +164,12 @@ import dhFooter from "../components/dh-footer";
 import dhExportDialog from "../components/dh-export-dialog";
 import Vue from "vue";
 import moment from "moment";
-import VueC3 from "vue-c3";
 import axios from "axios";
 import search from "../assets/search.svg";
 import livechat from "../assets/livechat.svg";
 import loader from "../components/dh-loader";
+import dhChart from "../components/dh-chart";
+import dhRangePicker from "../components/dh-range-picker";
 
 export default {
   name: "CampaignStatistics",
@@ -182,66 +177,17 @@ export default {
   components: {
     dhHeader,
     dhFooter,
-    VueC3,
+    dhChart,
     search,
     livechat,
     dhExportDialog,
-    loader
+    loader,
+    dhRangePicker
   },
 
   data: () => ({
     active: "Messages",
     status: "audience",
-    messagesChart: new Vue(),
-    pickerOptions: {
-      shortcuts: [
-        {
-          text: "Last week",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last 2 week",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 14);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last month",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last 3 months",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last year",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
-            picker.$emit("pick", [start, end]);
-          }
-        }
-      ]
-    },
     isExportData: false,
     paging: {
       page: 1,
@@ -260,16 +206,19 @@ export default {
     },
     chartFetching: false,
     threads: [],
-    defaultDateTimeBegin: new Date(moment().subtract(14, "days")),
-    defaultDateTimeEnd: new Date(),
-    interval: [],
-    granularity: {
-      options: {
-        month: 2592000,
-        day: 86400,
-        hour: 3600
-      }
+    messagesAt: [new Date(moment().subtract(14, "days")), new Date()],
+    options: {
+      month: 2592000,
+      day: 86400,
+      hour: 3600
     },
+    granularity: 86400,
+    graphs: {
+      Sent: "Sent",
+      Seen: "Seen",
+      Replied: "Replied"
+    },
+    messagesChartColumns: [],
     debounce: -1
   }),
 
@@ -309,29 +258,6 @@ export default {
       return filterText;
     },
 
-    messagesAt: {
-      get() {
-        if (!this.interval.length) {
-          return [this.defaultDateTimeBegin, this.defaultDateTimeEnd];
-        }
-
-        return this.interval;
-      },
-      set(value) {
-        if (!value) {
-          value = [this.defaultDateTimeBegin, this.defaultDateTimeEnd];
-        }
-
-        let [begin, end] = value;
-        if (begin.getTime() === end.getTime()) {
-          begin = begin - 1;
-        }
-
-        this.interval = [begin, end];
-        this.chartPatch();
-      }
-    },
-
     subscribedText() {
       const { subscribed } = this.filters;
 
@@ -355,9 +281,10 @@ export default {
 
   mounted() {
     const { campaignId } = this.$route.params;
-    this.filters.campaigns.in.push(campaignId);
-    this.getStatistics();
-    this.chartInitialize();
+    const { filters, getStatistics, chartFetch, options, messagesAt } = this;
+    filters.campaigns.in.push(campaignId);
+    getStatistics();
+    chartFetch(messagesAt, options.day);
   },
 
   methods: {
@@ -378,134 +305,12 @@ export default {
       return moment.duration(diff).asDays() + 1 / 30;
     },
 
-    granularityValue(days) {
-      days = Math.floor(days);
-      const { options } = this.granularity;
-      let granularity = options.month;
-
-      if (days < 7) {
-        granularity = options.hour;
-      } else if (days < 30) {
-        granularity = options.day;
-      }
-
-      return granularity;
-    },
-
-    chartPatch() {
-      this.chartFetch(data => {
-        const { sent, seen, replied } = data.response.body;
-        const dates = sent.map(c => moment(c.dateTime).toDate());
-        this.messagesChart.$emit("dispatch", chart => {
-          chart.load({
-            columns: [
-              ["x"].concat(dates),
-              ["Sent"].concat(sent.map(c => c.value)),
-              ["Seen"].concat(seen.map(c => c.value)),
-              ["Replied"].concat(replied.map(c => c.value))
-            ]
-          });
-
-          chart.zoom([
-            new Date(Math.min.apply(null, dates)),
-            new Date(Math.max.apply(null, dates))
-          ]);
-          chart.flush();
-        });
-      });
-    },
-
-    chartInitialize() {
-      this.chartFetch(data => {
-        const { sent, seen, replied } = data.response.body;
-        const self = this;
-
-        this.$nextTick(() => {
-          this.messagesChart.$emit("init", {
-            padding: {
-              top: 10,
-              right: 10,
-              left: 10
-            },
-            data: {
-              x: "x",
-              xFormat: "%Y-%m-%d",
-              type: "line",
-              labels: true,
-              columns: [
-                ["x"].concat(sent.map(c => moment(c.dateTime).toDate())),
-                ["Sent"].concat(sent.map(c => c.value)),
-                ["Seen"].concat(seen.map(c => c.value)),
-                ["Replied"].concat(replied.map(c => c.value))
-              ]
-            },
-            tooltip: {
-              format: {
-                value(value, ratio, id, index) {
-                  return value;
-                }
-              }
-            },
-            color: {
-              pattern: ["#9E4CF9", "#6DD230", "#FFAB2B"]
-            },
-            axis: {
-              y: {
-                show: false
-              },
-              x: {
-                show: true,
-                type: "timeseries",
-                tick: {
-                  culling: {
-                    max: 10
-                  },
-                  format: function(e) {
-                    const [begin, end] = self.messagesAt;
-                    let ranges = [begin, end];
-                    const { options } = self.granularity;
-                    const granularity = self.granularityValue(
-                      self.dataRangeDifference(ranges)
-                    );
-
-                    switch (granularity) {
-                      case options.hour: {
-                        return moment(e).format("MM-DD hh:mm A");
-                      }
-                      case options.day: {
-                        return moment(e).format("MM-DD");
-                      }
-                      case options.month: {
-                        return moment(e).format("YYYY-MM");
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            legend: {
-              hide: false
-            },
-            transition: {
-              duration: 1000
-            }
-          });
-        });
-
-        this.messagesChart.$emit("dispatch", chart => {
-          chart.zoom(this.messagesAt);
-        });
-      });
-    },
-
-    chartFetch(onSuccess) {
+    chartFetch(interval, granularity) {
       this.chartFetching = true;
-      const granularity = this.granularityValue(
-        this.dataRangeDifference(this.messagesAt)
-      );
-
+      this.granularity = granularity;
+      const { graphs } = this;
       const { campaignId, accountId } = this.$route.params;
-      const [begin, end] = this.messagesAt;
+      const [begin, end] = interval;
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -517,9 +322,15 @@ export default {
         }
       })
         .then(({ data }) => {
-          if (onSuccess) {
-            onSuccess(data);
-          }
+          const { sent, seen, replied } = data.response.body;
+          this.messagesChartColumns = [
+            ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
+            ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
+            ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
+            [graphs.Sent].concat(sent.map(c => c.value)),
+            [graphs.Seen].concat(seen.map(c => c.value)),
+            [graphs.Replied].concat(replied.map(c => c.value))
+          ];
         })
         .finally(_ => {
           this.chartFetching = false;
@@ -541,20 +352,6 @@ export default {
         this.threads = threadList;
         this.paging = paging;
       });
-    },
-
-    getMinOrDefault(dateTimes, comparator) {
-      const min = comparator ? comparator : this.defaultDateTimeBegin;
-      let d_min = new Date(Math.min.apply(null, dateTimes));
-      d_min = d_min > min ? d_min : min;
-      return d_min;
-    },
-
-    getMaxOrDefault(dateTimes, comparator) {
-      const max = comparator ? comparator : this.defaultDateTimeEnd;
-      let d_max = new Date(Math.max.apply(null, dateTimes));
-      d_max = d_max < max ? d_max : max;
-      return d_max;
     }
   }
 };
@@ -576,7 +373,7 @@ export default {
       margin-top: 22px;
       background-color: #fff;
       border-radius: 4px;
-      border: 1px solid #E8ECEF;
+      border: 1px solid #e8ecef;
 
       &.active {
         opacity: 1;
