@@ -370,6 +370,13 @@ body {
     border-right: 1px solid $borderColor;
     position: relative;
 
+    .dh-search-input {
+      padding: 10px 10px 10px 27px;
+      svg {
+        flex-shrink: 0;
+      }
+    }
+
     .dh-account-userpic {
       flex-shrink: 0;
       margin-right: 12px;
@@ -425,13 +432,6 @@ body {
 
     svg {
       width: 20px;
-    }
-  }
-
-  .dh-search-input {
-    padding: 10px 10px 10px 27px;
-    svg {
-      flex-shrink: 0;
     }
   }
 
@@ -581,6 +581,7 @@ body {
     align-items: center;
     white-space: nowrap;
     cursor: pointer;
+    height: 40px;
 
     .dh-account-userpic {
       width: 19px;

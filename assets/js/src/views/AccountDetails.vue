@@ -28,6 +28,7 @@ export default {
     return {
       localDB: null,
       requestTimeout: null,
+      revUpdate: false,
     }
   },
 
@@ -88,7 +89,7 @@ export default {
             this.$store.commit('set', { path: 'onSaveHandler', value: null });
           };
 
-          if (currentAccountData._rev === resultDoc._rev) return;
+          if (currentAccountData._rev >= resultDoc._rev) return;
 
           delete resultDoc._revisions;
 
@@ -113,7 +114,7 @@ export default {
           data._rev = result.rev;
         });
 
-        $store.commit('set', { path: 'saveTimeout', value: 1000 })
+        $store.commit('set', { path: 'saveTimeout', value: 2000 })
       }
 
       clearTimeout(requestTimeout);
