@@ -1,6 +1,6 @@
 <template>
   <div class="dh-chart-container">
-    <div v-bind:class="{ 'active': columns, 'dh-chart-wrapper': true }">
+    <div :class="{ 'dh-chart-active': columns, 'dh-chart-wrapper': true }">
       <slot name="chart-top"></slot>
       <vue-c3 class="dh-chart" :handler="handler"></vue-c3>
       <slot name="chart-bottom"></slot>
@@ -22,17 +22,7 @@ export default {
     loader
   },
 
-  props: {
-    /**
-     * * Chart options that will be merge with base options
-     */
-    options: null,
-
-    /**
-     * * Data columns of chart
-     */
-    columns: Array
-  },
+  props: ["options", "columns"],
 
   data: () => ({
     handler: new Vue(),
@@ -174,7 +164,7 @@ export default {
     opacity: 0.4;
     border: 1px solid $borderColor;
 
-    &.active {
+    &.dh-chart-active {
       opacity: 1;
     }
   }
