@@ -520,6 +520,15 @@ export default {
           }
         },
 
+        getParentSteps(searchStepId) {
+          const { arrows, subArrows } = this;
+
+          return  arrows
+            .concat(subArrows)
+            .filter(arrow => arrow.child === searchStepId)
+            .map(arrow => arrow.step);
+        },
+
         stepInBrokenBranch(stepId) {
           const { arrows, stepInBrokenBranch, getStep } = this;
           const endStepConnection = arrows.find(arrow => arrow.child === stepId);
