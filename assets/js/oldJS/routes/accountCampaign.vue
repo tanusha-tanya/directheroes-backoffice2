@@ -164,7 +164,7 @@
   import previewDialog from '../component/previewDialog.vue'
   import delayControl from '../component/delayControl.vue'
   import subscribeCategory from '../component/subscribeCategory.vue'
-  import debounce from 'lodash/debounce'
+  import debounce from '../utils/debounce'
   import { Switch, Collapse, CollapseItem, Select, Radio, Input, Popover, Dropdown, DropdownMenu, DatePicker, Checkbox } from 'element-ui'
 
   const campaignsToSave = [];

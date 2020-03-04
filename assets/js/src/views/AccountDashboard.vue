@@ -24,23 +24,16 @@
       <div class="dh-dashboard-analytics">
         <el-tabs class="dh-tab" v-model="activeTab" @tab-click="onTabClick">
           <el-tab-pane class="dh-tab-pane" :label="tabs.Messages" :name="tabs.Messages">
-            <div class="dh-tab-content">
+            <div class="dh-tab-content dh-messages">
               <dhRangePicker
                 :fromto="messagesAt"
-                :onChange="getMessagesRates"
                 :granularity="true"
+                @change="getMessagesRates"
               />
               <dhChart
                 :columns="messagesRatesColumns"
-                :colors="['#9E4CF9', '#6DD230', '#FFAB2B']"
-                :active="!messagesRatesFetching"
-                :granularity="granularity"
                 :ref="tabs.Messages"
-                :xsMapping="{
-                  [tabs.Sent]: 'x1',
-                  [tabs.Seen]: 'x2',
-                  [tabs.Replied]: 'x3'
-                }"
+                :options="messagesOptions"
               />
             </div>
           </el-tab-pane>
@@ -62,9 +55,7 @@
                   <div class="dh-analytics-item-graph">
                     <dhChart
                       :columns="followersRatesColumns"
-                      :colors="['#9E4CF9']"
-                      :active="followersRatesColumns !== null"
-                      flat
+                      :options="simpleChartOptions('#9E4CF9')"
                       :ref="tabs.Followers"
                     />
                     <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
@@ -93,9 +84,7 @@
                 <div class="dh-analytics-item-graph">
                   <dhChart
                     :columns="likeRatesColumns"
-                    :colors="['#6DD230']"
-                    :active="likeRatesColumns !== null"
-                    flat
+                    :options="simpleChartOptions('#6DD230')"
                     :ref="tabs.Likes"
                   />
                   <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
@@ -124,9 +113,7 @@
                 <div class="dh-analytics-item-graph">
                   <dhChart
                     :columns="commentRatesColumns"
-                    :colors="['#FFAB2B']"
-                    :active="commentRatesColumns !== null"
-                    flat
+                    :options="simpleChartOptions('#FFAB2B')"
                     :ref="tabs.Comments"
                   />
                   <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
@@ -168,6 +155,11 @@ export default {
         Seen: "Seen",
         Replied: "Replied"
       },
+      options: {
+        month: 2592000,
+        day: 86400,
+        hour: 3600
+      },
       activeTab: "Messages",
       granularity: 86400,
       messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
@@ -176,8 +168,7 @@ export default {
       followersRatesColumns: null,
       likeRatesColumns: null,
       commentRatesColumns: null,
-      interval: [],
-      messagesRatesFetching: false
+      interval: []
     };
   },
 
@@ -254,6 +245,46 @@ export default {
       const { deltaCommentCount } = this;
 
       return deltaCommentCount * 100 / lastElement.value
+    },
+
+    messagesOptions() {
+      const { options, tabs } = this;
+      const self = this;
+      return {
+        data: {
+          x: null,
+          xs: {
+            [tabs.Sent]: 'x1',
+            [tabs.Seen]: 'x2',
+            [tabs.Replied]: 'x3'
+          }
+        },
+        color: {
+          pattern: ['#9E4CF9', '#6DD230', '#FFAB2B']
+        },
+        axis: {
+          x: {
+            tick: {
+              format: function(e) {
+                  const { granularity } = self;
+                  switch (granularity) {
+                    case options.hour: {
+                      return moment(e).format("MM-DD hh:mm A");
+                    }
+                    case options.day: {
+                      return moment(e).format("MM-DD");
+                    }
+                    case options.month: {
+                      return moment(e).format("YYYY-MM");
+                    }
+                  }
+
+                  return moment(e).format("YYYY-MM-DD");
+              }
+            }
+          }
+        }
+      }
     }
   },
 
@@ -266,12 +297,32 @@ export default {
       }
     },
 
+    simpleChartOptions(color) {
+      return {
+        data: {
+          x: "x"
+        },
+        color: {
+          pattern: [color]
+        },
+        axis: {
+          x: {
+            tick: {
+              format: function(e) {
+                return moment(e).format("YYYY-MM-DD");
+              }
+            }
+          }
+        }
+      }
+    },
+
     getMessagesRates(interval, granularity) {
       const { currentAccount,
               tabs
             } = this;
       this.granularity = granularity;
-      this.messagesRatesFetching = true;
+      this.messagesRatesColumns = null;
       const [begin, end] = interval;
 
       axios({
@@ -417,6 +468,12 @@ export default {
     max-width: 100%;
     justify-content: space-between;
     margin-top: 24px;
+
+    .dh-tab-content:not(.dh-messages) {
+      .dh-chart-wrapper {
+        border: unset;
+      }
+    }
   }
 
   .dh-chart-item {

@@ -48,7 +48,6 @@ import panzoom from 'panzoom';
 import ObjectId from '../utils/ObjectId'
 import EventBus from '../utils/event-bus'
 import Collision from '../utils/collision'
-import debounce from 'lodash/debounce'
 import campaignCard from './builder-cards/campaignCard.vue'
 import stepCard from './builder-cards/stepCard.vue'
 import broadcastCard from './builder-cards/broadcastCard.vue'

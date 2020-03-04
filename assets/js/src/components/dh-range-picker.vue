@@ -24,86 +24,53 @@ export default {
     /**
      * * Default interval
      */
-    fromto: {
-      type: Array,
-      default: () => []
-    },
-
-    /**
-     * * Callback on change date-range
-     */
-    onChange: {
-      type: Function,
-      default: null
-    },
+    fromto: Array,
 
     /**
      * * Calc granularity by difference date-times
      * * If set as true then second argument in onChange function will be granularity value
      */
-    granularity: {
-      type: Boolean,
-      default: false
-    }
+    granularity: false
   },
 
-  data: () => ({
-    interval: [],
-    options: {
-      month: 2592000,
-      day: 86400,
-      hour: 3600
-    },
-    pickerOptions: {
-      shortcuts: [
-        {
-          text: "Last week",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last 2 week",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 14);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last month",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last 3 months",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit("pick", [start, end]);
-          }
-        },
-        {
-          text: "Last year",
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
-            picker.$emit("pick", [start, end]);
-          }
-        }
-      ]
-    }
-  }),
+  /**
+   * * Component state
+   */
+  data: () => {
+    const prefix = "Last";
+    const dayms = 3600 * 1000 * 24;
+    const onShortcutSelect = (picker, days) => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - `${days * dayms}`);
+      picker.$emit("pick", [start, end]);
+    };
+    const shortcutsItems = [
+      { text: `${prefix} week`, interval: 7 },
+      { text: `${prefix} 2 week`, interval: 14 },
+      { text: `${prefix} month`, interval: 30 },
+      { text: `${prefix} 3 month`, interval: 90 },
+      { text: `${prefix} year`, interval: 365 }
+    ];
+
+    return {
+      interval: [],
+      changeEvent: "change",
+      options: {
+        month: 2592000,
+        day: 86400,
+        hour: 3600
+      },
+      pickerOptions: {
+        shortcuts: shortcutsItems.map(c => {
+          return {
+            text: c.text,
+            onClick: picker => onShortcutSelect(picker, c.interval)
+          };
+        })
+      }
+    };
+  },
 
   methods: {
     getGranularity(range) {
@@ -141,14 +108,12 @@ export default {
           begin = begin - 1;
         }
 
-        let { onChange, granularity, getGranularity } = this;
+        let { changeEvent, granularity, getGranularity } = this;
         this.interval = [begin, end];
-        if (onChange) {
-          if (granularity) {
-            onChange(this.interval, getGranularity(this.interval));
-            return;
-          }
-          onChange(this.interval);
+        if (granularity) {
+          this.$emit(changeEvent, this.interval, getGranularity(this.interval));
+        } else {
+          this.$emit(changeEvent, this.interval);
         }
       }
     }

@@ -1,11 +1,11 @@
 <template>
   <div class="dh-chart-container">
-    <div v-bind:class="{ 'active': active, 'dh-chart-wrapper': !flat }">
+    <div v-bind:class="{ 'active': columns, 'dh-chart-wrapper': true }">
       <slot name="chart-top"></slot>
       <vue-c3 class="dh-chart" :handler="handler"></vue-c3>
       <slot name="chart-bottom"></slot>
     </div>
-    <loader class="dh-chart-loader" v-if="!active" />
+    <loader class="dh-chart-loader" v-if="!columns" />
   </div>
 </template>
 
@@ -14,6 +14,7 @@ import Vue from "vue";
 import VueC3 from "vue-c3";
 import moment from "moment";
 import loader from "./dh-loader";
+import deepMerge from "../../oldJS/utils/deepMerge";
 
 export default {
   components: {
@@ -23,61 +24,75 @@ export default {
 
   props: {
     /**
-     * * Means that data-chart is ready
+     * * Chart options that will be merge with base options
      */
-    active: {
-      type: Boolean,
-      default: false
-    },
-
-    /**
-     * * No box shadow and no background
-     */
-    flat: {
-      type: Boolean,
-      default: false
-    },
+    options: null,
 
     /**
      * * Data columns of chart
      */
-    columns: {
-      type: Array,
-      default: () => []
-    },
-
-    /**
-     * * Color patterns
-     */
-    colors: {
-      type: Array,
-      default: () => []
-    },
-
-    /**
-     * * Granularity between date-ranges
-     */
-    granularity: {
-      type: Number
-    },
-
-    /**
-     * * Multiline xy-mapping
-     */
-    xsMapping: {
-      type: Object
-    }
+    columns: Array
   },
 
   data: () => ({
     handler: new Vue(),
-    initialized: false,
-    options: {
-      month: 2592000,
-      day: 86400,
-      hour: 3600
-    }
+    initialized: false
   }),
+
+  computed: {
+    /**
+     * * Default chart options
+     */
+    defaultOptions() {
+      const { columns } = this;
+
+      return {
+        padding: {
+          left: 15,
+          right: 15
+        },
+        data: {
+          x: "x",
+          xFormat: "%Y-%m-%d",
+          type: "line",
+          labels: false,
+          columns: columns
+        },
+        tooltip: {
+          format: {
+            value(value, ratio, id, index) {
+              return value;
+            }
+          }
+        },
+        axis: {
+          y: {
+            show: false
+          },
+          x: {
+            show: true,
+            type: "timeseries",
+            tick: {
+              culling: {
+                max: 10
+              },
+              format: function(e) {
+                return moment(e).format("YYYY-MM-DD");
+              },
+              fit: true,
+              multiline: true
+            }
+          }
+        },
+        legend: {
+          hide: false
+        },
+        transition: {
+          duration: 1000
+        }
+      };
+    }
+  },
 
   watch: {
     columns: function(col, oldCol) {
@@ -123,26 +138,6 @@ export default {
     },
 
     /**
-     * * Tick formatting
-     */
-    tickFormat(e) {
-      const { granularity, options } = this;
-      switch (granularity) {
-        case options.hour: {
-          return moment(e).format("MM-DD hh:mm A");
-        }
-        case options.day: {
-          return moment(e).format("MM-DD");
-        }
-        case options.month: {
-          return moment(e).format("YYYY-MM");
-        }
-      }
-
-      return moment(e).format("YYYY-MM-DD");
-    },
-
-    /**
      * * Force rerender
      */
     flush() {
@@ -157,59 +152,11 @@ export default {
      * * Initialization
      */
     initGraph() {
-      let { handler, columns, colors, tickFormat, xsMapping } = this;
-      let setup = {
-        padding: {
-          left: 15,
-          right: 15
-        },
-        data: {
-          x: "x",
-          xFormat: "%Y-%m-%d",
-          type: "line",
-          labels: false,
-          columns: columns
-        },
-        tooltip: {
-          format: {
-            value(value, ratio, id, index) {
-              return value;
-            }
-          }
-        },
-        color: {
-          pattern: colors
-        },
-        axis: {
-          y: {
-            show: false
-          },
-          x: {
-            show: true,
-            type: "timeseries",
-            tick: {
-              culling: {
-                max: 10
-              },
-              format: tickFormat,
-              fit: true,
-              multiline: true
-            }
-          }
-        },
-        legend: {
-          hide: false
-        },
-        transition: {
-          duration: 1000
-        }
-      };
-      if (xsMapping) {
-        setup.data.xs = xsMapping;
-        delete setup.data.x;
-      }
-      handler.$emit("init", setup);
-
+      const { handler, defaultOptions, options } = this;
+      handler.$emit(
+        "init",
+        options ? deepMerge(defaultOptions, options) : defaultOptions
+      );
       this.initialized = true;
     }
   }

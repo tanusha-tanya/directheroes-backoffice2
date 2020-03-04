@@ -5,19 +5,9 @@
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
           <div class="dh-chart">
-            <dhRangePicker :fromto="messagesAt" :onChange="chartFetch" :granularity="true" />
+            <dhRangePicker :fromto="messagesAt" :granularity="true" @change="chartFetch" />
 
-            <dhChart
-              :columns="messagesChartColumns"
-              :colors="['#9E4CF9', '#6DD230', '#FFAB2B']"
-              :active="!chartFetching"
-              :granularity="granularity"
-              :xsMapping="{
-                [graphs.Sent]: 'x1',
-                [graphs.Seen]: 'x2',
-                [graphs.Replied]: 'x3'
-              }"
-            />
+            <dhChart :columns="messagesChartColumns" :options="messagesOptions" />
           </div>
           <div class="dh-campaign-controls">
             <div class="dh-select dh-campaign-subscription">
@@ -276,6 +266,46 @@ export default {
 
     account() {
       return this.$store.state.currentAccount;
+    },
+
+    messagesOptions() {
+      const { options, graphs } = this;
+      const self = this;
+      return {
+        data: {
+          x: null,
+          xs: {
+            [graphs.Sent]: "x1",
+            [graphs.Seen]: "x2",
+            [graphs.Replied]: "x3"
+          }
+        },
+        color: {
+          pattern: ["#9E4CF9", "#6DD230", "#FFAB2B"]
+        },
+        axis: {
+          x: {
+            tick: {
+              format: function(e) {
+                const { granularity } = self;
+                switch (granularity) {
+                  case options.hour: {
+                    return moment(e).format("MM-DD hh:mm A");
+                  }
+                  case options.day: {
+                    return moment(e).format("MM-DD");
+                  }
+                  case options.month: {
+                    return moment(e).format("YYYY-MM");
+                  }
+                }
+
+                return moment(e).format("YYYY-MM-DD");
+              }
+            }
+          }
+        }
+      };
     }
   },
 
@@ -306,7 +336,7 @@ export default {
     },
 
     chartFetch(interval, granularity) {
-      this.chartFetching = true;
+      this.messagesChartColumns = null;
       this.granularity = granularity;
       const { graphs } = this;
       const { campaignId, accountId } = this.$route.params;
@@ -320,21 +350,17 @@ export default {
           dateTimeTill: moment(end).toISOString(),
           campaignId
         }
-      })
-        .then(({ data }) => {
-          const { sent, seen, replied } = data.response.body;
-          this.messagesChartColumns = [
-            ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
-            ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
-            ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
-            [graphs.Sent].concat(sent.map(c => c.value)),
-            [graphs.Seen].concat(seen.map(c => c.value)),
-            [graphs.Replied].concat(replied.map(c => c.value))
-          ];
-        })
-        .finally(_ => {
-          this.chartFetching = false;
-        });
+      }).then(({ data }) => {
+        const { sent, seen, replied } = data.response.body;
+        this.messagesChartColumns = [
+          ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
+          ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
+          ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
+          [graphs.Sent].concat(sent.map(c => c.value)),
+          [graphs.Seen].concat(seen.map(c => c.value)),
+          [graphs.Replied].concat(replied.map(c => c.value))
+        ];
+      });
     },
 
     getStatistics() {
