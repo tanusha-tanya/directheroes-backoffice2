@@ -304,15 +304,6 @@ export default {
         },
         color: {
           pattern: [color]
-        },
-        axis: {
-          x: {
-            tick: {
-              format: function(e) {
-                return moment(e).format("YYYY-MM-DD");
-              }
-            }
-          }
         }
       }
     },
