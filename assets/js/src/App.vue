@@ -22,7 +22,7 @@
             <div class="dh-accounts-tool-list">
               <div class="dh-search-input" v-if="accountList.length > 5">
                 <search />
-                <input type="text" autocomplete="false" class="dh-input" placeholder="Type name to search"  v-model="searchName">
+                <input type="search" class="dh-input" placeholder="Type name to search"  v-model="searchName">
               </div>
               <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" :class="{'dh-account-item': true, 'dh-account-logged': accountItem.isLoggedIn}" v-for="accountItem in filteredAccountList" :key="accountItem.id">
                 <div class="dh-account-userpic" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
