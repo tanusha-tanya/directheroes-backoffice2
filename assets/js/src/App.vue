@@ -321,10 +321,7 @@ export default {
     },
 
     '$route.name'() {
-      const { filterAccountList } = this;
-
-      filterAccountList()
-
+      this.searchName = '';
       this.isShowList = false;
     },
 
