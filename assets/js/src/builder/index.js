@@ -136,7 +136,11 @@ export default {
               })
 
               if (!linkElements.length) {
-                const hiddenStep = steps.find(step => !stepsTree.some(stepsColumn => stepsColumn.includes(step)));
+                const hiddenStep = steps.find(step => !stepsTree.some(stepsColumn => {
+                  // stepsColumn.some(stepColumn => console.log(stepColumn && stepColumn.id, step && step.id, stepColumn, step))
+
+                  return stepsColumn.includes(step)
+                }));
 
                 if(!hiddenStep || (hiddenStep.displaySettings && hiddenStep.displaySettings.columnIndex)) return;
 
@@ -514,6 +518,15 @@ export default {
           } else {
             return stepsInOneBranch(endStepConnection.stepId, searchStepId)
           }
+        },
+
+        getParentSteps(searchStepId) {
+          const { arrows, subArrows } = this;
+
+          return  arrows
+            .concat(subArrows)
+            .filter(arrow => arrow.child === searchStepId)
+            .map(arrow => arrow.step);
         },
 
         stepInBrokenBranch(stepId) {

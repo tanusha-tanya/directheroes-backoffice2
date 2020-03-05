@@ -22,15 +22,20 @@
             <div class="dh-accounts-tool-list">
               <div class="dh-search-input" v-if="accountList.length > 5">
                 <search />
-                <input type="text" class="dh-input" placeholder="Type name to search"  v-model="searchName">
+                <input type="text" autocomplete="off" class="dh-input" placeholder="Type name to search"  v-model="searchName">
               </div>
-              <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" :class="{'dh-account-item': true, 'dh-account-logged': accountItem.isLoggedIn}" v-for="accountItem in filteredAccountList" :key="accountItem.id">
-                <div class="dh-account-userpic" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
+              <div :class="{'dh-accounts-list': true, 'dh-accounts-in-search': searchName}">
+                <router-link :to="{ name: 'accounts', query:{ action: accountItem.id }}" :class="{'dh-account-item': true, 'dh-account-logged': accountItem.isLoggedIn}" v-for="accountItem in filteredAccountList" :key="accountItem.id">
+                  <div class="dh-account-userpic" :style="{'background-image': `url(${ accountItem.profilePicUrl  })`}">
+                  </div>
+                  <span>
+                    @{{accountItem.login}}
+                  </span>
+                </router-link>
+                <div class="dh-no-accounts" v-if="searchName && !filteredAccountList.length">
+                  No match
                 </div>
-                <span>
-                  @{{accountItem.login}}
-                </span>
-              </router-link>
+              </div>
               <router-link class="dh-account-button" :to="{ name: 'accounts'}">
                 <div class="dh-account-button-ico">
                   <users/>
@@ -321,10 +326,7 @@ export default {
     },
 
     '$route.name'() {
-      const { filterAccountList } = this;
-
-      filterAccountList()
-
+      this.searchName = '';
       this.isShowList = false;
     },
 
@@ -369,6 +371,13 @@ body {
     flex-shrink: 0;
     border-right: 1px solid $borderColor;
     position: relative;
+
+    .dh-search-input {
+      padding: 10px 10px 10px 27px;
+      svg {
+        flex-shrink: 0;
+      }
+    }
 
     .dh-account-userpic {
       flex-shrink: 0;
@@ -425,13 +434,6 @@ body {
 
     svg {
       width: 20px;
-    }
-  }
-
-  .dh-search-input {
-    padding: 10px 10px 10px 27px;
-    svg {
-      flex-shrink: 0;
     }
   }
 
@@ -567,6 +569,19 @@ body {
 
   .dh-accounts-tool-list {
     padding: 5px 0;
+
+    .dh-no-accounts {
+      color: #778CA2;
+      letter-spacing: 0.3px;
+      line-height: 17px;
+      font-size: 12px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .dh-accounts-in-search {
+      min-height: 200px;
+    }
   }
 
   .dh-account-item {
@@ -581,6 +596,7 @@ body {
     align-items: center;
     white-space: nowrap;
     cursor: pointer;
+    height: 40px;
 
     .dh-account-userpic {
       width: 19px;

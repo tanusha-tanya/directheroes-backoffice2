@@ -6,15 +6,15 @@
     <div class="dh-settings-form-row">
       <label class="dh-label">
         <span>Current Password</span>
-        <input type="password" placeholder="Enter your password" class="dh-input" @input="clearNotifications" v-model="currentPassword">
+        <input type="password" autocomplete="new-password" placeholder="Enter your password" class="dh-input" @input="clearNotifications" v-model="currentPassword">
       </label>
       <label class="dh-label">
         <span>New Password</span>
-        <input type="password" placeholder="Enter new password" class="dh-input" @input="clearNotifications" v-model="newPassword">
+        <input type="password" autocomplete="new-password" placeholder="Enter new password" class="dh-input" @input="clearNotifications" v-model="newPassword">
       </label>
       <label class="dh-label">
         <span>Repeat Password</span>
-        <input type="password" placeholder="Enter new password" class="dh-input" @input="clearNotifications" v-model="reNewPassword">
+        <input type="password" autocomplete="new-password" placeholder="Enter new password" class="dh-input" @input="clearNotifications" v-model="reNewPassword">
       </label>
     </div>
     <div class="dh-notification dh-notification-error" v-if="error">

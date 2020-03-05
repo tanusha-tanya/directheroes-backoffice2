@@ -20,7 +20,6 @@
   </svg>
 </template>
 <script>
-import debounce from 'lodash/debounce'
 
 export default {
   data() {
