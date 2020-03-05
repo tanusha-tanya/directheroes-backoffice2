@@ -64,6 +64,7 @@
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Is Majority Member?
+              <keywords v-model="element.elements[0].condition.value.constraint" :list="categoriesInBranch"></keywords>
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" :ref="element.id">
@@ -317,6 +318,36 @@ export default {
       const { allCategories } = this.builder;
 
       return allCategories;
+    },
+
+    categoriesInBranch() {
+      const { getParentSteps } = this.builder;
+      const categories = [];
+      const getTagsFromStep = (stepId) => {
+        const parents = getParentSteps(stepId);
+
+        parents.forEach(parent => {
+          parent.elements.some(element => {
+            if (!element.displaySettings || !['action', 'sub-input'].includes(element.displaySettings.subType)) return true;
+
+            if (!element.body || element.body.action !== 'addCategory') return;
+
+            if (!element.body.name) return;
+
+            element.body.name.forEach(nameItem => {
+              if (categories.includes(nameItem)) return;
+
+              categories.push(nameItem);
+            });
+          })
+
+          getTagsFromStep(parent.id);
+        })
+      }
+
+      getTagsFromStep(this.$parent.step.id);
+
+      return categories
     }
   },
 

@@ -89,7 +89,8 @@ export default [
             operand: "contains",
             value: {
               entity: "runtime",
-              field: "topCategory"
+              field: "topCategory",
+              // constraint: []
             }
           },
         }
