@@ -8,7 +8,7 @@
       <button class="dh-button" @click="currentState = 'checkpoint'">Just me</button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
+   <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
     <div class="dh-wizzard-step-body">
       Please ask your colleagues not to use the account while you're getting it connected, it might take up to 15 minutes.
     </div>
@@ -18,6 +18,25 @@
     </div>
   </div>
   <checkpoint v-else-if="currentState === 'checkpoint'" @re-login="relogin($event)"></checkpoint>
+  <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-3'">
+    <div class="dh-wizzard-step-body">
+      Do you have two-factor authentication enabled on this account?<br><br>
+      <div class="dh-two-factor-radio-list">
+        <el-radio v-model="has2fa" :label="1">Yes</el-radio><br>
+        <el-radio v-model="has2fa" :label="3">No</el-radio><br>
+        <el-radio v-model="has2fa" :label="2">I'm not sure</el-radio>
+      </div><br/>
+    </div>
+    <div class="el-dialog__footer">
+      <span></span>
+      <button
+        class="dh-button"
+        :disabled="!has2fa"
+        @click="currentState = ''">
+        Next
+      </button>
+    </div>
+  </div>
   <div class="dh-wizzard-step dh-enter-password" v-else>
     <div class="dh-wizzard-step-body">
       <div class="dh-select-account-controls">
@@ -50,6 +69,7 @@ export default {
     return {
       password: '',
       connecting: false,
+      has2fa: null,
       error: null,
       infoViwed: false,
       currentState: isFirstTime ? 'preparation' : ''
@@ -118,7 +138,7 @@ export default {
     },
 
     relogin(callback) {
-      this.currentState = '';
+      this.currentState = 'preparation-3';
       // this.$emit('re-login', (request) => {
       //   callback(request)
 
