@@ -23,7 +23,7 @@
       Do you have two-factor authentication enabled on this account?<br><br>
       <div class="dh-two-factor-radio-list">
         <el-radio v-model="has2fa" :label="1">Yes</el-radio><br>
-        <el-radio v-model="has2fa" :label="3">No</el-radio><br>
+        <el-radio v-model="has2fa" :label="false">No</el-radio><br>
         <el-radio v-model="has2fa" :label="2">I'm not sure</el-radio>
       </div><br/>
     </div>
@@ -32,7 +32,7 @@
       <button
         class="dh-button"
         :disabled="!has2fa"
-        @click="currentState = ''">
+        @click="toggleToNext">
         Next
       </button>
     </div>
@@ -139,6 +139,7 @@ export default {
 
     relogin(callback) {
       this.currentState = 'preparation-3';
+      this.$emit('set-title', 'Preparation')
       // this.$emit('re-login', (request) => {
       //   callback(request)
 
@@ -148,6 +149,23 @@ export default {
       //     })
       //   })
       // })
+    },
+
+    toggleToNext() {
+      const { has2fa, account } = this;
+
+      if (has2fa) {
+        axios({
+          url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/account/android/set_proxy`,
+          method: 'post',
+          data: {
+            accountId: account.id,
+            use_mobile_proxy: true
+          }
+        })
+      }
+
+      this.currentState = ''
     }
   },
 
