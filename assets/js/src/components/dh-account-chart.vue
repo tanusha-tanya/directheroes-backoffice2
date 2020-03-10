@@ -1,11 +1,16 @@
 <template>
   <div class="dh-account-chart">
     <dhChart ref="chart" :options="options" :columns="columns" />
-    <loader class="dh-chart-loader" v-if="!columns && !refreshable" />
-    <div class="dh-refresh-container" v-if="refreshable">
-      <refresh class="dh-refresh" @click="$emit('refresh')" />
-      <span>There is no data available</span>
-      <span>{{ tryAgain }}</span>
+    <loader class="dh-chart-loader" v-if="fetching" />
+    <div v-else>
+      <div class="dh-refresh-container" v-if="columns === null">
+        <refresh class="dh-refresh" @click="$emit('refresh')" />
+        <span>There is no data available</span>
+        <span>{{ tryAgain }}</span>
+      </div>
+      <div class="dh-empty-container" v-if="columns && !columns.length">
+        <span>There is no data available</span>
+      </div>
     </div>
   </div>
 </template>
@@ -16,7 +21,7 @@ import loader from "./dh-loader";
 import refresh from "../assets/refresh.svg";
 
 export default {
-  props: ["options", "columns", "refreshable", "syncTimeEnd"],
+  props: ["options", "columns", "fetching", "refreshable", "syncTimeEnd"],
 
   components: {
     dhChart,
@@ -36,7 +41,8 @@ export default {
 .dh-account-chart {
   position: relative;
 
-  .dh-refresh-container {
+  .dh-refresh-container,
+  .dh-empty-container {
     width: inherit;
     width: inherit;
     position: absolute;

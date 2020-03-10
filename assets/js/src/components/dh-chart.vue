@@ -1,6 +1,6 @@
 <template>
   <div class="dh-chart-container">
-    <div :class="{ 'dh-chart-active': columns, 'dh-chart-wrapper': true }">
+    <div :class="{ 'dh-chart-active': columns && columns.length, 'dh-chart-wrapper': true }">
       <slot name="chart-top"></slot>
       <vue-c3 class="dh-chart" :handler="handler"></vue-c3>
       <slot name="chart-bottom"></slot>

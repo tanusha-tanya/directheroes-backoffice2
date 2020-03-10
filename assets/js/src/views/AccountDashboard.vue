@@ -34,7 +34,7 @@
                 :columns="tabs.Messages.columns"
                 :ref="tabs.Messages.name"
                 :options="messagesOptions"
-                :refreshable="tabs.Messages.refreshable"
+                :fetching="tabs.Messages.fetching"
                 @refresh="() => {
                   getMessagesRates(messagesAt, granularity);
                 }"
@@ -48,9 +48,9 @@
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo">
+              <div class="dh-dashboard-analytics-item dh-inform">
                 <div class="dh-analytics-item-info" >
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo.followerCount">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo && analyticInfo.followerCount">
                     {{deltaFollowerCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -62,16 +62,15 @@
                       :columns="tabs.Followers.columns"
                       :options="simpleChartOptions('#9E4CF9')"
                       :ref="tabs.Followers.name"
-                      :refreshable="tabs.Followers.refreshable"
+                      :fetching="tabs.Followers.fetching"
                       @refresh="getAnalyticInfo"
                       :syncTimeEnd="syncTime.analyticEnd"
                     />
-                    <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
+                    <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo && followerCountProgress">
                       {{followerCountProgress.toFixed(2)}}%
                     </div>
                   </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
           <el-tab-pane class="dh-tab-pane" :label="tabs.Likes.name" :name="tabs.Likes.name">
@@ -80,9 +79,9 @@
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo">
+              <div class="dh-dashboard-analytics-item dh-inform">
                 <div class="dh-analytics-item-info">
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo.likeCount">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo && analyticInfo.likeCount">
                     {{deltaLikeCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -93,17 +92,16 @@
                   <dhAccountChart
                     :columns="tabs.Likes.columns"
                     :options="simpleChartOptions('#6DD230')"
-                    :refreshable="tabs.Likes.refreshable"
+                    :fetching="tabs.Likes.fetching"
                     :ref="tabs.Likes.name"
                     @refresh="getAnalyticInfo"
                     :syncTimeEnd="syncTime.analyticEnd"
                   />
-                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo && likeCountProgress">
                     {{likeCountProgress.toFixed(2)}}%
                   </div>
                 </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
           <el-tab-pane class="dh-tab-pane" :label="tabs.Comments.name" :name="tabs.Comments.name">
@@ -112,9 +110,9 @@
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item" v-if="analyticInfo">
+              <div class="dh-dashboard-analytics-item">
                 <div class="dh-analytics-item-info">
-                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo.commentCount">
+                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo && analyticInfo.commentCount">
                     {{deltaCommentCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -125,17 +123,16 @@
                   <dhAccountChart
                     :columns="tabs.Comments.columns"
                     :options="simpleChartOptions('#FFAB2B')"
-                    :refreshable="tabs.Comments.refreshable"
+                    :fetching="tabs.Comments.fetching"
                     :ref="tabs.Comments.name"
                     @refresh="getAnalyticInfo"
                     :syncTimeEnd="syncTime.analyticEnd"
                   />
-                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo && commentCountProgress">
                     {{commentCountProgress.toFixed(2)}}%
                   </div>
                 </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -170,7 +167,7 @@ export default {
       acc[next] = {
         name: next,
         columns: null,
-        refreshable: false
+        fetching: true
       }
 
       return acc;
@@ -375,8 +372,8 @@ export default {
         return;
       }
       
-      tabs.Messages.refreshable = false;
-      tabs.Messages.columns = null;
+      tabs.Messages.fetching = true;
+      tabs.Messages.columns = [];
       this.granularity = granularity;
       const [begin, end] = interval;
       const appendDate = (prefix, source) => {
@@ -413,11 +410,10 @@ export default {
           columns.push(appendValue(tabs.Replied.name, replied));
         }
 
-        if (columns.length) {
-          tabs.Messages.refreshable = false;
-          tabs.Messages.columns = columns;
-        }
-      });
+        tabs.Messages.columns = columns;
+      }).catch(err => {
+        tabs.Messages.columns = null;
+      }).finally(() => tabs.Messages.fetching = false);
     },
 
     getAnalyticInfo() {
@@ -432,16 +428,9 @@ export default {
         return;
       }
 
-      const tabsVisibleFunc = (state) => {
-        Object.keys(tabs).forEach(t => {
-          const tab = tabs[t];
-          if (tab !== tabs.Messages) {
-              tab.refreshable = state;
-          }
-        });
-      }
-
-      tabsVisibleFunc(false);
+      ["Followers", "Likes", "Comments"].forEach(t => {
+        tabs[t].fetching = true;
+      });
        
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
@@ -449,8 +438,11 @@ export default {
           username: currentAccount.login
         }
       }).then(({ data }) => {
-        tabsVisibleFunc(true);
-
+        ["Followers", "Likes", "Comments"].forEach(t => {
+          const tab = tabs[t];
+          tab.columns = [];
+          tab.fetching = false;
+        });
         const analyticInfo = data.reports;
         let { followerCount, likeCount, commentCount } = analyticInfo;
         const checkValues = (accumulator, currentValue, index) => {
@@ -473,10 +465,9 @@ export default {
         commentCount = commentCount && commentCount.reduce(checkValues, []);
 
         if ( !followerCount && !likeCount && !commentCount) return;
-
         this.analyticInfo = analyticInfo;
         if (followerCount) {
-          tabs.Followers.refreshable = false;
+          tabs.Followers.fetching = false;
           tabs.Followers.columns = [
             ["x"].concat(
               followerCount.map(followerItem =>
@@ -487,7 +478,7 @@ export default {
           ];
         }
         if (likeCount) {
-          tabs.Likes.refreshable = false;
+          tabs.Likes.fetching = false;
           tabs.Likes.columns = [
               ["x"].concat(
                 likeCount.map(likeItem => moment(likeItem.time).toDate())
@@ -495,9 +486,8 @@ export default {
               [tabs.Likes.name].concat(likeCount.map(calcValues))
           ]
         }
-
         if (commentCount) {
-          tabs.Comments.refreshable = false;
+          tabs.Comments.fetching = false;
           tabs.Comments.columns = [
             ["x"].concat(
               commentCount.map(commentItem =>
@@ -507,6 +497,13 @@ export default {
             [tabs.Comments.name].concat(commentCount.map(calcValues))
           ]
         }
+      }).catch(() => {
+        debugger;
+        ["Followers", "Likes", "Comments"].forEach(t => {
+          const tab = tabs[t];
+          tab.columns = null;
+          tab.fetching = false;
+        });
       });
     },
 

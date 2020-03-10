@@ -79,10 +79,7 @@ export default {
       const duration = Math.floor(moment.duration(diff).asDays() + 1 / 30);
       const monthCount = Math.floor(duration / 30);
 
-      let granularity = this.options.hour;
-      if (duration > 7) {
-        granularity = this.options.day;
-      }
+      let granularity = duration >= 7 ? this.options.day : this.options.hour;
       if (monthCount) {
         granularity = monthCount > 2 ? this.options.month : this.options.day;
       }
