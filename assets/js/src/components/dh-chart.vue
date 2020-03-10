@@ -5,7 +5,6 @@
       <vue-c3 class="dh-chart" :handler="handler"></vue-c3>
       <slot name="chart-bottom"></slot>
     </div>
-    <loader class="dh-chart-loader" v-if="!columns" />
   </div>
 </template>
 
@@ -13,13 +12,11 @@
 import Vue from "vue";
 import VueC3 from "vue-c3";
 import moment from "moment";
-import loader from "./dh-loader";
 import deepMerge from "../../oldJS/utils/deepMerge";
 
 export default {
   components: {
-    VueC3,
-    loader
+    VueC3
   },
 
   props: ["options", "columns"],
@@ -180,12 +177,6 @@ export default {
     g.c3-axis.c3-axis-x {
       fill: #283747;
     }
-  }
-
-  .dh-chart-loader {
-    position: absolute;
-    top: 0%;
-    height: inherit;
   }
 }
 </style>

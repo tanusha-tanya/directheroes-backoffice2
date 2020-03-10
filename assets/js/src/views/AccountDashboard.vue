@@ -23,29 +23,34 @@
       </div>
       <div class="dh-dashboard-analytics">
         <el-tabs class="dh-tab" v-model="activeTab" @tab-click="onTabClick">
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Messages" :name="tabs.Messages">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Messages.name" :name="tabs.Messages.name">
             <div class="dh-tab-content dh-messages">
               <dhRangePicker
                 :fromto="messagesAt"
                 :granularity="true"
-                @change="getMessagesRates"
+                @change="(range, granularity) => getMessagesRates(range, granularity, true)"
               />
-              <dhChart
-                :columns="messagesRatesColumns"
-                :ref="tabs.Messages"
+              <dhAccountChart
+                :columns="tabs.Messages.columns"
+                :ref="tabs.Messages.name"
                 :options="messagesOptions"
+                :refreshable="tabs.Messages.refreshable"
+                @refresh="() => {
+                  getMessagesRates(messagesAt, granularity);
+                }"
+                :syncTimeEnd="syncTime.messagesEnd"
               />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Followers" :name="tabs.Followers">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Followers.name" :name="tabs.Followers.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.followerCount">
+              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo">
                 <div class="dh-analytics-item-info" >
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo.followerCount">
                     {{deltaFollowerCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -53,10 +58,13 @@
                   </div>
                   </div>
                   <div class="dh-analytics-item-graph">
-                    <dhChart
-                      :columns="followersRatesColumns"
+                    <dhAccountChart
+                      :columns="tabs.Followers.columns"
                       :options="simpleChartOptions('#9E4CF9')"
-                      :ref="tabs.Followers"
+                      :ref="tabs.Followers.name"
+                      :refreshable="tabs.Followers.refreshable"
+                      @refresh="getAnalyticInfo"
+                      :syncTimeEnd="syncTime.analyticEnd"
                     />
                     <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
                       {{followerCountProgress.toFixed(2)}}%
@@ -66,15 +74,15 @@
               <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Likes" :name="tabs.Likes">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Likes.name" :name="tabs.Likes.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.likeCount">
+              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo">
                 <div class="dh-analytics-item-info">
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo.likeCount">
                     {{deltaLikeCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -82,10 +90,13 @@
                   </div>
                 </div>
                 <div class="dh-analytics-item-graph">
-                  <dhChart
-                    :columns="likeRatesColumns"
+                  <dhAccountChart
+                    :columns="tabs.Likes.columns"
                     :options="simpleChartOptions('#6DD230')"
-                    :ref="tabs.Likes"
+                    :refreshable="tabs.Likes.refreshable"
+                    :ref="tabs.Likes.name"
+                    @refresh="getAnalyticInfo"
+                    :syncTimeEnd="syncTime.analyticEnd"
                   />
                   <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
                     {{likeCountProgress.toFixed(2)}}%
@@ -95,15 +106,15 @@
               <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Comments" :name="tabs.Comments">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Comments.name" :name="tabs.Comments.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item" v-if="analyticInfo && hasThreeDays && analyticInfo.commentCount">
+              <div class="dh-dashboard-analytics-item" v-if="analyticInfo">
                 <div class="dh-analytics-item-info">
-                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
+                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo.commentCount">
                     {{deltaCommentCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -111,10 +122,13 @@
                   </div>
                 </div>
                 <div class="dh-analytics-item-graph">
-                  <dhChart
-                    :columns="commentRatesColumns"
+                  <dhAccountChart
+                    :columns="tabs.Comments.columns"
                     :options="simpleChartOptions('#FFAB2B')"
-                    :ref="tabs.Comments"
+                    :refreshable="tabs.Comments.refreshable"
+                    :ref="tabs.Comments.name"
+                    @refresh="getAnalyticInfo"
+                    :syncTimeEnd="syncTime.analyticEnd"
                   />
                   <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
                     {{commentCountProgress.toFixed(2)}}%
@@ -139,22 +153,30 @@ import dhFooter from '../components/dh-footer'
 import dhCampaigns from '../components/dh-campaigns'
 import moment from 'moment'
 import axios from 'axios'
-import dhChart from "../components/dh-chart";
+import dhAccountChart from "../components/dh-account-chart.vue";
 import dhRangePicker from "../components/dh-range-picker";
 import loader from "../components/dh-loader";
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next(dashboard => {
+      dashboard.refreshAnalytics();
+    })
+  },
+
   data() {
+    const names = ["Messages", "Followers", "Likes", "Comments", "Sent", "Seen", "Replied"]
+    const tabs = names.reduce((acc, next) => {
+      acc[next] = {
+        name: next,
+        columns: null,
+        refreshable: false
+      }
+
+      return acc;
+    }, {});
     return {
-      tabs: {
-        Messages: "Messages",
-        Followers: "Followers",
-        Likes: "Likes",
-        Comments: "Comments",
-        Sent: "Reports",
-        Seen: "Seen",
-        Replied: "Replied"
-      },
+      tabs: tabs,
       options: {
         month: 2592000,
         day: 86400,
@@ -164,11 +186,13 @@ export default {
       granularity: 86400,
       messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
       analyticInfo: null,
-      messagesRatesColumns: null,
-      followersRatesColumns: null,
-      likeRatesColumns: null,
-      commentRatesColumns: null,
-      interval: []
+      interval: [],
+      syncTime: {
+        messages: null,
+        messagesEnd: null,
+        analytic: null,
+        analyticEnd: null
+      }
     };
   },
 
@@ -177,7 +201,7 @@ export default {
     dhFooter,
     dhCampaigns,
     loader,
-    dhChart,
+    dhAccountChart,
     dhRangePicker
   },
 
@@ -193,7 +217,7 @@ export default {
     deltaFollowerCount() {
       const { followerCount } = this.analyticInfo;
 
-      if (!followerCount) return {}
+      if (!followerCount) return 0;
 
       return Math.floor(followerCount[followerCount.length - 1].value - followerCount[0].value)
     },
@@ -212,7 +236,7 @@ export default {
     deltaLikeCount() {
       const { likeCount } = this.analyticInfo;
 
-      if (!likeCount) return {}
+      if (!likeCount) return 0;
 
       return likeCount[likeCount.length - 1].value - likeCount[0].value
     },
@@ -231,7 +255,7 @@ export default {
     deltaCommentCount() {
       const { commentCount } = this.analyticInfo;
 
-      if (!commentCount) return {}
+      if (!commentCount) return 0;
 
       return commentCount[commentCount.length - 1].value - commentCount[0].value
     },
@@ -254,9 +278,25 @@ export default {
         data: {
           x: null,
           xs: {
-            [tabs.Sent]: 'x1',
-            [tabs.Seen]: 'x2',
-            [tabs.Replied]: 'x3'
+            [tabs.Sent.name]: 'x1',
+            [tabs.Seen.name]: 'x2',
+            [tabs.Replied.name]: 'x3'
+          }
+        },
+        tooltip: {
+          format: {
+            value(value, ratio, id, index) {
+              if (id !== self.tabs.Sent.name) {
+                const sentSet = self.tabs.Messages.columns.find(c => c && c.length && c[0] === self.tabs.Sent.name);
+                if (sentSet) {
+                  const sentValue = sentSet.slice(1)[index];
+                  const percent = (100 * value / sentValue).toFixed(2);
+                  return `${value} - ${percent}%`;
+                }
+              }
+
+              return value;
+            }
           }
         },
         color: {
@@ -291,9 +331,12 @@ export default {
   methods: {
     onTabClick(tab) {
       const { name } = tab;
-      const chart = this.$refs[name];
-      if (chart) {
-        chart.resize();
+      const wrapper = this.$refs[name];
+      if (wrapper) {
+        const { chart } = wrapper.$refs;
+        if (chart) {
+          chart.resize();
+        }
       }
     },
 
@@ -308,14 +351,40 @@ export default {
       }
     },
 
-    getMessagesRates(interval, granularity) {
-      const { currentAccount,
-              tabs
-            } = this;
-      this.granularity = granularity;
-      this.messagesRatesColumns = null;
-      const [begin, end] = interval;
+    isActualData(syncTimeItem) {
+      const now = new Date();
+      const syncTimeItemEnd = `${syncTimeItem}End`;
+      if (this.syncTime[syncTimeItem]) {
+        const diff = Math.abs(moment(this.syncTime[syncTimeItem]).diff(now, 'seconds'));
+        if (diff <= 5) {
+          this.syncTime[syncTimeItemEnd] = (5 - diff);
+          return true;
+        }
+      }
+      this.syncTime[syncTimeItem] = now;
+      this.syncTime[syncTimeItemEnd] = null;
+      return false;
+    },
 
+    getMessagesRates(interval, granularity, force) {
+      const { currentAccount,
+              tabs,
+              isActualData
+            } = this;
+      if (!force && isActualData("messages")) {
+        return;
+      }
+      
+      tabs.Messages.refreshable = false;
+      tabs.Messages.columns = null;
+      this.granularity = granularity;
+      const [begin, end] = interval;
+      const appendDate = (prefix, source) => {
+        return [prefix].concat(source.map(c => moment(c.dateTime).toDate()));
+      }
+      const appendValue = (prefix, source) => {
+        return [prefix].concat(source.map(c => c.value));
+      }
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -326,24 +395,53 @@ export default {
         }
       }).then(({ data }) => {
         const { sent, seen, replied } = data.response.body;
-        this.messagesRatesColumns = [
-          ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
-          ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
-          ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
-          [tabs.Sent].concat(sent.map(c => c.value)),
-          [tabs.Seen].concat(seen.map(c => c.value)),
-          [tabs.Replied].concat(replied.map(c => c.value))
-        ];
-        this.messagesRatesFetching = false;
+
+        tabs.Messages.refreshable = true;
+        const columns = [];
+        if (sent) {
+          columns.push(appendDate("x1", sent));
+          columns.push(appendValue(tabs.Sent.name, sent));
+        }
+
+        if (seen) {
+          columns.push(appendDate("x2", seen));
+          columns.push(appendValue(tabs.Seen.name, seen));
+        }
+
+        if (replied) {
+          columns.push(appendDate("x3", replied));
+          columns.push(appendValue(tabs.Replied.name, replied));
+        }
+
+        if (columns.length) {
+          tabs.Messages.refreshable = false;
+          tabs.Messages.columns = columns;
+        }
       });
     },
 
-    getAnalyticInfoData(options) {
+    getAnalyticInfo() {
       const { followersGraph,
               likeGraph,
               commentGraph,
               currentAccount,
+              isActualData,
               tabs } = this;
+
+      if (isActualData("analytic")) {
+        return;
+      }
+
+      const tabsVisibleFunc = (state) => {
+        Object.keys(tabs).forEach(t => {
+          const tab = tabs[t];
+          if (tab !== tabs.Messages) {
+              tab.refreshable = state;
+          }
+        });
+      }
+
+      tabsVisibleFunc(false);
        
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
@@ -351,6 +449,8 @@ export default {
           username: currentAccount.login
         }
       }).then(({ data }) => {
+        tabsVisibleFunc(true);
+
         const analyticInfo = data.reports;
         let { followerCount, likeCount, commentCount } = analyticInfo;
         const checkValues = (accumulator, currentValue, index) => {
@@ -376,66 +476,59 @@ export default {
 
         this.analyticInfo = analyticInfo;
         if (followerCount) {
-          this.followersRatesColumns = [
+          tabs.Followers.refreshable = false;
+          tabs.Followers.columns = [
             ["x"].concat(
               followerCount.map(followerItem =>
                 moment(followerItem.time).toDate()
               )
             ),
-            [tabs.Followers].concat(followerCount.map(calcValues))
+            [tabs.Followers.name].concat(followerCount.map(calcValues))
           ];
         }
         if (likeCount) {
-          this.likeRatesColumns = [
+          tabs.Likes.refreshable = false;
+          tabs.Likes.columns = [
               ["x"].concat(
                 likeCount.map(likeItem => moment(likeItem.time).toDate())
               ),
-              [tabs.Likes].concat(likeCount.map(calcValues))
+              [tabs.Likes.name].concat(likeCount.map(calcValues))
           ]
         }
 
         if (commentCount) {
-          this.commentRatesColumns = [
+          tabs.Comments.refreshable = false;
+          tabs.Comments.columns = [
             ["x"].concat(
               commentCount.map(commentItem =>
                 moment(commentItem.time).toDate()
               )
             ),
-            [tabs.Comments].concat(commentCount.map(calcValues))
+            [tabs.Comments.name].concat(commentCount.map(calcValues))
           ]
         }
       });
     },
 
-    getAnalyticInfo() {
-      const { getMessagesRates,
-              getAnalyticInfoData,
-              messagesAt, 
-              granularity
-            } = this;
+    refreshAnalytics() {
+      const { $nextTick, currentAccount, getMessagesRates, getAnalyticInfo, messagesAt, granularity } = this;
 
-      getMessagesRates(messagesAt, granularity);
-      getAnalyticInfoData();
+      if (!currentAccount) return;
+
+      $nextTick(() => {
+        getMessagesRates(messagesAt, granularity);
+        getAnalyticInfo();
+      })
     }
-  },
-
-  mounted() {
-    const { analyticInfo, $nextTick, getAnalyticInfo, currentAccount } = this;
-
-    if (!analyticInfo || !currentAccount) return;
-
-    $nextTick(() => {
-      getAnalyticInfo();
-    })
   },
 
   watch: {
     currentAccount(value) {
-      const { getAnalyticInfo, _isMounted } = this;
+      const { refreshAnalytics, _isMounted } = this;
 
       if (!value || !_isMounted) return;
 
-      getAnalyticInfo();
+      refreshAnalytics();
     }
   }
 }
