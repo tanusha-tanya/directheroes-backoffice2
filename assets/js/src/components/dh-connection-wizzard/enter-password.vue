@@ -31,7 +31,7 @@
       <span></span>
       <button
         class="dh-button"
-        :disabled="has2fa !== null"
+        :disabled="has2fa === null"
         @click="toggleToNext">
         Next
       </button>
