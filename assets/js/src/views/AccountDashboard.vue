@@ -273,12 +273,7 @@ export default {
       const self = this;
       return {
         data: {
-          x: null,
-          xs: {
-            [tabs.Sent.name]: 'x1',
-            [tabs.Seen.name]: 'x2',
-            [tabs.Replied.name]: 'x3'
-          }
+          x: "x"
         },
         tooltip: {
           format: {
@@ -288,6 +283,9 @@ export default {
                 if (sentSet) {
                   const sentValue = sentSet.slice(1)[index];
                   const percent = (100 * value / sentValue).toFixed(2);
+                  if (Number.isNaN(percent) || percent === "NaN") {
+                    return value;
+                  }
                   return `${value} - ${percent}%`;
                 }
               }
@@ -363,10 +361,50 @@ export default {
       return false;
     },
 
+    getDatesInRange(begin, end) {
+      const dates = [];
+
+      let currDate = moment(begin).startOf('day');
+      let lastDate = moment(end).startOf('day');
+
+      while(currDate.add(1, 'days').diff(lastDate) < 0) {
+          dates.push(currDate.clone().toDate());
+      }
+
+      return dates;
+    },
+
+    getDatesInRangeMonth(begin, end) {
+      let startDate = moment(begin);
+      let endDate = moment(end);
+      let out = [];
+
+      while (startDate.isBefore(endDate)) {
+        startDate = startDate.add(1, 'month');
+        out.push(startDate.startOf("day").toDate());
+      }
+
+      return out;
+    },
+
+    getDatesInRangeByGranularity(begin, end, granularity) {
+      const { options, getDatesInRange, getDatesInRangeMonth } = this;
+      let dates = [];
+      if (granularity === options.month) {
+        dates = getDatesInRangeMonth(begin, end);
+      } else {
+        dates = getDatesInRange(moment(begin).subtract(1, 'day'), end);
+      }
+
+      return dates;
+    },
+
     getMessagesRates(interval, granularity, force) {
       const { currentAccount,
               tabs,
-              isActualData
+              isActualData,
+              options,
+              getDatesInRangeByGranularity
             } = this;
       if (!force && isActualData("messages")) {
         return;
@@ -376,12 +414,28 @@ export default {
       tabs.Messages.columns = [];
       this.granularity = granularity;
       const [begin, end] = interval;
+      const dates = getDatesInRangeByGranularity(begin, end, this.granularity)
       const appendDate = (prefix, source) => {
         return [prefix].concat(source.map(c => moment(c.dateTime).toDate()));
       }
       const appendValue = (prefix, source) => {
         return [prefix].concat(source.map(c => c.value));
       }
+      const aggregator = (source) => {
+        const granularityValue = this.granularity === options.month ? "month" : "day";
+        return dates.reduce((acc, dateTime) => {
+          const value = source.find(s => moment(dateTime).startOf('day').isSame(s.dateTime, granularityValue));
+          if (value) {
+            acc.push(value);
+          } else {
+            acc.push({
+              value: "0",
+              dateTime: moment(dateTime).startOf('day').toISOString(),
+            })
+          }
+          return acc;
+        }, []);
+      };
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -395,19 +449,17 @@ export default {
 
         tabs.Messages.refreshable = true;
         const columns = [];
+        columns.push(["x"].concat(dates.map(d => moment(d).toDate())));
         if (sent) {
-          columns.push(appendDate("x1", sent));
-          columns.push(appendValue(tabs.Sent.name, sent));
+          columns.push(appendValue(tabs.Sent.name, aggregator(sent)));
         }
 
         if (seen) {
-          columns.push(appendDate("x2", seen));
-          columns.push(appendValue(tabs.Seen.name, seen));
+          columns.push(appendValue(tabs.Seen.name, aggregator(seen)));
         }
 
         if (replied) {
-          columns.push(appendDate("x3", replied));
-          columns.push(appendValue(tabs.Replied.name, replied));
+          columns.push(appendValue(tabs.Replied.name, aggregator(replied)));
         }
 
         tabs.Messages.columns = columns;
