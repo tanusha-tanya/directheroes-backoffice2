@@ -111,7 +111,7 @@ export default {
   position: relative;
   margin: 14px;
   width: 262px;
-  height: 324px;
+  min-height: 324px;
   border-radius: 4px;
   background-color: $sectionBG;
   padding: 28px 32px;
@@ -236,6 +236,7 @@ export default {
     font-size: 20px;
     line-height: 24px;
     margin-top: 18px;
+    text-align: center;
   }
 
   .dh-account-ig-name {
@@ -268,6 +269,7 @@ export default {
     display: flex;
     align-items: flex-end;
     text-align: center;
+    margin: 10px 0;
   }
 
   .dh-account-frozen-info {
