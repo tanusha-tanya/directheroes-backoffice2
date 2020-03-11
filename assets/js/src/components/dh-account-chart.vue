@@ -1,7 +1,7 @@
 <template>
   <div class="dh-account-chart">
     <div class="dh-chart-wrapper" :class="{'dh-chart-wrapper-ready': !fetching}">
-      <dhChart ref="chart" :options="options" :columns="columns" />
+      <dhChart ref="chart" :options="options" :columns="columns" :class="{ 'dh-chart-hidden': columns && !columns.length}"/>
     </div>
     <loader class="dh-chart-loader" v-if="fetching" />
     <div v-else>
@@ -51,6 +51,10 @@ export default {
 
   .dh-chart-wrapper-ready {
     opacity: 1;
+  }
+
+  .dh-chart-hidden {
+    opacity: 0;
   }
 
   .dh-refresh-container,
