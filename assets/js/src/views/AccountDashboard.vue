@@ -376,7 +376,7 @@ export default {
           format: {
             value(value, ratio, id, index) {
               if (id !== self.tabs.Sent.name) {
-                const sentSet = self.tabs.Messages.columns.find(c => c && c.length && c[0] === self.tabs.Sent.name);
+                const sentSet = self.messagesColumnsStore.find(c => c && c.length && c[0] === self.tabs.Sent.name);
                 if (sentSet) {
                   const sentValue = sentSet.slice(1)[index];
                   const percent = (100 * value / sentValue).toFixed(2);
