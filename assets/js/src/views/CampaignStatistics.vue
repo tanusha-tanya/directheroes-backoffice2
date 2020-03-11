@@ -5,7 +5,7 @@
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
           <div class="dh-chart">
-            <dhRangePicker :fromto="messagesAt" :granularity="true" @change="chartFetch" />
+            <!-- <dhRangePicker :fromto="messagesAt" :granularity="true" @change="chartFetch" /> -->
 
             <dhAccountChart
               :columns="messagesChartColumns"

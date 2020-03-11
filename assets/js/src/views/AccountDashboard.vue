@@ -25,12 +25,12 @@
         <el-tabs class="dh-tab" v-model="activeTab" @tab-click="onTabClick">
           <el-tab-pane class="dh-tab-pane" :label="tabs.Messages.name" :name="tabs.Messages.name">
             <div class="dh-tab-content dh-messages">
-              <dhRangePicker
+              <!-- <dhRangePicker
                 :fromto="messagesAtStore"
                 :default="messagesAt"
                 :granularity="true"
                 @change="(range, granularity) => getMessagesRates(range, granularity, true)"
-              />
+              /> -->
               <dhAccountChart
                 :columns="messagesColumnsStore"
                 :ref="tabs.Messages.name"
@@ -183,7 +183,7 @@ export default {
       },
       activeTab: "Messages",
       granularity: 86400,
-      messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
+      messagesAt: [new Date(moment().subtract(30, "days")), new Date()],
       interval: [],
       syncTime: {
         messages: null,
