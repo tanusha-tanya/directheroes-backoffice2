@@ -22,9 +22,14 @@ import moment from "moment";
 export default {
   props: {
     /**
-     * * Default interval
+     * * Current interval
      */
     fromto: Array,
+
+    /**
+     * * Default interval
+     */
+    default: Array,
 
     /**
      * * Calc granularity by difference date-times
@@ -92,14 +97,14 @@ export default {
     dateAt: {
       get() {
         if (!this.interval.length) {
-          return this.fromto;
+          return this.fromto || this.default;
         }
 
         return this.interval;
       },
       set(value) {
         if (!value) {
-          value = this.fromto;
+          value = this.default;
         }
 
         let [begin, end] = value;

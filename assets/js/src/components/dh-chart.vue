@@ -60,9 +60,6 @@ export default {
             show: true,
             type: "timeseries",
             tick: {
-              culling: {
-                max: 10
-              },
               format: function(e) {
                 return moment(e).format("YYYY-MM-DD");
               },
@@ -150,7 +147,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .dh-chart-container {
   position: relative;
 
@@ -165,17 +162,28 @@ export default {
       opacity: 1;
     }
   }
+  .dh-chart-wrapper {
+    opacity: 0;
 
-  .dh-chart {
-    width: 100%;
-    height: 160px;
-
-    path.domain {
-      stroke: #778ca2;
+    &.dh-chart-wrapper-visible {
+      opacity: 1;
     }
 
-    g.c3-axis.c3-axis-x {
-      fill: #283747;
+    .dh-chart {
+      width: 100%;
+      height: 160px;
+
+      path.domain {
+        stroke: #778ca2;
+      }
+
+      g.c3-axis.c3-axis-x {
+        fill: #283747;
+      }
+
+      .c3-line {
+        stroke-width: 2px;
+      }
     }
   }
 }

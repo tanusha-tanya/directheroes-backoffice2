@@ -16,6 +16,7 @@ export default new Vuex.Store({
   state: {
     dhAccount: null,
     accounts: [],
+    accountStatistics: {},
     isFirstLoad: false,
     currentAccount: null,
     currentAccountData: null,
@@ -46,6 +47,19 @@ export default new Vuex.Store({
       if (state.currentAccount === account) return;
 
       state.currentAccount = account;
+    },
+
+    saveStatistics(state, dataset) {
+      const { currentAccount } = state;
+      if (!currentAccount) {
+        return;
+      }
+      let data = null;
+      if (state.accountStatistics.hasOwnProperty(currentAccount.id)) {
+        data = state.accountStatistics[currentAccount.id];
+      }
+
+      Vue.set(state.accountStatistics, currentAccount.id, { ...data, ...dataset });
     }
   },
   actions: {

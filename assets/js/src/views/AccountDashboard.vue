@@ -26,12 +26,13 @@
           <el-tab-pane class="dh-tab-pane" :label="tabs.Messages.name" :name="tabs.Messages.name">
             <div class="dh-tab-content dh-messages">
               <dhRangePicker
-                :fromto="messagesAt"
+                :fromto="messagesAtStore"
+                :default="messagesAt"
                 :granularity="true"
                 @change="(range, granularity) => getMessagesRates(range, granularity, true)"
               />
               <dhAccountChart
-                :columns="tabs.Messages.columns"
+                :columns="messagesColumnsStore"
                 :ref="tabs.Messages.name"
                 :options="messagesOptions"
                 :fetching="tabs.Messages.fetching"
@@ -59,7 +60,7 @@
                   </div>
                   <div class="dh-analytics-item-graph">
                     <dhAccountChart
-                      :columns="tabs.Followers.columns"
+                      :columns="followersColumnsStore"
                       :options="simpleChartOptions('#9E4CF9')"
                       :ref="tabs.Followers.name"
                       :fetching="tabs.Followers.fetching"
@@ -90,7 +91,7 @@
                 </div>
                 <div class="dh-analytics-item-graph">
                   <dhAccountChart
-                    :columns="tabs.Likes.columns"
+                    :columns="likesColumnsStore"
                     :options="simpleChartOptions('#6DD230')"
                     :fetching="tabs.Likes.fetching"
                     :ref="tabs.Likes.name"
@@ -121,7 +122,7 @@
                 </div>
                 <div class="dh-analytics-item-graph">
                   <dhAccountChart
-                    :columns="tabs.Comments.columns"
+                    :columns="commentsColumnsStore"
                     :options="simpleChartOptions('#FFAB2B')"
                     :fetching="tabs.Comments.fetching"
                     :ref="tabs.Comments.name"
@@ -167,7 +168,7 @@ export default {
       acc[next] = {
         name: next,
         columns: null,
-        fetching: true
+        fetching: false
       }
 
       return acc;
@@ -182,7 +183,6 @@ export default {
       activeTab: "Messages",
       granularity: 86400,
       messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
-      analyticInfo: null,
       interval: [],
       syncTime: {
         messages: null,
@@ -203,6 +203,103 @@ export default {
   },
 
   computed: {
+    accountStatistics() {
+      const { accountStatistics } = this.$store.state;
+      const { currentAccount } = this;
+      if (!currentAccount) {
+        return null;
+      }
+
+      if (accountStatistics.hasOwnProperty(currentAccount.id)) {
+        return accountStatistics[currentAccount.id];
+      }
+
+      return null;
+    },
+
+    analyticsStoreKey() {
+      const { tabs } = this;
+      return `${tabs.Followers.name}_${tabs.Likes.name}_${tabs.Comments.name}`;
+    },
+
+    messagesAtStore() {
+      const { tabs, accountStatistics, messagesAt } = this;
+      if (accountStatistics) {
+        const { Messages } = accountStatistics;
+        if (Messages) {
+          return Messages.range;
+        }
+      }
+
+      return messagesAt;
+    },
+
+    messagesColumnsStore() {
+      const { tabs, accountStatistics } = this;
+      if (accountStatistics) {
+        const { Messages } = accountStatistics;
+        if (Messages) {
+          return Messages.columns;
+        }
+      }
+
+      return null;
+    },
+
+    baseAnalyticsColumnsStore() {
+      const { accountStatistics, analyticsStoreKey } = this;
+      if (accountStatistics) {
+        return accountStatistics[analyticsStoreKey];
+      }
+
+      return null;
+    },
+
+    analyticInfo() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        return baseAnalyticsColumnsStore.analyticInfo;
+      }
+
+      return null;
+    },
+
+    commentsColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Comments) {
+          return Comments;
+        }
+      }
+
+      return null;
+    },
+
+    likesColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Likes) {
+          return Likes;
+        }
+      }
+
+      return null;
+    },
+
+    followersColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Followers) {
+          return Followers;
+        }
+      }
+
+      return null;
+    },
+
     hasThreeDays() {
       const { followerCount } = this.analyticInfo;
 
@@ -404,8 +501,10 @@ export default {
               tabs,
               isActualData,
               options,
-              getDatesInRangeByGranularity
+              getDatesInRangeByGranularity,
+              $store
             } = this;
+
       if (!force && isActualData("messages")) {
         return;
       }
@@ -465,7 +564,16 @@ export default {
         tabs.Messages.columns = columns;
       }).catch(err => {
         tabs.Messages.columns = null;
-      }).finally(() => tabs.Messages.fetching = false);
+      }).finally(() => {
+        tabs.Messages.fetching = false;
+        this.$store.commit('saveStatistics', {
+          [tabs.Messages.name]: {
+            range: [begin, end],
+            granularity: granularity,
+            columns: tabs.Messages.columns
+          }
+        });
+      });
     },
 
     getAnalyticInfo() {
@@ -474,8 +582,10 @@ export default {
               commentGraph,
               currentAccount,
               isActualData,
-              tabs } = this;
-
+              tabs,
+              analyticsStoreKey,
+              $store } = this;
+      let analyticInfo = null;
       if (isActualData("analytic")) {
         return;
       }
@@ -483,7 +593,7 @@ export default {
       ["Followers", "Likes", "Comments"].forEach(t => {
         tabs[t].fetching = true;
       });
-       
+      
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
         params: {
@@ -495,7 +605,7 @@ export default {
           tab.columns = [];
           tab.fetching = false;
         });
-        const analyticInfo = data.reports;
+        analyticInfo = data.reports;
         let { followerCount, likeCount, commentCount } = analyticInfo;
         const checkValues = (accumulator, currentValue, index) => {
           const { value } = currentValue;
@@ -517,7 +627,6 @@ export default {
         commentCount = commentCount && commentCount.reduce(checkValues, []);
 
         if ( !followerCount && !likeCount && !commentCount) return;
-        this.analyticInfo = analyticInfo;
         if (followerCount) {
           tabs.Followers.fetching = false;
           tabs.Followers.columns = [
@@ -550,24 +659,65 @@ export default {
           ]
         }
       }).catch(() => {
-        debugger;
         ["Followers", "Likes", "Comments"].forEach(t => {
           const tab = tabs[t];
           tab.columns = null;
           tab.fetching = false;
         });
+      }).finally(() => {
+        this.$store.commit('saveStatistics', {
+          [analyticsStoreKey]: {
+            analyticInfo,
+            columns: [
+              tabs.Followers.columns,
+              tabs.Likes.columns,
+              tabs.Comments.columns,
+            ]
+          }
+        });
       });
     },
 
     refreshAnalytics() {
-      const { $nextTick, currentAccount, getMessagesRates, getAnalyticInfo, messagesAt, granularity } = this;
+      const {
+        $nextTick,
+        currentAccount,
+        getMessagesRates,
+        getAnalyticInfo,
+        messagesAt,
+        granularity,
+        accountStatistics,
+        $store,
+        tabs,
+        analyticsStoreKey
+      } = this;
 
       if (!currentAccount) return;
-
-      $nextTick(() => {
-        getMessagesRates(messagesAt, granularity);
-        getAnalyticInfo();
-      })
+      if (accountStatistics) {
+        const messagesStore = accountStatistics[tabs.Messages.name];
+        const analyticsStore = accountStatistics[analyticsStoreKey];
+        if (messagesStore) {
+          const { columns } = messagesStore;
+          if (!columns) {
+            $$nextTick(() => {
+              getMessagesRates(messagesAt, granularity);
+            })
+          }
+        }
+        if (analyticsStore) {
+          const { columns, analyticInfo } = analyticsStore;
+          if (!columns || !analyticInfo) {
+            $$nextTick(() => {
+              getAnalyticInfo();
+            })
+          }
+        }
+      } else {
+        $nextTick(() => {
+          getMessagesRates(messagesAt, granularity);
+          getAnalyticInfo();
+        })
+      }
     }
   },
 

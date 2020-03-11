@@ -1,6 +1,8 @@
 <template>
   <div class="dh-account-chart">
-    <dhChart ref="chart" :options="options" :columns="columns" />
+    <div class="dh-chart-wrapper" :class="{'dh-chart-wrapper-ready': !fetching}">
+      <dhChart ref="chart" :options="options" :columns="columns" />
+    </div>
     <loader class="dh-chart-loader" v-if="fetching" />
     <div v-else>
       <div class="dh-refresh-container" v-if="columns === null">
@@ -40,6 +42,16 @@ export default {
 <style lang="scss">
 .dh-account-chart {
   position: relative;
+
+  .dh-chart-wrapper {
+    width: inherit;
+    height: inherit;
+    opacity: 0.4;
+  }
+
+  .dh-chart-wrapper-ready {
+    opacity: 1;
+  }
 
   .dh-refresh-container,
   .dh-empty-container {
