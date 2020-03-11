@@ -146,10 +146,12 @@ export default {
 
       let currDate = moment(begin).startOf('day');
       let lastDate = moment(end).startOf('day');
+      dates.push(currDate.clone().toDate());
 
       while(currDate.add(1, 'days').diff(lastDate) < 0) {
           dates.push(currDate.clone().toDate());
       }
+      dates.push(lastDate.clone().toDate());
 
       return dates;
     };
