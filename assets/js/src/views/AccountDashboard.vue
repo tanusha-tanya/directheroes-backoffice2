@@ -154,6 +154,7 @@ import axios from 'axios'
 import dhAccountChart from "../components/dh-account-chart.vue";
 import dhRangePicker from "../components/dh-range-picker";
 import loader from "../components/dh-loader";
+import utils from "../../oldJS/utils";
 
 export default {
   beforeRouteEnter(to, from, next) {
@@ -375,7 +376,7 @@ export default {
         tooltip: {
           format: {
             value(value, ratio, id, index) {
-              if (id !== self.tabs.Sent.name) {
+              if (id !== self.tabs.Sent.name && self.messagesColumnsStore) {
                 const sentSet = self.messagesColumnsStore.find(c => c && c.length && c[0] === self.tabs.Sent.name);
                 if (sentSet) {
                   const sentValue = sentSet.slice(1)[index];
@@ -458,50 +459,11 @@ export default {
       return false;
     },
 
-    getDatesInRange(begin, end) {
-      const dates = [];
-
-      let currDate = moment(begin).startOf('day');
-      let lastDate = moment(end).startOf('day');
-
-      while(currDate.add(1, 'days').diff(lastDate) < 0) {
-          dates.push(currDate.clone().toDate());
-      }
-
-      return dates;
-    },
-
-    getDatesInRangeMonth(begin, end) {
-      let startDate = moment(begin);
-      let endDate = moment(end);
-      let out = [];
-
-      while (startDate.isBefore(endDate)) {
-        startDate = startDate.add(1, 'month');
-        out.push(startDate.startOf("day").toDate());
-      }
-
-      return out;
-    },
-
-    getDatesInRangeByGranularity(begin, end, granularity) {
-      const { options, getDatesInRange, getDatesInRangeMonth } = this;
-      let dates = [];
-      if (granularity === options.month) {
-        dates = getDatesInRangeMonth(begin, end);
-      } else {
-        dates = getDatesInRange(moment(begin).subtract(1, 'day'), end);
-      }
-
-      return dates;
-    },
-
     getMessagesRates(interval, granularity, force) {
       const { currentAccount,
               tabs,
               isActualData,
               options,
-              getDatesInRangeByGranularity,
               $store
             } = this;
 
@@ -513,28 +475,14 @@ export default {
       tabs.Messages.columns = [];
       this.granularity = granularity;
       const [begin, end] = interval;
-      const dates = getDatesInRangeByGranularity(begin, end, this.granularity)
       const appendDate = (prefix, source) => {
         return [prefix].concat(source.map(c => moment(c.dateTime).toDate()));
       }
       const appendValue = (prefix, source) => {
         return [prefix].concat(source.map(c => c.value));
       }
-      const aggregator = (source) => {
-        const granularityValue = this.granularity === options.month ? "month" : "day";
-        return dates.reduce((acc, dateTime) => {
-          const value = source.find(s => moment(dateTime).startOf('day').isSame(s.dateTime, granularityValue));
-          if (value) {
-            acc.push(value);
-          } else {
-            acc.push({
-              value: "0",
-              dateTime: moment(dateTime).startOf('day').toISOString(),
-            })
-          }
-          return acc;
-        }, []);
-      };
+
+      const datesFiller = utils.fillDates(begin, end, granularity);
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -548,17 +496,17 @@ export default {
 
         tabs.Messages.refreshable = true;
         const columns = [];
-        columns.push(["x"].concat(dates.map(d => moment(d).toDate())));
+        columns.push(["x"].concat(datesFiller.Dates().map(d => moment(d).toDate())));
         if (sent) {
-          columns.push(appendValue(tabs.Sent.name, aggregator(sent)));
+          columns.push(appendValue(tabs.Sent.name, datesFiller.Fill(sent)));
         }
 
         if (seen) {
-          columns.push(appendValue(tabs.Seen.name, aggregator(seen)));
+          columns.push(appendValue(tabs.Seen.name, datesFiller.Fill(seen)));
         }
 
         if (replied) {
-          columns.push(appendValue(tabs.Replied.name, aggregator(replied)));
+          columns.push(appendValue(tabs.Replied.name, datesFiller.Fill(replied)));
         }
 
         tabs.Messages.columns = columns;

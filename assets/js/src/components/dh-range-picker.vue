@@ -104,7 +104,7 @@ export default {
       },
       set(value) {
         if (!value) {
-          value = this.default;
+          value = this.default || this.fromto;
         }
 
         let [begin, end] = value;

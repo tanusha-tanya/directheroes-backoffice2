@@ -88,7 +88,7 @@ export default {
     position: absolute;
     height: inherit;
     width: inherit;
-    right: 55%;
+    right: 50%;
     top: 0%;
   }
 }
