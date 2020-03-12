@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 const getOnMatchElement = (element) => {
   const { type, displaySettings } = element;
   let matchElement = element;
@@ -129,6 +131,74 @@ export default {
       return 'minutes'
     } else  {
       return 'seconds'
+    }
+  },
+
+  fillDates(begin, end, granularity) {
+    const options = {
+      month: 2592000,
+      day: 86400,
+      hour: 3600
+    };
+
+    const getDatesInRange = function() {
+      const dates = [];
+
+      let currDate = moment(begin).startOf('day');
+      let lastDate = moment(end).startOf('day');
+      dates.push(currDate.clone().toDate());
+
+      while(currDate.add(1, 'days').diff(lastDate) < 0) {
+          dates.push(currDate.clone().toDate());
+      }
+      dates.push(lastDate.clone().toDate());
+
+      return dates;
+    };
+
+    const getDatesInRangeMonth = function() {
+      let startDate = moment(begin);
+      let endDate = moment(end);
+      let out = [];
+
+      while (startDate.isBefore(endDate)) {
+        startDate = startDate.add(1, 'month');
+        out.push(startDate.startOf("day").toDate());
+      }
+
+      return out;
+    };
+
+    const getDatesInRangeByGranularity = function() {
+      let dates = [];
+      if (granularity === options.month) {
+        dates = getDatesInRangeMonth(begin, end);
+      } else {
+        dates = getDatesInRange(moment(begin).subtract(1, 'day'), end);
+      }
+
+      return dates;
+    };
+
+    return {
+      Fill: function(source) {
+        const granularityValue = granularity === options.month ? "month" : "day";
+        const dates = getDatesInRangeByGranularity();
+        return dates.reduce((acc, dateTime) => {
+            const value = source.find(s => moment(dateTime).startOf('day').isSame(s.dateTime, granularityValue));
+            if (value) {
+              acc.push(value);
+            } else {
+              acc.push({
+                value: "0",
+                dateTime: moment(dateTime).startOf('day').toISOString(),
+              })
+            }
+            return acc;
+          }, []);
+      },
+
+      Dates: getDatesInRangeByGranularity
     }
   },
 

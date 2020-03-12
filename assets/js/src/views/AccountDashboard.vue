@@ -23,29 +23,35 @@
       </div>
       <div class="dh-dashboard-analytics">
         <el-tabs class="dh-tab" v-model="activeTab" @tab-click="onTabClick">
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Messages" :name="tabs.Messages">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Messages.name" :name="tabs.Messages.name">
             <div class="dh-tab-content dh-messages">
-              <dhRangePicker
-                :fromto="messagesAt"
+              <!-- <dhRangePicker
+                :fromto="messagesAtStore"
+                :default="messagesAt"
                 :granularity="true"
-                @change="getMessagesRates"
-              />
-              <dhChart
-                :columns="messagesRatesColumns"
-                :ref="tabs.Messages"
+                @change="(range, granularity) => getMessagesRates(range, granularity, true)"
+              /> -->
+              <dhAccountChart
+                :columns="messagesColumnsStore"
+                :ref="tabs.Messages.name"
                 :options="messagesOptions"
+                :fetching="tabs.Messages.fetching"
+                @refresh="() => {
+                  getMessagesRates(messagesAt, granularity);
+                }"
+                :syncTimeEnd="syncTime.messagesEnd"
               />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Followers" :name="tabs.Followers">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Followers.name" :name="tabs.Followers.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.followerCount">
+              <div class="dh-dashboard-analytics-item dh-inform">
                 <div class="dh-analytics-item-info" >
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo && analyticInfo.followerCount">
                     {{deltaFollowerCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="followerCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -53,28 +59,30 @@
                   </div>
                   </div>
                   <div class="dh-analytics-item-graph">
-                    <dhChart
-                      :columns="followersRatesColumns"
+                    <dhAccountChart
+                      :columns="followersColumnsStore"
                       :options="simpleChartOptions('#9E4CF9')"
-                      :ref="tabs.Followers"
+                      :ref="tabs.Followers.name"
+                      :fetching="tabs.Followers.fetching"
+                      @refresh="getAnalyticInfo"
+                      :syncTimeEnd="syncTime.analyticEnd"
                     />
-                    <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="followerCountProgress">
+                    <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': followerCountProgress > 0 }" v-if="analyticInfo && followerCountProgress">
                       {{followerCountProgress.toFixed(2)}}%
                     </div>
                   </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Likes" :name="tabs.Likes">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Likes.name" :name="tabs.Likes.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item dh-inform" v-if="analyticInfo && hasThreeDays && analyticInfo.likeCount">
+              <div class="dh-dashboard-analytics-item dh-inform">
                 <div class="dh-analytics-item-info">
-                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }">
+                  <div :class="{'dh-analytics-item-value': true,'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo && analyticInfo.likeCount">
                     {{deltaLikeCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="likeCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -82,28 +90,30 @@
                   </div>
                 </div>
                 <div class="dh-analytics-item-graph">
-                  <dhChart
-                    :columns="likeRatesColumns"
+                  <dhAccountChart
+                    :columns="likesColumnsStore"
                     :options="simpleChartOptions('#6DD230')"
-                    :ref="tabs.Likes"
+                    :fetching="tabs.Likes.fetching"
+                    :ref="tabs.Likes.name"
+                    @refresh="getAnalyticInfo"
+                    :syncTimeEnd="syncTime.analyticEnd"
                   />
-                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="likeCountProgress">
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': likeCountProgress > 0 }" v-if="analyticInfo && likeCountProgress">
                     {{likeCountProgress.toFixed(2)}}%
                   </div>
                 </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
-          <el-tab-pane class="dh-tab-pane" :label="tabs.Comments" :name="tabs.Comments">
+          <el-tab-pane class="dh-tab-pane" :label="tabs.Comments.name" :name="tabs.Comments.name">
             <div class="dh-tab-content">
               <!-- <dhRangePicker // Disabled until api 2.0 will not be released
                 :fromto="messagesAt"
                 :onChange="(dates) => console.log(dates)"
               /> -->
-              <div class="dh-dashboard-analytics-item" v-if="analyticInfo && hasThreeDays && analyticInfo.commentCount">
+              <div class="dh-dashboard-analytics-item">
                 <div class="dh-analytics-item-info">
-                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }">
+                  <div  :class="{'dh-analytics-item-value': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo && analyticInfo.commentCount">
                     {{deltaCommentCount.toLocaleString()}}
                     <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="commentCountProgress">
                       <path d="M4 0.0625L4.375 0.40625L7.375 3.40625L6.625 4.125L4.5 1.96875V12H3.5V1.96875L1.375 4.125L0.625 3.40625L3.625 0.40625L4 0.0625Z" fill="currentColor"/>
@@ -111,17 +121,19 @@
                   </div>
                 </div>
                 <div class="dh-analytics-item-graph">
-                  <dhChart
-                    :columns="commentRatesColumns"
+                  <dhAccountChart
+                    :columns="commentsColumnsStore"
                     :options="simpleChartOptions('#FFAB2B')"
-                    :ref="tabs.Comments"
+                    :fetching="tabs.Comments.fetching"
+                    :ref="tabs.Comments.name"
+                    @refresh="getAnalyticInfo"
+                    :syncTimeEnd="syncTime.analyticEnd"
                   />
-                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="commentCountProgress">
+                  <div :class="{'dh-analytics-item-profit': true, 'dh-analytics-success': commentCountProgress > 0 }" v-if="analyticInfo && commentCountProgress">
                     {{commentCountProgress.toFixed(2)}}%
                   </div>
                 </div>
               </div>
-              <loader class="dh-dashboard-analytics-item" v-else />
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -139,22 +151,31 @@ import dhFooter from '../components/dh-footer'
 import dhCampaigns from '../components/dh-campaigns'
 import moment from 'moment'
 import axios from 'axios'
-import dhChart from "../components/dh-chart";
+import dhAccountChart from "../components/dh-account-chart.vue";
 import dhRangePicker from "../components/dh-range-picker";
 import loader from "../components/dh-loader";
+import utils from "../../oldJS/utils";
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next(dashboard => {
+      dashboard.refreshAnalytics();
+    })
+  },
+
   data() {
+    const names = ["Messages", "Followers", "Likes", "Comments", "Sent", "Seen", "Replied"]
+    const tabs = names.reduce((acc, next) => {
+      acc[next] = {
+        name: next,
+        columns: null,
+        fetching: false
+      }
+
+      return acc;
+    }, {});
     return {
-      tabs: {
-        Messages: "Messages",
-        Followers: "Followers",
-        Likes: "Likes",
-        Comments: "Comments",
-        Sent: "Reports",
-        Seen: "Seen",
-        Replied: "Replied"
-      },
+      tabs: tabs,
       options: {
         month: 2592000,
         day: 86400,
@@ -162,13 +183,14 @@ export default {
       },
       activeTab: "Messages",
       granularity: 86400,
-      messagesAt: [new Date(moment().subtract(7, "days")), new Date()],
-      analyticInfo: null,
-      messagesRatesColumns: null,
-      followersRatesColumns: null,
-      likeRatesColumns: null,
-      commentRatesColumns: null,
-      interval: []
+      messagesAt: [new Date(moment().subtract(30, "days")), new Date()],
+      interval: [],
+      syncTime: {
+        messages: null,
+        messagesEnd: null,
+        analytic: null,
+        analyticEnd: null
+      }
     };
   },
 
@@ -177,11 +199,108 @@ export default {
     dhFooter,
     dhCampaigns,
     loader,
-    dhChart,
+    dhAccountChart,
     dhRangePicker
   },
 
   computed: {
+    accountStatistics() {
+      const { accountStatistics } = this.$store.state;
+      const { currentAccount } = this;
+      if (!currentAccount) {
+        return null;
+      }
+
+      if (accountStatistics.hasOwnProperty(currentAccount.id)) {
+        return accountStatistics[currentAccount.id];
+      }
+
+      return null;
+    },
+
+    analyticsStoreKey() {
+      const { tabs } = this;
+      return `${tabs.Followers.name}_${tabs.Likes.name}_${tabs.Comments.name}`;
+    },
+
+    messagesAtStore() {
+      const { tabs, accountStatistics, messagesAt } = this;
+      if (accountStatistics) {
+        const { Messages } = accountStatistics;
+        if (Messages) {
+          return Messages.range;
+        }
+      }
+
+      return messagesAt;
+    },
+
+    messagesColumnsStore() {
+      const { tabs, accountStatistics } = this;
+      if (accountStatistics) {
+        const { Messages } = accountStatistics;
+        if (Messages) {
+          return Messages.columns;
+        }
+      }
+
+      return null;
+    },
+
+    baseAnalyticsColumnsStore() {
+      const { accountStatistics, analyticsStoreKey } = this;
+      if (accountStatistics) {
+        return accountStatistics[analyticsStoreKey];
+      }
+
+      return null;
+    },
+
+    analyticInfo() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        return baseAnalyticsColumnsStore.analyticInfo;
+      }
+
+      return null;
+    },
+
+    commentsColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Comments) {
+          return Comments;
+        }
+      }
+
+      return null;
+    },
+
+    likesColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Likes) {
+          return Likes;
+        }
+      }
+
+      return null;
+    },
+
+    followersColumnsStore() {
+      const { baseAnalyticsColumnsStore } = this;
+      if (baseAnalyticsColumnsStore) {
+        const [ Followers, Likes, Comments ] = baseAnalyticsColumnsStore.columns;
+        if (Followers) {
+          return Followers;
+        }
+      }
+
+      return null;
+    },
+
     hasThreeDays() {
       const { followerCount } = this.analyticInfo;
 
@@ -193,7 +312,7 @@ export default {
     deltaFollowerCount() {
       const { followerCount } = this.analyticInfo;
 
-      if (!followerCount) return {}
+      if (!followerCount) return 0;
 
       return Math.floor(followerCount[followerCount.length - 1].value - followerCount[0].value)
     },
@@ -212,7 +331,7 @@ export default {
     deltaLikeCount() {
       const { likeCount } = this.analyticInfo;
 
-      if (!likeCount) return {}
+      if (!likeCount) return 0;
 
       return likeCount[likeCount.length - 1].value - likeCount[0].value
     },
@@ -231,7 +350,7 @@ export default {
     deltaCommentCount() {
       const { commentCount } = this.analyticInfo;
 
-      if (!commentCount) return {}
+      if (!commentCount) return 0;
 
       return commentCount[commentCount.length - 1].value - commentCount[0].value
     },
@@ -252,11 +371,25 @@ export default {
       const self = this;
       return {
         data: {
-          x: null,
-          xs: {
-            [tabs.Sent]: 'x1',
-            [tabs.Seen]: 'x2',
-            [tabs.Replied]: 'x3'
+          x: "x"
+        },
+        tooltip: {
+          format: {
+            value(value, ratio, id, index) {
+              if (id !== self.tabs.Sent.name && self.messagesColumnsStore) {
+                const sentSet = self.messagesColumnsStore.find(c => c && c.length && c[0] === self.tabs.Sent.name);
+                if (sentSet) {
+                  const sentValue = sentSet.slice(1)[index];
+                  const percent = (100 * value / sentValue).toFixed(2);
+                  if (Number.isNaN(percent) || percent === "NaN") {
+                    return value;
+                  }
+                  return `${value} - ${percent}%`;
+                }
+              }
+
+              return value;
+            }
           }
         },
         color: {
@@ -291,9 +424,12 @@ export default {
   methods: {
     onTabClick(tab) {
       const { name } = tab;
-      const chart = this.$refs[name];
-      if (chart) {
-        chart.resize();
+      const wrapper = this.$refs[name];
+      if (wrapper) {
+        const { chart } = wrapper.$refs;
+        if (chart) {
+          chart.resize();
+        }
       }
     },
 
@@ -308,14 +444,45 @@ export default {
       }
     },
 
-    getMessagesRates(interval, granularity) {
-      const { currentAccount,
-              tabs
-            } = this;
-      this.granularity = granularity;
-      this.messagesRatesColumns = null;
-      const [begin, end] = interval;
+    isActualData(syncTimeItem) {
+      const now = new Date();
+      const syncTimeItemEnd = `${syncTimeItem}End`;
+      if (this.syncTime[syncTimeItem]) {
+        const diff = Math.abs(moment(this.syncTime[syncTimeItem]).diff(now, 'seconds'));
+        if (diff <= 5) {
+          this.syncTime[syncTimeItemEnd] = (5 - diff);
+          return true;
+        }
+      }
+      this.syncTime[syncTimeItem] = now;
+      this.syncTime[syncTimeItemEnd] = null;
+      return false;
+    },
 
+    getMessagesRates(interval, granularity, force) {
+      const { currentAccount,
+              tabs,
+              isActualData,
+              options,
+              $store
+            } = this;
+
+      if (!force && isActualData("messages")) {
+        return;
+      }
+      
+      tabs.Messages.fetching = true;
+      tabs.Messages.columns = [];
+      this.granularity = granularity;
+      const [begin, end] = interval;
+      const appendDate = (prefix, source) => {
+        return [prefix].concat(source.map(c => moment(c.dateTime).toDate()));
+      }
+      const appendValue = (prefix, source) => {
+        return [prefix].concat(source.map(c => c.value));
+      }
+
+      const datesFiller = utils.fillDates(begin, end, granularity);
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -326,32 +493,67 @@ export default {
         }
       }).then(({ data }) => {
         const { sent, seen, replied } = data.response.body;
-        this.messagesRatesColumns = [
-          ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
-          ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
-          ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
-          [tabs.Sent].concat(sent.map(c => c.value)),
-          [tabs.Seen].concat(seen.map(c => c.value)),
-          [tabs.Replied].concat(replied.map(c => c.value))
-        ];
-        this.messagesRatesFetching = false;
+
+        tabs.Messages.refreshable = true;
+        const columns = [];
+        columns.push(["x"].concat(datesFiller.Dates().map(d => moment(d).toDate())));
+        if (sent) {
+          columns.push(appendValue(tabs.Sent.name, datesFiller.Fill(sent)));
+        }
+
+        if (seen) {
+          columns.push(appendValue(tabs.Seen.name, datesFiller.Fill(seen)));
+        }
+
+        if (replied) {
+          columns.push(appendValue(tabs.Replied.name, datesFiller.Fill(replied)));
+        }
+
+        tabs.Messages.columns = columns;
+      }).catch(err => {
+        tabs.Messages.columns = null;
+      }).finally(() => {
+        tabs.Messages.fetching = false;
+        this.$store.commit('saveStatistics', {
+          [tabs.Messages.name]: {
+            range: [begin, end],
+            granularity: granularity,
+            columns: tabs.Messages.columns
+          }
+        });
       });
     },
 
-    getAnalyticInfoData(options) {
+    getAnalyticInfo() {
       const { followersGraph,
               likeGraph,
               commentGraph,
               currentAccount,
-              tabs } = this;
-       
+              isActualData,
+              tabs,
+              analyticsStoreKey,
+              $store } = this;
+      let analyticInfo = null;
+      if (isActualData("analytic")) {
+        return;
+      }
+
+      ["Followers", "Likes", "Comments"].forEach(t => {
+        tabs[t].fetching = true;
+      });
+      
       axios({
         url: 'https://igwm.directheroes.com/api/v1/account/short-report',
         params: {
           username: currentAccount.login
         }
       }).then(({ data }) => {
-        const analyticInfo = data.reports;
+        ["Followers", "Likes", "Comments"].forEach(t => {
+          const tab = tabs[t];
+          tab.columns = [];
+          tab.fetching = false;
+        });
+        analyticInfo = data.reports;
         let { followerCount, likeCount, commentCount } = analyticInfo;
         const checkValues = (accumulator, currentValue, index) => {
           const { value } = currentValue;
@@ -373,69 +575,107 @@ export default {
         commentCount = commentCount && commentCount.reduce(checkValues, []);
 
         if ( !followerCount && !likeCount && !commentCount) return;
-
-        this.analyticInfo = analyticInfo;
         if (followerCount) {
-          this.followersRatesColumns = [
+          tabs.Followers.fetching = false;
+          tabs.Followers.columns = [
             ["x"].concat(
               followerCount.map(followerItem =>
                 moment(followerItem.time).toDate()
               )
             ),
-            [tabs.Followers].concat(followerCount.map(calcValues))
+            [tabs.Followers.name].concat(followerCount.map(calcValues))
           ];
         }
         if (likeCount) {
-          this.likeRatesColumns = [
+          tabs.Likes.fetching = false;
+          tabs.Likes.columns = [
               ["x"].concat(
                 likeCount.map(likeItem => moment(likeItem.time).toDate())
               ),
-              [tabs.Likes].concat(likeCount.map(calcValues))
+              [tabs.Likes.name].concat(likeCount.map(calcValues))
           ]
         }
-
         if (commentCount) {
-          this.commentRatesColumns = [
+          tabs.Comments.fetching = false;
+          tabs.Comments.columns = [
             ["x"].concat(
               commentCount.map(commentItem =>
                 moment(commentItem.time).toDate()
               )
             ),
-            [tabs.Comments].concat(commentCount.map(calcValues))
+            [tabs.Comments.name].concat(commentCount.map(calcValues))
           ]
         }
+      }).catch(() => {
+        ["Followers", "Likes", "Comments"].forEach(t => {
+          const tab = tabs[t];
+          tab.columns = null;
+          tab.fetching = false;
+        });
+      }).finally(() => {
+        this.$store.commit('saveStatistics', {
+          [analyticsStoreKey]: {
+            analyticInfo,
+            columns: [
+              tabs.Followers.columns,
+              tabs.Likes.columns,
+              tabs.Comments.columns,
+            ]
+          }
+        });
       });
     },
 
-    getAnalyticInfo() {
-      const { getMessagesRates,
-              getAnalyticInfoData,
-              messagesAt, 
-              granularity
-            } = this;
+    refreshAnalytics() {
+      const {
+        $nextTick,
+        currentAccount,
+        getMessagesRates,
+        getAnalyticInfo,
+        messagesAt,
+        granularity,
+        accountStatistics,
+        $store,
+        tabs,
+        analyticsStoreKey
+      } = this;
 
-      getMessagesRates(messagesAt, granularity);
-      getAnalyticInfoData();
+      if (!currentAccount) return;
+      if (accountStatistics) {
+        const messagesStore = accountStatistics[tabs.Messages.name];
+        const analyticsStore = accountStatistics[analyticsStoreKey];
+        if (messagesStore) {
+          const { columns } = messagesStore;
+          if (!columns) {
+            $$nextTick(() => {
+              getMessagesRates(messagesAt, granularity);
+            })
+          }
+        }
+        if (analyticsStore) {
+          const { columns, analyticInfo } = analyticsStore;
+          if (!columns || !analyticInfo) {
+            $$nextTick(() => {
+              getAnalyticInfo();
+            })
+          }
+        }
+      } else {
+        $nextTick(() => {
+          getMessagesRates(messagesAt, granularity);
+          getAnalyticInfo();
+        })
+      }
     }
-  },
-
-  mounted() {
-    const { analyticInfo, $nextTick, getAnalyticInfo, currentAccount } = this;
-
-    if (!analyticInfo || !currentAccount) return;
-
-    $nextTick(() => {
-      getAnalyticInfo();
-    })
   },
 
   watch: {
     currentAccount(value) {
-      const { getAnalyticInfo, _isMounted } = this;
+      const { refreshAnalytics, _isMounted } = this;
 
       if (!value || !_isMounted) return;
 
-      getAnalyticInfo();
+      refreshAnalytics();
     }
   }
 }
