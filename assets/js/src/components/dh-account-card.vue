@@ -45,7 +45,7 @@
         <warning />Instagram Account<warning />
       </span>
     </div>
-    <div class="dh-account-owner-info" v-if="account.owner">
+    <div class="dh-account-owner-info" v-if="account.owner" :title="`Owned by ${ account.owner.firstName } ${ account.owner.lastName }`">
       <span>Owned by</span>  <strong>{{account.owner.firstName}} {{account.owner.lastName}}</strong>
     </div>
   </div>
@@ -173,7 +173,6 @@ export default {
     .dh-account-status {
       border-color: #2CE5F6;
     }
-
   }
 
   &.dh-account-updating {
@@ -292,9 +291,12 @@ export default {
     align-items: flex-end;
     color: $textColor;
     margin-bottom: -20px;
+    width: 100%;
 
     strong {
       margin-left: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     span, strong {
