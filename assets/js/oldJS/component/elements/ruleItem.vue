@@ -19,9 +19,11 @@
       <keywords v-model="rule.onMatch.elements[0].condition.value" :is-allow-create="true"></keywords>
     </template>
     <template v-else-if="ruleType == 'user-input'">
-      <el-select v-model="rule.condition.value" size="small">
-        <el-option v-for="inputType in inputList" :key="inputType.value" :value="inputType.value" :label="inputType.title"></el-option>
-      </el-select>
+      <div class="dh-select">
+        <el-select v-model="rule.condition.value" size="small" popper-class="dh-select-popper">
+          <el-option v-for="inputType in inputList" :key="inputType.value" :value="inputType.value" :label="inputType.title"></el-option>
+        </el-select>
+      </div>
     </template>
     <template v-else-if="ruleType == 'noreply'">
       within: <timeout :element="element"></timeout>
@@ -135,9 +137,7 @@ export default {
 
 <style lang="scss">
   .rule-item {
-    .el-select {
-      width: 100%;
-    }
+
 
     .timeout {
       width: 100px;
@@ -156,6 +156,26 @@ export default {
 
       input{
         font-weight: 700 !important;
+      }
+    }
+
+    .dh-select {
+      .el-select {
+        width: 100%;
+
+        .el-input {
+          margin-top: 0;
+        }
+
+        .el-input__inner {
+          border: 1px solid #DCDFE6;
+          background-color: #fff;
+          text-transform: none;
+        }
+
+        .el-input__icon {
+          line-height: 25px;
+        }
       }
     }
   }
