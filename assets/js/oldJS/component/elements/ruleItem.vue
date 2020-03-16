@@ -18,6 +18,14 @@
     <template v-else-if="['storyShare'].includes(ruleType)">
       <keywords v-model="rule.onMatch.elements[0].condition.value" :is-allow-create="true"></keywords>
     </template>
+    <template v-else-if="ruleType == 'user-input'">
+      <el-select v-model="rule.condition.value" size="small">
+        <el-option v-for="inputType in inputList" :key="inputType.value" :value="inputType.value" :label="inputType.title"></el-option>
+      </el-select>
+    </template>
+    <template v-else-if="ruleType == 'noreply'">
+      within: <timeout :element="element"></timeout>
+    </template>
     <add-tag-popup
       :available-list="availableList(element)"
       :link-element="element"
@@ -46,6 +54,7 @@ import ObjectId from '../../utils/ObjectId';
 import addTagPopup from '../addTagPopup';
 import elementWarning from '../elementWarning'
 import keywords from '../keywords';
+import timeout from '../timeout';
 import elementsPermissions from '../../elements/permissions'
 
 
@@ -56,6 +65,7 @@ export default {
     keywords,
     addTagPopup,
     elementWarning,
+    timeout
   },
 
   computed: {
@@ -67,10 +77,13 @@ export default {
     },
 
     ruleType() {
+      const { displaySettings } = this.element;
       const { value, entity, operand } = this.rule.condition;
 
       if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
         return value;
+      } else if (['noreply', 'user-input'].includes(displaySettings.type)) {
+        return displaySettings.type
       } else if (entity === 'message' && operand === 'contains') {
         return 'list'
       }
@@ -83,7 +96,9 @@ export default {
         adReply: 'Ad Reply',
         storyShare: 'Story Reply',
         storyMention: 'Story Mention',
-        mediaShare: 'Media Share'
+        mediaShare: 'Media Share',
+        'user-input': 'User Input',
+        noreply: 'No reply'
       }
     },
 
@@ -92,6 +107,12 @@ export default {
 
       return elements.find(element => element.type === 'rule')
     },
+
+    inputList() {
+      const { userInputMatches } = this.dhAccount.flowBuilderSettings;
+
+      return userInputMatches;
+    }
   },
 
   methods: {
@@ -113,6 +134,31 @@ export default {
 </script>
 
 <style lang="scss">
+  .rule-item {
+    .el-select {
+      width: 100%;
+    }
+
+    .timeout {
+      width: 100px;
+
+      .hidden-select {
+        width: auto;
+
+        .el-input {
+          margin-top: 0;
+        }
+
+        input {
+          padding: 0 !important;
+        }
+      }
+
+      input{
+        font-weight: 700 !important;
+      }
+    }
+  }
  .rule-item-title span {
    font-weight: bold;
  }

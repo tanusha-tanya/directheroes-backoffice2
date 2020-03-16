@@ -6,34 +6,7 @@
           {{conditionTitle[element.displaySettings.type]}}
           <element-warning :element="element"></element-warning>
         </div>
-        <template v-if="element.displaySettings.type === 'timeout'">
-          <div class="condition-item-controls timeout-item">
-            <div class="condition-item-control">
-              for <timeout :element="element"></timeout>
-            </div>
-            <div class="condition-item-matches">
-              <div class="condition-item-match" :ref="element.id">
-                Replied
-                <add-trigger-popup
-                  :available-list="availableList(element)"
-                  @on-select="createStep(element, $event)"
-                  v-if="!getRule(element).onMatch">
-                  <div class="add-step-button"></div>
-                </add-trigger-popup>
-               </div>
-              <div class="condition-item-fail" :ref="`${element.id}-fail`">
-                No response
-                <add-tag-popup
-                  :available-list="availableList(element, true)"
-                  @select="createStep(element, $event, true)"
-                  :existing-link="getRule(element).onFail"
-                  :builder="builder"
-                ></add-tag-popup>
-              </div>
-            </div>
-          </div>
-        </template>
-        <template v-else-if="element.displaySettings.type === 'verified'">
+        <template v-if="element.displaySettings.type === 'verified'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
               Is verified?

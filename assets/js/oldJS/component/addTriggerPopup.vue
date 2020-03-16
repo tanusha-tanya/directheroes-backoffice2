@@ -19,14 +19,12 @@
 
 <script>
 import triggers from '../elements/triggers'
-import { userInput } from '../elements/userInput';
 
 export default {
     data() {
       return {
         isShow: false,
         triggers,
-        userInput,
       };
     },
 
@@ -48,10 +46,10 @@ export default {
       triggerType(element) {
         const { value, entity, operand } = element.template.elements.find(element => element.type === 'rule').condition;
 
-        if (element.template.displaySettings && element.template.displaySettings.subType === 'user-input') {
-          return 'user-input'
-        } else if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
+        if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
           return value;
+        } else if (['noreply', 'user-input'].includes(element.template.displaySettings.type)) {
+          return element.template.displaySettings.type;
         } else if (entity === 'message' && operand === 'contains') {
           return 'list'
         }

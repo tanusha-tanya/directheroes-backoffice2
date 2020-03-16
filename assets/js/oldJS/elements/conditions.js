@@ -1,36 +1,5 @@
 export default [
   {
-    title: 'Timeout',
-    template: {
-      type: 'group',
-      displaySettings: {
-        subType: 'condition',
-        type: 'timeout'
-      },
-      elements: [
-        {
-          type: 'action',
-          body: {
-            action: 'registerTimeout',
-            delta: 14400
-          }
-        },
-        {
-          type: 'checkpoint'
-        },
-        {
-          type: 'rule',
-          condition: {
-            entity: 'time',
-            field: 'delta',
-            operand: 'eq',
-            value: 14400
-          }
-        },
-      ]
-    }
-  },
-  {
     title: 'Followers',
     template: {
       type: 'group',
