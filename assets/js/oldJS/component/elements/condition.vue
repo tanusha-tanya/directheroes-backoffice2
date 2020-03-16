@@ -223,7 +223,6 @@
 import Vue from 'vue';
 import elementsPermissions from '../../elements/permissions'
 import addConditionPopup from '../addConditionPopup';
-import addTriggerPopup from '../addTriggerPopup';
 import addTagPopup from '../addTagPopup';
 import timeout from '../timeout';
 import ObjectId from '../../utils/ObjectId';
@@ -254,7 +253,6 @@ export default {
     addTagPopup,
     timeout,
     inputAutosize,
-    addTriggerPopup,
     keywords
   },
 

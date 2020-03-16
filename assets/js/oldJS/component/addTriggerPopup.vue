@@ -28,7 +28,7 @@ export default {
       };
     },
 
-    props: ['availableList', 'hasUserInput'],
+    props: ['availableList'],
 
     computed: {
       hasAvailableTriggers() {
