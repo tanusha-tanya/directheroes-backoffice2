@@ -17,7 +17,7 @@
         <label class="dh-label">
             <span>Account blacklist</span>
             <vue-tags-input
-              placeholder="Print username"
+              placeholder='Print username and press "Enter"'
               v-model="blacklist"
               :tags="accounts"
               @tags-changed="newTags => tags = newTags"
@@ -29,12 +29,6 @@
     <div class="dh-notification" v-if="notification">
       {{ notification }}
     </div>
-    <div class="dh-spacer"></div>
-    <div class="dh-settings-form-footer">
-      <button :class="{'dh-button': true, 'dh-loading': loading}" @click="saveBlacklist">
-          Update
-      </button>
-    </div>
   </div>
 </template>
 
@@ -45,7 +39,6 @@ import axios from 'axios'
 export default {
     data () {
         return {
-            loading: false,
             notification: null,
             accounts: [],
             blacklist: ""
@@ -62,11 +55,14 @@ export default {
             this.accounts.push({'text': obj.tag.text, "tiClasses":["ti-valid"]});
 
             obj.addTag();
+            this.saveBlacklist();
         },
 
         deleteAccount(obj) {
             let index = this.accounts.findIndex(x => x.text === obj.tag.text);
             this.accounts.splice(index, 1);
+
+            this.saveBlacklist();
         },
 
         fillAccountList() {
@@ -74,7 +70,7 @@ export default {
 
             this.dhAccount.settings.forEach(function (setting) {
                 if (setting.type === 1) {
-                    setting.value.forEach(function(account){
+                    setting.value.forEach(function(account) {
                         accounts.push({'text': account, "tiClasses":["ti-valid"]})
                     });
                 }
@@ -100,11 +96,14 @@ export default {
                 }
             }).then(({data}) => {
                 this.notification = "Blacklist successfully saved";
-                this.loading = false;
+                this.dhAccount.settings.forEach(function (setting) {
+                    if (setting.type === 1) {
+                        setting.value = settingValue;
+                    }
+                });
             }).catch(({response}) => {
                 this.error = response.data.request.statusMessage;
-                this.loading = false;
-            })
+            });
         }
     },
 
