@@ -22,9 +22,14 @@ import moment from "moment";
 export default {
   props: {
     /**
-     * * Default interval
+     * * Current interval
      */
     fromto: Array,
+
+    /**
+     * * Default interval
+     */
+    default: Array,
 
     /**
      * * Calc granularity by difference date-times
@@ -77,12 +82,11 @@ export default {
       const [begin, end] = range;
       const diff = moment(end).diff(begin);
       const duration = Math.floor(moment.duration(diff).asDays() + 1 / 30);
-      let granularity = this.options.month;
+      const monthCount = Math.floor(duration / 30);
 
-      if (duration < 7) {
-        granularity = this.options.hour;
-      } else if (duration < 30) {
-        granularity = this.options.day;
+      let granularity = duration >= 7 ? this.options.day : this.options.hour;
+      if (monthCount) {
+        granularity = monthCount > 2 ? this.options.month : this.options.day;
       }
 
       return granularity;
@@ -93,14 +97,14 @@ export default {
     dateAt: {
       get() {
         if (!this.interval.length) {
-          return this.fromto;
+          return this.fromto || this.default;
         }
 
         return this.interval;
       },
       set(value) {
         if (!value) {
-          value = this.fromto;
+          value = this.default || this.fromto;
         }
 
         let [begin, end] = value;

@@ -5,9 +5,13 @@
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
           <div class="dh-chart">
-            <dhRangePicker :fromto="messagesAt" :granularity="true" @change="chartFetch" />
+            <!-- <dhRangePicker :fromto="messagesAt" :granularity="true" @change="chartFetch" /> -->
 
-            <dhChart :columns="messagesChartColumns" :options="messagesOptions" />
+            <dhAccountChart
+              :columns="messagesChartColumns"
+              :options="messagesOptions"
+              :fetching="messagesChartFetching"
+            />
           </div>
           <div class="dh-campaign-controls">
             <div class="dh-select dh-campaign-subscription">
@@ -158,8 +162,9 @@ import axios from "axios";
 import search from "../assets/search.svg";
 import livechat from "../assets/livechat.svg";
 import loader from "../components/dh-loader";
-import dhChart from "../components/dh-chart";
+import dhAccountChart from "../components/dh-account-chart";
 import dhRangePicker from "../components/dh-range-picker";
+import utils from "../../oldJS/utils";
 
 export default {
   name: "CampaignStatistics",
@@ -167,7 +172,7 @@ export default {
   components: {
     dhHeader,
     dhFooter,
-    dhChart,
+    dhAccountChart,
     search,
     livechat,
     dhExportDialog,
@@ -209,6 +214,7 @@ export default {
       Replied: "Replied"
     },
     messagesChartColumns: [],
+    messagesChartFetching: false,
     debounce: -1
   }),
 
@@ -273,15 +279,29 @@ export default {
       const self = this;
       return {
         data: {
-          x: null,
-          xs: {
-            [graphs.Sent]: "x1",
-            [graphs.Seen]: "x2",
-            [graphs.Replied]: "x3"
-          }
+          x: "x"
         },
         color: {
           pattern: ["#9E4CF9", "#6DD230", "#FFAB2B"]
+        },
+        tooltip: {
+          format: {
+            value(value, ratio, id, index) {
+              if (id !== self.graphs.Sent && self.messagesChartColumns) {
+                const sentSet = self.messagesChartColumns.find(c => c[0] == self.graphs.Sent);
+                if (sentSet) {
+                  const sentValue = sentSet.slice(1)[index];
+                  const percent = ((100 * value) / sentValue).toFixed(2);
+                  if (Number.isNaN(percent) || percent === "NaN") {
+                    return value;
+                  }
+                  return `${value} - ${percent}%`;
+                }
+              }
+
+              return value;
+            }
+          }
         },
         axis: {
           x: {
@@ -337,10 +357,12 @@ export default {
 
     chartFetch(interval, granularity) {
       this.messagesChartColumns = null;
+      this.messagesChartFetching = true;
       this.granularity = granularity;
       const { graphs } = this;
       const { campaignId, accountId } = this.$route.params;
       const [begin, end] = interval;
+      const datesFiller = utils.fillDates(begin, end, granularity);
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/message_rates/report`,
         params: {
@@ -350,17 +372,17 @@ export default {
           dateTimeTill: moment(end).toISOString(),
           campaignId
         }
-      }).then(({ data }) => {
-        const { sent, seen, replied } = data.response.body;
-        this.messagesChartColumns = [
-          ["x1"].concat(sent.map(c => moment(c.dateTime).toDate())),
-          ["x2"].concat(seen.map(c => moment(c.dateTime).toDate())),
-          ["x3"].concat(replied.map(c => moment(c.dateTime).toDate())),
-          [graphs.Sent].concat(sent.map(c => c.value)),
-          [graphs.Seen].concat(seen.map(c => c.value)),
-          [graphs.Replied].concat(replied.map(c => c.value))
-        ];
-      });
+      })
+        .then(({ data }) => {
+          const { sent, seen, replied } = data.response.body;
+          this.messagesChartColumns = [
+            ["x"].concat(datesFiller.Dates().map(c => moment(c).toDate())),
+            [graphs.Sent].concat(datesFiller.Fill(sent).map(c => c.value)),
+            [graphs.Seen].concat(datesFiller.Fill(seen).map(c => c.value)),
+            [graphs.Replied].concat(datesFiller.Fill(replied).map(c => c.value))
+          ];
+        })
+        .finally(() => (this.messagesChartFetching = false));
     },
 
     getStatistics() {

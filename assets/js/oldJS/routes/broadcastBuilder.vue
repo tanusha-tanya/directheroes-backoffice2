@@ -12,7 +12,7 @@
             </add-step-popup>
           </div>
         </div>
-        <div class="broadcast-choose-info">
+        <div class="broadcast-choose-info" v-if="false">
           You can also create a block by double clicking on the canvas
         </div>
       </div>
@@ -234,6 +234,11 @@ export default {
     },
 
     availableElements() {
+      const { elements } = this.dhAccount.flowBuilderSettings;
+      if (elements.includes('sendMedia')) {
+        return ['sendMedia'].concat(elementsPermissions.fromBroadcastFlow)
+      }
+
       return elementsPermissions.fromBroadcastFlow
     },
 

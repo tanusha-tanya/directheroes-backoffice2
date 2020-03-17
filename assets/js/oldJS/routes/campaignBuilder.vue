@@ -13,7 +13,7 @@
           </div>
           <!-- <div class="campaign-choose-button">Clone flow</div> -->
         </div>
-        <div class="campaign-choose-info">
+        <div class="campaign-choose-info" v-if="false">
           You can also create a block by double clicking on the canvas
         </div>
       </div>

@@ -5,7 +5,6 @@
 export default {
   fromFlow: [],
   fromTrigger: [
-    'sendMedia',
     'sendText',
     'delay',
     'addCategory',
@@ -17,7 +16,6 @@ export default {
   fromTriggerStep: [],
   fromMessageStep: [
     'sendText',
-    'sendMedia',
     'delay',
     'addCategory',
     'timeout',
@@ -29,12 +27,10 @@ export default {
     'verified'],
   fromLinkedMessageStep: [
     'sendText',
-    'sendMedia',
     'delay',
   ],
   fromActionStep: [
     'sendText',
-    'sendMedia',
     'delay',
     'followers',
     'timeout',
@@ -45,7 +41,6 @@ export default {
     'zapier'],
   fromCondition: [
     'sendText',
-    'sendMedia',
     'delay',
     'followers',
     'addCategory',
@@ -58,7 +53,6 @@ export default {
   ],
   fromUserInputFails: [
     'sendText',
-    'sendMedia',
     'delay',
     'timeout',
     'followers',
@@ -68,7 +62,6 @@ export default {
     'verified'],
   fromUserInput: [
     'sendText',
-    'sendMedia',
     'delay',
     'followers',
     'zapier',
@@ -77,6 +70,5 @@ export default {
     'removeCategory',
     'verified'],
   fromBroadcastFlow: [
-    'sendText',
-    'sendMedia'],
+    'sendText'],
 }

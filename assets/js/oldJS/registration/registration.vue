@@ -48,7 +48,7 @@
                 <input type="checkbox" v-model="confirmPolicy">
                 <span></span>
               </label>
-              <span>I have read and agree to the <a href="http://www.directheroes.com/privacy" target="_blank">Policy</a> and <a href="http://www.directheroes.com/terms" target="_blank">Terms of Service</a></span>
+              <span>I have read and agree to the <a href="https://www.directheroes.com/privacy/" target="_blank">Policy</a> and <a href="https://www.directheroes.com/terms-and-conditions/" target="_blank">Terms of Service</a></span>
             </div>
             <div class="plane-info" v-if="plan.price">You will be charged <strong>${{plan.price}}</strong> and subscribed to <strong>{{plan.name}}</strong> plan</div>
             <div class="error">{{globalError}}</div>

@@ -1,11 +1,10 @@
 <template>
   <div class="dh-chart-container">
-    <div :class="{ 'dh-chart-active': columns, 'dh-chart-wrapper': true }">
+    <div :class="{ 'dh-chart-active': columns && columns.length, 'dh-chart-wrapper': true }">
       <slot name="chart-top"></slot>
       <vue-c3 class="dh-chart" :handler="handler"></vue-c3>
       <slot name="chart-bottom"></slot>
     </div>
-    <loader class="dh-chart-loader" v-if="!columns" />
   </div>
 </template>
 
@@ -13,13 +12,11 @@
 import Vue from "vue";
 import VueC3 from "vue-c3";
 import moment from "moment";
-import loader from "./dh-loader";
 import deepMerge from "../../oldJS/utils/deepMerge";
 
 export default {
   components: {
-    VueC3,
-    loader
+    VueC3
   },
 
   props: ["options", "columns"],
@@ -63,9 +60,6 @@ export default {
             show: true,
             type: "timeseries",
             tick: {
-              culling: {
-                max: 10
-              },
               format: function(e) {
                 return moment(e).format("YYYY-MM-DD");
               },
@@ -153,7 +147,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .dh-chart-container {
   position: relative;
 
@@ -168,24 +162,29 @@ export default {
       opacity: 1;
     }
   }
+  .dh-chart-wrapper {
+    opacity: 0;
 
-  .dh-chart {
-    width: 100%;
-    height: 160px;
-
-    path.domain {
-      stroke: #778ca2;
+    &.dh-chart-wrapper-visible {
+      opacity: 1;
     }
 
-    g.c3-axis.c3-axis-x {
-      fill: #283747;
-    }
-  }
+    .dh-chart {
+      width: 100%;
+      height: 160px;
 
-  .dh-chart-loader {
-    position: absolute;
-    top: 0%;
-    height: inherit;
+      path.domain {
+        stroke: #778ca2;
+      }
+
+      g.c3-axis.c3-axis-x {
+        fill: #283747;
+      }
+
+      .c3-line {
+        stroke-width: 2px;
+      }
+    }
   }
 }
 </style>
