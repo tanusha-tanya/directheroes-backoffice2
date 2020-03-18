@@ -58,8 +58,8 @@
       <stripe-payment v-else goal="updateExistingSubscriptions" :return-url="$router.resolve({name: 'dhPayments'}).href">
         <template slot="footer" slot-scope="{submitPayment, canSendInfo, authorizeAmount}">
           <div class="dh-settings-form-buttons">
-            <button :class="{ 'dh-button': true, 'dh-loading': paymentRequest }" :disabled="!canSendInfo" @click="setPayInfo(submitPayment, authorizeAmount)">Save payment info</button>
-            <button class="dh-button dh-reset-button" @click="isSetPayment = false" >Cancel</button>
+            <button :class="{ 'dh-button': true, 'dh-loading': paymentRequest }" :disabled="!canSendInfo || paymentRequest" @click="setPayInfo(submitPayment, authorizeAmount)">Save payment info</button>
+            <button class="dh-button dh-reset-button" :disabled="paymentRequest" @click="isSetPayment = false" >Cancel</button>
           </div>
         </template>
       </stripe-payment>
@@ -68,7 +68,19 @@
     <div class="dh-settings-form-footer" v-if="!isSetPayment && !loading">
       <button class="dh-button" @click="isSetPayment = true">Set payment info</button>
     </div>
-
+    <el-dialog
+      :visible.sync="successUpdate"
+      title="Success"
+      width="554px"
+      append-to-body
+      class="dh-success-dialog"
+      >
+      <div class="dh-success-block">Payment card information updated successfully</div>
+      <template slot="footer">
+        <span></span>
+        <button class="dh-button" @click="successUpdate = false">Ok</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -85,6 +97,7 @@ export default {
       loading: true,
       paymentRequest: false,
       cardInfo: {},
+      successUpdate: false,
       owner: {
         address: {
 
@@ -100,30 +113,22 @@ export default {
 
   methods: {
     setPayInfo(submitPayment, authorizeAmount) {
-      const { $router } = this
+      const { $router, setBillingInfo } = this
       this.paymentRequest = true
 
-      submitPayment(authorizeAmount * 100, (error) => {
+      submitPayment(authorizeAmount * 100, (error, data) => {
         this.paymentRequest = false;
 
         if (error) return;
 
+        setBillingInfo(data.response.body.activeSource)
+
         this.isSetPayment = false;
+        this.successUpdate = true;
       });
-    }
-  },
+    },
 
-  created() {
-    const { dhAccount } = this;
-
-    if (dhAccount && !dhAccount.subscription.isActive) {
-      this.isSetPayment = true;
-    }
-
-    axios({
-      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
-    }).then(({ data }) => {
-      const { activeSource } = data.response.body;
+    setBillingInfo(activeSource) {
 
       if (!activeSource) return;
 
@@ -142,6 +147,22 @@ export default {
 
       this.owner.address = this.owner.address || {};
       this.cardInfo = activeSource.card || activeSource.three_d_secure || activeSource || {};
+    }
+  },
+
+  created() {
+    const { dhAccount, setBillingInfo } = this;
+
+    if (dhAccount && !dhAccount.subscription.isActive) {
+      this.isSetPayment = true;
+    }
+
+    axios({
+      url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/get-source`
+    }).then(({ data }) => {
+      const { activeSource } = data.response.body;
+
+      setBillingInfo(activeSource);
 
       this.loading = false;
     });
@@ -155,6 +176,20 @@ export default {
     display: flex;
     margin-top: 20px;
     justify-content: space-between;
+  }
+}
+
+.dh-success-dialog {
+  .dh-success-block {
+    height: 80px;
+    width: 100%;
+    background-color: $successColor;
+    border-radius: 4px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    font-size: 16px;
   }
 }
 </style>
