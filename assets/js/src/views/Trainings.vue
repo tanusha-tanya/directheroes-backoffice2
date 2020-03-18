@@ -7,6 +7,14 @@
           <span><tutorials/></span>
           Connecting Your Instagram Account
         </a>
+        <a href="https://youtu.be/spljZBHpijE" target="_blank" class="dh-list-item">
+          <span><tutorials/></span>
+          Top Instagram Giveaway Campaign! 80% email open rate!!!
+        </a>
+        <a href="https://youtu.be/M547brjtorQ" target="_blank" class="dh-list-item">
+          <span><tutorials/></span>
+          Growing Your Instagram List Free
+        </a>
         <a href="https://www.directheroes.com/doc-dist/Build_Your_First_Flow.pdf" download target=_blank class="dh-list-item">Build Your First Flow</a>
         <a href="https://www.directheroes.com/doc-dist/Integrate_With_Zapier.pdf" download target=_blank class="dh-list-item">How to Integrate With Zapier</a>
         <a href="https://www.youtube.com/channel/UCNzmh2GxbrgkVes0yJNbKWQ" target="_blank" class="dh-list-item">
