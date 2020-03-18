@@ -747,7 +747,7 @@ export default {
                 connectStepToStepById(step, parentElement.target)
               }
 
-              parentElement.target = step.id
+              Vue.set(parentElement, 'target', step.id)
               break;
             default:
               let rule = getElementByType(parentElement, 'rule');
