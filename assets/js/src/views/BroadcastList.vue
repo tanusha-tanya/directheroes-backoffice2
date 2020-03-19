@@ -186,13 +186,9 @@ export default {
     },
 
     updatePermissions() {
-      const { currentAccount } = this;
+      const { $store } = this;
 
-      axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
-      }).then(({ data }) => {
-        currentAccount.subscriptionCapabilities = data.response.body;
-      })
+      $store.dispatch('updateSubscriptionCapabilities')
     }
   },
 

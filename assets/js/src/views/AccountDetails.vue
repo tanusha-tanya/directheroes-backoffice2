@@ -55,6 +55,8 @@ export default {
         return;
       }
 
+      $store.dispatch('updateSubscriptionCapabilities')
+
       const localDB = new PouchDB(`pouch-local-${ account.id}`)
       const remoteDB = new PouchDB(account.couchDbUrl);
 
