@@ -7,7 +7,7 @@ import PouchDB from 'pouchdb';
 
 const jsondiffpatch = require('jsondiffpatch').create({
   objectHash: function(obj) {
-      return obj.name;
+    return obj.name;
   }
 })
 
