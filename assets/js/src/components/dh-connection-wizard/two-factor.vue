@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-two-factor" v-if="hasNotCodeInfo">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-two-factor" v-if="hasNotCodeInfo">
+    <div class="dh-wizard-step-body">
       <ul>
         <li>Open Instagram app.</li>
         <li>Go to settings.</li>
@@ -15,8 +15,8 @@
       <button class="dh-button" @click="toggleHelp">I got the code</button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-two-factor" v-else>
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-two-factor" v-else>
+    <div class="dh-wizard-step-body">
       Two factor authorization is enabled on your account, you should know where do you get the code<br>
       <div class="dh-two-factor-radio-list">
         <el-radio v-model="twoFAMethod" :label="1" :disabled="!twoFAmethods[1]">I just got an SMS from Instagram with a code</el-radio><br>
@@ -25,7 +25,7 @@
       </div><br/>
       Please enter the code below:
       <input placeholder="Verification Code" v-model="twoFACode" class="dh-input" @input="error = null" :maxlength="twoFAMethod == 2 ? 8 : 6" :disabled="false">
-      <div class="dh-wizzard-error" v-if="error">
+      <div class="dh-wizard-error" v-if="error">
         {{error}}
       </div>
     </div>

@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-checkpoint" v-if="!anyDid">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-checkpoint" v-if="!anyDid">
+    <div class="dh-wizard-step-body">
       Please take your phone, open the Instagram app, and reload news feed. Then click "it was me" if you see this prompt:
       <img src="../../assets/it_was_me.png">
     </div>
@@ -9,8 +9,8 @@
       <button class="dh-button" @click="anyDid = true">I did that</button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-checkpoint" v-else>
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-checkpoint" v-else>
+    <div class="dh-wizard-step-body">
       Please close the Instagram app, and do not open the app or web version till the end of the connection process, unless it's asked by this wizard.
     </div>
     <div class="el-dialog__footer">

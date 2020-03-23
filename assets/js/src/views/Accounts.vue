@@ -34,7 +34,7 @@
       </dh-confirm-dialog>
     </div>
     <dh-footer></dh-footer>
-    <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizzard>
+    <dh-connection-wizard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizard>
     <el-dialog
       :visible.sync="isExtraAccount"
       custom-class="extra-account"
@@ -55,7 +55,7 @@
 import axios from 'axios'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
-import dhConnectionWizzard from '../components/dh-connection-wizzard'
+import dhConnectionWizard from '../components/dh-connection-wizard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
 import dhAccountCard from '../components/dh-account-card'
 import status from '../assets/plus.svg'
@@ -94,7 +94,7 @@ export default {
     dhConfirmDialog,
     status,
     extraAccount,
-    dhConnectionWizzard,
+    dhConnectionWizard,
     dhAccountCard
   },
 

@@ -132,7 +132,7 @@
         title="Announcing weekly live training"
         :destroy-on-close="true"
         @close="hidePopup"
-      >
+        >
         Get the most out of direct heroes, join our weekly webinars with Jeff MacPhearson CEO and Founder of Direct Heroes. <br><br>
         We show you high converting flows, showcase some of the top performing Direct Heroes. And answer questions each week.<br><br>
         Register now using the link in lefthand menu.
@@ -140,6 +140,7 @@
           <button class="dh-button" @click="hidePopup">Ok</button>
         </template>
       </el-dialog>
+      <purchase-wizard v-model="$store.state.purchasePlans" v-if="$store.state.purchasePlans"></purchase-wizard>
     </div>
     <loader v-else-if="isFirstLoad"></loader>
     <div class="dh-init-error" v-else>
@@ -170,6 +171,7 @@ import support from './assets/support.svg'
 import affiliate from './assets/affiliate.svg'
 import loader from './components/dh-loader'
 import TariffWrapper from './components/dh-tariff-wrapper'
+import PurchaseWizard from './components/dh-purchase-wizard'
 import easywebinar from '../oldJS/assets/svg/youtube.svg'
 
 export default {
@@ -203,7 +205,8 @@ export default {
     users,
     search,
     userplus,
-    arrow
+    arrow,
+    PurchaseWizard
   },
 
   computed: {

@@ -25,7 +25,9 @@ export default new Vuex.Store({
     globalError: false,
     saveTimeout: 1000,
     onSaveHandler: null,
+    purchasePlans: true,
   },
+
   mutations: {
     set(state, { path, value }) {
       const nodes = path.split('.');
@@ -63,6 +65,7 @@ export default new Vuex.Store({
       Vue.set(state.accountStatistics, currentAccount.id, { ...data, ...dataset });
     }
   },
+
   actions: {
     getAccounts({ state, commit }) {
       commit('set', { path: 'isFirstLoad', value: true });

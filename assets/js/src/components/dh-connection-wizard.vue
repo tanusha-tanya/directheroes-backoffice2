@@ -7,15 +7,15 @@
     :close-on-click-modal="false"
     :destroy-on-close="true"
     @close="checkAddAccount"
-    class="dh-wizzard-dialog"
+    class="dh-wizard-dialog"
   >
     <component
-      :is="wizzardState"
+      :is="wizardState"
       :account="account"
       :protocol="protocol"
       :is-first-time="isFirstTime"
       @set-account="setAccount"
-      @close-wizzard="isShow = false"
+      @close-wizard="isShow = false"
       @re-login="reloginAccount"
       @set-title="title = $event"
       @first-run="isFirstTime = false"
@@ -26,13 +26,13 @@
 
 <script>
 import axios from 'axios'
-import selectAccount from './dh-connection-wizzard/select-account'
-import enterPassword from './dh-connection-wizzard/enter-password'
-import successAdded from './dh-connection-wizzard/success-added'
-import twoFactor from './dh-connection-wizzard/two-factor'
-import challenge from './dh-connection-wizzard/challenge'
-import checkpoint from './dh-connection-wizzard/checkpoint'
-import resetAccount from './dh-connection-wizzard/reset-account'
+import selectAccount from './dh-connection-wizard/select-account'
+import enterPassword from './dh-connection-wizard/enter-password'
+import successAdded from './dh-connection-wizard/success-added'
+import twoFactor from './dh-connection-wizard/two-factor'
+import challenge from './dh-connection-wizard/challenge'
+import checkpoint from './dh-connection-wizard/checkpoint'
+import resetAccount from './dh-connection-wizard/reset-account'
 
 export default {
   data() {
@@ -56,7 +56,7 @@ export default {
   },
 
   computed: {
-    wizzardState() {
+    wizardState() {
       const { account } = this;
 
       if (!account) {
@@ -153,39 +153,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-div.dh-wizzard-dialog {
-  .el-dialog__body {
-    padding: 0 !important;
-  }
-
-  .dh-wizzard-step-body {
-    padding: 28px 31px 22px 24px;
-    min-height: 200px;
-  }
-
-  .el-dialog__footer {
-    background-color: #ffffff;
-    justify-content: flex-end;
-    min-height: 64px;
-  }
-
-  .dh-wizzard-error, .dh-wizzard-success {
-    height: 80px;
-    width: 100%;
-    background-color: #FE4D97;
-    border-radius: 4px;
-    margin-top: 20px;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    color: #ffffff;
-    font-size: 16px;
-  }
-
-  .dh-wizzard-success {
-    background-color: $successColor;
-  }
-}
-</style>

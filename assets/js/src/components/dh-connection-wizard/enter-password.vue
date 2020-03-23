@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-enter-password" v-if="currentState === 'preparation'">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-enter-password" v-if="currentState === 'preparation'">
+    <div class="dh-wizard-step-body">
       Who is using this account on mobile?
     </div>
     <div class="el-dialog__footer">
@@ -8,18 +8,18 @@
       <button class="dh-button" @click="currentState = 'checkpoint'">Just me</button>
     </div>
   </div>
-   <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
-    <div class="dh-wizzard-step-body">
+   <div class="dh-wizard-step dh-enter-password" v-else-if="currentState === 'preparation-2'">
+    <div class="dh-wizard-step-body">
       Please ask your colleagues not to use the account while you're getting it connected, it might take up to 15 minutes.
     </div>
     <div class="el-dialog__footer">
       <button class="dh-button dh-reset-button" @click="currentState = 'checkpoint'">No one is using it</button>
-      <button class="dh-button" @click="$emit('close-wizzard')">It's in use, I have to wait</button>
+      <button class="dh-button" @click="$emit('close-wizard')">It's in use, I have to wait</button>
     </div>
   </div>
   <checkpoint v-else-if="currentState === 'checkpoint'" @re-login="relogin($event)"></checkpoint>
-  <div class="dh-wizzard-step dh-enter-password" v-else-if="currentState === 'preparation-3'">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-enter-password" v-else-if="currentState === 'preparation-3'">
+    <div class="dh-wizard-step-body">
       Do you have two-factor authentication enabled on this account?<br><br>
       <div class="dh-two-factor-radio-list">
         <el-radio v-model="has2fa" :label="1">Yes</el-radio><br>
@@ -37,12 +37,12 @@
       </button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-enter-password" v-else>
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-enter-password" v-else>
+    <div class="dh-wizard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="password" @input="error = null" v-model="password" placeholder="Enter password"/>
       </div>
-      <div class="dh-wizzard-error" v-if="error">
+      <div class="dh-wizard-error" v-if="error">
         {{error}}
       </div>
     </div>

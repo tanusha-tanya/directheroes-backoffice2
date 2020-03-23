@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-select-account">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-select-account">
+    <div class="dh-wizard-step-body">
       <div class="dh-select-account-controls">
         <input class="dh-input" type="text" v-model="login" @input="error = null" placeholder="Enter Instagram login" :disabled="finding" @keypress.enter="findAccount"/>
       </div>
@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div class="dh-wizzard-error" v-if="error">
+      <div class="dh-wizard-error" v-if="error">
         {{error}}
       </div>
     </div>

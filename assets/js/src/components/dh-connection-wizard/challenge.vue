@@ -1,9 +1,9 @@
 <template>
-  <div class="dh-wizzard-step dh-challange" v-if="!codeSended">
-    <div class="dh-wizzard-step-body">
-      <div class="dh-wizzard-text">
+  <div class="dh-wizard-step dh-challenge" v-if="!codeSended">
+    <div class="dh-wizard-step-body">
+      <div class="dh-wizard-text">
         Instagram requires additional verification for this connection<br><br>
-        <div class="dh-wizzard-choose-code-variants" v-if="hasMoreOneVariants">
+        <div class="dh-wizard-choose-code-variants" v-if="hasMoreOneVariants">
           Please, select send code variant:<br>
           <el-radio v-model="sendMethod" :label="0" >Phone: {{account.igChallenge.sendCodeVariants.phone_number}}</el-radio><br>
           <el-radio v-model="sendMethod" :label="1" >E-mail: {{account.igChallenge.sendCodeVariants.email}}</el-radio>
@@ -14,14 +14,14 @@
       <button :class="{'dh-button': true, 'dh-loading': sending}" :disabled="sending || sendMethod === null" @click="sendCode">Request verification code</button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-challange-verify" v-else-if="noCodeInfo">
-    <div class="dh-wizzard-step-body">
-      <div class="dh-wizzard-text">
+  <div class="dh-wizard-step dh-challenge-verify" v-else-if="noCodeInfo">
+    <div class="dh-wizard-step-body">
+      <div class="dh-wizard-text">
         I didn’t receive challenge code:<br><br>
         - Check older codes<br>
         - Log in to app and check "it was me"
       </div>
-      <div class="dh-wizzard-error" v-if="error">
+      <div class="dh-wizard-error" v-if="error">
         {{error}}
       </div>
     </div>
@@ -30,13 +30,13 @@
       <button :disabled="sending" class="dh-button" @click="noCodeInfo = false">I have a code to try</button>
     </div>
   </div>
-  <div class="dh-wizzard-step dh-challange-verify" v-else>
-    <div class="dh-wizzard-step-body">
-      <div class="dh-wizzard-text">
+  <div class="dh-wizard-step dh-challenge-verify" v-else>
+    <div class="dh-wizard-step-body">
+      <div class="dh-wizard-text">
         {{challengeCodeMessage}}
         <input class="dh-input" type="text" @input="error = null" v-model="codeToVerify" placeholder="Verification code"/>
       </div>
-      <div class="dh-wizzard-error" v-if="error">
+      <div class="dh-wizard-error" v-if="error">
         {{error}}
       </div>
     </div>
@@ -54,8 +54,6 @@ export default {
   data() {
     const { account } = this;
     const { email, phone_number } = account.igChallenge.sendCodeVariants;
-
-
 
     return {
       sending: false,
@@ -210,7 +208,7 @@ export default {
 </script>
 
 <style lang="scss">
-.dh-challange-verify {
+.dh-challenge-verify {
   .el-dialog__footer {
     justify-content: space-between !important;
   }
@@ -221,7 +219,7 @@ export default {
   }
 }
 
-.dh-challange {
+.dh-challenge {
   .el-radio:not(:last-child) {
     margin-top: 5px;
   }
