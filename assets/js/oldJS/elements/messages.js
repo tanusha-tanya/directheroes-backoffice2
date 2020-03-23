@@ -39,7 +39,7 @@ export default [
         {
           type: 'action',
           body: {
-            action: 'fallthrough',
+            action: 'registerTimeout',
             delta: 60
           }
         },
@@ -53,7 +53,8 @@ export default [
             field: 'delta',
             operand: 'eq',
             value: 60
-          }
+          },
+          onMatch: { action: 'fallthrough' }
         },
       ]
     }
