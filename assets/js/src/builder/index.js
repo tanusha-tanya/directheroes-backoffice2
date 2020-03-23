@@ -5,7 +5,6 @@ import actions from "../../oldJS/elements/actions";
 import store from '../store';
 
 const addTagElement = actions.find(action => action.template.body.action === 'addCategory')
-// import { userInputSubscriber } from '../../oldJS/elements/userInput'
 
 export default {
   create(campaign, account) {

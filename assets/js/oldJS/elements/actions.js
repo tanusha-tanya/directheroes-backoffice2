@@ -31,6 +31,27 @@ export default [
       }
     }
   },
+  {
+    title: 'Remove tags',
+    template: {
+      type: 'action',
+      displaySettings: {
+        subType: 'action',
+        type: 'saveCustomInput'
+      },
+      body: {
+        action: 'collect',
+        source: {
+          entity: 'message',
+          field: 'text'
+        },
+        destination: {
+          entity: 'subscriber',
+          field: ''
+        }
+      },
+    }
+  },
   // {
   //   title: 'Subscription',
   //   template: {
