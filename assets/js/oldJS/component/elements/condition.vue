@@ -167,17 +167,18 @@
         <template v-else-if="element.displaySettings.type === 'subscriberField'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              Subscriber field count<br>
-              is <el-select class="hidden-select" :value="getRule(element).condition.operand" size="mini" popper-class="small-dropdown" @change="setSubscriberFieldRulesOperand">
-                  <el-option label="Less" value="lt"></el-option>
-                  <el-option label="Greater" value="gt"></el-option>
-                </el-select> than
-               <el-input
+              Subscriber field <br>
+              <el-input
                 class="custom-field"
                 size="small"
                 placeholder="Enter name"
                 v-model="subscribersField"
-              ></el-input>
+              ></el-input><br>
+              is <el-select class="hidden-select" :value="getRule(element).condition.operand" size="mini" popper-class="small-dropdown" @change="setSubscriberFieldRulesOperand">
+                  <el-option label="Less" value="lt"></el-option>
+                  <el-option label="Greater" value="gt"></el-option>
+                </el-select> than
+
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
@@ -205,7 +206,7 @@
           </div>
           <div class="condition-item-controls">
             <div class="condition-item-control">
-              Subscriber field count is
+              Subscriber field value is
             </div>
             <div class="condition-item-matches">
               <div class="condition-item-fail" :ref="`${element.id}-fail`">
