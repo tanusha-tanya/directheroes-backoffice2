@@ -4,6 +4,7 @@
 ###< docker-compose ###
 ###> symfony/framework-bundle ###
 /.env
+/.vscode
 /public/bundles/
 /var/
 /vendor/
