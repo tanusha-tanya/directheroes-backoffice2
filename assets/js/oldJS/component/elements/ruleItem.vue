@@ -84,7 +84,7 @@ export default {
 
       if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
         return value;
-      } else if (['noreply', 'user-input'].includes(displaySettings.type)) {
+      } else if (['noreply', 'user-input', 'number'].includes(displaySettings.type)) {
         return displaySettings.type
       } else if (entity === 'message' && operand === 'contains') {
         return 'list'
@@ -100,7 +100,8 @@ export default {
         storyMention: 'Story Mention',
         mediaShare: 'Media Share',
         'user-input': 'User Input',
-        noreply: 'No reply'
+        noreply: 'No reply',
+        number: 'Number'
       }
     },
 
@@ -137,7 +138,6 @@ export default {
 
 <style lang="scss">
   .rule-item {
-
 
     .timeout {
       width: 100px;

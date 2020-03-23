@@ -220,7 +220,7 @@ export default {
       const isFail = /fail/.test(postFix);
       let parentElement = builder.getElementById(parent.substr(0, 24));
 
-      if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
+      if (parentElement.displaySettings && ['followers', 'scarcity', 'subscriberField'].includes(parentElement.displaySettings.type)) {
         const matchRule = parentElement.elements[isFail ? parentElement.elements.length-1 : parseInt(postFix)];
 
         parentElement = {

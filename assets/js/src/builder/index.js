@@ -104,7 +104,7 @@ export default {
                   })
                 };
 
-                if (stepElement.displaySettings && ['followers', 'scarcity', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
+                if (stepElement.displaySettings && ['followers', 'subscriberField', 'scarcity', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
                   stepElement.elements.forEach(matchesHandler);
                 } else {
                   matchesHandler(stepElement)
@@ -592,11 +592,11 @@ export default {
           if (stepElement.type === 'existingStep') {
             let step = this.getStepByElement(parentElement);
 
-            if (parentElement.displaySettings && ['followers', 'scarcity'].includes(parentElement.displaySettings.type)) {
+            if (parentElement.displaySettings && ['followers', 'subscriberField', 'scarcity'].includes(parentElement.displaySettings.type)) {
               const ruleElement = parentElement.elements[0];
 
               steps.some(searchStep => searchStep.elements.some(element => {
-                if (!element.displaySettings || !['followers', 'scarcity'].includes(element.displaySettings.type)) return;
+                if (!element.displaySettings || !['followers', 'subscriberField', 'scarcity'].includes(element.displaySettings.type)) return;
 
                 return element.elements.some(subElement => {
                   if (subElement.id !== ruleElement.id) return;
@@ -659,8 +659,6 @@ export default {
 
                 rule.condition.field = action.id;
               }
-
-
 
               break;
             // case 'user-input':

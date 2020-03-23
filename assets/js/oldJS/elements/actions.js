@@ -28,12 +28,12 @@ export default [
     }
   },
   {
-    title: 'Remove tags',
+    title: 'Save custom field',
     template: {
       type: 'action',
       displaySettings: {
         subType: 'action',
-        type: 'saveCustomInput'
+        type: 'saveCustomField'
       },
       body: {
         action: 'collect',

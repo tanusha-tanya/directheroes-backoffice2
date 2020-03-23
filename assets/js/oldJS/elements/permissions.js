@@ -9,13 +9,15 @@ export default {
     'delay',
     'addCategory',
     'removeCategory',
+    'saveCustomField',
     'existingStep',
     'followers',
     'zapier',
     'verified'],
   fromTriggerStep: [
     'noreply',
-    'user-input'
+    'user-input',
+    'number'
   ],
   fromMessageStep: [
     'sendText',

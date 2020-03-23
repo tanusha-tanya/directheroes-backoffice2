@@ -164,6 +164,62 @@
             </div>
           </div>
         </template>
+        <template v-else-if="element.displaySettings.type === 'subscriberField'">
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Subscriber field count<br>
+              is <el-select class="hidden-select" :value="getRule(element).condition.operand" size="mini" popper-class="small-dropdown" @change="setSubscriberFieldRulesOperand">
+                  <el-option label="Less" value="lt"></el-option>
+                  <el-option label="Greater" value="gt"></el-option>
+                </el-select> than
+               <el-input
+                class="custom-field"
+                size="small"
+                placeholder="Enter name"
+                v-model="subscribersField"
+              ></el-input>
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-match" v-for="(subElement, index) in element.elements" :ref="element.id + index" :key="subElement.id" >
+                <input-autosize v-model="subElement.condition.value" only-numbers></input-autosize>
+                <add-tag-popup
+                  :available-list="availableList(element)"
+                  @select="createStep(element, $event, null, subElement)"
+                  :existing-link="subElement.onMatch"
+                  :builder="builder"
+                ></add-tag-popup>
+                <div class="delete-condition-value" v-if="element.elements.length > 1 " @click="deleteSubscriberFieldElement(subElement)">
+                  <svg viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.018 10L21 18.554 19.48 20l-8.98-8.554L1.518 20 0 18.554 8.98 10 0 1.446 1.518 0 10.5 8.554 19.48 0 21 1.446z"
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="add-condition-value" @click="addSubscriberFieldCondition">
+                + Add value
+              </div>
+            </div>
+          </div>
+          <div class="condition-item-controls">
+            <div class="condition-item-control">
+              Subscriber field count is
+            </div>
+            <div class="condition-item-matches">
+              <div class="condition-item-fail" :ref="`${element.id}-fail`">
+                {{ elseSubscriberFieldText }}
+                <add-tag-popup
+                  :available-list="availableList(element, true)"
+                  @select="createStep(element, $event, true, lastSubscriberFieldRule)"
+                  :existing-link="lastSubscriberFieldRule.onFail"
+                  :builder="builder"
+                ></add-tag-popup>
+              </div>
+            </div>
+          </div>
+        </template>
         <template v-else-if="element.displaySettings.type === 'followers'">
           <div class="condition-item-controls">
             <div class="condition-item-control">
@@ -240,7 +296,8 @@ export default {
         topCategory: 'Is Majority Member',
         scarcity: 'Scarcity',
         hasTag: 'Has Tag',
-        waitTillCondition: 'Wait for'
+        waitTillCondition: 'Wait for',
+        subscriberField: 'Subscriber Field'
       }
     }
   },
@@ -265,6 +322,14 @@ export default {
       return `${countElement} or ${ lastFollowersRule.condition.operand === 'gt' ? 'less' : 'greater' }`;
     },
 
+    elseSubscriberFieldText() {
+      const { lastSubscriberFieldRule, subscriberFieldElement } = this;
+      const countMethod = lastSubscriberFieldRule.condition.operand === 'gt' ? Math.min : Math.max;
+      let countElement = subscriberFieldElement.elements.reduce((accumulator, element) => countMethod(accumulator, element.condition.value), lastSubscriberFieldRule.condition.value) ;
+
+      return `${countElement} or ${ lastSubscriberFieldRule.condition.operand === 'gt' ? 'less' : 'greater' }`;
+    },
+
     lastFollowersRule() {
       const { followersElement } = this;
 
@@ -273,6 +338,16 @@ export default {
 
     followersElement() {
       return this.elements.find(element => element.displaySettings.type === 'followers');
+    },
+
+    lastSubscriberFieldRule() {
+      const { subscriberFieldElement } = this;
+
+      return subscriberFieldElement.elements[subscriberFieldElement.elements.length - 1]
+    },
+
+    subscriberFieldElement() {
+      return this.elements.find(element => element.displaySettings.type === 'subscriberField');
     },
 
     scarcityElement() {
@@ -319,6 +394,19 @@ export default {
       getTagsFromStep(this.$parent.step.id);
 
       return categories
+    },
+
+    subscribersField: {
+      get() {
+        const { lastSubscriberFieldRule } = this;
+
+        return lastSubscriberFieldRule.condition.field;
+      },
+      set(value) {
+        const { subscriberFieldElement } = this;
+
+        subscriberFieldElement.elements.forEach(element => element.condition.field = value)
+      }
     }
   },
 
@@ -353,6 +441,18 @@ export default {
       followersElement.elements.push(newFollowerElement);
     },
 
+    addSubscriberFieldCondition() {
+      const { lastSubscriberFieldRule, subscriberFieldElement } = this;
+      const newSubscriberFieldElement = JSON.parse(JSON.stringify(lastSubscriberFieldRule));
+
+      lastSubscriberFieldRule.onFail = { action: 'fallthrough' };
+
+      newSubscriberFieldElement.id = (new ObjectId).toString();
+      delete newSubscriberFieldElement.onMatch;
+
+      subscriberFieldElement.elements.push(newSubscriberFieldElement);
+    },
+
     getRule(element) {
       return element.elements.find(element => element.type === 'rule')
     },
@@ -371,7 +471,7 @@ export default {
           displaySettings,
           elements:[waitTillRule]
         }
-      } else if (['followers', 'scarcity'].includes(displaySettings.type)) {
+      } else if (['followers', 'scarcity', 'subscriberField'].includes(displaySettings.type)) {
         conditionElement = {
           id,
           displaySettings,
@@ -382,6 +482,14 @@ export default {
       builder.addStep(conditionElement, element, onFail)
     },
 
+    setSubscriberFieldRulesOperand(value) {
+      const { subscriberFieldElement } = this;
+
+      if (!subscriberFieldElement) return;
+
+      subscriberFieldElement.elements.forEach(element => element.condition.operand = value);
+    },
+
     setRulesOperand(value) {
       const { followersElement } = this;
 
@@ -389,6 +497,8 @@ export default {
 
       followersElement.elements.forEach(element => element.condition.operand = value);
     },
+
+
 
     deleteFollowersElement(element) {
       const { lastFollowersRule, followersElement } = this;
@@ -400,6 +510,18 @@ export default {
       }
 
       followersElement.elements.splice(followersElement.elements.indexOf(element), 1);
+    },
+
+    deleteSubscriberFieldElement(element) {
+      const { lastSubscriberFieldRule, subscriberFieldElement } = this;
+
+      if (lastSubscriberFieldRule === element) {
+        const newLastElement = subscriberFieldElement.elements[subscriberFieldElement.elements.length - 2];
+
+        newLastElement.onFail = lastSubscriberFieldRule.onFail;
+      }
+
+      subscriberFieldElement.elements.splice(subscriberFieldElement.elements.indexOf(element), 1);
     },
 
     deleteScarcityElement(element) {
