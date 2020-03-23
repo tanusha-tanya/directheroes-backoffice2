@@ -239,29 +239,15 @@ export default {
                 }
               }
             break;
-            case 'user-input':
-              const { fromUserInputFails, fromUserInput } = elementsPermissions;
-
-              return [].concat(triggers.messageTypes, isFail ? fromUserInputFails : fromUserInput, elements);
-            break;
             case 'action':
               const { fromActionStep } = elementsPermissions;
 
               return [].concat(triggers.messageTypes, fromActionStep, elements);
             break;
             case 'condition':
-              const { fromCondition, fromConditionTimeout } = elementsPermissions;
+              const { fromCondition } = elementsPermissions;
 
-              if (element.displaySettings.type === 'timeout') {
-                if (isFail) {
-                  return [].concat(fromCondition, elements);
-                } else {
-                  return [].concat(triggers.messageTypes, fromConditionTimeout);
-                }
-              } else {
-                return [].concat(fromCondition, elements);
-              };
-
+              return [].concat(fromCondition, elements);
             break;
             default:
               if (isBroadcast) {
@@ -285,7 +271,7 @@ export default {
             firstElement = actionStep.elements[0]
           }
 
-          if (firstElement.type === 'action' || (firstElement.displaySettings && ['message', 'sub-input', 'action'].includes(firstElement.displaySettings.subType))) {
+          if (firstElement.type === 'action' || (firstElement.displaySettings && ['message', 'action'].includes(firstElement.displaySettings.subType))) {
             step.elements.push({
               id: (new ObjectId).toString(),
               type: 'linker',
@@ -425,21 +411,6 @@ export default {
           switch (type) {
             case 'group':
               if (element.displaySettings.subType === 'settings') return matches;
-
-              if (element.displaySettings.subType === 'user-input') {
-                const rule = getElementByType(element, 'rule');
-                const linker = getElementByType(element, 'linker');
-
-                if (linker) {
-                  matches.push(linker)
-                }
-
-                if (rule.onFail) {
-                  matches.push(rule)
-                }
-
-                return matches;
-              }
 
               element.elements.forEach(subElement => {
                 matches = matches.concat(getAllMatchElements(subElement))
@@ -677,13 +648,7 @@ export default {
               break;
 
             case 'condition':
-              if (stepElement.displaySettings.type === 'timeout') {
-                step.name = 'Wait for'
-              } else {
-                step.name = 'Condition'
-              }
-
-              if (['timeout', 'waitTillCondition'].includes(stepElement.displaySettings.type)) {
+              if (['waitTillCondition'].includes(stepElement.displaySettings.type)) {
                 const checkpoint = getElementByType(stepElement, 'checkpoint');
                 const action = getElementByType(stepElement, 'action');
 
@@ -698,46 +663,49 @@ export default {
 
 
               break;
-            case 'user-input':
-              const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
-              const newLinker = {
-                id: (new ObjectId).toString(),
-                type: 'linker'
-              };
+            // case 'user-input':
+            //   const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
+            //   const newLinker = {
+            //     id: (new ObjectId).toString(),
+            //     type: 'linker'
+            //   };
 
-              step.name = 'User Input'
+            //   step.name = 'User Input'
 
-              step.elements[0].elements.push(newLinker);
+            //   step.elements[0].elements.push(newLinker);
 
-              if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
-                step.elements[0].elements.splice(0,0, {
-                  type: 'checkpoint',
-                  id: (new ObjectId).toString()
-                })
-              }
+            //   if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
+            //     step.elements[0].elements.splice(0,0, {
+            //       type: 'checkpoint',
+            //       id: (new ObjectId).toString()
+            //     })
+            //   }
 
-              addTagTemplate.body.name.push('Email collected');
+            //   addTagTemplate.body.name.push('Email collected');
 
-              addStep(newLinker, addTagTemplate)
-              break;
+            //   addStep(newLinker, addTagTemplate)
+            //   break;
             case 'action':
               step.name = 'Action'
               break;
             case 'trigger':
               step.name = 'Trigger'
 
-              if (!parentElement || !parentElement.displaySettings || !parentElement.displaySettings.subType === 'condition') {
+              if (!parentElement || !parentElement.displaySettings) {
                 step.elements.splice(0,0, {
                   type: 'checkpoint',
                   id: (new ObjectId).toString()
                 })
               }
 
-              break;
-          }
+              if (stepElement.displaySettings.type === 'user-input') {
+                const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
 
-          if (parentElement.type === 'group' && parentElement.displaySettings.type === 'user-input' && !isFail) {
-            parentElement = getElementByType(parentElement, 'linker');
+                addTagTemplate.body.name.push('Email collected');
+                addStep(stepElement, addTagTemplate)
+              }
+
+              break;
           }
 
           switch (parentElement.type) {

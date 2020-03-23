@@ -75,6 +75,10 @@ export default new Vuex.Store({
 
         dhAccount.isAdmin = !viewedBy || !viewedBy.parentUserId
 
+        dhAccount.flowBuilderSettings.triggers.messageTypes.push('noreply', 'user-input')
+
+        dhAccount.flowBuilderSettings.userInputMatches = [{value: '{{email}}', title: 'E-mail'}, {value: '{{phone}}', title: 'Phone'}]
+
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
         commit('set', { path: 'isFirstLoad', value: false });
