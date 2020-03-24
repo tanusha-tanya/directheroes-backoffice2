@@ -354,10 +354,10 @@ body {
     box-sizing: border-box;
   }
 
-  .zEWidget-launcher {
-    right: 160px !important;
-    bottom: -5px !important;
-  }
+  // .zEWidget-launcher {
+  //   right: 160px !important;
+  //   bottom: -5px !important;
+  // }
 }
 
 .dh-application {
