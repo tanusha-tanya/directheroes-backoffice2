@@ -13,7 +13,7 @@
         ></rule-item>
     </template>
     <div class="add-rule-button">
-      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry).filter(element => element !== 'user-input')">
+      <add-trigger-popup @on-select="addTrigger" :available-list="builder.availableListByElement(undefined, false, isEntry)">
         <span>+ Add rule item</span>
       </add-trigger-popup>
     </div>
@@ -27,6 +27,9 @@ import utils from '../../utils'
 import ruleItem from './ruleItem';
 import ObjectId from '../../utils/ObjectId';
 import addTriggerPopup from '../addTriggerPopup';
+import actions from "../../elements/actions";
+
+const addTagElement = actions.find(action => action.template.body.action === 'addCategory')
 
 export default {
   props: ['elements', 'isEntry', 'builder'],
@@ -38,7 +41,7 @@ export default {
 
   methods: {
     addTrigger(element) {
-      const { elements } = this;
+      const { elements, builder } = this;
 
       element.elements.forEach(element => element.id = (new ObjectId).toString())
 
@@ -46,6 +49,13 @@ export default {
         id: (new ObjectId).toString(),
         ...element
       })
+
+      if (element.displaySettings.type === 'user-input') {
+        const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
+
+        addTagTemplate.body.name.push('Email collected');
+        builder.addStep(element, addTagTemplate);
+      }
     },
 
     deleteRule(element) {

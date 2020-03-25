@@ -1,16 +1,3 @@
-import conditions from './conditions';
-
-let timeout = conditions.find(condition => condition.title === 'Timeout');
-
-if (timeout) {
-  timeout = JSON.parse(JSON.stringify(timeout));
-  timeout.template.elements[0].body.delta = 60;
-  timeout.template.elements[2].onMatch = { action: 'fallthrough' };
-  timeout.template.elements[2].condition.value = 60;
-  timeout.template.displaySettings.type ='delay';
-  timeout.template.displaySettings.subType ='message';
-}
-
 
 export default [
   {
@@ -18,7 +5,8 @@ export default [
     template: {
       type: 'action',
       displaySettings: {
-        subType: 'message'
+        subType: 'message',
+        type: 'sendText'
       },
       body: {
         action: 'sendText',
@@ -31,7 +19,8 @@ export default [
     template: {
       type: 'action',
       displaySettings: {
-        subType: 'message'
+        subType: 'message',
+        type: 'sendMedia'
       },
       body: {
         action: 'sendMedia',
@@ -40,7 +29,35 @@ export default [
   },
   {
     title: 'Delay',
-    template: timeout.template
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'message',
+        type: 'delay'
+      },
+      elements: [
+        {
+          type: 'action',
+          body: {
+            action: 'registerTimeout',
+            delta: 60
+          }
+        },
+        {
+          type: 'checkpoint'
+        },
+        {
+          type: 'rule',
+          condition: {
+            entity: 'time',
+            field: 'delta',
+            operand: 'eq',
+            value: 60
+          },
+          onMatch: { action: 'fallthrough' }
+        },
+      ]
+    }
   },
   {
     title: 'Wait till',

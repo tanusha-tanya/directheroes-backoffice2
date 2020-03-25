@@ -13,13 +13,14 @@ export default {
     'followers',
     'zapier',
     'verified'],
-  fromTriggerStep: [],
+  fromTriggerStep: [
+    'noreply',
+    'user-input'
+  ],
   fromMessageStep: [
     'sendText',
     'delay',
     'addCategory',
-    'timeout',
-    'user-input',
     'followers',
     'existingStep',
     'removeCategory',
@@ -33,7 +34,6 @@ export default {
     'sendText',
     'delay',
     'followers',
-    'timeout',
     'addCategory',
     'existingStep',
     'removeCategory',
@@ -48,13 +48,9 @@ export default {
     'removeCategory',
     'zapier',
     'verified'],
-  fromConditionTimeout: [
-    'user-input',
-  ],
   fromUserInputFails: [
     'sendText',
     'delay',
-    'timeout',
     'followers',
     'existingStep',
     'removeCategory',
