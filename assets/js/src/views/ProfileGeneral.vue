@@ -104,8 +104,11 @@ export default {
                         setting.value = settingValue;
                     }
                 });
+
+                this.error = null;
             }).catch(({response}) => {
-                this.error = 'Error happened during blacklist saving, please try again';
+                this.error = 'Error happened during blacklist saving';
+                setTimeout(this.saveBlacklist(), 10000);
             });
         }
     },
