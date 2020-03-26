@@ -29,6 +29,9 @@
     <div class="dh-notification" v-if="notification">
       {{ notification }}
     </div>
+    <div class="dh-notification dh-notification-error" v-if="error">
+        <warning /> {{error}}
+    </div>
   </div>
 </template>
 
@@ -41,7 +44,8 @@ export default {
         return {
             notification: null,
             accounts: [],
-            blacklist: ""
+            blacklist: "",
+            error: null,
         }
     },
 
@@ -95,14 +99,13 @@ export default {
                     value: settingValue
                 }
             }).then(({data}) => {
-                this.notification = "Blacklist successfully saved";
                 this.dhAccount.settings.forEach(function (setting) {
                     if (setting.type === 1) {
                         setting.value = settingValue;
                     }
                 });
             }).catch(({response}) => {
-                this.error = response.data.request.statusMessage;
+                this.error = 'Error happened during blacklist saving, please try again';
             });
         }
     },
