@@ -60,7 +60,16 @@
           </el-popover>
         </router-link>
       </div>
-      <div class="dh-info" v-else>
+      <div class="dh-campaigns-title dh-campaign-templates-title">Select to create campaign from template or click "New campaign"</div>
+      <div class="dh-list" v-if="campaignTemplates && campaignTemplates.length">
+        <div class="dh-list-item dh-campaign-template" v-for="campaign in campaignTemplates" :key="campaign.id" @click="prepareToClone(campaign, true)">
+          <shapes/>
+          <div class="dh-campaign-name">
+            {{campaign.name}}
+          </div>
+        </div>
+      </div>
+      <div class="dh-info" v-else="!campaigns || !campaigns.length">
         <nocampaign/>
         <span>
           <strong>No campaigns found?</strong>
@@ -108,6 +117,7 @@ import task from '../assets/task.svg'
 import duplicated from '../assets/duplicated.svg'
 import chart from '../assets/chart.svg'
 import calendar from '../assets/schedule.svg'
+import shapes from '../assets/template.svg'
 import loader from './dh-loader'
 import TariffWrapper from './dh-tariff-wrapper'
 
@@ -141,7 +151,8 @@ export default {
     task,
     chart,
     duplicated,
-    TariffWrapper
+    TariffWrapper,
+    shapes
   },
 
   props: ['title', 'limit'],
@@ -172,6 +183,12 @@ export default {
       const { currentAccountData } = this.$store.state;
 
       return currentAccountData
+    },
+
+    campaignTemplates() {
+      const { campaignTemplates } = this.$store.state;
+
+      return campaignTemplates
     },
 
     isCampaignAction: {
@@ -286,8 +303,8 @@ export default {
       this.campaignToRename = campaign;
     },
 
-    prepareToClone(campaign) {
-      this.newCampaignName = campaign.name;
+    prepareToClone(campaign, isNameEmpty) {
+      this.newCampaignName = isNameEmpty ? '' : campaign.name;
       this.campaignToClone = campaign;
     },
 
@@ -353,6 +370,24 @@ export default {
 .dh-campaigns {
   .dh-loader {
     min-height: 50vh;
+  }
+
+  .dh-campaign-templates-title {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .dh-campaign-template {
+    height: 50px;
+
+    .dh-campaign-name {
+      font-size: 16px;
+    }
+
+    svg {
+      width: 20px;
+      color: #778CA2;
+    }
   }
 }
 
