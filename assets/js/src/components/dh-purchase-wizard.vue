@@ -1,12 +1,12 @@
 <template>
   <el-dialog
     :visible.sync="isShow"
-    width="554px"
+    width="800px"
     append-to-body
     :title="title"
     :close-on-click-modal="false"
     :destroy-on-close="true"
-    class="dh-wizard-dialog"
+    class="dh-wizard-dialog dh-purchase-wizard"
   >
     <component
       :is="wizardState"
@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import offerStep from './dh-purchase-wizard/offer-step'
 
 export default {
@@ -26,10 +25,11 @@ export default {
       title: 'Select plan',
       wizardState: 'offerStep',
       tariffs: null,
+      selectedPlan: null,
     }
   },
 
-  props:['value'],
+  props:['value', 'permission'],
 
   computed: {
     isShow: {
@@ -46,18 +46,13 @@ export default {
   components: {
     offerStep
   },
-
-  created() {
-    axios({
-      url: `${ dh.apiUrl }/api/1.0.0/plans`,
-    }).then(({ data }) => {
-      console.log(data);
-
-    })
-  }
 }
 </script>
 
 <style lang="scss">
-
+div.dh-purchase-wizard {
+  div.dh-wizard-step-body {
+    min-height: 400px;
+  }
+}
 </style>
