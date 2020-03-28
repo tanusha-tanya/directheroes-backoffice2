@@ -1,6 +1,6 @@
 <template>
   <div class="dh-view dh-campaign-perfomance-view">
-    <dh-header title="Campaign Perfomance"></dh-header>
+    <dh-header :title="`${ campaignType } Perfomance`"></dh-header>
     <div class="dh-view-content">
       <el-tabs class="dh-tab" v-model="active" lazy>
         <el-tab-pane class="dh-tab-pane" label="Messages" name="Messages">
@@ -112,7 +112,7 @@
                 </template>
               </div>
               <div class="dh-thread-data-item">
-                <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>Last campaign activity
+                <div class="dh-thread-data-item-main">{{fromNowDate(thread.lastMessageAt)}}</div>Last {{ campaignType }} activity
               </div>
               <div class="dh-thread-data-item">
                 <div class="dh-thread-data-item-main">{{thread.status}}</div>Status
@@ -326,6 +326,12 @@ export default {
           }
         }
       };
+    },
+
+    campaignType() {
+      const { $route } = this;
+
+      return $route.name === 'accountBroadcastStatistics' ? 'broadcast' : 'campaign';
     }
   },
 
@@ -407,6 +413,10 @@ export default {
 
 <style lang="scss" >
 .dh-campaign-perfomance-view {
+  .dh-header-title::first-letter {
+    text-transform: uppercase;
+  }
+
   .dh-chart {
     width: 100%;
     min-width: 350px;

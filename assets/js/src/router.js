@@ -51,6 +51,7 @@ export default new Router({
         { name: 'accountCampaignStatistics', path: 'campaigns/:campaignId/statistics', component: CampaignStatistics },
         { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
         { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: BroadcastBuilder },
+        { name: 'accountBroadcastStatistics', path: 'broadcasts/:campaignId/statistics', component: CampaignStatistics },
         { name: 'subscriber', path: 'audience/:threadId', component: SubscriberInfo },
         { name: 'audience', path: 'audience', component: Audience },
         { name: 'livechat', path: 'livechat/:threadId?', component: LiveChat },
