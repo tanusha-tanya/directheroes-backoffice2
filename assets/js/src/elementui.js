@@ -19,7 +19,8 @@ import {
   Radio,
   Progress,
   TabPane,
-  Tabs
+  Tabs,
+  Tree
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -42,6 +43,7 @@ import 'element-ui/lib/theme-chalk/date-picker.css';
 import 'element-ui/lib/theme-chalk/progress.css';
 import 'element-ui/lib/theme-chalk/tabs.css';
 import 'element-ui/lib/theme-chalk/tab-pane.css';
+import 'element-ui/lib/theme-chalk/tree.css';
 
 
 Vue.use(Select);
@@ -64,3 +66,4 @@ Vue.use(Radio);
 Vue.use(Progress);
 Vue.use(Tabs);
 Vue.use(TabPane);
+Vue.use(Tree);
