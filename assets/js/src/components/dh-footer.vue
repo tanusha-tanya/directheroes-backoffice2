@@ -1,6 +1,6 @@
 <template>
   <div class="dh-footer">
-    <span>© 2019 Direct Heroes - All Rights Reserved.</span>
+    <span>© 2020 Direct Heroes - All Rights Reserved.</span>
     <span v-if="false">About Direct Heroes</span>
   </div>
 </template>
