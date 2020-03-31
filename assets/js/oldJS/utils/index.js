@@ -36,6 +36,8 @@ const campaignElementValidate = (element, isEntry, mainType) => {
         case 'sendText':
           if (!text || !text.trim()) {
             warning = 'Enter text'
+          } else if (new Blob([text]).size > 1000) {
+            warning = 'Message text is too long'
           }
           break;
       }

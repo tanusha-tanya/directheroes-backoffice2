@@ -382,15 +382,17 @@ button {
       width: 15px;
       height: 15px;
       position: relative;
+      margin-right: 5px;
     }
 
     &:checked + span:before {
       position: absolute;
       font-weight: bold;
       content: '✓';
-      top: -4px;
-      left: 0px;
+      top: 0;
+      left: 0;
       color: #6A12CB;
+      line-height: 15px;
     }
   }
 

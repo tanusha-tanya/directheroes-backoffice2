@@ -355,7 +355,7 @@ body {
   }
 
   .zEWidget-launcher {
-    right: 160px !important;
+    // right: 160px !important;
     bottom: -5px !important;
   }
 }

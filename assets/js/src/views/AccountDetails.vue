@@ -7,7 +7,7 @@ import PouchDB from 'pouchdb';
 
 const jsondiffpatch = require('jsondiffpatch').create({
   objectHash: function(obj) {
-      return obj.name;
+    return obj.name;
   }
 })
 
@@ -54,6 +54,8 @@ export default {
         this.$router.push({name: 'accounts'});
         return;
       }
+
+      $store.dispatch('updateSubscriptionCapabilities')
 
       const localDB = new PouchDB(`pouch-local-${ account.id}`)
       const remoteDB = new PouchDB(account.couchDbUrl);

@@ -207,7 +207,7 @@ export default {
           sessionId
         }
       }).then(({ data }) => {
-        callback()
+        callback(null, data)
       });
     },
 

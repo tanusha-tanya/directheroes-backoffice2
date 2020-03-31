@@ -17,6 +17,9 @@
               <div class="dh-option" @click="broadcastToDelete = campaign">
                 <trash /> Delete
               </div>
+              <div class="dh-option" @click="$router.push({ name: 'accountBroadcastStatistics', params: { campaignId: campaign.id } })">
+                <chart /> Broadcast performance
+              </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">
               <ellipsis />
@@ -69,6 +72,7 @@ import nocampaign from '../assets/nocampaign.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
 import calendar from '../assets/schedule.svg'
+import chart from '../assets/chart.svg'
 import loader from '../components/dh-loader'
 import TariffWrapper from '../components/dh-tariff-wrapper'
 import axios from 'axios'
@@ -96,6 +100,7 @@ export default {
     loader,
     nocampaign,
     triangle,
+    chart,
     TariffWrapper
   },
 
@@ -186,13 +191,9 @@ export default {
     },
 
     updatePermissions() {
-      const { currentAccount } = this;
+      const { $store } = this;
 
-      axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
-      }).then(({ data }) => {
-        currentAccount.subscriptionCapabilities = data.response.body;
-      })
+      $store.dispatch('updateSubscriptionCapabilities')
     }
   },
 

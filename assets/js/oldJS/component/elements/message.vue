@@ -3,7 +3,7 @@
     <draggable :list="elements" handle=".drag-handler" @change="replaceElements">
       <template v-for="element in elements">
         <div class="message-item" v-if="element.type !== 'linker'" :key="element.id">
-          <div class="drag-handler" @click.prevent v-if="linker ? elements.length > 2 : elements.length > 1">
+          <div class="drag-handler" @click.prevent v-if="linker && linker.target ? elements.length > 2 : elements.length > 1">
 
           </div>
           <element-warning :element="element"></element-warning>
@@ -54,7 +54,7 @@
       </template>
     </draggable>
     <div :class="{'message-add-button': true, 'button-disabled': isBroadcast && elements.length > 1}">
-      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker)" @select="addElement">
+      <add-step-popup :available-list="builder.availableListByElement(elements[0], linker && linker.target)" @select="addElement">
       </add-step-popup>
     </div>
     <div class="message-linker">

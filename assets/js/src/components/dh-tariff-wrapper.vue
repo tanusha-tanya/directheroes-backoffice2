@@ -6,13 +6,13 @@
     <slot></slot>
     <el-dialog
       :visible.sync="isPopupShown"
-      title="Change tariff"
+      title="Upgrade plan"
       width="554px"
       append-to-body
       :destroy-on-close="true"
       class="dh-tariff-dialog"
     >
-      This feature is only available on a higher plan
+      Please upgrade plan to access this feature
       <template slot="footer">
         <button class="dh-button" @click="isPopupShown = false">Ok</button>
       </template>

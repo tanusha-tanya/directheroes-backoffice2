@@ -51,7 +51,7 @@
                 <duplicated /> Clone
               </tariff-wrapper>
               <div class="dh-option" @click="$router.push({ name: 'accountCampaignStatistics', params: { campaignId: campaign.id } })">
-                <chart  /> Campaign perfomance
+                <chart /> Campaign perfomance
               </div>
             </div>
             <div class="dh-campaign-actions" slot="reference" @click="blockEvent">

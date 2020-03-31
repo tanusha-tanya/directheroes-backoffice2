@@ -51,10 +51,11 @@ export default new Vuex.Store({
 
     saveStatistics(state, dataset) {
       const { currentAccount } = state;
-      if (!currentAccount) {
-        return;
-      }
+
+      if (!currentAccount) return;
+
       let data = null;
+
       if (state.accountStatistics.hasOwnProperty(currentAccount.id)) {
         data = state.accountStatistics[currentAccount.id];
       }
@@ -73,6 +74,10 @@ export default new Vuex.Store({
         const { accountList, dhAccount } = data.response.body;
 
         dhAccount.isAdmin = !viewedBy || !viewedBy.parentUserId
+
+        dhAccount.flowBuilderSettings.triggers.messageTypes.push('noreply', 'user-input')
+
+        dhAccount.flowBuilderSettings.userInputMatches = [{value: '{{email}}', title: 'E-mail'}, {value: '{{phone}}', title: 'Phone'}]
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
@@ -120,15 +125,14 @@ export default new Vuex.Store({
         return request;
     },
 
-    webDirectLogin({ state, commit }, params) {
-      const request = axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/web_direct/login`,
-        method: 'POST',
-        data: params,
-        timeout: 30000
-      })
+    updateSubscriptionCapabilities({ state, commit }) {
+      const { currentAccount } = state;
 
-      return request;
-    },
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
+      }).then(({ data }) => {
+        commit('set', { path: 'currentAccount.subscriptionCapabilities', value: data.response.body})
+      })
+    }
   }
 })
