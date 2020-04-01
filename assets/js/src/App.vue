@@ -116,7 +116,7 @@
           </div>
           Trainings
         </router-link>
-        <a class="dh-navigation-button dh-easy-webinar" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
+        <a class="dh-navigation-button dh-easy-webinar" v-if="false" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
           <div class="dh-navigation-button-ico">
             <easywebinar/>
           </div>
