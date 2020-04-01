@@ -23,8 +23,9 @@ import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
 import CampaignStatistics from './views/CampaignStatistics'
 import utils from '../oldJS/utils'
-import LoginForm from '../oldJS/routes/loginForm'
-const permission = utils.permission;
+
+const { permission } = utils;
+
 Vue.use(Router)
 
 export default new Router({

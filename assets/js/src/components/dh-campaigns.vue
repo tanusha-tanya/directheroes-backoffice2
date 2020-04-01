@@ -61,13 +61,23 @@
         </router-link>
       </div>
       <div class="dh-info" v-else>
-        <nocampaign/>
         <span>
-          <strong>No campaigns found?</strong>
-          Try creating a new campaign from scratch or<br>
-          view one of our tutorials.
+          <strong>You don't have any campaigns</strong>
+          Create a new campaign from scratch <br/>
+          or use one of our templates
         </span>
       </div>
+      <template v-if="campaignTemplates && campaignTemplates.length">
+        <div class="dh-campaigns-title dh-campaign-templates-title">Templates</div>
+        <div class="dh-list">
+          <div class="dh-list-item dh-campaign-template" v-for="campaign in campaignTemplates" :key="campaign.id" @click="prepareToClone(campaign, true)">
+            <shapes/>
+            <div class="dh-campaign-name">
+              {{campaign.name}}
+            </div>
+          </div>
+        </div>
+      </template>
       <dh-confirm-dialog
         v-model="isDeleteCampaign"
         title="Delete campaign"
@@ -81,6 +91,7 @@
         append-to-body
         width="554px"
         >
+        <div class="dh-campaign-add-title" v-if="templateName"><strong>Template:</strong>{{templateName}}</div>
         <div class="dh-campaign-add-input">
           <input class="dh-input" v-model="newCampaignName" placeholder="Enter Campaign name">
         </div>
@@ -108,6 +119,7 @@ import task from '../assets/task.svg'
 import duplicated from '../assets/duplicated.svg'
 import chart from '../assets/chart.svg'
 import calendar from '../assets/schedule.svg'
+import shapes from '../assets/template.svg'
 import loader from './dh-loader'
 import TariffWrapper from './dh-tariff-wrapper'
 
@@ -124,6 +136,7 @@ export default {
       campaignToDeactivate: null,
       isAddCampaign: false,
       newCampaignName: '',
+      templateName: '',
     }
   },
 
@@ -141,7 +154,8 @@ export default {
     task,
     chart,
     duplicated,
-    TariffWrapper
+    TariffWrapper,
+    shapes
   },
 
   props: ['title', 'limit'],
@@ -174,6 +188,12 @@ export default {
       return currentAccountData
     },
 
+    campaignTemplates() {
+      const { campaignTemplates } = this.$store.state;
+
+      return campaignTemplates
+    },
+
     isCampaignAction: {
       get() {
         const { isAddCampaign, campaignToRename, campaignToClone } = this;
@@ -195,7 +215,11 @@ export default {
       } else if (campaignToRename) {
         return 'Rename'
       } else if (campaignToClone) {
-        return 'Clone'
+        if (campaignToClone.name) {
+          return 'Clone'
+        } else {
+          return 'Create from template'
+        }
       }
     },
 
@@ -207,7 +231,11 @@ export default {
       } else if (campaignToRename) {
         return 'Rename Campaign'
       } else if (campaignToClone) {
-        return 'Clone Campaign'
+        if (campaignToClone.name) {
+          return 'Clone Campaign'
+        } else {
+          return 'Create'
+        }
       }
     },
 
@@ -286,9 +314,16 @@ export default {
       this.campaignToRename = campaign;
     },
 
-    prepareToClone(campaign) {
-      this.newCampaignName = campaign.name;
-      this.campaignToClone = campaign;
+    prepareToClone(campaign, isTemplate) {
+      const campaignCopy = JSON.parse(JSON.stringify(campaign));
+
+      if (isTemplate) {
+        this.templateName = campaignCopy.name;
+        campaignCopy.name = '';
+      }
+
+      this.newCampaignName = campaignCopy.name;
+      this.campaignToClone = campaignCopy;
     },
 
     actionCampaign() {
@@ -319,17 +354,20 @@ export default {
     },
 
     cloneCampaign() {
-      const { newCampaignName, campaignToClone, $store } = this;
+      const { newCampaignName, campaignToClone, $store, templateName, $router } = this;
       const { currentAccountData } = $store.state;
-      const newCampaign = JSON.parse(JSON.stringify(campaignToClone));
 
-      newCampaign.name = newCampaignName;
-      newCampaign.id = (new ObjectId).toString(),
-      newCampaign.createdAt = Date.now(),
-      newCampaign.isEnabled = false,
-      newCampaign.isActive = false
+      campaignToClone.name = newCampaignName;
+      campaignToClone.id = (new ObjectId).toString(),
+      campaignToClone.createdAt = Date.now(),
+      campaignToClone.isEnabled = false,
+      campaignToClone.isActive = false
 
-      currentAccountData.campaigns.push(newCampaign);
+      currentAccountData.campaigns.push(campaignToClone);
+
+      if (templateName) {
+        $router.push({ name: 'accountCampaign', params: { campaignId: campaignToClone.id } })
+      }
 
       this.campaignToClone = null;
     },
@@ -345,6 +383,15 @@ export default {
       this.campaignToDeactivate.isActive = false;
       this.isDeactivateCampaign = false;
     }
+  },
+
+  watch: {
+    campaignToClone(newCampaign) {
+      if (newCampaign) return;
+
+      this.templateName = '';
+      this.newCampaignName = '';
+    }
   }
 }
 </script>
@@ -354,12 +401,42 @@ export default {
   .dh-loader {
     min-height: 50vh;
   }
+
+  .dh-campaign-templates-title {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .dh-info {
+    margin-top: 20px;
+  }
+
+  .dh-campaign-template {
+    height: 50px;
+
+    .dh-campaign-name {
+      font-size: 16px;
+    }
+
+    svg {
+      width: 20px;
+      color: #778CA2;
+    }
+  }
 }
 
 .dh-campaign-add-dialog {
   .dh-campaign-add-input {
     input {
       width: 100%;
+    }
+  }
+
+  .dh-campaign-add-title {
+    margin-bottom: 20px;
+
+    strong {
+      margin-right: 10px;
     }
   }
 }
