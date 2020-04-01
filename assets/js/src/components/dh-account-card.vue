@@ -12,6 +12,9 @@
         <div class="dh-option" @click="accountAction('toggle-freez')" v-if="false && canBeFrozen">
           <snowflake /> {{isFrozen ? 'Unfreeze' : 'Freeze'}}
         </div>
+        <div class="dh-option" @click="accountAction('share-account')" v-if="isOwner">
+          <share />Share
+        </div>
         <div class="dh-option" @click="accountAction('delete-account')">
           <trash /> Delete
         </div>
@@ -55,6 +58,7 @@
 import warning from '../assets/warning.svg'
 import ellipsis from '../assets/ellipsis.svg'
 import trash from '../assets/trash.svg'
+import share from '../assets/share.svg'
 import snowflake from '../assets/snowflake.svg'
 
 export default {
@@ -72,6 +76,7 @@ export default {
     ellipsis,
     snowflake,
     trash,
+    share
   },
 
   computed: {
@@ -92,6 +97,12 @@ export default {
       const { subscription } = this;
 
       return subscription && subscription.maxAccounts == 1;
+    },
+
+    isOwner() {
+      const { account } = this;
+
+      return account && account.owner.username === dh.userName;
     }
   },
 

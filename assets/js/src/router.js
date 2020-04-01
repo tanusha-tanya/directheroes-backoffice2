@@ -22,9 +22,9 @@ import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
 import CampaignStatistics from './views/CampaignStatistics'
-
+import utils from '../oldJS/utils'
 import LoginForm from '../oldJS/routes/loginForm'
-
+const permission = utils.permission;
 Vue.use(Router)
 
 export default new Router({
@@ -46,15 +46,15 @@ export default new Router({
     { path: '/:accountId', component: AccountDetails,
       children: [
         { name: 'accountHome', path: '', component: AccountDashboard },
-        { name: 'accountCampaignList', path: 'campaigns', component: CampaignList },
-        { name: 'accountCampaign', path: 'campaigns/:campaignId', component: CampaignBuilder },
-        { name: 'accountCampaignStatistics', path: 'campaigns/:campaignId/statistics', component: CampaignStatistics },
-        { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList },
-        { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: BroadcastBuilder },
+        { name: 'accountCampaignList', path: 'campaigns', component: CampaignList, meta: { code: permission.CAMPAIGN } },
+        { name: 'accountCampaign', path: 'campaigns/:campaignId', component: CampaignBuilder, meta: { code: permission.CAMPAIGN } },
+        { name: 'accountCampaignStatistics', path: 'campaigns/:campaignId/statistics', component: CampaignStatistics, meta: { code: permission.CAMPAIGN } },
+        { name: 'accountBroadcastList', path: 'broadcasts', component: BroadcastList, meta: { code: permission.BROADCAST } },
+        { name: 'accountBroadcast', path: 'broadcasts/:campaignId', component: BroadcastBuilder, meta: { code: permission.BROADCAST } },
         { name: 'accountBroadcastStatistics', path: 'broadcasts/:campaignId/statistics', component: CampaignStatistics },
         { name: 'subscriber', path: 'audience/:threadId', component: SubscriberInfo },
-        { name: 'audience', path: 'audience', component: Audience },
-        { name: 'livechat', path: 'livechat/:threadId?', component: LiveChat },
+        { name: 'audience', path: 'audience', component: Audience, meta: { code: permission.AUDIENCE } },
+        { name: 'livechat', path: 'livechat/:threadId?', component: LiveChat, meta: { code: permission.LIVE_CHAT } },
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },
