@@ -355,7 +355,7 @@ export default {
     },
 
     cloneCampaign() {
-      const { newCampaignName, campaignToClone, $store } = this;
+      const { newCampaignName, campaignToClone, $store, templateName, $router } = this;
       const { currentAccountData } = $store.state;
 
       campaignToClone.name = newCampaignName;
@@ -365,6 +365,10 @@ export default {
       campaignToClone.isActive = false
 
       currentAccountData.campaigns.push(campaignToClone);
+
+      if (templateName) {
+        $router.push({ name: 'accountCampaign', params: { campaignId: campaignToClone.id } })
+      }
 
       this.campaignToClone = null;
     },
