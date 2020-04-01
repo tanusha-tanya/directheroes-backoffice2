@@ -23,6 +23,7 @@
           @click.native="accountClick(account, $event)"
           @delete-account="accountToDelete = $event"
           @toggle-freez="toggleFreez"
+          @share-account="onShareAccount"
           ref="accountCards"
           ></dh-account-card>
       </div>
@@ -35,7 +36,8 @@
     </div>
     <dh-footer></dh-footer>
     <dh-connection-wizzard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizzard>
-    <el-dialog
+    <dh-sharing-wizzard v-model="sharing.common" :account-share="accountToShare" :delegates="delegates"/>
+     <el-dialog
       :visible.sync="isExtraAccount"
       custom-class="extra-account"
       @open="overleyClassToggle('extra-style')"
@@ -59,6 +61,7 @@ import dhConnectionWizzard from '../components/dh-connection-wizzard'
 import dhConfirmDialog from '../components/dh-confirm-dialog'
 import dhAccountCard from '../components/dh-account-card'
 import status from '../assets/plus.svg'
+import dhSharingWizzard from '../components/dh-sharing-wizzard'
 
 import extraAccount from '../../oldJS/assets/svg/extra-account.svg'
 
@@ -78,14 +81,18 @@ export default {
     checkAction(to, from, next);
   },
 
-
   data() {
     return {
       accountToAuth: null,
       isAddAccount: false,
       accountToDelete: false,
+      accountToShare: null,
+      delegates: null,
       isExtraAccount: false,
-    }
+      sharing: {
+        common: false
+      }
+    };
   },
 
   components: {
@@ -95,7 +102,8 @@ export default {
     status,
     extraAccount,
     dhConnectionWizzard,
-    dhAccountCard
+    dhAccountCard,
+    dhSharingWizzard
   },
 
   computed: {
@@ -140,6 +148,23 @@ export default {
 
       this.accountToAuth = null;
       this.isAddAccount = true;
+    },
+
+    onShareAccount(account) {
+      this.delegates = null;
+      this.sharing.common = true;
+      this.delegateRequestHandler().then(d => {
+        this.delegates = d;
+        this.accountToShare = account;
+      });
+    },
+
+    delegateRequestHandler() {
+      return axios({
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/delegate`
+      }).then(({ data }) => {
+        return data.response.body.list || [];
+      });
     },
 
     accountClick(account) {

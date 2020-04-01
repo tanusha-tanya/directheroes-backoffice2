@@ -6,6 +6,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@johmun/vue-tags-input": "^2.1.0",
     "axios": "^0.19.0",
     "c3": "^0.7.0",
     "core-js": "^3.3.2",
