@@ -60,8 +60,15 @@
           </el-popover>
         </router-link>
       </div>
+      <div class="dh-info" v-else>
+        <span>
+          <strong>You don't have any campaigns</strong>
+          Create a new campaign from scratch <br/>
+          or use one of our templates
+        </span>
+      </div>
       <template v-if="campaignTemplates && campaignTemplates.length">
-        <div class="dh-campaigns-title dh-campaign-templates-title">Select to create campaign from template or click "New campaign"</div>
+        <div class="dh-campaigns-title dh-campaign-templates-title">Templates</div>
         <div class="dh-list">
           <div class="dh-list-item dh-campaign-template" v-for="campaign in campaignTemplates" :key="campaign.id" @click="prepareToClone(campaign, true)">
             <shapes/>
@@ -71,14 +78,6 @@
           </div>
         </div>
       </template>
-      <div class="dh-info" v-else-if="!campaigns || !campaigns.length">
-        <nocampaign/>
-        <span>
-          <strong>No campaigns found?</strong>
-          Try creating a new campaign from scratch or<br>
-          view one of our tutorials.
-        </span>
-      </div>
       <dh-confirm-dialog
         v-model="isDeleteCampaign"
         title="Delete campaign"
@@ -406,6 +405,10 @@ export default {
   .dh-campaign-templates-title {
     text-align: center;
     margin-top: 30px;
+  }
+
+  .dh-info {
+    margin-top: 20px;
   }
 
   .dh-campaign-template {
