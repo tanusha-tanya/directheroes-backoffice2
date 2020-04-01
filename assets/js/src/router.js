@@ -23,8 +23,6 @@ import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
 import CampaignStatistics from './views/CampaignStatistics'
 
-import LoginForm from '../oldJS/routes/loginForm'
-
 Vue.use(Router)
 
 export default new Router({

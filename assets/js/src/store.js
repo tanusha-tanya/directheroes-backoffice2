@@ -143,7 +143,9 @@ export default new Vuex.Store({
 
       localDB.replicate.from(remoteDB).on('complete', () => {
         localDB.get(String(dhAccount.marketAccountId)).then(record => {
-          commit('set', { path: 'campaignTemplates', value: record.campaigns })
+          const availableTemplates = record.campaigns.filter(campaign => campaign.isActive);
+
+          commit('set', { path: 'campaignTemplates', value: availableTemplates })
         });
       })
     }
