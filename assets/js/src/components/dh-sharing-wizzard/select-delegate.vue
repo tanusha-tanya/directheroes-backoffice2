@@ -29,8 +29,8 @@
       </template>
     </div>
     <div class="el-dialog__footer">
+      <button class="dh-button dh-reset-button" @click="$emit('close-wizzard')">Close</button>
       <button class="dh-button" :class="{'dh-loading': loading.search }" :disabled="!newDelegateEmail" @click="addDelegate">Add</button>
-      <button class="dh-button" @click="$emit('close-wizzard')">Close</button>
     </div>
   </div>
 </template>

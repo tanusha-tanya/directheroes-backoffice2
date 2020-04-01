@@ -72,7 +72,7 @@ export default {
 
     account() {
       const { accountShare, accountState } = this;
-      
+
       return { ...accountShare, ...accountState };
     },
 
@@ -136,7 +136,6 @@ export default {
 div.dh-wizzard-dialog.dh-share-access {
   .dh-button {
     cursor: pointer;
-    margin-left: 8px;
   }
 }
 </style>

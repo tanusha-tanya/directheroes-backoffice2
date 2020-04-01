@@ -135,7 +135,6 @@ export default {
 div.el-dialog__wrapper.dh-wizzard-dialog {
   .dh-button {
     cursor: pointer;
-    margin-left: 8px;
   }
 }
 </style>

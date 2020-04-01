@@ -1,5 +1,5 @@
 <template>
-  <div class="dh-wizzard-step dh-select-account">
+  <div class="dh-wizzard-step dh-select-account-wizzard">
     <div class="dh-wizzard-step-body">
       <template v-if="igAccounts.length">
         <div
@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss">
-.dh-select-account {
+.dh-select-account-wizzard {
   .dh-select-account-info {
     margin-right: 20px;
   }

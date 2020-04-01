@@ -13,7 +13,7 @@
     </div>
     </div>
     <div class="el-dialog__footer">
-      <button class="dh-button" @click="$emit('to-change-permissions')">Back</button>
+      <button class="dh-button dh-reset-button" @click="$emit('to-change-permissions')">Back</button>
       <button class="dh-button" @click="$emit('success')">Ok</button>
     </div>
   </div>
@@ -37,10 +37,6 @@ export default {
 .dh-changes-success {
   .el-dialog__footer {
     justify-content: flex-end;
-
-    .dh-button {
-      margin-left: 8px;
-    }
   }
 }
 </style>
