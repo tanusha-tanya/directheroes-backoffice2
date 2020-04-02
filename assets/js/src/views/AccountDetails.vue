@@ -49,7 +49,7 @@ export default {
     hasPermissions(to) {
       const { currentAccount, $router } = this;
 
-      if (currentAccount) {
+      if (currentAccount && currentAccount.owner.username !== dh.userName) {
         const { viewerPermissions } = currentAccount;
         const permission = viewerPermissions.account.find(p => p.code === to.meta.code);
         if (!permission || (permission && !permission.isGranted)) {
