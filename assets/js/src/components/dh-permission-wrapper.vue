@@ -38,7 +38,12 @@ export default {
   computed: {
     hasPermission() {
       const { currentAccount, code } = this;
+      
       if (!currentAccount || !code) return false;
+
+      if (currentAccount.owner.username === dh.userName) {
+        return true;
+      }
 
       const permission = currentAccount.viewerPermissions.account.find(p => p.code === code);
       return (permission && permission.isGranted) || false;
