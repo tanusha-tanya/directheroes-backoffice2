@@ -16,6 +16,8 @@
           Growing Your Instagram List Free
         </a>
         <a href="https://www.directheroes.com/doc-dist/Build_Your_First_Flow.pdf" download target=_blank class="dh-list-item">Build Your First Flow</a>
+        <a href="https://www.directheroes.com/doc-dist/2_Min_Template.pdf" download target=_blank class="dh-list-item">Two Minute Template</a>
+        <a href="https://www.directheroes.com/doc-dist/30_Day_Customer_Walk_Through.pdf" download target=_blank class="dh-list-item">30 Customer Walk Through </a>
         <a href="https://www.directheroes.com/doc-dist/Integrate_With_Zapier.pdf" download target=_blank class="dh-list-item">How to Integrate With Zapier</a>
         <a href="https://www.youtube.com/channel/UCNzmh2GxbrgkVes0yJNbKWQ" target="_blank" class="dh-list-item">
           <span><tutorials/></span>

@@ -22,7 +22,7 @@
         :available-list="builder.availableListByElement(step.elements[0])"
         @select="createStep"
         v-if="stepType === 'action'"
-        :existing-link="linker && linker.target"
+        :existing-link="linker && linker.target && linker"
         :builder="builder"></add-step-popup>
     </span>
   </div>

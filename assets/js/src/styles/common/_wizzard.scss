@@ -1,0 +1,40 @@
+div.el-dialog__wrapper.dh-wizzard-dialog {
+  .el-dialog__body {
+    padding: 0 !important;
+  }
+
+  .dh-wizzard-step-body {
+    padding: 28px 31px 22px 24px;
+    min-height: 200px;
+  }
+
+  .el-dialog__footer {
+    padding: 28px 31px 22px 24px; 
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .el-dialog__footer {
+    background-color: #ffffff;
+    justify-content: space-between;
+    min-height: 64px;
+  }
+
+  .dh-wizzard-error,
+  .dh-wizzard-success {
+    height: 80px;
+    width: 100%;
+    background-color: #fe4d97;
+    border-radius: 4px;
+    margin-top: 20px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    font-size: 16px;
+  }
+
+  .dh-wizzard-success {
+    background-color: $successColor;
+  }
+}

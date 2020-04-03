@@ -174,7 +174,7 @@ div.dh-wizzard-dialog {
   .dh-wizzard-error, .dh-wizzard-success {
     height: 80px;
     width: 100%;
-    background-color: #FE4D97;
+    background-color: #fe4d4d;
     border-radius: 4px;
     margin-top: 20px;
     padding: 0 24px;

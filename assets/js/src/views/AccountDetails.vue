@@ -15,7 +15,20 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(accountComponent => {
       accountComponent.selectAccount(to);
+      if (to.meta.code && !accountComponent.hasPermissions(to)) {
+        accountComponent.$router.push({ name: 'accountHome' });
+      }
     });
+  },
+
+  beforeRouteUpdate(to, from, next) {
+    if (to.meta.code && !this.hasPermissions(to)) {
+      if (from.name !== 'accountHome') {
+        this.$router.push({ name: 'accountHome' });
+      }
+      return;
+    }
+    next();
   },
 
   beforeRouteLeave(to, from, next) {
@@ -33,6 +46,20 @@ export default {
   },
 
   methods: {
+    hasPermissions(to) {
+      const { currentAccount, $router } = this;
+
+      if (currentAccount && currentAccount.owner.username !== dh.userName) {
+        const { viewerPermissions } = currentAccount;
+        const permission = viewerPermissions.account.find(p => p.code === to.meta.code);
+        if (!permission || (permission && !permission.isGranted)) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+
     selectAccount(route) {
       const sortedList = JSON.parse(localStorage.getItem(`${ this.dhAccount.id }-igs`) || '[]') ;
       const { $store, dhAccount } = this

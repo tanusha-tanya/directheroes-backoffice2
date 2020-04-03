@@ -5,6 +5,9 @@
 @import './common/step-popup';
 @import './common/tabs';
 @import './common/controls';
+@import './common/wizzard';
+
+$scroll-color: $elementsColor;
 
 @keyframes rotation {
   0% { transform:rotate(0deg); }
@@ -244,6 +247,10 @@ input.dh-input {
   color: $inputTextColor;
   outline: none;
 
+  &.dh-input-error {
+    border: 1px solid $failColor;
+  }
+
   &:disabled {
     background-color: $disabledBG;
     color: $textColor;
@@ -457,6 +464,8 @@ label.el-checkbox {
   }
 
   .el-checkbox__input {
+    
+    &.is-indeterminate,
     &.is-checked {
       .el-checkbox__inner {
         background-color: $elementActiveColor;
@@ -681,4 +690,18 @@ div.el-picker-panel {
   border: 2px solid transparent;
   flex-shrink: 0;
   background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: $secondBorderColor;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: $scroll-color;
 }
