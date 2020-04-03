@@ -64,10 +64,10 @@
         <span>
           <strong>You don't have any campaigns</strong>
           Create a new campaign from scratch <br/>
-          or use one of our templates
+          <span v-if="!title"> or use one of our templates</span>
         </span>
       </div>
-      <template v-if="campaignTemplates && campaignTemplates.length">
+      <template v-if="!title && campaignTemplates && campaignTemplates.length">
         <div class="dh-campaigns-title dh-campaign-templates-title">Templates</div>
         <div class="dh-list">
           <div class="dh-list-item dh-campaign-template" v-for="campaign in campaignTemplates" :key="campaign.id" @click="prepareToClone(campaign, true)">
