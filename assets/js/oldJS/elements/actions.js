@@ -27,6 +27,27 @@ export default [
       }
     }
   },
+  {
+    title: 'Save custom field',
+    template: {
+      type: 'action',
+      displaySettings: {
+        subType: 'action',
+        type: 'saveCustomField'
+      },
+      body: {
+        action: 'collect',
+        source: {
+          entity: 'message',
+          field: 'text'
+        },
+        destination: {
+          entity: 'subscriber',
+          field: ''
+        }
+      },
+    }
+  },
   // {
   //   title: 'Subscription',
   //   template: {

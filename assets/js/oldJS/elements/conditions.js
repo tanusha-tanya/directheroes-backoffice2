@@ -21,6 +21,27 @@ export default [
     }
   },
   {
+    title: 'Subscriber Field',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'condition',
+        type: 'subscriberField'
+      },
+      elements: [
+        {
+          type: 'rule',
+          condition: {
+            entity: 'subscriberField',
+            field: '',
+            operand: 'lt',
+            value: 5000
+          }
+        },
+      ]
+    }
+  },
+  {
     title: 'Is Verified',
     template: {
       type: "group",

@@ -18,6 +18,14 @@
             </el-select>
           </div>
         </template>
+        <template v-else-if="action.displaySettings.type === 'saveCustomField'">
+          <el-input
+            class="custom-field"
+            size="small"
+            placeholder="Enter custom field name"
+            v-model="action.body.destination.field"
+          ></el-input>
+        </template>
         <template v-else>
           <div class="unknown-action-wrapper">
             Unknown element
@@ -52,7 +60,8 @@ export default {
         addCategory: 'Add tags',
         removeCategory: 'Remove tags',
         zapier: 'Zapier',
-        subscription: 'Subscription'
+        subscription: 'Subscription',
+        saveCustomField: 'Save custom field'
       }
     }
   },
@@ -120,7 +129,7 @@ export default {
       } else if (action.type === 'group') {
         return action.elements.find(element => element.body.action === 'webhook').body.action
       }
-    }
+    },
   }
 }
 </script>
@@ -158,6 +167,11 @@ export default {
     .el-select .el-tag__close.el-icon-close {
       color: #2D2D2D
     }
+  }
+
+  .el-input.custom-field {
+    margin-top: 5px;
+    outline: none;
   }
 
   .unknown-action-wrapper {

@@ -154,21 +154,21 @@ export default [
     },
   },
   {
-    title: 'Ad Reply',
+    title: 'Number',
     template: {
       type: 'group',
       displaySettings: {
         subType: 'trigger',
-        type: 'adReply'
+        type: 'number'
       },
       elements: [
         {
           type: 'rule',
           condition: {
             entity: 'message',
-            field: 'type',
-            operand: 'eq',
-            value: 'adReply'
+            field: 'text',
+            operand: 'contains',
+            value: '{{number}}'
           },
           onFail: {
             action: 'fallthrough',
