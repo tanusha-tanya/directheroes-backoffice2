@@ -20,6 +20,8 @@ export default {
   fromMessageStep: [
     'sendText',
     'delay',
+    'noreply',
+    'user-input',
     'addCategory',
     'followers',
     'existingStep',
