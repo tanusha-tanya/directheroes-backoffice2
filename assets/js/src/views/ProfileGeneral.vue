@@ -1,126 +1,145 @@
 <template>
   <div class="dh-settings-form dh-profile-general">
-    <div class="dh-settings-title">
-      General information
-    </div>
+    <div class="dh-settings-title">General information</div>
     <div class="dh-settings-form-row">
       <label class="dh-label">
         <span>First name</span>
-        <input type="text" class="dh-input" :value="dhAccount.firstName" readonly>
+        <input type="text" class="dh-input" :value="dhAccount.firstName" readonly />
       </label>
       <label class="dh-label">
         <span>Last name</span>
-        <input type="text" class="dh-input" :value="dhAccount.lastName" readonly>
+        <input type="text" class="dh-input" :value="dhAccount.lastName" readonly />
       </label>
     </div>
-    <div class="dh-settings-form-row">
-        <label class="dh-label">
-            <span>Account blacklist</span>
-            <vue-tags-input
-              placeholder='Print username and press "Enter"'
-              v-model="blacklist"
-              :tags="accounts"
-              @tags-changed="newTags => tags = newTags"
-              @before-adding-tag="addAccount"
-              @before-deleting-tag="deleteAccount"
-            />
-        </label>
-    </div>
-    <div class="dh-notification" v-if="notification">
-      {{ notification }}
-    </div>
-    <div class="dh-notification dh-notification-error" v-if="error">
-        <warning /> {{error}}
+    <div class="dh-settings-form-row dh-blacklist-row">
+      <label class="dh-label">
+        <span>Account blacklist</span>
+        <el-select
+          class="dh-blacklist-select"
+          :class="{ 'dh-loading': loading }"
+          v-model="blackListSetting.value"
+          placeholder="Print username and press 'Enter'"
+          popper-class="dh-disabled-select-list"
+          multiple
+          filterable
+          default-first-option
+          :allow-create="true"
+          >
+        </el-select>
+      </label>
+      <div class="dh-notification dh-notification-error" v-if="error">
+        <warning />
+        {{error}}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import VueTagsInput from '@johmun/vue-tags-input';
-import axios from 'axios'
+import axios from 'axios';
+import warning from '../assets/warning.svg'
 
 export default {
-    data () {
-        return {
-            notification: null,
-            accounts: [],
-            blacklist: "",
-            error: null,
+  data() {
+    return {
+      loading: false,
+      error: null
+    };
+  },
+
+  components: {
+    warning
+  },
+
+  computed: {
+    blackListSetting() {
+      const { settings } = this.dhAccount;
+
+      return settings.find(setting => setting.type === 1);
+    }
+  },
+
+  methods: {
+    saveBlacklist() {
+      const { dhAccount, blackListSetting, saveBlacklist } = this;
+
+      this.loading = true;
+      this.error = null;
+
+      axios({
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/settings/update`,
+        method: "post",
+        data: {
+          userId: dhAccount.id,
+          type: 1,
+          value: blackListSetting.value
         }
-    },
+      })
+        .catch(({ response }) => {
+          this.error = "Error happened during blacklist saving";
 
-    components: {
-        VueTagsInput,
-    },
+          setTimeout(saveBlacklist, 10000);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    }
+  },
 
-    methods: {
-        addAccount(obj) {
-            this.blacklist = "";
-            this.accounts.push({'text': obj.tag.text, "tiClasses":["ti-valid"]});
+  watch: {
+    'blackListSetting.value'() {
+      const { saveBlacklist } = this;
 
-            obj.addTag();
-            this.saveBlacklist();
-        },
-
-        deleteAccount(obj) {
-            let index = this.accounts.findIndex(x => x.text === obj.tag.text);
-            this.accounts.splice(index, 1);
-
-            this.saveBlacklist();
-        },
-
-        fillAccountList() {
-            let accounts = [];
-
-            this.dhAccount.settings.forEach(function (setting) {
-                if (setting.type === 1) {
-                    setting.value.forEach(function(account) {
-                        accounts.push({'text': account, "tiClasses":["ti-valid"]})
-                    });
-                }
-            });
-
-            this.accounts = accounts
-        },
-        saveBlacklist() {
-            this.loading = true;
-
-            let settingValue = [];
-            this.accounts.forEach(function(account){
-               settingValue.push(account.text)
-            });
-
-            axios({
-                url: `${ dh.apiUrl }/api/1.0.0/${ this.dhAccount.username }/settings/update`,
-                method: 'post',
-                data: {
-                    userId: this.dhAccount.id,
-                    type: 1,
-                    value: settingValue
-                }
-            }).then(({data}) => {
-                this.dhAccount.settings.forEach(function (setting) {
-                    if (setting.type === 1) {
-                        setting.value = settingValue;
-                    }
-                });
-
-                this.error = null;
-            }).catch(({response}) => {
-                this.error = 'Error happened during blacklist saving';
-                setTimeout(this.saveBlacklist(), 10000);
-            });
-        }
-    },
-
-    created() {
-        this.fillAccountList()
-    },
-}
+      saveBlacklist();
+    }
+  }
+};
 </script>
 
 <style lang="scss">
 .dh-profile-general {
   overflow: auto;
+
+  .dh-blacklist-row {
+    display: block;
+  }
+
+  .dh-blacklist-select {
+    width: 100%;
+    position: relative;
+
+    &.dh-loading {
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: calc(50% - 10px);
+        right: 10px;
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        border: 2px solid $elementActiveColor;
+        border-bottom-color: transparent;
+        animation: rotation .8s infinite linear;
+        z-index: 4;
+      }
+    }
+
+    .el-input__suffix {
+      display: none;
+    }
+
+    .el-tag, .el-tag span {
+      display: inline;
+    }
+
+    .el-input.is-focus .el-input__inner {
+      border-color: #E8ECEF;
+    }
+  }
+}
+
+.dh-disabled-select-list {
+  display: none;
 }
 </style>
