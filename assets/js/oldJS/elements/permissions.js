@@ -14,14 +14,10 @@ export default {
     'zapier',
     'verified'],
   fromTriggerStep: [
-    'noreply',
-    'user-input'
   ],
   fromMessageStep: [
     'sendText',
     'delay',
-    'noreply',
-    'user-input',
     'addCategory',
     'followers',
     'existingStep',
