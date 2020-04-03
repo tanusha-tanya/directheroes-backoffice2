@@ -661,28 +661,6 @@ export default {
               }
 
               break;
-            // case 'user-input':
-            //   const addTagTemplate = JSON.parse(JSON.stringify(addTagElement.template));
-            //   const newLinker = {
-            //     id: (new ObjectId).toString(),
-            //     type: 'linker'
-            //   };
-
-            //   step.name = 'User Input'
-
-            //   step.elements[0].elements.push(newLinker);
-
-            //   if (!parentElement || !parentElement.displaySettings || !['condition', 'trigger'].includes(parentElement.displaySettings.subType)) {
-            //     step.elements[0].elements.splice(0,0, {
-            //       type: 'checkpoint',
-            //       id: (new ObjectId).toString()
-            //     })
-            //   }
-
-            //   addTagTemplate.body.name.push('Email collected');
-
-            //   addStep(newLinker, addTagTemplate)
-            //   break;
             case 'action':
               step.name = 'Action'
               break;

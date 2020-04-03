@@ -10,6 +10,7 @@
       :class="{'action-item':true, 'action-disabled': availableList && !availableList.includes(actionType(action))}"
       :is-enabled="isEnabledByTariff(actionType(action))"
       :key="action.title"
+      v-if="availableList && availableList.includes(actionType(action))"
       @click.native="selectAction(action)">
       {{action.title}}
     </tariff-wrapper>
@@ -45,13 +46,6 @@ export default {
       return actions.some(action => {
         return availableList.includes(actionType(action))
       })
-    },
-
-    isAddTagInTariff() {
-      const { getTariffParameter } = this;
-      const addTagTariff = getTariffParameter('subscriber_categories')
-
-      return addTagTariff && addTagTariff.enabled
     },
 
     isAddTagInTariff() {
