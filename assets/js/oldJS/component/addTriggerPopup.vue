@@ -48,7 +48,7 @@ export default {
 
         if (['postShare', 'adReply', 'storyShare', 'storyMention', 'mediaShare'].includes(value)) {
           return value;
-        } else if (['noreply', 'user-input'].includes(element.template.displaySettings.type)) {
+        } else if (['noreply', 'user-input', 'number'].includes(element.template.displaySettings.type)) {
           return element.template.displaySettings.type;
         } else if (entity === 'message' && operand === 'contains') {
           return 'list'
