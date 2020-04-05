@@ -11,7 +11,7 @@
         <input type="text" class="dh-input" :value="dhAccount.lastName" readonly />
       </label>
     </div>
-    <div class="dh-settings-form-row dh-blacklist-row">
+    <div class="dh-settings-form-row dh-blacklist-row" v-if="blackListSetting">
       <label class="dh-label">
         <span>Account blacklist</span>
         <el-select
