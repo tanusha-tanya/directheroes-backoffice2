@@ -36,6 +36,8 @@ const campaignElementValidate = (element, isEntry, mainType) => {
         case 'sendText':
           if (!text || !text.trim()) {
             warning = 'Enter text'
+          } else if (new Blob([text]).size > 1000) {
+            warning = 'Message text is too long'
           }
           break;
       }
@@ -122,6 +124,33 @@ export default {
     hours: 3600,
     minutes: 60,
     seconds: 1
+  },
+
+  permission: {
+    DASHBOARD: 100,
+    CAMPAIGN: 200,
+    BROADCAST: 300,
+    LIVE_CHAT: 400,
+    AUDIENCE: 500
+  },
+
+  isEmail(str) {
+    const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return new RegExp(regex).test(str);
+  },
+
+  copyToClipboard(value) {
+    const input = document.createElement("input");
+
+    input.setAttribute("value", value);
+    input.style.position = "absolute";
+    input.style.opacity = 0;
+    input.style.pointerEvents = "none";
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
   },
 
   secondsToTimeType(seconds) {

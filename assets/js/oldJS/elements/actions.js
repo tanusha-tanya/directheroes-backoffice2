@@ -1,9 +1,3 @@
-import { userInputZapier } from './userInput';
-
-const zapierAction = JSON.parse(JSON.stringify(userInputZapier));
-
-zapierAction.displaySettings.subType = 'action';
-
 export default [
   {
     title: 'Add tags',
@@ -11,6 +5,7 @@ export default [
       type: 'action',
       displaySettings: {
         subType: 'action',
+        type: 'addCategory'
       },
       body: {
         action: 'addCategory',
@@ -24,11 +19,33 @@ export default [
       type: 'action',
       displaySettings: {
         subType: 'action',
+        type: 'removeCategory'
       },
       body: {
         action: 'removeCategory',
         name: []
       }
+    }
+  },
+  {
+    title: 'Save custom field',
+    template: {
+      type: 'action',
+      displaySettings: {
+        subType: 'action',
+        type: 'saveCustomField'
+      },
+      body: {
+        action: 'collect',
+        source: {
+          entity: 'message',
+          field: 'text'
+        },
+        destination: {
+          entity: 'subscriber',
+          field: ''
+        }
+      },
     }
   },
   // {
@@ -47,7 +64,23 @@ export default [
   {
     title: 'Zapier',
     template: {
-      ...zapierAction
+      displaySettings: {
+        subType: 'action',
+        type: 'zapier'
+      },
+      type: 'group',
+      elements: [
+        {
+          type: 'action',
+          body: {
+            action: 'webhook',
+            url: '',
+            data: {
+              status: null
+            }
+          }
+        }
+      ]
     }
   }
 ]

@@ -59,30 +59,38 @@
           </span>
         </router-link>
         <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'accountCampaignList', params: { accountId: account.id}}">
-          <div class="dh-navigation-button-ico">
-            <campaigns/>
-          </div>
-          Campaigns
+          <dh-permission-wrapper :code="permission.CAMPAIGN">
+            <div class="dh-navigation-button-ico">
+              <campaigns/>
+            </div>
+            Campaigns
+          </dh-permission-wrapper>
         </router-link>
         <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'accountBroadcastList', params: { accountId: account.id}}">
-          <div class="dh-navigation-button-ico">
-            <broadcast/>
-          </div>
-          Broadcast
+          <dh-permission-wrapper :code="permission.BROADCAST">
+            <div class="dh-navigation-button-ico">
+              <broadcast/>
+            </div>
+            Broadcast
+          </dh-permission-wrapper>
         </router-link>
         <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'livechat', params: { accountId: account.id}}">
-           <tariff-wrapper :is-enabled="isLiveChatInTariff">
-            <div class="dh-navigation-button-ico">
-              <livechat/>
-            </div>
-            Live chat
-          </tariff-wrapper>
+           <dh-permission-wrapper class="dh-permission-livechat" :code="permission.LIVE_CHAT">
+            <tariff-wrapper :is-enabled="isLiveChatInTariff">
+              <div class="dh-navigation-button-ico">
+                <livechat/>
+              </div>
+              Live chat
+            </tariff-wrapper>
+           </dh-permission-wrapper>
         </router-link>
         <router-link v-if="account.id" class="dh-navigation-button" :to="{ name: 'audience', params: { accountId: account.id}}">
-          <div class="dh-navigation-button-ico">
-            <audience/>
-          </div>
-          Audience
+          <dh-permission-wrapper :code="permission.AUDIENCE">
+            <div class="dh-navigation-button-ico">
+              <audience/>
+            </div>
+            Audience
+          </dh-permission-wrapper>
         </router-link>
         <router-link v-if="false" :class="{'dh-navigation-button': true, 'dh-disabled': !account.id }" :to="{ name: 'accountHome', params: { accountId: account.id}}">
           <div class="dh-navigation-button-ico">
@@ -108,7 +116,7 @@
           </div>
           Trainings
         </router-link>
-        <a class="dh-navigation-button dh-easy-webinar" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
+        <a class="dh-navigation-button dh-easy-webinar" v-if="false" :href="`${ dh.easywebinarLink }/oneclick-registration?attendee_name=${ dh.userName }&attendee_email=${ dh.userName }`">
           <div class="dh-navigation-button-ico">
             <easywebinar/>
           </div>
@@ -173,6 +181,8 @@ import loader from './components/dh-loader'
 import TariffWrapper from './components/dh-tariff-wrapper'
 import PurchaseWizard from './components/dh-purchase-wizard'
 import easywebinar from '../oldJS/assets/svg/youtube.svg'
+import dhPermissionWrapper from './components/dh-permission-wrapper'
+import utils from "../oldJS/utils"
 
 export default {
   data() {
@@ -206,12 +216,17 @@ export default {
     search,
     userplus,
     arrow,
-    PurchaseWizard
+    PurchaseWizard,
+    dhPermissionWrapper
   },
 
   computed: {
     dh() {
       return window.dh
+    },
+
+    permission() {
+      return utils.permission;
     },
 
     account() {
@@ -358,7 +373,7 @@ body {
   }
 
   .zEWidget-launcher {
-    right: 160px !important;
+    // right: 160px !important;
     bottom: -5px !important;
   }
 }
@@ -704,5 +719,9 @@ body {
     display: flex;
     justify-content: flex-end !important;
   }
+}
+
+.dh-permission-livechat {
+  width: 100%;
 }
 </style>

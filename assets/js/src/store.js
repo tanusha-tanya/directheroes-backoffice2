@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import PouchDB from 'pouchdb';
 
 const accountRequestHandler = (method, params) => {
   return axios({
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     saveTimeout: 1000,
     onSaveHandler: null,
     purchasePlans: true,
+    campaignTemplates: null,
   },
 
   mutations: {
@@ -67,7 +69,7 @@ export default new Vuex.Store({
   },
 
   actions: {
-    getAccounts({ state, commit }) {
+    getAccounts({ state, commit, dispatch }) {
       commit('set', { path: 'isFirstLoad', value: true });
 
       axios({
@@ -76,11 +78,17 @@ export default new Vuex.Store({
         const { viewedBy } = data.response;
         const { accountList, dhAccount } = data.response.body;
 
-        dhAccount.isAdmin = !viewedBy || !viewedBy.parentUserId
+        dhAccount.isAdmin = !viewedBy || !viewedBy.parentUserId;
+
+        // dhAccount.flowBuilderSettings.elements.push('saveCustomField')
+
+        dhAccount.flowBuilderSettings.userInputMatches = [{value: '{{email}}', title: 'E-mail'}, {value: '{{phone}}', title: 'Phone'}]
 
         commit('set', { path: 'dhAccount', value: dhAccount });
         commit('set', { path: 'accounts', value: accountList });
         commit('set', { path: 'isFirstLoad', value: false });
+
+        dispatch('getCampaignTemplates', dhAccount)
       }).catch(() => {
         commit('set', { path: 'isFirstLoad', value: false });
       })
@@ -131,6 +139,19 @@ export default new Vuex.Store({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/ig_account/${ currentAccount.id }/subscription-capabilities`,
       }).then(({ data }) => {
         commit('set', { path: 'currentAccount.subscriptionCapabilities', value: data.response.body})
+      })
+    },
+
+    getCampaignTemplates({ commit }, dhAccount) {
+      const localDB = new PouchDB(`dh-campaign-templates`);
+      const remoteDB = new PouchDB(dhAccount.marketCouchdbUrl);
+
+      localDB.replicate.from(remoteDB).on('complete', () => {
+        localDB.get(String(dhAccount.marketAccountId)).then(record => {
+          const availableTemplates = record.campaigns.filter(campaign => campaign.isActive);
+
+          commit('set', { path: 'campaignTemplates', value: availableTemplates })
+        });
       })
     }
   }

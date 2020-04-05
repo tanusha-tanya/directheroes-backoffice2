@@ -42,14 +42,17 @@ export default {
 
     seconds: {
       get() {
-        const { actionElement } = this;
+        const { ruleElement } = this;
 
-        return actionElement.body.delta
+        return ruleElement.condition.value
       },
       set(value) {
         const { actionElement, ruleElement } = this;
 
-        actionElement.body.delta = value;
+        if (actionElement) {
+          actionElement.body.delta = value;
+        }
+
         ruleElement.condition.value = value;
       }
     },

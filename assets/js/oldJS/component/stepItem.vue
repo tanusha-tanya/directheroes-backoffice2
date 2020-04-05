@@ -22,7 +22,7 @@
         :available-list="builder.availableListByElement(step.elements[0])"
         @select="createStep"
         v-if="stepType === 'action'"
-        :existing-link="linker && linker.target"
+        :existing-link="linker && linker.target && linker"
         :builder="builder"></add-step-popup>
     </span>
   </div>
@@ -116,7 +116,7 @@ export default {
           return target;
         }
 
-        if (element.displaySettings && ['followers', 'waitTillCondition'].includes(element.displaySettings.type)) {
+        if (element.displaySettings && ['followers', 'subscriberField', 'waitTillCondition'].includes(element.displaySettings.type)) {
           return element.elements.some(actionElement);
         } else {
           return actionElement(utils.getOnMatchElement(element));

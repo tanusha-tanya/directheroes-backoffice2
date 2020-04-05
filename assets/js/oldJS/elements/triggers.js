@@ -1,4 +1,3 @@
-import { userInput } from './userInput'
 
 export default [
   {
@@ -155,21 +154,21 @@ export default [
     },
   },
   {
-    title: 'Ad Reply',
+    title: 'Number',
     template: {
       type: 'group',
       displaySettings: {
         subType: 'trigger',
-        type: 'adReply'
+        type: 'number'
       },
       elements: [
         {
           type: 'rule',
           condition: {
             entity: 'message',
-            field: 'type',
-            operand: 'eq',
-            value: 'adReply'
+            field: 'text',
+            operand: 'contains',
+            value: '{{number}}'
           },
           onFail: {
             action: 'fallthrough',
@@ -178,5 +177,52 @@ export default [
       ]
     },
   },
-  userInput
+  {
+    title: 'No reply',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'trigger',
+        type: 'noreply'
+      },
+      elements: [
+        {
+          type: 'rule',
+          condition: {
+            entity: 'time',
+            field: 'delta',
+            operand: 'eq',
+            value: 14400
+          },
+          onFail: {
+            action: 'fallthrough',
+          },
+        },
+      ]
+    }
+  },
+  {
+    title: 'User Input',
+    template: {
+      type: 'group',
+      displaySettings: {
+        subType: 'trigger',
+        type: 'user-input'
+      },
+      elements: [
+        {
+          type: 'rule',
+          condition: {
+            entity: 'message',
+            field: 'text',
+            operand: 'contains',
+            value: '{{email}}'
+          },
+          onFail: {
+            action: 'fallthrough',
+          },
+        }
+      ]
+    }
+  }
 ]
