@@ -54,6 +54,18 @@ export default {
   computed: {
     blackListSetting() {
       const { settings } = this.dhAccount;
+      const blackListSetting = settings.find(setting => setting.type === 1);
+
+      if (!blackListSetting) {
+        const newSetting = {
+          type: 1,
+          value: []
+        }
+
+        settings.push(newSetting);
+
+        return newSetting
+      }
 
       return settings.find(setting => setting.type === 1);
     }
