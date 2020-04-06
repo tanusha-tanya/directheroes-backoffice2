@@ -101,7 +101,7 @@ export default {
     status,
     extraAccount,
     dhConnectionWizard,
-    dhAccountCard
+    dhAccountCard,
     dhSharingWizzard
   },
 

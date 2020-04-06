@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :visible.sync="isShow"
-    width="800px"
+    :width="`${width}px`"
     append-to-body
     :title="title"
     :close-on-click-modal="false"
@@ -10,42 +10,37 @@
   >
     <component
       :is="wizardState"
-      @close-wizard="isShow = false"
-      @set-title="title = $event"
-      ></component>
+     ></component>
   </el-dialog>
 </template>
 
 <script>
+import wizardMixin from '../mixins/wizard/wizard'
 import offerStep from './dh-purchase-wizard/offer-step'
+import purchaseStep from './dh-purchase-wizard/purchase-step'
 
 export default {
   data() {
     return {
-      title: 'Select plan',
-      wizardState: 'offerStep',
       tariffs: null,
       selectedPlan: null,
     }
   },
 
-  props:['value', 'permission'],
+  mixins: [ wizardMixin ],
 
-  computed: {
-    isShow: {
-      get() {
-        return this.value
-      },
-
-      set(value) {
-        this.$emit('input', value)
-      }
-    },
-  },
+  props: [ 'permission' ],
 
   components: {
-    offerStep
+    offerStep,
+    purchaseStep
   },
+
+  created() {
+    const { setWizardState } = this;
+
+    setWizardState('Select plan', 'offerStep')
+  }
 }
 </script>
 
