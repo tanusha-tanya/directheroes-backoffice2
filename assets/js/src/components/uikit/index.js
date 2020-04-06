@@ -1,3 +1,4 @@
-import DhButton from "./button"
+import Vue from 'vue'
+import DhButton from "./dh-button.vue"
 
-export { DhButton }
+Vue.component('dh-button', DhButton)

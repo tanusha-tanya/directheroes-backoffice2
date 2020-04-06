@@ -1,5 +1,5 @@
 import './elementui';
-import "./uikit";
+import "./components/uikit";
 import Vue from 'vue'
 import App from './App.vue'
 import { Message, Notification } from 'element-ui'
