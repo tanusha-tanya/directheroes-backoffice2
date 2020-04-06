@@ -22,6 +22,7 @@ import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
 import CampaignStatistics from './views/CampaignStatistics'
+import UiKit from './views/UiKit'
 import utils from '../oldJS/utils'
 
 const { permission } = utils;
@@ -30,6 +31,7 @@ Vue.use(Router)
 
 export default new Router({
   routes:[
+    { path: '/uikit', name: 'uikit', component: UiKit },
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
     { path: '/partner-program', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
