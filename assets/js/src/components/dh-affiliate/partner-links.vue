@@ -1,5 +1,22 @@
 <template>
   <div class="dh-partner-row dh-affiliate-info dh-partner-links">
+    <el-dialog
+      :visible.sync="isEmailSendedPopup"
+      append-to-body
+      class="dh-wizzard-dialog"
+      title="Link has been generated"
+      width="554px"
+      >
+      <div class="dh-wizzard-step dh-partner-links-popup">
+        <div class="dh-wizzard-step-body">
+          <div class="dh-partner-links-popup__content">Email with the Partner link has been sent to the specified e-mail address, but you can also just copy the link to clipboard and send it manually if you wish.</div>
+        </div>
+        <div class="el-dialog__footer">
+          <span></span>
+          <button class="dh-button" @click="isEmailSendedPopup = false">Ok</button>
+        </div>
+      </div>
+    </el-dialog>
     <div class="dh-affiliate-column">
       <div>We will send one-time link to:</div>
       <div
@@ -58,6 +75,7 @@ export default {
     return {
       receiverEmail: null,
       partnerLink: null,
+      isEmailSendedPopup: false,
       errors: {
         global: "",
         email: ""
@@ -96,23 +114,19 @@ export default {
       this.creating = true;
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/partner/generate?email=${receiverEmail}`
-      })
-        .then(({ data }) => {
-          const { response } = data;
-          if (response && response.body) {
-            const { invitationLink } = response.body;
-            this.partnerLink = invitationLink;
-          }
-        })
-        .catch(({ response }) => {
+      }).then(({ data }) => {
+          const { invitationLink } = data.response.body;
+
+          this.partnerLink = invitationLink;
+          this.isEmailSendedPopup = true;
+      }).catch(({ response }) => {
           let message = "Something went wrong";
           if (response && response.data && response.data.request) {
             const { statusMessage } = response.data.request;
             message = statusMessage;
           }
           Vue.set(errors, "global", message);
-        })
-        .finally(() => (this.creating = false));
+      }).finally(() => (this.creating = false));
     }
   }
 };
