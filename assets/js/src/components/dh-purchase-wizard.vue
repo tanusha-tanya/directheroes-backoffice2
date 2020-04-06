@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :visible.sync="isShow"
-    :width="`${width}px`"
+    :width="width"
     append-to-body
     :title="title"
     :close-on-click-modal="false"
@@ -39,7 +39,7 @@ export default {
   created() {
     const { setWizardState } = this;
 
-    setWizardState('Select plan', 'offerStep')
+    setWizardState('Select plan', 'offerStep', { width: '80%'})
   }
 }
 </script>

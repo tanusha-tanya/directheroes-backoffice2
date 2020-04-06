@@ -30,11 +30,10 @@ export default {
   },
 
   methods: {
-    selectPlan(plan) {
+    selectPlan(selectedPlan) {
       const { wizard } = this;
 
-      wizard.selectedPlan = plan;
-      wizard.setWizardState('Summary', 'purchaseStep')
+      wizard.setWizardState('Summary', 'purchaseStep', { selectedPlan, width: '45%' })
     }
   },
 

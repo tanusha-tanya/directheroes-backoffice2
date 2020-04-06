@@ -1,8 +1,10 @@
+import Vue from 'vue'
+
 export default {
   data() {
     return {
       title: '',
-      width: 900,
+      width: '50%',
       wizardState: null,
       parentWizard: true
     }
@@ -23,9 +25,19 @@ export default {
   },
 
   methods: {
-    setWizardState(title, wizardState) {
+    setWizardState(title, wizardState, data = {}) {
       this.title = title;
       this.wizardState = wizardState;
+
+      Object.keys(data).forEach(dataProperty => {
+        const dataValue = data[dataProperty];
+
+        if (this.hasOwnProperty(dataProperty)) {
+          this[dataProperty] = dataValue;
+        } else {
+          Vue.set(this, dataProperty, dataValue)
+        }
+      })
     },
 
     closeWizard() {
