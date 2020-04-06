@@ -1,3 +1,17 @@
+
+$primaryPressed: #8233DB;
+$primaryHover: #9349E6;
+$background1: #F2F4F6;
+$background2: #F8FAFB;
+$outline: #E8ECEF;
+$white: #fff;
+$secondaryDark1: #778CA2;
+$secondaryDark2: #98A9BC;
+$secondary3: #FF4550;
+$secondary3Hover: #FC6770;
+$secondary3Pressed: #F0232F;
+
+// legacy
 $mainBGColor: #F8FAFB;
 $mainTextColor: #252631;
 $inputTextColor: #1B1E24;
@@ -5,8 +19,10 @@ $textColor: #98A9BC;
 $sectionBG: #fff;
 $elementsColor: #778CA2;
 $elementActiveColor: #9E4CF9;
+$elementActiveColor-200: #9349E6;
+$elementActiveColor-300: #8233DB;
 $borderColor: #E8ECEF;
 $successColor: #6DD230;
-$failColor: #FE4D97;
+$failColor: #FF4550;
 $disabledBG: #F8FAFB;
 $secondBorderColor: #F2F4F6

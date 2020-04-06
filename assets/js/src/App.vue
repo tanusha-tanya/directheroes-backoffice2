@@ -128,6 +128,12 @@
           </div>
           Support
         </router-link>
+        <router-link v-if="isDevelopment" :class="{'dh-navigation-button': true }" :to="{ name: 'ui-kit' }">
+          <div class="dh-navigation-button-ico">
+            <training/>
+          </div>
+          UI-kit
+        </router-link>
       </div>
     </div>
     <div class="dh-content" v-if="dhAccount">
@@ -220,6 +226,10 @@ export default {
   computed: {
     dh() {
       return window.dh
+    },
+
+    isDevelopment() {
+      return process.env.NODE_ENV === 'development';
     },
 
     permission() {
