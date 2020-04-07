@@ -38,7 +38,7 @@
           <div class="dh-no-payment-card" v-else>
             No card attached to service
           </div>
-          <dh-button type="outline">Edit payment method</dh-button>
+          <dh-button type="outline" size="small">Edit payment method</dh-button>
         </div>
       </div>
     </div>
