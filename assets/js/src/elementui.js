@@ -45,7 +45,6 @@ import 'element-ui/lib/theme-chalk/tabs.css';
 import 'element-ui/lib/theme-chalk/tab-pane.css';
 import 'element-ui/lib/theme-chalk/tree.css';
 
-
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(OptionGroup);

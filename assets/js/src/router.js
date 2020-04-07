@@ -22,6 +22,7 @@ import AddonPayment from './views/AddonPayment'
 import Affiliate from './views/Affiliate'
 import SubscriberInfo from './views/SubscriberInfo'
 import CampaignStatistics from './views/CampaignStatistics'
+import UiKit from './views/UiKit'
 import utils from '../oldJS/utils'
 
 const { permission } = utils;
@@ -29,8 +30,9 @@ const { permission } = utils;
 Vue.use(Router)
 
 export default new Router({
-  routes:[
+  routes: [
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
+    { path: '/ui-kit', name: 'ui-kit', component: UiKit },
     { path: '/partner-program', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
     { path: '/trainings', name: 'trainings', component: Trainings },
@@ -59,7 +61,7 @@ export default new Router({
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },
-    { path: '/:isBuy?', name: 'accounts', component: Accounts },
+    { path: '/:isBuy?', name: 'accounts', component: Accounts }
   ]
 });
 
