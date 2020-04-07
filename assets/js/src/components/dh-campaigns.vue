@@ -411,6 +411,12 @@ export default {
     margin-top: 20px;
   }
 
+  .dh-list-item {
+    svg {
+      width: 20px;
+    }
+  }
+
   .dh-campaign-template {
     height: 50px;
 

@@ -185,7 +185,7 @@ import utils from "../oldJS/utils"
 export default {
   data() {
     return {
-      showWebinarPopup: !localStorage.getItem('webinarInfoViewed'),
+      showWebinarPopup: false && !localStorage.getItem('webinarInfoViewed'),
       isShowList: false,
       searchName: '',
       canScrollUp: false,
