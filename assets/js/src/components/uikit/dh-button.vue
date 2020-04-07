@@ -17,6 +17,7 @@
 <script>
 export default {
   name: "dh-button",
+
   props: ["type", "size", "disabled", "loading"]
 };
 </script>
@@ -39,6 +40,8 @@ $resetPressedText: $primaryPressed;
 $resetBGDisabled: $background2;
 
 $outlineBG: $white;
+$outlineBGHover: $outlineBG;
+$outlineBGPressed: $outlineBG;
 $outlineBGBorder: $elementActiveColor;
 $outlineText: $elementActiveColor;
 $outlineBGBorderHover: $primaryHover;
@@ -47,57 +50,34 @@ $outlineBGBorderPressed: $primaryPressed;
 $outlinePressedText: $primaryPressed;
 
 @mixin button-is-disabled {
-  background-color: $primaryBGDisabled;
-  border: 1px solid $primaryBGDisabled;
-  border-radius: 4px;
-  opacity: 0.4;
-  color: $disabledTextColor;
+  &.dh-disabled {
+    background-color: $primaryBGDisabled;
+    border: 1px solid $primaryBGDisabled;
+    border-radius: 4px;
+    opacity: 0.4;
+    color: $disabledTextColor;
+  }
 }
 
-button.dh-button {
-  font: 500 14px Rubik;
-  line-height: 17px;
-  color: $primaryTextColor;
-  background-color: $primaryBG;
-  height: 46px;
-  min-width: 200px;
-  padding: 15px 15px 14px;
-  text-transform: uppercase;
-  border-radius: 4px;
-  outline: none;
-  border: 1px solid $primaryBG;
-
+@mixin button-variant(
+  $BGcolor-hover,
+  $BGcolor-pressed,
+  $textColor-hover: $primaryTextColor,
+  $textColor-pressed: $primaryTextColor,
+  $BGborder-hover: $BGcolor-hover,
+  $BGborder-pressed: $BGcolor-pressed
+) {
   &:focus,
   &:hover {
-    background-color: $primaryBGHover;
-    border-color: $primaryBGHover;
-    color: $primaryTextColor;
+    background-color: $BGcolor-hover;
+    border-color: $BGborder-hover;
+    color: $textColor-hover;
   }
 
   &:active {
-    color: $primaryTextColor;
-    background-color: $primaryBGPressed;
-    border-color: $primaryBGPressed;
-  }
-
-  &.dh-button--small {
-    min-width: auto;
-    height: auto;
-    padding: 5px 15px;
-
-    &.dh-loading {
-      &:before {
-        width: 5px;
-        height: 5px;
-        border-radius: 5px;
-        top: calc(50% - 6px);
-        left: calc(50% - 6px);
-      }
-    }
-  }
-
-  &.dh-disabled {
-    @include button-is-disabled;
+    background-color: $BGcolor-pressed;
+    border-color: $BGborder-pressed ;
+    color: $textColor-pressed;
   }
 
   &.dh-loading {
@@ -113,10 +93,40 @@ button.dh-button {
       left: calc(50% - 10px);
       width: 15px;
       height: 15px;
-      border-radius: 15px;
+      border-radius: 100%;
       border: 3px solid $sectionBG;
       border-bottom-color: transparent;
       animation: rotation 0.8s infinite linear;
+    }
+  }
+}
+
+button.dh-button {
+  font: 500 14px Rubik;
+  line-height: 17px;
+  color: $primaryTextColor;
+  background-color: $primaryBG;
+  height: 46px;
+  min-width: 200px;
+  padding: 15px 15px 14px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid $primaryBG;
+
+  @include button-variant($primaryBGHover, $primaryBGPressed);
+  @include button-is-disabled;
+
+  &.dh-button--small {
+    min-width: auto;
+    height: auto;
+    padding: 5px 15px;
+
+    &.dh-loading:before {
+      width: 5px;
+      height: 5px;
+      top: calc(50% - 6px);
+      left: calc(50% - 6px);
     }
   }
 }
@@ -126,21 +136,13 @@ button.dh-button.dh-button--reset {
   background-color: $resetBG;
   color: $plainTextColor;
 
-  &:focus,
-  &:hover {
-    background-color: $resetBGHover;
-    border-color: $resetBGHover;
-    color: $resetHoverText;
-  }
-
-  &:active {
-    background-color: $resetBGPressed;
-    color: $resetPressedText;
-  }
-
-  &.dh-disabled {
-    @include button-is-disabled;
-  }
+  @include button-variant(
+    $resetBGHover,
+    $resetBGPressed,
+    $resetHoverText,
+    $resetPressedText
+  );
+  @include button-is-disabled;
 
   &.dh-loading {
     &:before {
@@ -155,20 +157,17 @@ button.dh-button.dh-button--text {
   background-color: transparent;
   color: $outlineText;
 
-  &:focus,
-  &:hover {
-    background-color: transparent;
-    color: $outlineHoverText;
-  }
-
-  &:active {
-    background-color: $outlineBG;
-    border-color: $outlineBGBorderPressed;
-    color: $outlinePressedText;
-  }
+  @include button-variant(
+    transparent,
+    $outlineBG,
+    $outlineHoverText,
+    $outlinePressedText,
+    transparent,
+    $outlineBGBorderPressed
+  );
+  @include button-is-disabled;
 
   &.dh-disabled {
-    @include button-is-disabled;
     background-color: transparent;
     border: 1px solid transparent;
   }
@@ -186,24 +185,19 @@ button.dh-button.dh-button--outline {
   background-color: $outlineBG;
   color: $outlineText;
 
-  &:focus,
-  &:hover {
-    background-color: $outlineBG;
-    border-color: $outlineBGBorderHover;
-    color: $outlineHoverText;
-  }
-
-  &:active {
-    background-color: $outlineBG;
-    border-color: $outlineBGBorderPressed;
-    color: $outlinePressedText;
-  }
+  @include button-variant(
+    $outlineBGHover,
+    $outlineBGPressed,
+    $outlineHoverText,
+    $outlinePressedText,
+    $outlineBGBorderHover,
+    $outlineBGBorderPressed
+  );
+  @include button-is-disabled;
 
   &.dh-disabled {
-    @include button-is-disabled;
     background-color: $outlineBG;
     border: 1px solid $outline;
-    border-radius: 4px;
   }
 
   &.dh-loading {
@@ -218,9 +212,7 @@ button.dh-button.dh-button--danger {
   border-color: $failColor;
   background-color: $failColor;
 
-  &.dh-disabled {
-    @include button-is-disabled;
-  }
+  @include button-is-disabled;
 
   &:hover {
     background-color: #e8498c;
