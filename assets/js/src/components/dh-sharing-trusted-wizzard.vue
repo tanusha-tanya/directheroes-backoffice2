@@ -15,6 +15,7 @@
       :delegate="delegateShare"
       :permissions="accountState.permissions"
       @close-wizzard="isVisible = false"
+      @success="isVisible = false"
       @deny="accountState.state = 'share.deny'"
       @cancel="accountState.state = 'share.request'"
       @to-change-permissions="accountState.state = 'share.permissions'"
@@ -112,7 +113,7 @@ export default {
           return "shareRequest";
         }
         case "share.deny": {
-          this.title = `Request deny for ${account.delegate.username}`;
+          this.title = "Deny request";
           return "shareDeny";
         }
         case "share.permissions": {
@@ -137,7 +138,6 @@ export default {
 div.dh-wizzard-dialog.dh-trusted-share-access {
   .dh-button {
     cursor: pointer;
-    width: 100px;
   }
 }
 </style>

@@ -2,15 +2,14 @@
   <div class="dh-wizzard-step dh-share-request">
     <div class="dh-wizzard-step-body">
       <div class="dh-share-text">
-        <div>
-          <span>{{ delegate.username }}</span>
-        </div>Sended request for share access to account
-        <span>{{ account.login }}</span>
+        <span>
+          {{ delegate.username }} is sending you a request to manage your Instagram account @{{ account.login }}
+        </span>
       </div>
     </div>
     <div class="el-dialog__footer">
-      <button class="dh-button dh-small dh-reset-button" @click="$emit('deny')">Deny</button>
-      <button class="dh-button dh-small" :class="{'dh-loading': loading}" @click="onShare">Share</button>
+      <button class="dh-button dh-reset-button" @click="$emit('deny')">Deny</button>
+      <button class="dh-button" :class="{'dh-loading': loading}" @click="onShare">Accept</button>
     </div>
   </div>
 </template>
@@ -50,16 +49,7 @@ export default {
 div.el-dialog__wrapper .dh-wizzard-step.dh-share-request {
   .dh-share-text {
     span {
-      font-weight: 500;
       font-size: 16px;
-    }
-  }
-
-  div.el-dialog__footer {
-    justify-content: flex-end;
-
-    .dh-button {
-      margin-left: 8px;
     }
   }
 }

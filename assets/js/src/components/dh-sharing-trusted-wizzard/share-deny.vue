@@ -1,16 +1,17 @@
 <template>
   <div class="dh-wizzard-step dh-share-deny">
     <div class="dh-wizzard-step-body">
-      <div>Do you want to deny sharing for this account only, or all future accounts too?</div>
+      <div>You are about to deny user {{ delegate.username }} to access Instagram account @{{ account.login }}.</div>
+      <div>Please select the most suitable option:</div>
       <div class="dh-deny-options">
-        <el-radio v-model="isUntrusted" :label="true">Deny for all future accounts too</el-radio>
-        <el-radio v-model="isUntrusted" :label="false">Deny for this account</el-radio>
+        <el-radio v-model="isUntrusted" :label="true">Deny this time and never ask again</el-radio>
+        <el-radio v-model="isUntrusted" :label="false">Deny this time, but ask again when attaching a new Instagram account</el-radio>
       </div>
     </div>
     <div class="el-dialog__footer">
-      <button class="dh-button dh-small dh-reset-button" @click="$emit('cancel')">Back</button>
+      <button class="dh-button dh-reset-button" @click="$emit('cancel')">Back</button>
       <button
-        :class="{'dh-button': true, 'dh-small': true, 'dh-loading': denying}"
+        :class="{'dh-button': true, 'dh-loading': denying}"
         :disabled="isUntrusted === null"
         @click="onDeny"
       >Deny</button>
@@ -22,7 +23,7 @@
 import axios from "axios";
 
 export default {
-  props: ["delegate"],
+  props: ["delegate", "account"],
 
   data: () => {
     return {
@@ -64,14 +65,6 @@ div.dh-share-deny {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-  }
-
-  .el-dialog__footer {
-    justify-content: flex-end;
-
-    .dh-button {
-      margin-left: 8px;
-    }
   }
 }
 </style>

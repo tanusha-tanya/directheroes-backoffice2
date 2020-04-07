@@ -54,22 +54,22 @@ export default {
           {
             code: 200,
             name: "Campaigns",
-            isGranted: false
+            isGranted: true
           },
           {
             code: 300,
             name: "Broadcast",
-            isGranted: false
+            isGranted: true
           },
           {
             code: 400,
             name: "Live chat",
-            isGranted: false
+            isGranted: true
           },
           {
             code: 500,
             name: "Audience",
-            isGranted: false
+            isGranted: true
           }
         ]
       },
@@ -168,18 +168,16 @@ export default {
     },
 
     updateAccountPermissions(permissions) {
-      if (permissions) {
+      const { accountIsShared } = this;
+
+      if (accountIsShared && permissions.length) {
         const { tree } = this.$refs;
 
-        permissions.forEach(ap => {
-          const per = this.tree.permissions.find(p => p.code === ap.code);
-          if (per) {
-            per.isGranted = ap.isGranted;
-          }
-          if (tree) {
-            tree.setChecked(ap.code, ap.isGranted);
-          }
-        })
+        this.tree.permissions.forEach(treePermission => {
+          const permission = permissions.find(permission => permission.code === treePermission.code);
+
+          treePermission.isGranted = (permission && permission.isGranted) || false;
+        });
       };
     }
   },
