@@ -31,7 +31,7 @@
             <div class="dh-payment-card">
               <div class="dh-payment-card__type-image"></div>
               <div class="dh-payment-card__info">
-
+                {{card}}
               </div>
             </div>
           </div>
@@ -42,13 +42,14 @@
 </template>
 
 <script>
+import axios from 'axios'
 import loader from '../dh-loader'
 import wizardStep from '../../mixins/wizard/wizard-step'
 
 export default {
   data() {
     return {
-      cardSource: null,
+      paymentSource: null,
       inSourceGet: true,
     }
   },
@@ -64,6 +65,12 @@ export default {
       const { wizard } = this;
 
       return wizard.selectedPlan
+    },
+
+    card() {
+      const { paymentSource } = this;
+
+      return paymentSource.card || paymentSource.three_d_secure
     }
   },
 
@@ -77,7 +84,7 @@ export default {
 
       if (!activeSource) return;
 
-      this.cardSource = activeSource.card || activeSource.three_d_secure;
+      this.paymentSource = activeSource;
     });
   }
 }
