@@ -27,7 +27,7 @@
         </div>
         <div class="dh-wrapper__body">
           <loader v-if="inSourceGet"/>
-          <div class="dh-payment">
+          <div class="dh-payment" v-else-if="card">
             <div class="dh-payment-card">
               <div class="dh-payment-card__type-image"></div>
               <div class="dh-payment-card__info">
@@ -35,6 +35,10 @@
               </div>
             </div>
           </div>
+          <div class="dh-no-payment-card" v-else>
+            No card attached to service
+          </div>
+          <dh-button type="outline">Edit payment method</dh-button>
         </div>
       </div>
     </div>
@@ -70,7 +74,7 @@ export default {
     card() {
       const { paymentSource } = this;
 
-      return paymentSource.card || paymentSource.three_d_secure
+      return paymentSource && (paymentSource.card || paymentSource.three_d_secure);
     }
   },
 
@@ -80,11 +84,13 @@ export default {
     }).then(({ data }) => {
       const { activeSource } = data.response.body;
 
-      this.inSourceGet = false;
+      this.$nextTick(() => {
+        this.inSourceGet = false;
+      })
 
-      if (!activeSource) return;
+      // if (!activeSource) return;
 
-      this.paymentSource = activeSource;
+      // this.paymentSource = activeSource;
     });
   }
 }
