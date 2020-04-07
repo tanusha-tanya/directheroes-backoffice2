@@ -28,14 +28,11 @@ import utils from '../oldJS/utils'
 const { permission } = utils;
 
 Vue.use(Router)
-const routesDev = [];
-if (process.env.NODE_ENV === 'development') {
-  routesDev.push({ path: '/ui-kit', name: 'ui-kit', component: UiKit });
-}
 
 export default new Router({
-  routes: routesDev.concat([
+  routes: [
     // { path: '/bookhelp', name: 'book-help', component: bookHelp },
+    { path: '/ui-kit', name: 'ui-kit', component: UiKit },
     { path: '/partner-program', name: 'affiliate', component: Affiliate },
     { path: '/tutorials', name: 'tutorials', component: Tutorials },
     { path: '/trainings', name: 'trainings', component: Trainings },
@@ -65,7 +62,7 @@ export default new Router({
       ]
     },
     { path: '/:isBuy?', name: 'accounts', component: Accounts }
-  ])
+  ]
 });
 
 
