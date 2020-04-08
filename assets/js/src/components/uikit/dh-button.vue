@@ -6,8 +6,8 @@
       type ? 'dh-button--' + type : '',
       size ? 'dh-button--' + size : '',
       {
-        'dh-disabled': disabled,
-        'dh-loading': !disabled && loading
+        'dh-button--disabled': disabled,
+        'dh-button--loading': !disabled && loading
       }
     ]"
     @click="$emit('click', $event)"
@@ -81,7 +81,8 @@ $dangerPressedText: $white;
     color: $textColor-pressed;
   }
 
-  &.dh-disabled {
+  &.dh-button--disabled,
+  .dh-disabled { // legacy, will be removed later
     background-color: $primaryBGDisabled;
     border: 1px solid $primaryBGDisabled;
     border-radius: 4px;
@@ -116,7 +117,8 @@ button.dh-button {
   @include button-base-behaviour($primaryBG, $primaryBG, $primaryTextColor);
   @include button-variant($primaryBGHover, $primaryBGPressed);
 
-  &.dh-loading {
+  &.dh-button--loading,
+  .dh-loading { // legacy, will be removed later
     color: transparent;
     position: relative;
     pointer-events: none;
@@ -161,7 +163,7 @@ button.dh-button {
     $resetPressedText
   );
 
-  &.dh-loading {
+  &.dh-button--loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
@@ -180,12 +182,12 @@ button.dh-button {
     transparent
   );
 
-  &.dh-disabled {
+  &.dh-button--disabled {
     background-color: transparent;
     border: 1px solid transparent;
   }
 
-  &.dh-loading {
+  &.dh-button--loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
@@ -204,12 +206,12 @@ button.dh-button {
     $outlineBGBorderPressed
   );
 
-  &.dh-disabled {
+  &.dh-button--disabled {
     background-color: $outlineBG;
     border: 1px solid $outline;
   }
 
-  &.dh-loading {
+  &.dh-button--loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
