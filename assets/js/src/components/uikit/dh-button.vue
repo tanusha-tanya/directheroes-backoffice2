@@ -28,10 +28,10 @@ export default {
 $button-text-size: $font-size-base;
 
 $primaryTextColor: $white;
-$plainTextColor: $elementActiveColor;
+$plainTextColor: $primary;
 $disabledTextColor: $secondaryDark2;
 
-$primaryBG: $elementActiveColor;
+$primaryBG: $primary;
 $primaryBGHover: $primaryHover;
 $primaryBGPressed: $primaryPressed;
 $primaryBGDisabled: $background2;
@@ -46,8 +46,8 @@ $resetBGDisabled: $background2;
 $outlineBG: $white;
 $outlineBGHover: $outlineBG;
 $outlineBGPressed: $outlineBG;
-$outlineBGBorder: $elementActiveColor;
-$outlineText: $elementActiveColor;
+$outlineBGBorder: $primary;
+$outlineText: $primary;
 $outlineBGBorderHover: $primaryHover;
 $outlineHoverText: $primaryHover;
 $outlineBGBorderPressed: $primaryPressed;
