@@ -559,14 +559,14 @@
           };
 
           if (!this.threadMessages) {
-            this.threadMessages = body.messageList;
+            this.threadMessages = body.messageList.filter(message => message.type !== 'none');
             return;
           }
 
           let onlyNewMessages = body.messageList.filter(newMessage => {
             const messages = this.threadMessages.filter(message => !(message.type || '').includes('conversation'))
 
-            if ((newMessage.type || '').includes('conversation')) return;
+            if ((newMessage.type || '').includes('conversation') || newMessage.type === 'none') return;
 
             return !messages.find((message, index) => {
                 if (!message.id && !message.botMessageId && message.clientContext === newMessage.clientContext) {
