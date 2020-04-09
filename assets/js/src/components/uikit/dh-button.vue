@@ -82,7 +82,7 @@ $dangerPressedText: $white;
   }
 
   &.dh-button--disabled,
-  .dh-disabled { // legacy, will be removed later
+  &.dh-disabled { // legacy, will be removed later
     background-color: $primaryBGDisabled;
     border: 1px solid $primaryBGDisabled;
     border-radius: 4px;
@@ -118,7 +118,7 @@ button.dh-button {
   @include button-variant($primaryBGHover, $primaryBGPressed);
 
   &.dh-button--loading,
-  .dh-loading { // legacy, will be removed later
+  &.dh-loading { // legacy, will be removed later
     color: transparent;
     position: relative;
     pointer-events: none;
@@ -144,6 +144,7 @@ button.dh-button {
     height: auto;
     padding: 5px 15px;
 
+    &.dh-button--loading:before,
     &.dh-loading:before {
       width: 5px;
       height: 5px;
@@ -163,7 +164,8 @@ button.dh-button {
     $resetPressedText
   );
 
-  &.dh-button--loading {
+  &.dh-button--loading,
+  &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
@@ -187,7 +189,8 @@ button.dh-button {
     border: 1px solid transparent;
   }
 
-  &.dh-button--loading {
+  &.dh-button--loading,
+  &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
@@ -211,7 +214,8 @@ button.dh-button {
     border: 1px solid $outline;
   }
 
-  &.dh-button--loading {
+  &.dh-button--loading,
+  &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
       border-bottom-color: transparent;
