@@ -162,9 +162,9 @@
             <div class="dh-contact-profile-fullname">
               {{currentThread.contactProfile.fullName}}
             </div>
-            <div class="dh-contact-profile-name">
+            <a class="dh-contact-profile-name" :href="`https://www.instagram.com/${currentThread.contactProfile.username}`" target="_blank">
               {{currentThread.contactProfile.username}}
-            </div>
+            </a>
           </div>
           <div class="dh-contact-profile-controls">
             <div v-if="currentThread.hasOwnProperty('isSubscribed')" :class="{'dh-contact-profile-control':true, 'dh-contact-profile-unsubscribe': true, 'dh-disabled': !currentThread.isSubscribed}" @click="unsubscribe(currentThread)">
@@ -1174,6 +1174,7 @@
 
     .dh-contact-profile-name {
       color: $textColor;
+      text-decoration: none;
     }
 
     .dh-contact-profile-controls {
