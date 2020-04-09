@@ -25,20 +25,22 @@
         <div class="dh-wrapper__title">
           Payment
         </div>
-        <div class="dh-wrapper__body">
+        <div class="dh-wrapper__body ">
           <loader v-if="inSourceGet"/>
-          <div class="dh-payment" v-else-if="card">
-            <div class="dh-payment-card">
-              <div class="dh-payment-card__type-image"></div>
-              <div class="dh-payment-card__info">
-                {{card}}
+          <div class="dh-card-info" v-else>
+            <div class="dh-payment" v-if="card">
+              <div class="dh-payment-card">
+                <component :is="123" class="dh-payment-card__brand-image"></component>
+                <div class="dh-payment-card__info">
+                  
+                </div>
               </div>
             </div>
+            <div class="dh-no-payment-card" v-else>
+              No card attached to service
+            </div>
+            <dh-button type="outline" size="small" >Edit payment method</dh-button>
           </div>
-          <div class="dh-no-payment-card" v-else>
-            No card attached to service
-          </div>
-          <dh-button type="outline" size="small">Edit payment method</dh-button>
         </div>
       </div>
     </div>
@@ -49,6 +51,7 @@
 import axios from 'axios'
 import loader from '../dh-loader'
 import wizardStep from '../../mixins/wizard/wizard-step'
+
 
 export default {
   data() {
@@ -88,9 +91,9 @@ export default {
         this.inSourceGet = false;
       })
 
-      // if (!activeSource) return;
+      if (!activeSource) return;
 
-      // this.paymentSource = activeSource;
+      this.paymentSource = activeSource;
     });
   }
 }
@@ -136,6 +139,12 @@ export default {
   .dh-plan-description {
     margin-top: 8px;
     color: #778CA2;
+  }
+
+  .dh-card-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 </style>
