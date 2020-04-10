@@ -5,16 +5,19 @@
     </div>
     <div class="uikit__body">
       <ui-kit-buttons :active="false"/>
+      <ui-kit-inputs :active="true" />
     </div>
   </div>
 </template>
 
 <script>
 import UiKitButtons from "../components/uikit/examples/buttons";
+import UiKitInputs from "../components/uikit/examples/inputs";
 
 export default {
   components: {
-    UiKitButtons
+    UiKitButtons,
+    UiKitInputs
   }
 };
 </script>
