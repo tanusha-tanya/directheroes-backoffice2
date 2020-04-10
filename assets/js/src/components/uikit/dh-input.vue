@@ -66,6 +66,8 @@ $input-background-disabled: $background2;
 $input-border-color-error: $secondary3;
 $input-error-color: $secondary3;
 
+$input-error-icon-size: 14px;
+
 .dh-input-wrapper {
   font-family: Rubik;
   font-style: normal;
@@ -95,8 +97,8 @@ $input-error-color: $secondary3;
     align-items: flex-start;
 
     .dh-input-error__icon {
-      width: 14px;
-      max-height: 14px;
+      width: $input-error-icon-size;
+      max-height: $input-error-icon-size;
     }
 
     .dh-input-error__text {
