@@ -38,6 +38,8 @@
     <dh-connection-wizard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizard>
     <dh-sharing-trusted-wizzard v-model="sharing.trusted" :account-share="accountToShare" :delegate-share="delegateToShare" />
     <el-dialog
+    <dh-sharing-trusted-wizzard v-model="sharing.trusted" :account-share="accountToShare" :delegate-share="delegateToShare" />
+    <el-dialog
     <dh-sharing-wizzard v-model="sharing.common" :account-share="accountToShare" :delegates="delegates"/>
      <el-dialog
       :visible.sync="isExtraAccount"
