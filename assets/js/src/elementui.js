@@ -3,7 +3,6 @@ import {
   Select,
   Option,
   OptionGroup,
-  Input,
   InputNumber,
   Slider,
   Switch,
@@ -48,7 +47,6 @@ import 'element-ui/lib/theme-chalk/tree.css';
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(OptionGroup);
-Vue.use(Input);
 Vue.use(InputNumber);
 Vue.use(Slider);
 Vue.use(Switch);
