@@ -3,8 +3,8 @@
     class="dh-button"
     type="button"
     :class="[
-      type ? 'dh-button--' + type : '',
-      size ? 'dh-button--' + size : '',
+      typeClass,
+      sizeClass,
       {
         'dh-button--disabled': disabled,
         'dh-button--loading': !disabled && loading
@@ -20,7 +20,21 @@
 export default {
   name: "dh-button",
 
-  props: ["type", "size", "disabled", "loading"]
+  props: ["type", "size", "disabled", "loading"],
+
+  computed: {
+    typeClass() {
+      const { type } = this;
+
+      return type && `dh-button--${ type }`
+    },
+
+    sizeClass() {
+      const { size } = this;
+
+      return size && `dh-button--${ size }`
+    }
+  }
 };
 </script>
 

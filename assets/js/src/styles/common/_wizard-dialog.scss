@@ -1,3 +1,7 @@
+$dialogBGColor: $white;
+$dialogTextWarningColor: $white;
+$dialogSuccessBGColor: $successColor;
+$dialogErrorBGColor: $failColor;
 
 div.dh-wizard-dialog {
   .el-dialog__body {
@@ -10,7 +14,7 @@ div.dh-wizard-dialog {
   }
 
   .el-dialog__footer {
-    background-color: #ffffff;
+    background-color: $dialogBGColor;
     justify-content: flex-end;
     min-height: 64px;
   }
@@ -18,17 +22,17 @@ div.dh-wizard-dialog {
   .dh-wizard-error, .dh-wizard-success {
     height: 80px;
     width: 100%;
-    background-color: #FE4D97;
+    background-color: $dialogErrorBGColor;
     border-radius: 4px;
     margin-top: 20px;
     padding: 0 24px;
     display: flex;
     align-items: center;
-    color: #ffffff;
+    color: $dialogTextWarningColor;
     font-size: 16px;
   }
 
   .dh-wizard-success {
-    background-color: $successColor;
+    background-color: $dialogSuccessBGColor;
   }
 }

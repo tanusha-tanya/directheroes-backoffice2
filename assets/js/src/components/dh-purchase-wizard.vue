@@ -18,12 +18,14 @@
 import wizardMixin from '../mixins/wizard/wizard'
 import offerStep from './dh-purchase-wizard/offer-step'
 import purchaseStep from './dh-purchase-wizard/purchase-step'
+import cardUpdateStep from './dh-purchase-wizard/card-update-step'
 
 export default {
   data() {
     return {
       tariffs: null,
       selectedPlan: null,
+      paymentSource: null,
     }
   },
 
@@ -33,7 +35,8 @@ export default {
 
   components: {
     offerStep,
-    purchaseStep
+    purchaseStep,
+    cardUpdateStep
   },
 
   created() {

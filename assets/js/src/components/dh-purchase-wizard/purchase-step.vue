@@ -44,7 +44,7 @@
             <div class="dh-no-payment-card" v-else>
               No card attached to service
             </div>
-            <dh-button type="outline" size="small" >Edit payment method</dh-button>
+            <dh-button type="outline" size="small" @click="updateCard">Edit payment card</dh-button>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@
     </div>
     <div class="el-dialog__footer">
       <dh-button @click.native="backToPlans" type="reset" :disabled="inPurchaseProcess">Back</dh-button>
-      <dh-button @click.native="purchasePlan" :loading="inPurchaseProcess">Purchase</dh-button>
+      <dh-button @click.native="purchasePlan" :loading="inPurchaseProcess">Buy</dh-button>
     </div>
   </div>
 </template>
@@ -93,7 +93,7 @@ export default {
       const { paymentSource } = this;
 
       return paymentSource && (paymentSource.card || paymentSource.three_d_secure);
-    }
+    },
   },
 
   methods: {
@@ -123,7 +123,7 @@ export default {
         const { dhAccount } = data.response.body;
 
         if (success) {
-          // this.$store.commit('set', { path:'dhAccount', value: dhAccount })
+          this.$store.commit('set', { path:'dhAccount', value: dhAccount })
         } else {
           this.error = error.message;
         }
@@ -139,6 +139,13 @@ export default {
         }
 
       }).finally(() =>  this.inPurchaseProcess = false);
+    },
+
+    updateCard() {
+      const { paymentSource, wizard } = this;
+      const { setWizardState } = wizard;
+
+      setWizardState('Card info', 'cardUpdateStep', { width: '80%', paymentSource })
     }
   },
 
