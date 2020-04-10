@@ -52,7 +52,8 @@ div.dh-purchase-wizard {
   }
 
   div.dh-wizard-step-body {
-    min-height: 400px;
+    min-height: 250px;
+    min-width: 580px;
   }
 }
 </style>

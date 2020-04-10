@@ -30,9 +30,14 @@
           <div class="dh-card-info" v-else>
             <div class="dh-payment" v-if="card">
               <div class="dh-payment-card">
-                <component :is="123" class="dh-payment-card__brand-image"></component>
+                <dh-card-brand-image :type="card.brand"></dh-card-brand-image>
                 <div class="dh-payment-card__info">
-                  
+                  <div class="dh-payment-card__type">
+                    {{card.brand}} ••••  ••••  ••••  {{card.last4}}
+                  </div>
+                  <div class="dh-payment-card__date">
+                    Expires on {{String(card.exp_month).padStart(2, '0')}}/{{card.exp_year}}
+                  </div>
                 </div>
               </div>
             </div>
@@ -43,6 +48,13 @@
           </div>
         </div>
       </div>
+      <div class="dh-wizard-error" v-if="error">
+        {{error}}
+      </div>
+    </div>
+    <div class="el-dialog__footer">
+      <dh-button @click.native="backToPlans" type="reset" :disabled="inPurchaseProcess">Back</dh-button>
+      <dh-button @click.native="purchasePlan" :loading="inPurchaseProcess">Purchase</dh-button>
     </div>
   </div>
 </template>
@@ -51,20 +63,23 @@
 import axios from 'axios'
 import loader from '../dh-loader'
 import wizardStep from '../../mixins/wizard/wizard-step'
-
+import dhCardBrandImage from '../dh-card-brand-image'
 
 export default {
   data() {
     return {
       paymentSource: null,
       inSourceGet: true,
+      inPurchaseProcess: false,
+      error: null
     }
   },
 
   mixins: [wizardStep],
 
   components: {
-    loader
+    loader,
+    dhCardBrandImage
   },
 
   computed: {
@@ -78,6 +93,52 @@ export default {
       const { paymentSource } = this;
 
       return paymentSource && (paymentSource.card || paymentSource.three_d_secure);
+    }
+  },
+
+  methods: {
+    backToPlans() {
+      const { setWizardState } = this.wizard;
+
+      setWizardState('Select plan', 'offerStep', { width: '80%'})
+    },
+
+    purchasePlan() {
+      const { plan } = this;
+
+      this.error = null;
+      this.inPurchaseProcess = true;
+
+      axios({
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/add-subscription`,
+        method: 'post',
+        data: {
+          cartItems: [{
+            plan: plan.code,
+            quantity: 1
+          }]
+        }
+      }).then(({ data }) => {
+        const { success, error } = data.request;
+        const { dhAccount } = data.response.body;
+
+        if (success) {
+          // this.$store.commit('set', { path:'dhAccount', value: dhAccount })
+        } else {
+          this.error = error.message;
+        }
+      }).catch(error => {
+        const { response } = error;
+
+        if (response && response.data && response.data.request) {
+          const { request } = response.data;
+
+          this.error = request.statusMessage;
+        } else {
+          this.error = 'Server connection problem, try again';
+        }
+
+      }).finally(() =>  this.inPurchaseProcess = false);
     }
   },
 
@@ -145,6 +206,20 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .dh-payment-card {
+    display: flex;
+    align-items: center;
+    color: #252631;
+  }
+
+  .dh-payment-card__info {
+    margin-left: 12px;
+  }
+
+  .dh-payment-card__type {
+    font-weight: 500;
   }
 }
 </style>
