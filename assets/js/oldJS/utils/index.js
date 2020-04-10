@@ -1,4 +1,5 @@
 import moment from 'moment'
+import store from '../../src/store'
 
 const getOnMatchElement = (element) => {
   const { type, displaySettings } = element;
@@ -20,7 +21,7 @@ const getOnMatchElement = (element) => {
 
   return matchElement;
 }
-const campaignElementValidate = (element, isEntry, mainType) => {
+const campaignElementValidate = (element, isEntry, parentDisplaySettings) => {
   let warning = null;
 
   switch(element.type) {
@@ -45,7 +46,10 @@ const campaignElementValidate = (element, isEntry, mainType) => {
     case 'rule':
       const matchElement = getOnMatchElement(element);
 
-      if (mainType === 'trigger' || !mainType) {
+      if (!parentDisplaySettings || parentDisplaySettings.subType === 'trigger') {
+        const { growthTools, triggers } = store.state.dhAccount.flowBuilderSettings;
+        const hasEmptyKeywords = (isEntry ? growthTools : triggers).messageTypes.includes('anyMessage');
+
         if (!matchElement || !matchElement.onMatch) {
           warning = 'Element has no target step'
         }
@@ -53,21 +57,17 @@ const campaignElementValidate = (element, isEntry, mainType) => {
         if (element.condition.value === 'storyMention' && isEntry && (element.onMatch.elements && !element.onMatch.elements[0].condition.value.length)) {
           warning = 'Please specify at least one hashtag'
         }
-      } else if (mainType === 'condition'){
-        if (element.condition.entity === 'time' && typeof element.condition.value !== 'object') {
-          if (!matchElement || !matchElement.onMatch) {
-            warning = 'Please add the next element for the "replied" branch'
-          } else if (!matchElement || !matchElement.onFail) {
-            warning = 'Please connect the "No Response" branch'
-          }
+
+        if (parentDisplaySettings && parentDisplaySettings.type === 'keywords' && !hasEmptyKeywords && !element.condition.value.length) {
+          warning = 'Enter keywords'
         }
       }
 
       break;
     case 'group':
-      if (['trigger', 'condition'].includes(element.displaySettings.subType)) {
+      if (['trigger'].includes(element.displaySettings.subType)) {
         element.elements.some(elementItem => {
-          warning = campaignElementValidate(elementItem, isEntry, element.displaySettings.subType);
+          warning = campaignElementValidate(elementItem, isEntry, element.displaySettings);
 
           return warning;
         })

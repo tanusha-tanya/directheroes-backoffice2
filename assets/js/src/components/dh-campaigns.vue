@@ -354,11 +354,12 @@ export default {
     },
 
     cloneCampaign() {
-      const { newCampaignName, campaignToClone, $store, templateName, $router } = this;
+      const { newCampaignName, campaignToClone, $store, templateName, $router, currentAccount } = this;
       const { currentAccountData } = $store.state;
 
       campaignToClone.name = newCampaignName;
       campaignToClone.id = (new ObjectId).toString(),
+      campaignToClone.igAccountId = currentAccount.id,
       campaignToClone.createdAt = Date.now(),
       campaignToClone.isEnabled = false,
       campaignToClone.isActive = false
@@ -409,6 +410,12 @@ export default {
 
   .dh-info {
     margin-top: 20px;
+  }
+
+  .dh-list-item {
+    svg {
+      width: 20px;
+    }
   }
 
   .dh-campaign-template {

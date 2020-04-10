@@ -1,14 +1,16 @@
 <template>
   <el-button
     class="dh-button"
+    type="button"
     :class="[
       type ? 'dh-button--' + type : '',
       size ? 'dh-button--' + size : '',
       {
-        'dh-disabled': disabled,
-        'dh-loading': !disabled && loading
+        'dh-button--disabled': disabled,
+        'dh-button--loading': !disabled && loading
       }
     ]"
+    @click="$emit('click', $event)"
   >
     <slot></slot>
   </el-button>
@@ -23,11 +25,13 @@ export default {
 </script>
 
 <style lang="scss">
+$button-text-size: $font-size-base;
+
 $primaryTextColor: $white;
-$plainTextColor: $elementActiveColor;
+$plainTextColor: $primary;
 $disabledTextColor: $secondaryDark2;
 
-$primaryBG: $elementActiveColor;
+$primaryBG: $primary;
 $primaryBGHover: $primaryHover;
 $primaryBGPressed: $primaryPressed;
 $primaryBGDisabled: $background2;
@@ -42,22 +46,20 @@ $resetBGDisabled: $background2;
 $outlineBG: $white;
 $outlineBGHover: $outlineBG;
 $outlineBGPressed: $outlineBG;
-$outlineBGBorder: $elementActiveColor;
-$outlineText: $elementActiveColor;
+$outlineBGBorder: $primary;
+$outlineText: $primary;
 $outlineBGBorderHover: $primaryHover;
 $outlineHoverText: $primaryHover;
 $outlineBGBorderPressed: $primaryPressed;
 $outlinePressedText: $primaryPressed;
 
-@mixin button-is-disabled {
-  &.dh-disabled {
-    background-color: $primaryBGDisabled;
-    border: 1px solid $primaryBGDisabled;
-    border-radius: 4px;
-    opacity: 0.4;
-    color: $disabledTextColor;
-  }
-}
+$dangerBG: $secondary3;
+$dangerBGHover: $secondary3Hover;
+$dangerBGPressed: $secondary3Pressed;
+$dangerBGBorderHover: $secondary3Hover;
+$dangerBGBorderPressed: $secondary3Pressed;
+$dangerHoverText: $white;
+$dangerPressedText: $white;
 
 @mixin button-variant(
   $BGcolor-hover,
@@ -67,7 +69,6 @@ $outlinePressedText: $primaryPressed;
   $BGborder-hover: $BGcolor-hover,
   $BGborder-pressed: $BGcolor-pressed
 ) {
-  &:focus,
   &:hover {
     background-color: $BGcolor-hover;
     border-color: $BGborder-hover;
@@ -76,11 +77,48 @@ $outlinePressedText: $primaryPressed;
 
   &:active {
     background-color: $BGcolor-pressed;
-    border-color: $BGborder-pressed ;
+    border-color: $BGborder-pressed;
     color: $textColor-pressed;
   }
 
-  &.dh-loading {
+  &.dh-button--disabled,
+  &.dh-disabled { // legacy, will be removed later
+    background-color: $primaryBGDisabled;
+    border: 1px solid $primaryBGDisabled;
+    border-radius: 4px;
+    opacity: 0.4;
+    color: $disabledTextColor;
+  }
+}
+
+@mixin button-base-behaviour($BGcolor, $BGborder-color, $textColor) {
+  background-color: $BGcolor;
+  border: 1px solid $BGborder-color;
+  color: $textColor;
+  cursor: pointer;
+
+  &:focus {
+    background-color: $BGcolor;
+    border-color: $BGborder-color;
+    color: $textColor;
+  }
+}
+
+button.dh-button {
+  font: 500 $button-text-size Rubik;
+  line-height: 17px;
+  height: 46px;
+  min-width: 200px;
+  padding: 15px 15px 14px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  outline: none;
+
+  @include button-base-behaviour($primaryBG, $primaryBG, $primaryTextColor);
+  @include button-variant($primaryBGHover, $primaryBGPressed);
+
+  &.dh-button--loading,
+  &.dh-loading { // legacy, will be removed later
     color: transparent;
     position: relative;
     pointer-events: none;
@@ -99,29 +137,14 @@ $outlinePressedText: $primaryPressed;
       animation: rotation 0.8s infinite linear;
     }
   }
-}
 
-button.dh-button {
-  font: 500 14px Rubik;
-  line-height: 17px;
-  color: $primaryTextColor;
-  background-color: $primaryBG;
-  height: 46px;
-  min-width: 200px;
-  padding: 15px 15px 14px;
-  text-transform: uppercase;
-  border-radius: 4px;
-  outline: none;
-  border: 1px solid $primaryBG;
-
-  @include button-variant($primaryBGHover, $primaryBGPressed);
-  @include button-is-disabled;
-
-  &.dh-button--small {
+  &.dh-button--small,
+  &.dh-small { // legacy, will be removed later
     min-width: auto;
     height: auto;
     padding: 5px 15px;
 
+    &.dh-button--loading:before,
     &.dh-loading:before {
       width: 5px;
       height: 5px;
@@ -131,19 +154,17 @@ button.dh-button {
   }
 }
 
-button.dh-button.dh-button--reset {
-  border: 1px solid $resetBG;
-  background-color: $resetBG;
-  color: $plainTextColor;
-
+.dh-button.dh-button--reset,
+.dh-button.dh-reset-button { // legacy, will be removed later
+  @include button-base-behaviour($resetBG, $resetBG, $plainTextColor);
   @include button-variant(
     $resetBGHover,
     $resetBGPressed,
     $resetHoverText,
     $resetPressedText
   );
-  @include button-is-disabled;
 
+  &.dh-button--loading,
   &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
@@ -152,26 +173,23 @@ button.dh-button.dh-button--reset {
   }
 }
 
-button.dh-button.dh-button--text {
-  border: unset;
-  background-color: transparent;
-  color: $outlineText;
-
+.dh-button.dh-button--text {
+  @include button-base-behaviour(transparent, transparent, $outlineText);
   @include button-variant(
     transparent,
     $outlineBG,
     $outlineHoverText,
     $outlinePressedText,
     transparent,
-    $outlineBGBorderPressed
+    transparent
   );
-  @include button-is-disabled;
 
-  &.dh-disabled {
+  &.dh-button--disabled {
     background-color: transparent;
     border: 1px solid transparent;
   }
 
+  &.dh-button--loading,
   &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
@@ -180,11 +198,8 @@ button.dh-button.dh-button--text {
   }
 }
 
-button.dh-button.dh-button--outline {
-  border: 1px solid $outlineBGBorder;
-  background-color: $outlineBG;
-  color: $outlineText;
-
+.dh-button.dh-button--outline {
+  @include button-base-behaviour($outlineBG, $outlineBGBorder, $outlineText);
   @include button-variant(
     $outlineBGHover,
     $outlineBGPressed,
@@ -193,13 +208,13 @@ button.dh-button.dh-button--outline {
     $outlineBGBorderHover,
     $outlineBGBorderPressed
   );
-  @include button-is-disabled;
 
-  &.dh-disabled {
+  &.dh-button--disabled {
     background-color: $outlineBG;
     border: 1px solid $outline;
   }
 
+  &.dh-button--loading,
   &.dh-loading {
     &:before {
       border-color: $outlinePressedText;
@@ -208,14 +223,16 @@ button.dh-button.dh-button--outline {
   }
 }
 
-button.dh-button.dh-button--danger {
-  border-color: $failColor;
-  background-color: $failColor;
-
-  @include button-is-disabled;
-
-  &:hover {
-    background-color: #e8498c;
-  }
+.dh-button.dh-button--danger,
+.dh-button.dh-danger-button { // legacy, will be removed later
+  @include button-base-behaviour($dangerBG, $dangerBG, $primaryTextColor);
+  @include button-variant(
+    $dangerBGHover,
+    $dangerBGPressed,
+    $dangerHoverText,
+    $dangerPressedText,
+    $dangerBGBorderHover,
+    $dangerBGBorderPressed
+  );
 }
 </style>

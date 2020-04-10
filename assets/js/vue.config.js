@@ -34,7 +34,7 @@ const commonConfig = {
   css: {
     loaderOptions: {
       scss: {
-        prependData: `@import "./src/styles/variables.scss";`
+        prependData: `@import "./src/styles/index.scss";`
       }
     }
   },

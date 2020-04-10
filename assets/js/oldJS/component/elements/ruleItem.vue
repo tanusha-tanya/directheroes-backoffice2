@@ -1,9 +1,9 @@
 <template>
   <div class="rule-item" :ref="element.id">
-    <element-warning :element="rule" :is-entry="isEntry"></element-warning>
+    <element-warning :element="element" :is-entry="isEntry"></element-warning>
     <div class="rule-item-title">{{ ruleTitles[ruleType] }} <span v-if="ruleType === 'storyMention'">@{{currentAccount.login}}</span></div>
     <template v-if="ruleType == 'list'">
-      <keywords v-model="rule.condition.value" :is-allow-create="true"></keywords>
+      <keywords v-model="rule.condition.value" :is-allow-create="true" placeholder="Click to enter keywords" ></keywords>
     </template>
     <template v-else-if="ruleType == 'postShare'">
       <el-input
@@ -115,6 +115,13 @@ export default {
       const { userInputMatches } = this.dhAccount.flowBuilderSettings;
 
       return userInputMatches;
+    },
+
+    canHasEmptyKeywords() {
+      const { isEntry, $store } = this;
+      const { growthTools, triggers } = $store.state.dhAccount.flowBuilderSettings;
+
+      return (isEntry ? growthTools : triggers).messageTypes.includes('anyMessage')
     }
   },
 

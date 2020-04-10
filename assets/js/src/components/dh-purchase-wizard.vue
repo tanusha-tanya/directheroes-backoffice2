@@ -46,6 +46,11 @@ export default {
 
 <style lang="scss">
 div.dh-purchase-wizard {
+
+  .el-dialog {
+    max-width: 900px;
+  }
+
   div.dh-wizard-step-body {
     min-height: 400px;
   }
