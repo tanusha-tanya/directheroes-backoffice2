@@ -166,6 +166,12 @@ button.dh-button {
       left: calc(50% - 6px);
     }
   }
+
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .dh-button.dh-button--reset,

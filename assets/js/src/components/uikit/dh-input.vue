@@ -1,6 +1,6 @@
 <template>
   <label class="dh-input-wrapper">
-    <span class="dh-input__header">{{ label }}</span>
+    <span class="dh-input__header" v-if="label">{{ label }}</span>
     <el-input
       class="dh-input"
       :class="[
@@ -19,7 +19,14 @@
       :type="type || 'text'"
       @change="$emit('change', $event)"
       @input="$emit('input', $event)"
-    />
+    >
+      <template v-slot:prefix>
+        <slot name="prefix"></slot>
+      </template>
+      <template v-slot:suffix>
+        <slot name="suffix"></slot>
+      </template>
+    </el-input>
     <div class="dh-input__footer dh-input-error">
       <span class="dh-input-error__wrapper" v-if="error">
         <span class="dh-input-error__icon"><warning /></span>
@@ -113,6 +120,7 @@ $input-error-icon-size: 14px;
       border: 1px solid $input-border-color;
       box-sizing: border-box;
       border-radius: 4px;
+      height: 46px;
 
       &:focus {
         border-color: $input-border-color-focus;
@@ -136,6 +144,19 @@ $input-error-icon-size: 14px;
 
     &.dh-input--readonly input {
       pointer-events: none;
+    }
+
+    .el-input__suffix {
+      right: 14px;
+    }
+
+    .el-input__prefix {
+      left: 14px;
+      color: $label-color;
+    }
+
+    &.el-input--prefix .el-input__inner {
+      padding-left: 40px;
     }
   }
 }
