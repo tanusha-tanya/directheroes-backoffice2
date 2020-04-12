@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { Button, Input } from 'element-ui';
 import DhButton from './dh-button.vue';
-import DhInput from "./dh-input.vue";
+import DhInput from './dh-input.vue';
 
 /**
  * * Dh-button
