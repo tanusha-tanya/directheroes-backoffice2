@@ -657,3 +657,33 @@ div.el-tooltip__popper.dh-button-error {
   border-radius: 10px;
   background-color: #E8ECEF;
 }
+
+@mixin input-button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  
+  .dh-input-wrapper {
+    flex-grow: 1;
+  }
+
+  .dh-button {
+    min-width: 80px;
+    width: 140px;
+    margin-left: 10px;
+  }
+}
+
+.dh-input-button-group {
+  @include input-button-group()
+}
+
+.dh-input-button-group--labeled {
+  @include input-button-group();
+
+  align-items: center;
+
+  .dh-button {
+    margin-top: 4px;
+  }
+}

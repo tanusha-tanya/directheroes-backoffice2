@@ -18,9 +18,13 @@
       :readonly="readonly"
       :autocomplete="autocomplete"
       :type="type || 'text'"
+      :maxlength="maxlength"
       @change="$emit('change', $event)"
       @input="$emit('input', $event)"
     >
+      <template v-slot:prepend>
+        <slot name="prepend"></slot>
+      </template>
       <template v-slot:prefix>
         <slot name="prefix"></slot>
       </template>
@@ -41,7 +45,7 @@
 import warning from '../../assets/warning.svg'
 
 export default {
-  props: ['type', 'value', 'label', 'error', 'placeholder', 'autofocus', 'disabled', 'readonly', 'autocomplete'],
+  props: ['type', 'value', 'label', 'error', 'placeholder', 'autofocus', 'disabled', 'readonly', 'autocomplete', 'maxlength'],
 
   components: {
     warning
@@ -149,16 +153,18 @@ $input-error-icon-size: 14px;
 
     .el-input__suffix {
       right: 14px;
-      top: calc(50% - 9px);
 
       svg {
         width: 18px;
       }
     }
 
+    .el-input-group__prepend {
+      padding: 0 10px;
+    }
+
     .el-input__prefix {
       left: 14px;
-      top: calc(50% - 9px);
       color: $label-color;
 
       svg {

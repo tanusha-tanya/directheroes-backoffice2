@@ -2,6 +2,7 @@
   <el-button
     class="dh-button"
     type="button"
+    :disabled="disabled"
     :class="[
       typeClass,
       sizeClass,

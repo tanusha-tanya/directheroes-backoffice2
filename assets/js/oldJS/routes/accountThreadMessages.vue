@@ -202,7 +202,6 @@
   import { Popover } from "element-ui"
   import defaultAvatar from '../assets/ig-avatar.jpg'
   import times from '../assets/times.svg'
-  import dhLink from '../../src/assets/link.svg'
   import task from '../../src/assets/task.svg'
   import search from '../../src/assets/search.svg'
   import star from '../../src/assets/star.svg'
@@ -269,7 +268,6 @@
       nolivechat,
       loader,
       ellipsis,
-      dhLink,
       send,
       close,
       search,
