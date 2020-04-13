@@ -142,10 +142,9 @@ export default {
     },
 
     updateCard() {
-      const { paymentSource, wizard } = this;
-      const { setWizardState } = wizard;
+      const { setWizardState } = this.wizard;
 
-      setWizardState('Card info', 'cardUpdateStep', { width: '80%', paymentSource })
+      setWizardState('Card info', 'cardUpdateStep', { width: '80%' })
     }
   },
 

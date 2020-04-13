@@ -1,6 +1,6 @@
 <template>
   <div class="dh-wizard-step dh-card-step">
-    <dh-stripe></dh-stripe>
+    <dh-stripe :goal="plan.code || 'updateExistingSubscriptions'"></dh-stripe>
   </div>
 </template>
 
@@ -13,6 +13,16 @@ export default {
   components: {
     loader,
     dhStripe
+  },
+
+  mixins: [wizardStep],
+
+  computed: {
+    plan() {
+      const { wizard } = this;
+
+      return wizard.selectedPlan
+    },
   },
 
   methods: {

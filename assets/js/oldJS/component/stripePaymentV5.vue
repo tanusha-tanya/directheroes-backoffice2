@@ -287,14 +287,14 @@ export default {
   color: $failColor;
 }
 
-.StripeElement {
-  background-color: $sectionBG;
-  border: 1px solid $borderColor;
-  border-radius: 4px;
-  padding: 14px 19px 16px 17px;
-  line-height: 17px;
-  font-weight: 500;
-  color: $inputTextColor;
-  outline: none;
-}
+// .StripeElement {
+//   background-color: $sectionBG;
+//   border: 1px solid $borderColor;
+//   border-radius: 4px;
+//   padding: 14px 19px 16px 17px;
+//   line-height: 17px;
+//   font-weight: 500;
+//   color: $inputTextColor;
+//   outline: none;
+// }
 </style>
