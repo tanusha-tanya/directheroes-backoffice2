@@ -5,15 +5,15 @@
     </div>
     <div class="dh-sign-form">
       <div class="dh-form-row">
-        <dh-input label="E-mail" v-model="account.email" :error="errors.email" @input="clearError('email')"></dh-input>
+        <dh-input label="E-mail" v-model="account.email" :error="errors.email" autocomplete="new-password" @input="clearError('email')"></dh-input>
       </div>
       <div class="dh-form-row">
-        <dh-input label="First name" v-model="account.firstName" :error="errors.firstName" @input="clearError('firstName')"></dh-input>
-        <dh-input label="Last name" v-model="account.lastName" :error="errors.lastName" @input="clearError('lastName')"></dh-input>
+        <dh-input label="First name" v-model="account.firstName" :error="errors.firstName" autocomplete="new-password" @input="clearError('firstName')"></dh-input>
+        <dh-input label="Last name" v-model="account.lastName" :error="errors.lastName" autocomplete="new-password" @input="clearError('lastName')"></dh-input>
       </div>
       <div class="dh-form-row">
-        <dh-input label="Password" type="password" v-model="account.password" :error="errors.password" @input="clearError('password')" @change="passwordValidation = account.password === confirmPassword"></dh-input>
-        <dh-input label="Confirm password" type="password" v-model="confirmPassword" :error="errors.confirmPassword" @input="clearError('confirmPassword')" @change="passwordValidation = account.password === confirmPassword">
+        <dh-input label="Password" type="password" v-model="account.password" autocomplete="new-password" :error="errors.password" @input="clearError('password')" @change="passwordValidation = account.password === confirmPassword"></dh-input>
+        <dh-input label="Confirm password" type="password" v-model="confirmPassword" autocomplete="new-password" :error="errors.confirmPassword" @input="clearError('confirmPassword')" @change="passwordValidation = account.password === confirmPassword">
           <template v-slot:suffix v-if="passwordValidation">
             <success />
           </template>

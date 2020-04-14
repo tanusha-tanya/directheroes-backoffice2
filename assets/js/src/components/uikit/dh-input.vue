@@ -16,6 +16,7 @@
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :autocomplete="autocomplete"
       :type="type || 'text'"
       @change="$emit('change', $event)"
       @input="$emit('input', $event)"
@@ -40,7 +41,7 @@
 import warning from '../../assets/warning.svg'
 
 export default {
-  props: ['type', 'value', 'label', 'error', 'placeholder', 'autofocus', 'disabled', 'readonly'],
+  props: ['type', 'value', 'label', 'error', 'placeholder', 'autofocus', 'disabled', 'readonly', 'autocomplete'],
 
   components: {
     warning
