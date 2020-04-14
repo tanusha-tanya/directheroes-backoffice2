@@ -1,6 +1,12 @@
 <template>
   <div class="dh-plan-list">
-    <div class="dh-plan-item" v-for="plan in plans" :key="plan.code">
+    <div class="dh-plan-item" :class="{'dh-selected-plan': plan === selectedPlan}" v-for="plan in plans" :key="plan.code">
+      <div class="dh-plan-selected__sign">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 4C0 1.79086 1.79086 0 4 0H60C60 0 58.5 22.5 42 39C25.5 55.5 0 60 0 60V4Z" fill="#6DD230"/>
+          <path d="M15 23.6471L21 29L33 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="dh-plan-info">
         <div class="dh-plan-name">{{plan.name}}</div>
         <div class="dh-plan-price">${{plan.price}} / month</div>
@@ -17,7 +23,12 @@
           <div class="dh-plan-feature" :class="[`dh-plan-${parameter.enabled ? 'enabled' : 'disable'}`]" v-else>
           </div>
         </div>
-        <button class="dh-button" @click="$emit('select-plan', plan)">Upgrade</button>
+        <template v-if="plan !== selectedPlan">
+          <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
+        </template>
+        <template v-else>
+          <dh-button class="dh-button" :disabled="true">Selected plan</dh-button>
+        </template>
       </div>
     </div>
   </div>
@@ -25,7 +36,7 @@
 
 <script>
 export default {
-  props: ['plans'],
+  props: ['plans', 'selectedPlan', 'actionText'],
 }
 </script>
 
@@ -42,6 +53,22 @@ export default {
       background: #FFFFFF;
       box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
       border-radius: 4px;
+
+      &.dh-selected-plan {
+        position: relative;
+        box-shadow: 0 0 0px 3px #6DD230;
+
+        .dh-plan-selected__sign {
+          display: block;
+        }
+      }
+    }
+
+    .dh-plan-selected__sign {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     .dh-plan-info {

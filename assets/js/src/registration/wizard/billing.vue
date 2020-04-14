@@ -3,9 +3,9 @@
     <div class="dh-sign-title">
       Billing & payment information
     </div>
-    <dh-stripe goal="" :plan-code="plan.code" ref="stripeComponent">
+    <dh-stripe goal="createPlanSubscription" :plan-code="plan.code" ref="stripeComponent">
       <div class="dh-plan-info">
-        You will be charged ${{plan.price}} now and subscribed to {{plan.name}}
+        You will be charged <span @click="goToPlans">${{plan.price}}</span> now and subscribed to <span @click="goToPlans">{{plan.name}}</span>
       </div>
     </dh-stripe>
     <div class="dh-sign-footer" v-if="stripeComponent && stripeComponent.stripe">
@@ -55,6 +55,12 @@ export default {
 
         wizard.setWizardState(null, 'thanks');
       })
+    },
+
+    goToPlans() {
+      const { wizard } = this;
+
+      wizard.setWizardState(null, 'plans');
     }
   },
 
@@ -91,6 +97,12 @@ export default {
     .dh-plan-info {
       margin-top: 24px;
       text-align: center;
+      font-weight: 500;
+
+      span {
+        color: $elementActiveColor;
+        cursor: pointer;
+      }
     }
   }
 </style>

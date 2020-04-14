@@ -29,6 +29,9 @@ export default {
       this.title = title;
       this.wizardState = wizardState;
 
+      console.log(data);
+
+
       Object.keys(data).forEach(dataProperty => {
         const dataValue = data[dataProperty];
 

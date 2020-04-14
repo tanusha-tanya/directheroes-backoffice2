@@ -1,6 +1,6 @@
 <template>
   <div class="dh-sign-app">
-    <div class="dh-sign-step">
+    <div class="dh-sign-step" :class="[`dh-step-${ wizardState }`]">
       <div class="dh-logo"></div>
       <component
         :is="wizardState"
@@ -14,6 +14,7 @@ import wizardMixin from '../mixins/wizard/wizard'
 import signUp from './wizard/sign-up'
 import billing from './wizard/billing'
 import thanks from './wizard/thanks'
+import plans from './wizard/plans'
 
 export default {
   data() {
@@ -30,13 +31,14 @@ export default {
   components: {
     signUp,
     billing,
-    thanks
+    thanks,
+    plans
   },
 
   created() {
     const { setWizardState } = this;
 
-    setWizardState(null, 'signUp')
+    setWizardState(null, 'signUp');
   },
 }
 </script>
@@ -75,6 +77,7 @@ body {
     border-radius: 4px;
     padding-top: 40px;
     position: relative;
+    margin-top: 45px;
   }
 
   .dh-sign-title {

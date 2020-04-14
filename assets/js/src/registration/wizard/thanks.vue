@@ -25,7 +25,7 @@ export default {
 
   methods: {
     goToDH() {
-      window.location.href = `https://${ window.location.hostname }/${ dh.userName }/`;
+      window.location.href = `https://${ window.location.hostname }/${ dh.userName }/v2/`;
     }
   }
 }
