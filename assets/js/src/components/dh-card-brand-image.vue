@@ -1,5 +1,5 @@
 <template>
-  <component class="dh-card-brand-image" :is="type.toLowerCase()"></component>
+  <component class="dh-card-brand-image" :is="(type.replace(' ', '') || 'unknown').toLowerCase()"></component>
 </template>
 
 <script>
@@ -17,6 +17,7 @@ import mir from '../assets/cardbrands/mir.svg'
 import paypal from '../assets/cardbrands/paypal.svg'
 import unionpay from '../assets/cardbrands/unionpay.svg'
 import visa from '../assets/cardbrands/visa.svg'
+import unknown from '../assets/cardbrands/blank.svg'
 
 
 export default {
@@ -25,6 +26,7 @@ export default {
   components: {
     alipay,
     amex,
+    americanexpress: amex,
     diners,
     discover,
     elo,
@@ -36,7 +38,8 @@ export default {
     mir,
     paypal,
     unionpay,
-    visa
+    visa,
+    unknown
   }
 }
 </script>

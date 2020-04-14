@@ -26,7 +26,7 @@ export default new Vuex.Store({
     globalError: false,
     saveTimeout: 1000,
     onSaveHandler: null,
-    purchasePlans: true,
+    purchasePlans: false,
     campaignTemplates: null,
   },
 
