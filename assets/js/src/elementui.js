@@ -5,12 +5,10 @@ import {
   OptionGroup,
   InputNumber,
   Slider,
-  Switch,
   Dropdown,
   DropdownMenu,
   DropdownItem,
   Dialog,
-  Checkbox,
   Popover,
   Pagination,
   Tooltip,
@@ -23,7 +21,6 @@ import {
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
-import 'element-ui/lib/theme-chalk/switch.css';
 import 'element-ui/lib/theme-chalk/select-dropdown.css';
 import 'element-ui/lib/theme-chalk/dropdown.css';
 import 'element-ui/lib/theme-chalk/icon.css';
@@ -36,7 +33,6 @@ import 'element-ui/lib/theme-chalk/message.css';
 import 'element-ui/lib/theme-chalk/notification.css';
 import 'element-ui/lib/theme-chalk/pagination.css';
 import 'element-ui/lib/theme-chalk/tooltip.css';
-import 'element-ui/lib/theme-chalk/checkbox.css';
 import 'element-ui/lib/theme-chalk/radio.css';
 import 'element-ui/lib/theme-chalk/date-picker.css';
 import 'element-ui/lib/theme-chalk/progress.css';
@@ -49,7 +45,6 @@ Vue.use(Option);
 Vue.use(OptionGroup);
 Vue.use(InputNumber);
 Vue.use(Slider);
-Vue.use(Switch);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
@@ -58,7 +53,6 @@ Vue.use(Popover);
 Vue.use(Pagination);
 Vue.use(Tooltip);
 Vue.use(DatePicker);
-Vue.use(Checkbox);
 Vue.use(Radio);
 Vue.use(Progress);
 Vue.use(Tabs);
