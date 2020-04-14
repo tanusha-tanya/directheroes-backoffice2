@@ -261,11 +261,17 @@ export default {
 
   watch: {
     publicKey(value) {
+      const { stripeElementsInit } = this;
       if (!value) return;
+
+      if (window.Stripe) {
+        stripeElementsInit();
+        return;
+      }
 
       const stripe = document.createElement("script");
 
-      stripe.onload = this.stripeElementsInit;
+      stripe.onload = stripeElementsInit;
 
       stripe.src = "//js.stripe.com/v3/";
       document.head.appendChild(stripe);
