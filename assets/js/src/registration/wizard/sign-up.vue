@@ -108,7 +108,7 @@ export default {
         }
       })
 
-      return Object.keys(errors).some(error => errors[error]);
+      return this.globalError || Object.keys(errors).some(error => errors[error]);
     },
 
     createAccount() {
