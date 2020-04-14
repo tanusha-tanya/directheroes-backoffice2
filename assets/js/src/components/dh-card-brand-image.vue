@@ -1,5 +1,5 @@
 <template>
-  <component class="dh-card-brand-image" :is="(type.replace(' ', '') || 'unknown').toLowerCase()"></component>
+  <component class="dh-card-brand-image" :is="((type || '').replace(' ', '') || 'unknown').toLowerCase()"></component>
 </template>
 
 <script>

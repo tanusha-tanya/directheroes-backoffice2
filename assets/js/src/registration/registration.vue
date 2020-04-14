@@ -1,6 +1,7 @@
 <template>
   <div class="dh-sign-app">
     <div class="dh-sign-step">
+      <div class="dh-logo"></div>
       <component
         :is="wizardState"
       ></component>
@@ -11,12 +12,25 @@
 <script>
 import wizardMixin from '../mixins/wizard/wizard'
 import signUp from './wizard/sign-up'
+import billing from './wizard/billing'
+import thanks from './wizard/thanks'
 
 export default {
+  data() {
+    const { defaultPlanCode, plans } = dh;
+
+    return {
+      selectedPlan: plans.find(plan => plan.code === defaultPlanCode),
+      dhAccount: null,
+    }
+  },
+
   mixins: [ wizardMixin ],
 
   components: {
-    signUp
+    signUp,
+    billing,
+    thanks
   },
 
   created() {
@@ -28,6 +42,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../styles/fonts.scss';
+@import '../styles/common.scss';
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -43,17 +64,37 @@ body {
   align-items: center;
   justify-content: center;
 
+  a {
+    text-decoration: none;
+    color: $primary;
+  }
+
   .dh-sign-step {
     background: #FFFFFF;
     box-shadow: 0px 2px 80px rgba(27, 30, 36, 0.05);
     border-radius: 4px;
     padding-top: 40px;
+    position: relative;
   }
 
   .dh-sign-title {
     font-size: 30px;
     line-height: 36px;
+    text-align: center;
     color: #000000;
+  }
+
+  .dh-logo {
+    width: 200px;
+    height: 36px;
+    background-image: url(../assets/logo.png);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: 0 auto;
+    position: absolute;
+    bottom: calc(100% + 40px);
+    left: calc(50% - 100px);
   }
 }
 </style>

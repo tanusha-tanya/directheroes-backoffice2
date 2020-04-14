@@ -148,11 +148,21 @@ $input-error-icon-size: 14px;
 
     .el-input__suffix {
       right: 14px;
+      top: calc(50% - 9px);
+
+      svg {
+        width: 18px;
+      }
     }
 
     .el-input__prefix {
       left: 14px;
+      top: calc(50% - 9px);
       color: $label-color;
+
+      svg {
+        width: 18px;
+      }
     }
 
     &.el-input--prefix .el-input__inner {

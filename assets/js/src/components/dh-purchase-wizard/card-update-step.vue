@@ -1,6 +1,6 @@
 <template>
   <div class="dh-wizard-step dh-card-step">
-    <dh-stripe :goal="plan.code || 'updateExistingSubscriptions'" ref="stripeComponent"></dh-stripe>
+    <dh-stripe goal="updateExistingSubscriptions" ref="stripeComponent"></dh-stripe>
     <div class="el-dialog__footer" v-if="stripeComponent && stripeComponent.stripe">
       <dh-button @click.native="backToPurchase" :disabled="inCardUpdate" type="reset">Back</dh-button>
       <dh-button @click.native="setPaymentInfo" :loading="inCardUpdate">Set card info</dh-button>
@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import loader from '../dh-loader'
 import wizardStep from '../../mixins/wizard/wizard-step'
 import dhStripe from '../dh-stripe'
 
@@ -22,7 +21,6 @@ export default {
   },
 
   components: {
-    loader,
     dhStripe
   },
 
@@ -44,11 +42,11 @@ export default {
     },
 
     setPaymentInfo() {
-      const { authorizeAmount, submitPayment } = this.stripeComponent;
+      const { submitPayment } = this.stripeComponent;
 
       this.inCardUpdate = true;
 
-      submitPayment(authorizeAmount * 100, (error) => {
+      submitPayment((error) => {
         this.inCardUpdate = false;
 
         if (error) return;

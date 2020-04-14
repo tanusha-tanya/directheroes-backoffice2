@@ -50,6 +50,7 @@
           </div>
         </div>
       </el-tooltip>
+      <slot></slot>
     </div>
     <loader v-if="!stripe"/>
   </div>
@@ -89,11 +90,11 @@ export default {
     }
   },
 
-  props: ['goal'],
+  props: ['goal', 'returnUrl', 'planCode'],
 
   components: {
     dhCardBrandImage,
-    loader
+    loader,
   },
 
   methods: {
@@ -105,11 +106,10 @@ export default {
       })
 
       request.then(({ data }) => {
-        const { stripePk, previousSourceOwner, paymentIntent, sessionId, authorizeAmount, chargeAmount } = data.response.body;
+        const { stripePk, previousSourceOwner, paymentIntent, sessionId } = data.response.body;
 
         this.publicKey = stripePk;
         this.sessionId = sessionId;
-        this.authorizeAmount = authorizeAmount;
         this.clientSecret = paymentIntent.clientSecret;
 
         if (!previousSourceOwner) return;
@@ -183,7 +183,7 @@ export default {
       return Object.keys(errors).some(error => errors[error]);
     },
 
-    submitPayment(price, callback) {
+    submitPayment(callback) {
       const {
         sessionId,
         stripe,
@@ -195,7 +195,11 @@ export default {
         hasErrors,
       } = this;
 
-      if (hasErrors()) return;
+      if (hasErrors()) {
+        callback(true);
+
+        return
+      };
 
       stripe.handleCardPayment(clientSecret, cardNumber, {
         source_data: {
@@ -216,7 +220,7 @@ export default {
     },
 
     setPaymentSource({ source, id }, callback) {
-      const { sessionId } = this;
+      const { sessionId, planCode } = this;
 
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/use-source`,
@@ -224,7 +228,8 @@ export default {
         data: {
           sourceId: source,
           paymentIntentId: id,
-          sessionId
+          sessionId,
+          planCode
         }
       }).then(({ data }) => {
         callback()
@@ -369,7 +374,7 @@ export default {
     }
   }
 
-  .el-tooltip__popper.dh-card-error {
+  div.el-tooltip__popper.dh-card-error {
     background-color: $failColor;
     padding: 10px 30px;
     max-width: 300px;
