@@ -2,10 +2,13 @@
   <div class="uikit">
     <div class="uikit__header">
       <h2>UI Kit</h2>
+      <dh-button type="outline" size="small" v-if="hasClosed" @click="toggleItems(true)">expand</dh-button>
+      <dh-button type="outline" size="small" v-else @click="toggleItems(false)">collapse</dh-button>
     </div>
     <div class="uikit__body">
-      <ui-kit-buttons :active="false"/>
-      <ui-kit-inputs :active="true" />
+      <ui-kit-buttons :active="kit.buttons" />
+      <ui-kit-inputs :active="kit.inputs" />
+      <ui-kit-checkbox :active="kit.checkbox" />
     </div>
   </div>
 </template>
@@ -13,19 +16,49 @@
 <script>
 import UiKitButtons from "../components/uikit/examples/buttons";
 import UiKitInputs from "../components/uikit/examples/inputs";
+import UiKitCheckbox from "../components/uikit/examples/checkbox";
 
 export default {
   components: {
     UiKitButtons,
-    UiKitInputs
+    UiKitInputs,
+    UiKitCheckbox
+  },
+
+  data: () => {
+    return {
+      kit: {
+        buttons: false,
+        inputs: false,
+        checkbox: true
+      }
+    };
+  },
+
+  computed: {
+    hasClosed() {
+      return Object.keys(this.kit).some(kitItem => !this.kit[kitItem]);
+    }
+  },
+
+  methods: {
+    toggleItems(status) {
+      const { kit } = this;
+
+      Object.keys(kit).forEach(k => {
+        kit[k] = status;
+      });
+    }
   }
 };
 </script>
 
 <style lang="scss">
 .uikit {
-  height: 100%;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 
   .el-icon-arrow-down {
     font-weight: 600;
@@ -45,6 +78,10 @@ export default {
 
   .uikit__header {
     padding: 40px 40px 20px;
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .uikit__body {
