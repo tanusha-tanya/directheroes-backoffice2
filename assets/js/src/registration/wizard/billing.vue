@@ -3,7 +3,7 @@
     <div class="dh-sign-title">
       Billing & payment information
     </div>
-    <dh-stripe :goal="plan.code" ref="stripeComponent">
+    <dh-stripe goal="" :plan-code="plan.code" ref="stripeComponent">
       <div class="dh-plan-info">
         You will be charged ${{plan.price}} now and subscribed to {{plan.name}}
       </div>

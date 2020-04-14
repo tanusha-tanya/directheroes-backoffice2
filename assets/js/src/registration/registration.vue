@@ -17,10 +17,10 @@ import thanks from './wizard/thanks'
 
 export default {
   data() {
-    const { defaultPlanCode, plans } = dh;
+    const { defaultPlan, plans } = dh;
 
     return {
-      selectedPlan: plans.find(plan => plan.code === defaultPlanCode),
+      selectedPlan: plans.find(plan => plan.code === defaultPlan),
       dhAccount: null,
     }
   },
