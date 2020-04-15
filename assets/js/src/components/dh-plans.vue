@@ -12,8 +12,10 @@
         <div class="dh-plan-price">${{plan.price}} / month</div>
       </div>
       <div class="dh-plan-parameters">
-        <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters.sort(sortByPriority)" :key="parameter.code">
-          {{parameter.name}}
+        <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
+          <div class="dh-plan-parameter-name">
+             {{parameter.name}}
+          </div>
           <div class="dh-plan-quote" v-if="parameter.type === 1">
             {{parameter.quotaLimit === -1 ? 'Unlimited' : parameter.quotaLimit}}
           </div>
@@ -37,12 +39,6 @@
 <script>
 export default {
   props: ['plans', 'selectedPlan', 'actionText'],
-
-  methods: {
-    sortByPriority(a, b) {
-      return a.priority - b.priority;
-    }
-  }
 }
 </script>
 
@@ -118,6 +114,12 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .dh-plan-parameter-name {
+      &::first-letter {
+        text-transform: uppercase;
+      }
     }
 
     .dh-plan-enabled {

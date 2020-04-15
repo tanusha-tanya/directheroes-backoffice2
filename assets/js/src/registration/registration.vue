@@ -20,6 +20,8 @@ export default {
   data() {
     const { defaultPlan, plans } = dh;
 
+    plans.forEach(element => element.parameters.sort((a,b) => b.priority - a.priority));
+
     return {
       selectedPlan: plans.find(plan => plan.code === defaultPlan) || plans[0],
       dhAccount: null,
@@ -77,7 +79,6 @@ body {
     border-radius: 4px;
     padding-top: 40px;
     position: relative;
-    margin-top: 45px;
   }
 
   .dh-sign-title {
