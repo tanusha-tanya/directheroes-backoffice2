@@ -11,7 +11,7 @@
     <div class="dh-color-text">
       Empower Your Instagram Today
     </div>
-    <dh-plans :plans="plans" :selected-plan="selectedPlan" action-text="Choose plan" @select-plan="backToBilling({selectedPlan: $event})"/>
+    <dh-plans v-if="false" :plans="plans" :selected-plan="selectedPlan" action-text="Choose plan" @select-plan="backToBilling({selectedPlan: $event})"/>
   </div>
 </template>
 

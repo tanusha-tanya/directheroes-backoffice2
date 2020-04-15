@@ -62,7 +62,7 @@ body {
 }
 
 .dh-sign-app {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -79,6 +79,7 @@ body {
     border-radius: 4px;
     padding-top: 40px;
     position: relative;
+    margin-top: 100px;
   }
 
   .dh-sign-title {
