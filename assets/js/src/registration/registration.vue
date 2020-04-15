@@ -18,12 +18,14 @@ import plans from './wizard/plans'
 
 export default {
   data() {
+    const code = /code=([^&]*)/.exec(location.search);
     const { defaultPlan, plans } = dh;
+    const currentPlan = (code && code[1]) || defaultPlan;
 
     plans.forEach(element => element.parameters.sort((a,b) => b.priority - a.priority));
 
     return {
-      selectedPlan: plans.find(plan => plan.code === defaultPlan) || plans[0],
+      selectedPlan: plans.find(plan => plan.code === currentPlan) || plans[0],
       dhAccount: null,
     }
   },
@@ -38,9 +40,14 @@ export default {
   },
 
   created() {
+    const referrer = /ref=([^&]*)/.exec(location.search);
     const { setWizardState } = this;
 
-    setWizardState(null, 'signUp');
+    if (referrer && referrer[1]) {
+      document.cookie = 'referrer=' + referrer[1] + '; path=/; max-age=2592000'
+    }
+
+    setWizardState(null, 'sign-up');
   },
 }
 </script>
@@ -79,7 +86,7 @@ body {
     border-radius: 4px;
     padding-top: 40px;
     position: relative;
-    margin-top: 100px;
+    margin: 100px 0 25px;
   }
 
   .dh-sign-title {

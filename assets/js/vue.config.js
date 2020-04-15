@@ -70,9 +70,9 @@ const devConfig = {
     historyApiFallback: {
       rewrites: [
         { from: /\/$/, to: '/index.html' },
-        { from: /\/register/, to: '/register.html' },
+        { from: /\/check-out/, to: '/register.html' },
         { from: /\/login/, to: '/login.html' },
-        { from: /\/landing/, to: '/landing.html' },
+        { from: /\/pricing/, to: '/landing.html' },
       ],
     },
     proxy: {

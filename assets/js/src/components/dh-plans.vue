@@ -1,6 +1,6 @@
 <template>
   <div class="dh-plan-list">
-    <div class="dh-plan-item" :class="{'dh-selected-plan': plan === selectedPlan}" v-for="plan in plans" :key="plan.code">
+    <div class="dh-plan-item" :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs }" v-for="plan in plans" :key="plan.code">
       <div class="dh-plan-selected__sign">
         <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 4C0 1.79086 1.79086 0 4 0H60C60 0 58.5 22.5 42 39C25.5 55.5 0 60 0 60V4Z" fill="#6DD230"/>
@@ -9,7 +9,8 @@
       </div>
       <div class="dh-plan-info">
         <div class="dh-plan-name">{{plan.name}}</div>
-        <div class="dh-plan-price">${{plan.price}} / month</div>
+        <div class="dh-plan-price" v-if="plan.contactUs">Individual</div>
+        <div class="dh-plan-price" v-else>${{plan.price}} / month</div>
       </div>
       <div class="dh-plan-parameters" >
         <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
@@ -25,7 +26,10 @@
           <div class="dh-plan-feature" :class="[`dh-plan-${parameter.enabled ? 'enabled' : 'disable'}`]" v-else>
           </div>
         </div>
-        <template v-if="plan !== selectedPlan">
+        <template v-if="plan.contactUs">
+          <dh-button class="dh-button" type="reset" @click="contactTo">Contact Us</dh-button>
+        </template>
+        <template v-else-if="plan !== selectedPlan">
           <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
         </template>
         <template v-else>
@@ -39,6 +43,18 @@
 <script>
 export default {
   props: ['plans', 'selectedPlan', 'actionText'],
+
+  methods: {
+    contactTo() {
+      const { contactEmail } = dh;
+      let newTab = null;
+
+      if (!contactEmail) return;
+
+      newTab = window.open(`mailto:${ contactEmail }`, '_blank');
+      newTab.focus();
+    }
+  }
 }
 </script>
 
@@ -62,6 +78,34 @@ export default {
 
         .dh-plan-selected__sign {
           display: block;
+        }
+      }
+
+      &.dh-plan-contact-us {
+        background-color: #3D40E5;
+
+        .dh-plan-info {
+          border-color: rgab($white, .06);
+        }
+
+        .dh-plan-name {
+          color: $white;
+        }
+
+        .dh-plan-price {
+          color: $white;
+          background: none;
+          -webkit-text-fill-color: inherit;
+          border-color: $white;
+        }
+
+        .dh-plan-parameter-item {
+          background-color: transparent;
+          color: $white;
+        }
+
+        .dh-plan-description, .dh-plan-quote {
+          color: $white;
         }
       }
     }

@@ -30,7 +30,7 @@ export default {
     plans() {
       const { plans } = dh;
 
-      return plans;
+      return plans.filter(plan => !plan.contactUs);
     },
 
     selectedPlan() {

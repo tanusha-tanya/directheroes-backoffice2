@@ -29,7 +29,7 @@
         placement="top"
         :content="globalError"
         :manual="true">
-        <dh-button @click="createAccount" :loading="creating">submit</dh-button>
+        <dh-button @click="createAccount" :loading="creating" :disabled="!confirmPolicy">submit</dh-button>
       </el-tooltip>
     </div>
     <div class="dh-sign-in-form">
