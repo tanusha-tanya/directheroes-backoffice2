@@ -54,7 +54,7 @@ export default {
 
 <style lang="scss">
 @import '../styles/fonts.scss';
-@import '../styles/common.scss';
+@import '../styles/index.scss';
 
 * {
   box-sizing: border-box;

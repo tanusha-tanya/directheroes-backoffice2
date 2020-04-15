@@ -85,7 +85,7 @@ export default {
         background-color: #3D40E5;
 
         .dh-plan-info {
-          border-color: rgab($white, .06);
+          border-color: rgba($white, .06);
         }
 
         .dh-plan-name {
@@ -102,6 +102,7 @@ export default {
         .dh-plan-parameter-item {
           background-color: transparent;
           color: $white;
+          border-color: rgba($white, .06);
         }
 
         .dh-plan-description, .dh-plan-quote {
