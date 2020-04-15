@@ -40,10 +40,10 @@
           </div>
         </div>
         <div class="dh-menu dh-menu--mobile">
-          <a class="dh-menu__item" href="/pricing">
+          <a class="dh-menu__item" href="/pricing" @click="showModalMenu = false">
             Pricing
           </a>
-          <a class="dh-menu__item" href="/blog">
+          <a class="dh-menu__item" href="/blog" @click="showModalMenu = false">
             Blog
           </a>
           <a class="dh-menu__item" href="#" v-if="false">
@@ -208,7 +208,7 @@ export default {
   data() {
     return {
       clients: [one, two, three, four, five, six, seven, eight, nine, ten],
-      showModalMenu: true,
+      showModalMenu: false,
     }
   },
 
@@ -234,6 +234,7 @@ export default {
 
   methods: {
     goToPath(path) {
+      this.showModalMenu = false;
       window.location.href = window.location.origin + path;
     },
 
@@ -302,7 +303,7 @@ body {
   text-transform: uppercase;
 
   &.dh-menu--light {
-    color: $white;
+    color: rgba($white, .8);
   }
 
   &.dh-menu--mobile {
@@ -417,6 +418,7 @@ button.dh-button.dh-button + .dh-button {
   line-height: 36px;
   text-align: center;
   color: #000000;
+  margin-bottom: 32px;
 }
 
 .dh-plan-list {
@@ -560,6 +562,7 @@ button.dh-button.dh-button + .dh-button {
       justify-content: space-around;
       margin: 0 16px;
       padding: 24px 0;
+      border-top: 1px solid #E8ECEF;
     }
 
     .dh-socials__item {
@@ -598,6 +601,146 @@ button.dh-button.dh-button + .dh-button {
         margin-left: auto;
         margin-top: 16px;
       }
+    }
+  }
+
+  .dh-slogan {
+    padding: 60px 16px 48px;
+    text-align: center;
+  }
+
+  .dh-slogan__title {
+    font-size: 30px;
+    line-height: 36px;
+  }
+
+  .dh-slogan__text {
+    font-size: 18px;
+    line-height: 22px;
+    padding: 0 10px;
+  }
+
+  .dh-offer {
+    height: 145px;
+    margin-top: 28px;
+  }
+
+  .dh-offer__slogan {
+    flex-direction: column;
+    align-self: center;
+    align-items: flex-start;
+    text-align: left;
+
+    & > svg {
+      display: none;
+    }
+  }
+
+  .dh-offer__text {
+    font-size: 18px;
+    line-height: 21px;
+  }
+
+  .dh-offer__text-ad {
+    margin-top: 8px;
+    font-size: 22px;
+    line-height: 26px;
+  }
+
+  .dh-plans-block {
+    margin-bottom: 40px;
+
+    .dh-plan-list {
+      width: 100%;
+      margin: 0;
+    }
+  }
+
+  .dh-plans-block__title {
+    margin-bottom: 0;
+  }
+
+  .dh-our-clients {
+    padding: 48px 38px;
+
+    img {
+      width: 80%;
+    }
+  }
+
+  .dh-our-client__title {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+  .dh-our-client__text {
+    font-size: 16px;
+    line-height: 21px;
+    margin: 8px -2px 0;
+  }
+
+  .dh-our-client-list {
+    flex-direction: column;
+  }
+
+  .dh-our-client-list__item {
+    width: 100%;
+    height: 80px;
+  }
+
+  .dh-connect-block {
+    padding: 60px 55px;
+
+    .dh-button {
+      margin-top: 28px;
+      width: 100%;
+    }
+  }
+
+  .dh-connect-block__title {
+    font-size: 28px;
+    line-height: 33px;
+  }
+
+  .dh-footer__controls {
+    flex-direction: column;
+
+    .dh-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dh-menu__item {
+      & + .dh-menu__item {
+        margin-left: 0;
+        margin-top: 24px;
+      }
+    }
+
+    .dh-socials {
+      margin-top: 40px;
+    }
+
+    .dh-socials__item {
+      & + .dh-socials__item {
+        margin-left: 28px;
+      }
+    }
+  }
+
+  .dh-footer__info {
+    margin: 40px 17px 0;
+    padding: 24px 0 0;
+    flex-direction: column;
+
+    svg {
+      order: -1;
+    }
+
+    div {
+      margin-top: 24px;
+      text-align: center;
     }
   }
 }

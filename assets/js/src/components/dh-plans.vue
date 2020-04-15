@@ -1,40 +1,50 @@
 <template>
-  <div class="dh-plan-list">
-    <div class="dh-plan-item" :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs }" v-for="plan in plans" :key="plan.code">
-      <div class="dh-plan-selected__sign">
-        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 4C0 1.79086 1.79086 0 4 0H60C60 0 58.5 22.5 42 39C25.5 55.5 0 60 0 60V4Z" fill="#6DD230"/>
-          <path d="M15 23.6471L21 29L33 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="dh-plan-info">
-        <div class="dh-plan-name">{{plan.name}}</div>
-        <div class="dh-plan-price" v-if="plan.contactUs">Individual</div>
-        <div class="dh-plan-price" v-else>${{plan.price}} / month</div>
-      </div>
-      <div class="dh-plan-parameters" >
-        <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
-          <div class="dh-plan-parameter-name">
-             {{parameter.name}}
-          </div>
-          <div class="dh-plan-quote" v-if="parameter.type === 1">
-            {{parameter.quotaLimit === -1 ? 'Unlimited' : parameter.quotaLimit}}
-          </div>
-          <div class="dh-plan-description" v-else-if="parameter.type === 3">
-            {{parameter.description}}
-          </div>
-          <div class="dh-plan-feature" :class="[`dh-plan-${parameter.enabled ? 'enabled' : 'disable'}`]" v-else>
-          </div>
+  <div class="dh-plans">
+    <div class="dh-plan-tabs">
+      <div class="dh-plan-tab" :class="{'dh-plan-tab--active': selectedTab === plan.code}" v-for="plan in plans" :key="plan.code" @click="scrollPlan(plan.code)">{{plan.name}}</div>
+    </div>
+    <div class="dh-plan-list">
+      <div
+        class="dh-plan-item"
+        :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs }"
+        v-for="plan in plans"
+        :key="plan.code"
+        :ref="plan.code">
+        <div class="dh-plan-selected__sign">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 4C0 1.79086 1.79086 0 4 0H60C60 0 58.5 22.5 42 39C25.5 55.5 0 60 0 60V4Z" fill="#6DD230"/>
+            <path d="M15 23.6471L21 29L33 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
         </div>
-        <template v-if="plan.contactUs">
-          <dh-button class="dh-button" type="reset" @click="contactTo">Contact Us</dh-button>
-        </template>
-        <template v-else-if="plan !== selectedPlan">
-          <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
-        </template>
-        <template v-else>
-          <dh-button class="dh-button" :disabled="true">Selected plan</dh-button>
-        </template>
+        <div class="dh-plan-info">
+          <div class="dh-plan-name">{{plan.name}}</div>
+          <div class="dh-plan-price" v-if="plan.contactUs">Individual</div>
+          <div class="dh-plan-price" v-else>${{plan.price}} / month</div>
+        </div>
+        <div class="dh-plan-parameters" >
+          <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
+            <div class="dh-plan-parameter-name">
+              {{parameter.name}}
+            </div>
+            <div class="dh-plan-quote" v-if="parameter.type === 1">
+              {{parameter.quotaLimit === -1 ? 'Unlimited' : parameter.quotaLimit}}
+            </div>
+            <div class="dh-plan-description" v-else-if="parameter.type === 3">
+              {{parameter.description}}
+            </div>
+            <div class="dh-plan-feature" :class="[`dh-plan-${parameter.enabled ? 'enabled' : 'disable'}`]" v-else>
+            </div>
+          </div>
+          <template v-if="plan.contactUs">
+            <dh-button class="dh-button" type="reset" @click="contactTo">Contact Us</dh-button>
+          </template>
+          <template v-else-if="plan !== selectedPlan">
+            <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
+          </template>
+          <template v-else>
+            <dh-button class="dh-button" :disabled="true">Selected plan</dh-button>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -42,6 +52,15 @@
 
 <script>
 export default {
+  data() {
+    const { selectedPlan, plans } = this;
+    const currentPlan = selectedPlan || plans[0];
+
+    return {
+      selectedTab: currentPlan.code
+    }
+  },
+
   props: ['plans', 'selectedPlan', 'actionText'],
 
   methods: {
@@ -53,12 +72,29 @@ export default {
 
       newTab = window.open(`mailto:${ contactEmail }`, '_blank');
       newTab.focus();
+    },
+
+    scrollPlan(planCode, noAnimation) {
+      const [planElement] = this.$refs[planCode];
+
+      if (!planElement) return;
+
+      this.selectedTab = planCode;
+
+      planElement.scrollIntoView({inline: 'center', behavior: noAnimation ? 'auto' : 'smooth'})
     }
+  },
+
+  mounted() {
+    const { scrollPlan, selectedTab } = this;
+
+    scrollPlan(selectedTab, true);
   }
 }
 </script>
 
 <style lang="scss">
+.dh-plans {
   .dh-plan-list {
     display: flex;
     width: calc(100% + 20px);
@@ -215,5 +251,40 @@ export default {
       text-align: right;
       color: #252631;
     }
+
   }
+
+  .dh-plan-tabs {
+    display: none;
+    justify-content: space-around;
+    margin: 25px 0;
+  }
+
+  .dh-plan-tab {
+    font-weight: 500;
+    padding-bottom: 1px;
+    font-size: 14px;
+    line-height: 17px;
+    text-transform: uppercase;
+
+    &.dh-plan-tab--active {
+      color: $elementActiveColor;
+      border-bottom: 2px solid $elementActiveColor;
+    }
+  }
+
+  @include  screen-xs {
+    .dh-plan-tabs {
+      display: flex;
+    }
+
+    .dh-plan-list {
+      overflow: hidden;
+
+      .dh-plan-item {
+        width: 100%;
+      }
+    }
+  }
+}
 </style>
