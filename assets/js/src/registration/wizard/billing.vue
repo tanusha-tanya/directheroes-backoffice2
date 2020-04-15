@@ -104,5 +104,21 @@ export default {
         cursor: pointer;
       }
     }
+
+    @include  screen-xs {
+      max-width: auto;
+      min-width: auto;
+      min-height: auto;
+
+      .dh-sign-footer {
+        padding: 24px 16px;
+        margin: 0 -16px;
+        flex-direction: column;
+
+        .dh-button {
+          width: 100%;
+        }
+      }
+    }
   }
 </style>

@@ -67,5 +67,9 @@ export default {
     .dh-button {
       margin-top: 27px;
     }
+
+    @include  screen-xs {
+      width: 100%;
+    }
   }
 </style>

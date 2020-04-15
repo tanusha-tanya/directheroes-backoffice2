@@ -18,7 +18,7 @@
       <el-tooltip
         popper-class="dh-card-error"
         :value="Boolean(errors.card)"
-        placement="left-start"
+        :placement="placement"
         :content="errors.card"
         :manual="true">
         <div class="dh-card-wrapper" :class="{'dh-card-wrapper-error': Boolean(errors.card)}">
@@ -29,7 +29,6 @@
                 <dh-card-brand-image :type="cardBrand"></dh-card-brand-image>
                 <div id="card-number"></div>
               </div>
-              <div class="dh-input__footer dh-input-error"></div>
             </label>
             <div class="dh-card-row">
               <label class="dh-input-wrapper">
@@ -37,14 +36,12 @@
                 <div class="dh-card-input dh-card-expiry">
                   <div id="card-expiry"></div>
                 </div>
-                <div class="dh-input__footer dh-input-error"></div>
               </label>
               <label class="dh-input-wrapper">
                 <span class="dh-input__header">CVV code</span>
                 <div class="dh-card-input dh-card-cvc">
                   <div id="card-cvc"></div>
                 </div>
-                <div class="dh-input__footer dh-input-error"></div>
               </label>
             </div>
           </div>
@@ -91,6 +88,14 @@ export default {
   },
 
   props: ['goal', 'returnUrl', 'planCode'],
+
+  computed: {
+    placement() {
+      const isMobile = Math.min(window.innerWidth, screen.width) < 571;
+
+      return isMobile ? 'top' : 'left-start'
+    }
+  },
 
   components: {
     dhCardBrandImage,
@@ -333,6 +338,7 @@ export default {
     .dh-card-row {
       display: flex;
       justify-content: space-between;
+      margin-top: 20px;
     }
 
     .dh-card-input {
@@ -373,6 +379,35 @@ export default {
     .dh-card-brand-image {
       margin: 0 10px 0 -7px;
     }
+
+    @include  screen-xs {
+      flex-wrap: wrap;
+
+      .dh-owner-info {
+        width: 100%;
+        padding: 0;
+      }
+
+      .dh-owner-row {
+        flex-direction: column;
+      }
+
+      .dh-input-wrapper {
+        & + .dh-input-wrapper {
+          margin-left: 0;
+        }
+      }
+
+      .dh-card-info {
+        padding: 32px 16px;
+        margin: 18px -16px 0;
+        border-top-left-radius: 0;
+      }
+
+      .dh-card {
+        padding: 20px 20px 20px 14px;
+      }
+    }
   }
 
   div.el-tooltip__popper.dh-card-error {
@@ -387,6 +422,15 @@ export default {
         border-bottom-color: $failColor;
       }
     }
+
+    &[x-placement^=top] .popper__arrow {
+      border-top-color: $failColor;
+
+      &:after {
+        border-top-color: $failColor;
+      }
+    }
+
     &[x-placement^=left] .popper__arrow {
       border-left-color: $failColor;
       top: calc(50% - 6px) !important;

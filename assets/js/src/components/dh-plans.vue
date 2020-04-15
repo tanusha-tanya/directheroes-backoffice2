@@ -1,7 +1,7 @@
 <template>
   <div class="dh-plans">
     <div class="dh-plan-tabs">
-      <div class="dh-plan-tab" :class="{'dh-plan-tab--active': selectedTab === plan.code}" v-for="plan in plans" :key="plan.code" @click="scrollPlan(plan.code)">{{plan.name}}</div>
+      <div class="dh-plan-tab" :class="{'dh-plan-tab--active': selectedTab === plan.code, 'dh-plan-tab--selected': plan === selectedPlan}" v-for="plan in plans" :key="plan.code" @click="scrollPlan(plan.code)">{{plan.name}}</div>
     </div>
     <div class="dh-plan-list">
       <div
@@ -270,6 +270,29 @@ export default {
     &.dh-plan-tab--active {
       color: $elementActiveColor;
       border-bottom: 2px solid $elementActiveColor;
+
+      &.dh-plan-tab--selected {
+        border-color: #6DD230;
+      }
+    }
+
+    &.dh-plan-tab--selected {
+      position: relative;
+      color: #6DD230;
+
+      &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -18px;
+        top: 1px;
+        width: 13px;
+        height: 7px;
+        border-width: 0 0 1px 1px;
+        border-color: #6DD230;
+        border-style: solid;
+        transform: rotate(-45deg);
+      }
     }
   }
 

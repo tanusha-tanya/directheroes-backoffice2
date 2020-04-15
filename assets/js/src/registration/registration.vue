@@ -108,5 +108,21 @@ body {
     bottom: calc(100% + 40px);
     left: calc(50% - 100px);
   }
+
+  @include  screen-xs {
+    .dh-sign-step {
+      width: calc(100% - 32px);
+      padding: 28px 16px 0;
+    }
+
+    .dh-sign-title {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .dh-logo {
+      bottom: calc(100% + 25px);
+    }
+  }
 }
 </style>

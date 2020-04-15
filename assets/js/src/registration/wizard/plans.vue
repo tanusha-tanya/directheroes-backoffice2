@@ -79,5 +79,30 @@ export default {
     .dh-plan-list {
       padding: 28px;
     }
+
+    @include  screen-xs {
+      padding-bottom: 20px;
+
+      .dh-close-button {
+        right: 12px;
+        top: 12px
+      }
+
+      .dh-plan-list {
+        padding: 2px;
+        width: 100%;
+        margin: 0;
+
+        .dh-plan-item {
+          width: calc(100% - 2px);
+        }
+
+        &:after {
+          content: '';
+          width: 5px;
+          flex-shrink: 0;
+        }
+      }
+    }
   }
 </style>

@@ -203,6 +203,35 @@ export default {
       margin-left: 3px;
     }
   }
+
+  @include  screen-xs {
+    .dh-sign-form {
+      padding: 0;
+      margin-top: 20px;
+      width: 100%;
+      min-width: auto;
+    }
+
+    .dh-form-row {
+      flex-direction: column;
+    }
+
+    .dh-input-wrapper {
+      & + .dh-input-wrapper {
+        margin-left: 0;
+      }
+    }
+
+    .dh-privacy-block {
+      align-items: flex-start;
+      margin-right: 20px;
+    }
+
+    .dh-sign-in-form {
+      margin: 21px -16px 0;
+      padding: 20px 0;
+    }
+  }
 }
 
 div.el-tooltip__popper.dh-global-error {
