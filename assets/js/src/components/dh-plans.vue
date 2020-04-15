@@ -11,7 +11,7 @@
         <div class="dh-plan-name">{{plan.name}}</div>
         <div class="dh-plan-price">${{plan.price}} / month</div>
       </div>
-      <div class="dh-plan-parameters">
+      <div class="dh-plan-parameters" v-if="false">
         <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
           <div class="dh-plan-parameter-name">
              {{parameter.name}}
