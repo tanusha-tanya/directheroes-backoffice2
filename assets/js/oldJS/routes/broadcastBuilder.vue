@@ -266,14 +266,12 @@ export default {
 
   methods: {
     getTotalSubscribers() {
-      const { categoryList } = this.currentBroadcast.settings;
+      const { settings } = this.currentBroadcast
+      let { categoryList } = settings;
 
-      // if (!categoryList.length) {
-      //   this.totalSubscribers = 0
-      //   this.inGetCount = false;
-
-      //   return;
-      // }
+      if (!categoryList) {
+        categoryList = settings.categoryList = [];
+      }
 
       axios({
         url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/category/count-subscribers`,
