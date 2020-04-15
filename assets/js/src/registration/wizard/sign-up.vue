@@ -125,7 +125,15 @@ export default {
         method: 'post',
         data: account
       }).then(({ data }) => {
-        const { dhAccount } = data.response.body;
+        const { dhAccount, success, error } = data.response.body;
+
+        if (!success) {
+          if (error === 'account_exists') {
+            Vue.set(errors, 'email', 'Account already exist.')
+          }
+
+          return;
+        }
 
         dh.userName = dhAccount.username;
 
