@@ -29,7 +29,12 @@ const commonConfig = {
       entry: './oldJS/login/login.js',
       template: './public/login.html',
       filename: 'login.html'
-    }
+    },
+    landing: {
+      entry: './src/landing/landing.js',
+      template: './public/landing.html',
+      filename: 'landing.html'
+    },
   },
   css: {
     loaderOptions: {
@@ -67,6 +72,7 @@ const devConfig = {
         { from: /\/$/, to: '/index.html' },
         { from: /\/register/, to: '/register.html' },
         { from: /\/login/, to: '/login.html' },
+        { from: /\/landing/, to: '/landing.html' },
       ],
     },
     proxy: {
