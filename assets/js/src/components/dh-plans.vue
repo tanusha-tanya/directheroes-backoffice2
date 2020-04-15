@@ -25,13 +25,11 @@
           <div class="dh-plan-feature" :class="[`dh-plan-${parameter.enabled ? 'enabled' : 'disable'}`]" v-else>
           </div>
         </div>
-        <template v-if="false">
-          <template v-if="plan !== selectedPlan">
-            <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
-          </template>
-          <template v-else>
-            <dh-button class="dh-button" :disabled="true">Selected plan</dh-button>
-          </template>
+        <template v-if="plan !== selectedPlan">
+          <dh-button @click="$emit('select-plan', plan)">{{ actionText || 'Upgrade' }}</dh-button>
+        </template>
+        <template v-else>
+          <dh-button class="dh-button" :disabled="true">Selected plan</dh-button>
         </template>
       </div>
     </div>
