@@ -205,11 +205,14 @@ body {
   & > span {
     flex-grow: 1;
   }
+
+  .dh-menu {
+    margin: 15px 0 0 60px;
+  }
 }
 
 .dh-menu {
   text-transform: uppercase;
-  margin: 15px 0 0 60px;
 
   &.dh-menu--light {
     color: $white;

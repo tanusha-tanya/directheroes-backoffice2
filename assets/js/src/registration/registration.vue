@@ -21,7 +21,7 @@ export default {
     const { defaultPlan, plans } = dh;
 
     return {
-      selectedPlan: plans.find(plan => plan.code === defaultPlan),
+      selectedPlan: plans.find(plan => plan.code === defaultPlan) || plans[0],
       dhAccount: null,
     }
   },
