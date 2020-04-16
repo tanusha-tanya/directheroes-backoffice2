@@ -555,6 +555,7 @@ button.dh-button.dh-button + .dh-button {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 50;
     background: linear-gradient(90deg, #EFF4FA 0%, #F8FAFB 10%) #F8FAFB;
 
     & > span {
