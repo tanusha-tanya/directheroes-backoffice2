@@ -25,6 +25,10 @@
           <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
             <div class="dh-plan-parameter-name">
               {{parameter.name}}
+              <span class="dh-parameter-extension" v-if="quotaExtensions[parameter.code]">
+                {{''.padStart(quotaExtensions[parameter.code].stars, '*')}}
+                <div class="dh-parameter-tooltip">{{`${''.padStart(quotaExtensions[parameter.code].stars, '*')} ${quotaExtensions[parameter.code].text}`}}</div>
+              </span>
             </div>
             <div class="dh-plan-quote" v-if="parameter.type === 1">
               {{parameter.quotaLimit === -1 ? 'Unlimited' : parameter.quotaLimit}}
@@ -47,6 +51,17 @@
         </div>
       </div>
     </div>
+    <div class="dh-plan-quotas-description">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 0.25C8.23438 0.25 6.59375 0.695312 5.07812 1.58594C3.60938 2.44531 2.44531 3.60938 1.58594 5.07812C0.695312 6.59375 0.25 8.23438 0.25 10C0.25 11.7656 0.695312 13.4062 1.58594 14.9219C2.44531 16.3906 3.60938 17.5547 5.07812 18.4141C6.59375 19.3047 8.23438 19.75 10 19.75C11.7656 19.75 13.4062 19.3047 14.9219 18.4141C16.3906 17.5547 17.5547 16.3906 18.4141 14.9219C19.3047 13.4062 19.75 11.7656 19.75 10C19.75 8.23438 19.3047 6.59375 18.4141 5.07812C17.5547 3.60938 16.3906 2.44531 14.9219 1.58594C13.4062 0.695312 11.7656 0.25 10 0.25ZM10 1.75C11.5 1.75 12.8906 2.125 14.1719 2.875C15.4062 3.60938 16.3906 4.59375 17.125 5.82812C17.875 7.10938 18.25 8.5 18.25 10C18.25 11.5 17.875 12.8906 17.125 14.1719C16.3906 15.4062 15.4062 16.3906 14.1719 17.125C12.8906 17.875 11.5 18.25 10 18.25C8.5 18.25 7.10938 17.875 5.82812 17.125C4.59375 16.3906 3.60938 15.4062 2.875 14.1719C2.125 12.8906 1.75 11.5 1.75 10C1.75 8.5 2.125 7.10938 2.875 5.82812C3.60938 4.59375 4.59375 3.60938 5.82812 2.875C7.10938 2.125 8.5 1.75 10 1.75ZM9.25 5.5V7H10.75V5.5H9.25ZM9.25 8.5V14.5H10.75V8.5H9.25Z" fill="#4D7CFE"/>
+      </svg>
+      <div class="dh-plan-quotas-item" v-for="(quota, code) in quotaExtensions" :key="code">
+        <span class="dh-parameter-extension">
+          {{''.padStart(quota.stars, '*')}}
+        </span>
+        {{quota.text}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -62,6 +77,25 @@ export default {
   },
 
   props: ['plans', 'selectedPlan', 'actionText'],
+
+  computed: {
+    quotaExtensions() {
+      const { plans } = this;
+      const quotas = {}
+
+      plans.forEach( plan => plan.parameters.forEach(parameter => {
+          if (quotas.hasOwnProperty(parameter.code) || !parameter.quotaExtensionType || parameter.quotaExtensionType !== 'pay_per_unit') return;
+
+          quotas[parameter.code] = {
+            stars: Object.keys(quotas).length + 1,
+            text: `Per unit — $ ${ parameter.quotaPrice }`
+          }
+        })
+      )
+
+      return quotas
+    },
+  },
 
   methods: {
     contactTo() {
@@ -96,6 +130,8 @@ export default {
 
 <style lang="scss">
 .dh-plans {
+  text-align: center;
+
   .dh-plan-list {
     display: flex;
     width: calc(100% + 20px);
@@ -255,6 +291,53 @@ export default {
 
   }
 
+  .dh-parameter-extension {
+    color: #4D7CFE;
+    position: relative;
+    cursor: default;
+
+    &:hover .dh-parameter-tooltip {
+      opacity: 1;
+    }
+  }
+
+  .dh-parameter-tooltip {
+    background-color: #4D7CFE;
+    white-space: nowrap;
+    left: calc(100% + 12px);
+    top: calc(50% - 25px);
+    position: absolute;
+    padding: 12px 15px;
+    color:$white;
+    border-radius: 4px;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity .3s ;
+
+    &:before {
+      content: '';
+      position: absolute;
+      border-width: 10px 10px 10px 0;
+      border-color: transparent #4D7CFE;
+      border-style: solid;
+      left: -10px;
+      top: calc(50% - 9px);
+    }
+  }
+
+  .dh-plan-quotas-description {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px;
+    margin: 25px auto 0;
+    background-color: #F2F4F6;
+    border-radius: 4px;
+  }
+
+  .dh-plan-quotas-item {
+    margin-left: 12px;
+  }
+
   .dh-plan-tabs {
     display: none;
     justify-content: space-around;
@@ -307,6 +390,16 @@ export default {
 
       .dh-plan-item {
         width: 100%;
+      }
+    }
+
+    .dh-plan-quotas-description {
+      flex-direction: column;
+      margin-top: 20px;
+
+      .dh-plan-quotas-item {
+        margin-left: 0;
+        margin-top: 12px;
       }
     }
   }

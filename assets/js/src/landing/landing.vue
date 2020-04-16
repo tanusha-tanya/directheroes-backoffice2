@@ -222,6 +222,8 @@ export default {
     plans() {
       const { plans } = dh;
 
+      plans.forEach(element => element.parameters.sort((a,b) => b.priority - a.priority));
+
       return plans;
     },
 

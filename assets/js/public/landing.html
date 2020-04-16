@@ -21,11 +21,83 @@
           "price": 97,
           "parameters": [
             {
-              "name": "Instagram Accounts",
-              "code": "instagram_accounts_limit",
+              "name": "support",
+              "code": "support",
+              "description": "",
+              "type": 3,
+              "priority": 130
+            },
+            {
+              "name": "campaign analitics",
+              "code": "campaign_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 120
+            },
+            {
+              "name": "account analitics",
+              "code": "account_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 110
+            },
+            {
+              "name": "Live Chat",
+              "code": "live_chat",
+              "enabled": false,
+              "type": 2,
+              "priority": 100
+            },
+            {
+              "name": "Broadcasts per month prepaid",
+              "code": "broadcast_runtime_limit",
               "quotaLimit": 1,
               "type": 1,
-              "priority": 10,
+              "priority": 90,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "Broadcast reach limit",
+              "code": "broadcast_reach_limit",
+              "quotaLimit": 1000,
+              "type": 1,
+              "priority": 80,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "API (Coming Soon)",
+              "code": "dh_api",
+              "enabled": false,
+              "type": 2,
+              "priority": 70
+            },
+            {
+              "name": "Zapier (webhook)",
+              "code": "flow_zapier_element",
+              "enabled": false,
+              "type": 2,
+              "priority": 60
+            },
+            {
+              "name": "Subscriber Tags & Segments",
+              "code": "subscriber_categories",
+              "enabled": false,
+              "type": 2,
+              "priority": 50
+            },
+            {
+              "name": "Audience Profiles",
+              "code": "subscriber_profiles",
+              "enabled": false,
+              "type": 2,
+              "priority": 40
+            },
+            {
+              "name": "Campaign Flows",
+              "code": "campaign_flow_limit",
+              "quotaLimit": 5,
+              "type": 1,
+              "priority": 30,
               "quotaExtensionType": "disabled"
             },
             {
@@ -37,84 +109,12 @@
               "quotaExtensionType": "disabled"
             },
             {
-              "name": "Campaign Flows",
-              "code": "campaign_flow_limit",
-              "quotaLimit": 5,
-              "type": 1,
-              "priority": 30,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Audience Profiles",
-              "code": "subscriber_profiles",
-              "enabled": false,
-              "type": 2,
-              "priority": 40
-            },
-            {
-              "name": "Subscriber Tags & Segments",
-              "code": "subscriber_categories",
-              "enabled": false,
-              "type": 2,
-              "priority": 50
-            },
-            {
-              "name": "Zapier (webhook)",
-              "code": "flow_zapier_element",
-              "enabled": false,
-              "type": 2,
-              "priority": 60
-            },
-            {
-              "name": "API (Coming Soon)",
-              "code": "dh_api",
-              "enabled": false,
-              "type": 2,
-              "priority": 70
-            },
-            {
-              "name": "Broadcast reach limit",
-              "code": "broadcast_reach_limit",
-              "quotaLimit": 1000,
-              "type": 1,
-              "priority": 80,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Broadcasts per month prepaid",
-              "code": "broadcast_runtime_limit",
+              "name": "Instagram Accounts",
+              "code": "instagram_accounts_limit",
               "quotaLimit": 1,
               "type": 1,
-              "priority": 90,
+              "priority": 10,
               "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Live Chat",
-              "code": "live_chat",
-              "enabled": false,
-              "type": 2,
-              "priority": 100
-            },
-            {
-              "name": "account analitics",
-              "code": "account_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 110
-            },
-            {
-              "name": "campaign analitics",
-              "code": "campaign_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 120
-            },
-            {
-              "name": "support",
-              "code": "support",
-              "description": "",
-              "type": 3,
-              "priority": 130
             }
           ],
           "contactUs": false,
@@ -127,11 +127,83 @@
           "price": 147,
           "parameters": [
             {
-              "name": "Instagram Accounts",
-              "code": "instagram_accounts_limit",
-              "quotaLimit": 1,
+              "name": "support",
+              "code": "support",
+              "description": "basic",
+              "type": 3,
+              "priority": 130
+            },
+            {
+              "name": "campaign analitics",
+              "code": "campaign_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 120
+            },
+            {
+              "name": "account analitics",
+              "code": "account_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 110
+            },
+            {
+              "name": "Live Chat",
+              "code": "live_chat",
+              "enabled": true,
+              "type": 2,
+              "priority": 100
+            },
+            {
+              "name": "Broadcasts per month prepaid",
+              "code": "broadcast_runtime_limit",
+              "quotaLimit": 2,
               "type": 1,
-              "priority": 10,
+              "priority": 90,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "Broadcast reach limit",
+              "code": "broadcast_reach_limit",
+              "quotaLimit": 10000,
+              "type": 1,
+              "priority": 80,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "API (Coming Soon)",
+              "code": "dh_api",
+              "enabled": true,
+              "type": 2,
+              "priority": 70
+            },
+            {
+              "name": "Zapier (webhook)",
+              "code": "flow_zapier_element",
+              "enabled": true,
+              "type": 2,
+              "priority": 60
+            },
+            {
+              "name": "Subscriber Tags & Segments",
+              "code": "subscriber_categories",
+              "enabled": true,
+              "type": 2,
+              "priority": 50
+            },
+            {
+              "name": "Audience Profiles",
+              "code": "subscriber_profiles",
+              "enabled": true,
+              "type": 2,
+              "priority": 40
+            },
+            {
+              "name": "Campaign Flows",
+              "code": "campaign_flow_limit",
+              "quotaLimit": -1,
+              "type": 1,
+              "priority": 30,
               "quotaExtensionType": "disabled"
             },
             {
@@ -143,84 +215,12 @@
               "quotaExtensionType": "disabled"
             },
             {
-              "name": "Campaign Flows",
-              "code": "campaign_flow_limit",
-              "quotaLimit": -1,
+              "name": "Instagram Accounts",
+              "code": "instagram_accounts_limit",
+              "quotaLimit": 1,
               "type": 1,
-              "priority": 30,
+              "priority": 10,
               "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Audience Profiles",
-              "code": "subscriber_profiles",
-              "enabled": true,
-              "type": 2,
-              "priority": 40
-            },
-            {
-              "name": "Subscriber Tags & Segments",
-              "code": "subscriber_categories",
-              "enabled": true,
-              "type": 2,
-              "priority": 50
-            },
-            {
-              "name": "Zapier (webhook)",
-              "code": "flow_zapier_element",
-              "enabled": true,
-              "type": 2,
-              "priority": 60
-            },
-            {
-              "name": "API (Coming Soon)",
-              "code": "dh_api",
-              "enabled": true,
-              "type": 2,
-              "priority": 70
-            },
-            {
-              "name": "Broadcast reach limit",
-              "code": "broadcast_reach_limit",
-              "quotaLimit": 10000,
-              "type": 1,
-              "priority": 80,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Broadcasts per month prepaid",
-              "code": "broadcast_runtime_limit",
-              "quotaLimit": 2,
-              "type": 1,
-              "priority": 90,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Live Chat",
-              "code": "live_chat",
-              "enabled": true,
-              "type": 2,
-              "priority": 100
-            },
-            {
-              "name": "account analitics",
-              "code": "account_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 110
-            },
-            {
-              "name": "campaign analitics",
-              "code": "campaign_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 120
-            },
-            {
-              "name": "support",
-              "code": "support",
-              "description": "basic",
-              "type": 3,
-              "priority": 130
             }
           ],
           "contactUs": false,
@@ -233,11 +233,85 @@
           "price": 97,
           "parameters": [
             {
-              "name": "Instagram Accounts",
-              "code": "instagram_accounts_limit",
-              "quotaLimit": 1,
+              "name": "support",
+              "code": "support",
+              "description": "dedicated",
+              "type": 3,
+              "priority": 130
+            },
+            {
+              "name": "campaign analitics",
+              "code": "campaign_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 120
+            },
+            {
+              "name": "account analitics",
+              "code": "account_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 110
+            },
+            {
+              "name": "Live Chat",
+              "code": "live_chat",
+              "enabled": true,
+              "type": 2,
+              "priority": 100
+            },
+            {
+              "name": "Broadcasts per month prepaid",
+              "code": "broadcast_runtime_limit",
+              "quotaLimit": 4,
               "type": 1,
-              "priority": 10,
+              "priority": 90,
+              "quotaPrice": 59,
+              "quotaExtensionType": "pay_per_unit"
+            },
+            {
+              "name": "Broadcast reach limit",
+              "code": "broadcast_reach_limit",
+              "quotaLimit": 50000,
+              "type": 1,
+              "priority": 80,
+              "quotaPrice": 0,
+              "quotaExtensionType": "pay_per_unit"
+            },
+            {
+              "name": "API (Coming Soon)",
+              "code": "dh_api",
+              "enabled": true,
+              "type": 2,
+              "priority": 70
+            },
+            {
+              "name": "Zapier (webhook)",
+              "code": "flow_zapier_element",
+              "enabled": true,
+              "type": 2,
+              "priority": 60
+            },
+            {
+              "name": "Subscriber Tags & Segments",
+              "code": "subscriber_categories",
+              "enabled": true,
+              "type": 2,
+              "priority": 50
+            },
+            {
+              "name": "Audience Profiles",
+              "code": "subscriber_profiles",
+              "enabled": true,
+              "type": 2,
+              "priority": 40
+            },
+            {
+              "name": "Campaign Flows",
+              "code": "campaign_flow_limit",
+              "quotaLimit": -1,
+              "type": 1,
+              "priority": 30,
               "quotaExtensionType": "disabled"
             },
             {
@@ -250,72 +324,30 @@
               "quotaExtensionType": "pay_per_unit"
             },
             {
-              "name": "Campaign Flows",
-              "code": "campaign_flow_limit",
-              "quotaLimit": -1,
+              "name": "Instagram Accounts",
+              "code": "instagram_accounts_limit",
+              "quotaLimit": 1,
               "type": 1,
-              "priority": 30,
+              "priority": 10,
               "quotaExtensionType": "disabled"
-            },
+            }
+          ],
+          "contactUs": false,
+          "annualPrice": 1048,
+          "oldPrice": 247
+        },
+        {
+          "code": "agency_v2",
+          "name": "Enterprise",
+          "description": "dh enterprise",
+          "price": 997,
+          "parameters": [
             {
-              "name": "Audience Profiles",
-              "code": "subscriber_profiles",
-              "enabled": true,
-              "type": 2,
-              "priority": 40
-            },
-            {
-              "name": "Subscriber Tags & Segments",
-              "code": "subscriber_categories",
-              "enabled": true,
-              "type": 2,
-              "priority": 50
-            },
-            {
-              "name": "Zapier (webhook)",
-              "code": "flow_zapier_element",
-              "enabled": true,
-              "type": 2,
-              "priority": 60
-            },
-            {
-              "name": "API (Coming Soon)",
-              "code": "dh_api",
-              "enabled": true,
-              "type": 2,
-              "priority": 70
-            },
-            {
-              "name": "Broadcast reach limit",
-              "code": "broadcast_reach_limit",
-              "quotaLimit": 50000,
-              "type": 1,
-              "priority": 80,
-              "quotaPrice": 0,
-              "quotaExtensionType": "pay_per_unit"
-            },
-            {
-              "name": "Broadcasts per month prepaid",
-              "code": "broadcast_runtime_limit",
-              "quotaLimit": 4,
-              "type": 1,
-              "priority": 90,
-              "quotaPrice": 59,
-              "quotaExtensionType": "pay_per_unit"
-            },
-            {
-              "name": "Live Chat",
-              "code": "live_chat",
-              "enabled": true,
-              "type": 2,
-              "priority": 100
-            },
-            {
-              "name": "account analitics",
-              "code": "account_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 110
+              "name": "support",
+              "code": "support",
+              "description": "Dedicated AM",
+              "type": 3,
+              "priority": 130
             },
             {
               "name": "campaign analitics",
@@ -325,28 +357,69 @@
               "priority": 120
             },
             {
-              "name": "support",
-              "code": "support",
-              "description": "dedicated",
-              "type": 3,
-              "priority": 130
-            }
-          ],
-          "contactUs": false,
-          "annualPrice": 1048
-        },
-        {
-          "code": "agency_v2",
-          "name": "Enterprise",
-          "description": "dh enterprise",
-          "price": 997,
-          "parameters": [
+              "name": "account analitics",
+              "code": "account_analitics",
+              "enabled": true,
+              "type": 2,
+              "priority": 110
+            },
             {
-              "name": "Instagram Accounts",
-              "code": "instagram_accounts_limit",
+              "name": "Live Chat",
+              "code": "live_chat",
+              "enabled": true,
+              "type": 2,
+              "priority": 100
+            },
+            {
+              "name": "Broadcasts per month prepaid",
+              "code": "broadcast_runtime_limit",
               "quotaLimit": -1,
               "type": 1,
-              "priority": 10,
+              "priority": 90,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "Broadcast reach limit",
+              "code": "broadcast_reach_limit",
+              "quotaLimit": -1,
+              "type": 1,
+              "priority": 80,
+              "quotaExtensionType": "disabled"
+            },
+            {
+              "name": "API (Coming Soon)",
+              "code": "dh_api",
+              "enabled": true,
+              "type": 2,
+              "priority": 70
+            },
+            {
+              "name": "Zapier (webhook)",
+              "code": "flow_zapier_element",
+              "enabled": true,
+              "type": 2,
+              "priority": 60
+            },
+            {
+              "name": "Subscriber Tags & Segments",
+              "code": "subscriber_categories",
+              "enabled": true,
+              "type": 2,
+              "priority": 50
+            },
+            {
+              "name": "Audience Profiles",
+              "code": "subscriber_profiles",
+              "enabled": true,
+              "type": 2,
+              "priority": 40
+            },
+            {
+              "name": "Campaign Flows",
+              "code": "campaign_flow_limit",
+              "quotaLimit": -1,
+              "type": 1,
+              "priority": 30,
               "quotaExtensionType": "disabled"
             },
             {
@@ -358,84 +431,12 @@
               "quotaExtensionType": "disabled"
             },
             {
-              "name": "Campaign Flows",
-              "code": "campaign_flow_limit",
+              "name": "Instagram Accounts",
+              "code": "instagram_accounts_limit",
               "quotaLimit": -1,
               "type": 1,
-              "priority": 30,
+              "priority": 10,
               "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Audience Profiles",
-              "code": "subscriber_profiles",
-              "enabled": true,
-              "type": 2,
-              "priority": 40
-            },
-            {
-              "name": "Subscriber Tags & Segments",
-              "code": "subscriber_categories",
-              "enabled": true,
-              "type": 2,
-              "priority": 50
-            },
-            {
-              "name": "Zapier (webhook)",
-              "code": "flow_zapier_element",
-              "enabled": true,
-              "type": 2,
-              "priority": 60
-            },
-            {
-              "name": "API (Coming Soon)",
-              "code": "dh_api",
-              "enabled": true,
-              "type": 2,
-              "priority": 70
-            },
-            {
-              "name": "Broadcast reach limit",
-              "code": "broadcast_reach_limit",
-              "quotaLimit": -1,
-              "type": 1,
-              "priority": 80,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Broadcasts per month prepaid",
-              "code": "broadcast_runtime_limit",
-              "quotaLimit": -1,
-              "type": 1,
-              "priority": 90,
-              "quotaExtensionType": "disabled"
-            },
-            {
-              "name": "Live Chat",
-              "code": "live_chat",
-              "enabled": true,
-              "type": 2,
-              "priority": 100
-            },
-            {
-              "name": "account analitics",
-              "code": "account_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 110
-            },
-            {
-              "name": "campaign analitics",
-              "code": "campaign_analitics",
-              "enabled": true,
-              "type": 2,
-              "priority": 120
-            },
-            {
-              "name": "support",
-              "code": "support",
-              "description": "Dedicated AM",
-              "type": 3,
-              "priority": 130
             }
           ],
           "contactUs": true,
