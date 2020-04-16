@@ -125,7 +125,7 @@ export default {
 
         if (!success) {
           if (error === 'account_exists') {
-            Vue.set(errors, 'email', 'Account with this email address already exists. </br>You can login or recover your password on <a href="/login">the login page</a>')
+            Vue.set(errors, 'email', 'Account with this email address already exists. Please <a href="/login">login</a> or <a href="/resetting/request">recover your password</a>')
           }
 
           return;
