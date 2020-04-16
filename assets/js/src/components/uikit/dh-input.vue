@@ -31,7 +31,7 @@
     <div class="dh-input__footer dh-input-error">
       <span class="dh-input-error__wrapper" v-if="error">
         <span class="dh-input-error__icon"><warning /></span>
-        <span class="dh-input-error__text">{{ error }}</span>
+        <span class="dh-input-error__text" v-html="error"></span>
       </span>
     </div>
   </label>

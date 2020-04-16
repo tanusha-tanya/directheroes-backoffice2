@@ -102,6 +102,7 @@ $dangerPressedText: $white;
     border-radius: 4px;
     opacity: 0.4;
     color: $disabledTextColor;
+    pointer-events: none;
   }
 }
 

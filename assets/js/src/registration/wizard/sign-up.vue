@@ -78,14 +78,10 @@ export default {
     hasErrors() {
       const { account, confirmPassword, errors, confirmPolicy, passwordValidation } = this;
       const emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      const emptyFilledError = 'Please fill out this field';
+      const emptyFilledError = 'Please fill in this field';
 
       if (!confirmPassword) {
         Vue.set(errors, 'confirmPassword', emptyFilledError)
-      }
-
-      if (!confirmPolicy) {
-        this.globalError = 'Check and read policy'
       }
 
       Object.keys(account).forEach(accountProperty => {
@@ -129,7 +125,7 @@ export default {
 
         if (!success) {
           if (error === 'account_exists') {
-            Vue.set(errors, 'email', 'Account already exist.')
+            Vue.set(errors, 'email', 'Account with this email address already exists. </br>You can login or recover your password on <a href="/login">the login page</a>')
           }
 
           return;
@@ -145,12 +141,6 @@ export default {
       });
     },
   },
-
-  watch: {
-    confirmPolicy() {
-      this.globalError = null;
-    }
-  }
 }
 </script>
 

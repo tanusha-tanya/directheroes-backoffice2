@@ -8,7 +8,7 @@
       Your payment has been accepted.
     </div>
     <div class="dh-sign-text dh-sign-text--small">
-      You can contact us to get more info at <br/>
+      If you have any questions, do not hesitate to reach out at: <br/>
       <a :href="`mailto:${ contactEmail }`" target="_blank">{{contactEmail}}</a>
     </div>
     <dh-button @click="goToDH">Start now!</dh-button>

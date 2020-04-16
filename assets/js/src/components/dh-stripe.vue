@@ -169,7 +169,7 @@ export default {
     hasErrors() {
       const { cardNumber, cardExpiry, cardCvc, owner, errors } = this;
       const { address } = owner;
-      const emptyFilledError = 'Please fill out this field';
+      const emptyFilledError = 'Please fill in this field';
 
       if (!owner.name) {
         Vue.set(errors, 'name', emptyFilledError)
@@ -182,7 +182,7 @@ export default {
       })
 
       if (!cardNumber._complete || !cardExpiry._complete || !cardCvc._complete) {
-        Vue.set(errors, 'card', 'Please fill out card fields')
+        Vue.set(errors, 'card', 'Please fill in card fields')
       }
 
       return Object.keys(errors).some(error => errors[error]);
