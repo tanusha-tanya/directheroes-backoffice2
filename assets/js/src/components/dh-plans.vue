@@ -3,7 +3,7 @@
     <div class="dh-plan-tabs">
       <div class="dh-plan-tab" :class="{'dh-plan-tab--active': selectedTab === plan.code, 'dh-plan-tab--selected': plan === selectedPlan}" v-for="plan in plans" :key="plan.code" @click="scrollPlan(plan.code)">{{plan.name}}</div>
     </div>
-    <div class="dh-plan-list">
+    <div class="dh-plan-list" ref="scrollElement">
       <div
         class="dh-plan-item"
         :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs }"
@@ -75,14 +75,15 @@ export default {
     },
 
     scrollPlan(planCode, noAnimation) {
+      const { scrollElement } = this.$refs;
       const [planElement] = this.$refs[planCode];
 
-      if (!planElement) return;
+      if (!planElement || !scrollElement) return;
 
       this.selectedTab = planCode;
 
-      planElement.scrollIntoView({inline: 'center', behavior: noAnimation ? 'auto' : 'smooth'})
-    }
+      scrollElement.scrollTo({left: planElement.offsetLeft - 28, behavior: noAnimation ? 'auto' : 'smooth'})
+    },
   },
 
   mounted() {
