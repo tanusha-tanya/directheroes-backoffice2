@@ -66,7 +66,7 @@ export default {
     const { defaultPlan, plans } = dh;
     const currentPlan = (code && code[1]) || defaultPlan;
 
-    plans.forEach(element => element.parameters.sort((a,b) => b.priority - a.priority));
+    plans.forEach(element => element.parameters.sort((a,b) => a.priority - b.priority));
 
     return {
       selectedPlan: plans.find(plan => plan.code === currentPlan) || plans[0],
