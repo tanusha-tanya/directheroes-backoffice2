@@ -45,7 +45,15 @@ export default {
     backToBilling(data = {}) {
       const { wizard } = this;
 
+      window.onbeforeunload = undefined;
+
       wizard.setWizardState(null, 'billing', data);
+    }
+  },
+
+  created() {
+    window.onbeforeunload = () => {
+      return false
     }
   }
 }

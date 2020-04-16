@@ -53,6 +53,8 @@ export default {
 
         if (error) return;
 
+        window.onbeforeunload = undefined;
+
         wizard.setWizardState(null, 'thanks');
       })
     },
@@ -60,8 +62,10 @@ export default {
     goToPlans() {
       const { wizard } = this;
 
+      window.onbeforeunload = undefined;
+
       wizard.setWizardState(null, 'plans');
-    }
+    },
   },
 
   mounted() {
@@ -72,6 +76,12 @@ export default {
 
       this.stripeComponent = stripeComponent;
     })
+  },
+
+  created() {
+    window.onbeforeunload = () => {
+      return false
+    }
   }
 }
 </script>

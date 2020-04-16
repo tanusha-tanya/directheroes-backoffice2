@@ -235,6 +235,7 @@ export default {
   methods: {
     goToPath(path) {
       this.showModalMenu = false;
+
       window.location.href = window.location.origin + path;
     },
 
