@@ -36,9 +36,9 @@ export default {
           subscribers: "493K"
         },
         {
-          logo: require("../assets/landing/tech.png"),
-          name: "Technology",
-          login: "@technology",
+          logo: require("../assets/landing/stone.png"),
+          name: "Jason Stone",
+          login: "@jason__stone",
           subscribers: "4.7M"
         },
         {
@@ -48,10 +48,10 @@ export default {
           subscribers: "5.7M"
         },
         {
-          logo: require("../assets/landing/high.png"),
-          name: "High On Life",
-          login: "@highonlife",
-          subscribers: "1M"
+          logo: require("../assets/landing/kinobody.png"),
+          name: "Kinobody",
+          login: "@gregogallagher",
+          subscribers: "619K"
         },
         {
           logo: require("../assets/landing/mylett.png"),
