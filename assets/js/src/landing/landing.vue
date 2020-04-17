@@ -417,6 +417,7 @@ button.dh-button.dh-button + .dh-button {
   border-radius: 4px;
   padding: 40px 28px 24px;
   position: relative;
+  overflow: hidden;
 }
 
 .dh-plans-block__title {
