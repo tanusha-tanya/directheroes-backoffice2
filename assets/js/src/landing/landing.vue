@@ -113,7 +113,8 @@
         @select-plan="selectPlan"
       ></dh-plans>
     </div>
-    <div class="dh-our-clients">
+    <dh-clients />
+    <!-- <div class="dh-our-clients">
       <img src="../assets/landing/bg-trust.png" alt="">
       <div class="dh-our-clients__wrapper">
         <div class="dh-our-client__title">They trust <span class="dh-colored-text">Direct Heroes</span> </div>
@@ -122,7 +123,7 @@
           <div class="dh-our-client-list__item" v-for="index in 10" :style="{'background-image': `url(${ clients[index - 1] })`}" :key="index"></div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="dh-connect-block">
       <div class="dh-connect-block__title">
         Empower Your Instagram Today
@@ -203,6 +204,7 @@ import seven from '../assets/landing/7.png'
 import eight from '../assets/landing/8.png'
 import nine from '../assets/landing/9.png'
 import ten from '../assets/landing/10.png'
+import dhClients from "../components/dh-clients";
 
 export default {
   data() {
@@ -216,6 +218,7 @@ export default {
     logoBig,
     dhPlans,
     logoImage,
+    dhClients
   },
 
   computed: {
@@ -413,6 +416,7 @@ button.dh-button.dh-button + .dh-button {
   box-shadow: 0px 2px 80px rgba(27, 30, 36, 0.05);
   border-radius: 4px;
   padding: 40px 28px 24px;
+  position: relative;
 }
 
 .dh-plans-block__title {
