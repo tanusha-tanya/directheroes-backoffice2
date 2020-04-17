@@ -104,10 +104,10 @@ export default {
 
   methods: {
     initAddCard() {
-      const { goal, returnUrl } = this;
+      const { goal, returnUrl, planCode } = this;
       const request = axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/stripe/init-add-card`,
-        params: { goal, return_url: encodeURIComponent(returnUrl) }
+        params: { goal, return_url: encodeURIComponent(returnUrl), planCode }
       })
 
       request.then(({ data }) => {
