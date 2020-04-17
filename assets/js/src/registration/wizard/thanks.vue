@@ -35,6 +35,10 @@ export default {
     goToDH() {
       window.location.href = `https://${ window.location.hostname }/${ dh.userName }/v2/`;
     }
+  },
+
+  created() {
+    window.location.hash="thankyou"
   }
 }
 </script>
