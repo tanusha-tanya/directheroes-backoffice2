@@ -145,6 +145,8 @@ $clients-footer-title-font-size: $font-size-heading-h2;
     padding-bottom: 12px;
     font-weight: bold;
     text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .landing-clients__subtitle {
@@ -183,6 +185,7 @@ $clients-footer-title-font-size: $font-size-heading-h2;
       font-size: $clients-footer-subtitle-font-size;
       line-height: 24px;
       padding-bottom: 6px;
+      text-align: center;
     }
 
     .landing-clients-footer__title {
@@ -190,6 +193,7 @@ $clients-footer-title-font-size: $font-size-heading-h2;
       font-size: $clients-footer-title-font-size;
       line-height: 30px;
       font-weight: 500;
+      text-align: center;
     }
   }
 
@@ -222,6 +226,7 @@ $clients-footer-title-font-size: $font-size-heading-h2;
         font-size: $font-size-heading-h4;
         line-height: 22px;
         color: $primaryDark;
+        text-align: center;
       }
 
       .landing-clients-item__login {
@@ -245,7 +250,7 @@ $clients-footer-title-font-size: $font-size-heading-h2;
 @include screen-xs {
   .landing-clients-step {
     margin-top: 90px;
-    
+
     &:before {
       content: "";
       background-image: url("../assets/landing/clients-step-decor-mobile.png");
@@ -257,6 +262,16 @@ $clients-footer-title-font-size: $font-size-heading-h2;
 
       .landing-clients-item {
         width: 49%;
+      }
+    }
+
+    .landing-clients__footer {
+
+      &:before {
+        content: "";
+        height: 120px;
+        width: 102px;
+        top: 110px;
       }
     }
   }
