@@ -1,7 +1,7 @@
 <template>
   <div class="dh-sign-app">
     <div class="dh-sign-step" :class="[`dh-step-${ wizardState }`]">
-      <div class="dh-logo"></div>
+      <a class="dh-logo" href="/"></a>
       <component
         :is="wizardState"
       ></component>
