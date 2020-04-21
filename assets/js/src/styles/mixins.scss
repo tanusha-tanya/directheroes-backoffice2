@@ -1,5 +1,33 @@
+$screen-md-max: 1200px;
+$screen-sm-max: 992px;
+$screen-xs-max: 768px;
+$screen-xxs-max: 568px;
+
+@keyframes rotation {
+  0% { transform:rotate(0deg); }
+  100% { transform:rotate(360deg); }
+}
+
 @mixin text-ellipsis {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+@mixin screen-md {
+  @media (max-width: $screen-md-max) {
+    @content;
+  }
+};
+
+@mixin screen-sm {
+  @media (max-width: $screen-sm-max) {
+    @content;
+  }
+};
+
+@mixin screen-xs {
+  @media (max-width: $screen-xs-max) {
+    @content;
+  }
+};

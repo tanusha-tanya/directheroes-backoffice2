@@ -79,6 +79,8 @@ $checkbox-radio-border-color-disabled-unchecked: $background1;
 $checkbox-radio-pin-color-disabled-checked: $secondaryDark2;
 
 .dh-checkbox {
+  display: inline-block;
+
   &.dh-checkbox--toggle {
     display: flex;
     align-items: center;

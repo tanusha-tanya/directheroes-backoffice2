@@ -235,6 +235,7 @@ export default {
 
     availableElements() {
       const { elements } = this.dhAccount.flowBuilderSettings;
+
       if (elements.includes('sendMedia')) {
         return ['sendMedia'].concat(elementsPermissions.fromBroadcastFlow)
       }

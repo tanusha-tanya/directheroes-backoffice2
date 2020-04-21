@@ -61,7 +61,7 @@ export default new Router({
         // { name: 'accountThreadInfo', path: 'subscriber/:subscriberId', component: accountThreadInfo },
       ]
     },
-    { path: '/:isBuy?', name: 'accounts', component: Accounts },
+    { path: '/:isBuy?', name: 'accounts', component: Accounts }
   ]
 });
 

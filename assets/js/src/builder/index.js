@@ -230,7 +230,11 @@ export default {
               const { fromMessageStep, fromLinkedMessageStep } = elementsPermissions;
 
               if (isBroadcast) {
-                return element.body.action === 'sendMedia' ? ['sendText'] : ['sendMedia', 'sendText']
+                if (elements.includes('sendMedia') && element.body.action !== 'sendMedia') {
+                  return ['sendMedia', 'sendText']
+                }
+
+                return ['sendText'];
               } else {
                 if (isFail) {
                   return [].concat(fromLinkedMessageStep);

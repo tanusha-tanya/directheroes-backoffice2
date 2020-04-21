@@ -1,0 +1,38 @@
+$dialogBGColor: $white;
+$dialogTextWarningColor: $white;
+$dialogSuccessBGColor: $successColor;
+$dialogErrorBGColor: $failColor;
+
+div.dh-wizard-dialog {
+  .el-dialog__body {
+    padding: 0 !important;
+  }
+
+  .dh-wizard-step-body {
+    padding: 28px 31px 22px 24px;
+    min-height: 200px;
+  }
+
+  .el-dialog__footer {
+    background-color: $dialogBGColor;
+    justify-content: flex-end;
+    min-height: 64px;
+  }
+
+  .dh-wizard-error, .dh-wizard-success {
+    height: 80px;
+    width: 100%;
+    background-color: $dialogErrorBGColor;
+    border-radius: 4px;
+    margin-top: 20px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    color: $dialogTextWarningColor;
+    font-size: 16px;
+  }
+
+  .dh-wizard-success {
+    background-color: $dialogSuccessBGColor;
+  }
+}

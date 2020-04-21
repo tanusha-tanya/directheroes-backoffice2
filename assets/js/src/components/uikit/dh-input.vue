@@ -1,6 +1,6 @@
 <template>
   <label class="dh-input-wrapper">
-    <span class="dh-input__header">{{ label }}</span>
+    <span class="dh-input__header" v-if="label">{{ label }}</span>
     <el-input
       class="dh-input"
       :class="[
@@ -16,13 +16,22 @@
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :autocomplete="autocomplete"
+      :type="type || 'text'"
       @change="$emit('change', $event)"
       @input="$emit('input', $event)"
-    />
+    >
+      <template v-slot:prefix>
+        <slot name="prefix"></slot>
+      </template>
+      <template v-slot:suffix>
+        <slot name="suffix"></slot>
+      </template>
+    </el-input>
     <div class="dh-input__footer dh-input-error">
       <span class="dh-input-error__wrapper" v-if="error">
         <span class="dh-input-error__icon"><warning /></span>
-        <span class="dh-input-error__text">{{ error }}</span>
+        <span class="dh-input-error__text" v-html="error"></span>
       </span>
     </div>
   </label>
@@ -32,8 +41,8 @@
 import warning from '../../assets/warning.svg'
 
 export default {
-  props: ["value", "label", "error", "placeholder", "autofocus", "disabled", "readonly"],
-  
+  props: ['type', 'value', 'label', 'error', 'placeholder', 'autofocus', 'disabled', 'readonly', 'autocomplete'],
+
   components: {
     warning
   },
@@ -112,6 +121,7 @@ $input-error-icon-size: 14px;
       border: 1px solid $input-border-color;
       box-sizing: border-box;
       border-radius: 4px;
+      height: 46px;
 
       &:focus {
         border-color: $input-border-color-focus;
@@ -135,6 +145,29 @@ $input-error-icon-size: 14px;
 
     &.dh-input--readonly input {
       pointer-events: none;
+    }
+
+    .el-input__suffix {
+      right: 14px;
+      top: calc(50% - 9px);
+
+      svg {
+        width: 18px;
+      }
+    }
+
+    .el-input__prefix {
+      left: 14px;
+      top: calc(50% - 9px);
+      color: $label-color;
+
+      svg {
+        width: 18px;
+      }
+    }
+
+    &.el-input--prefix .el-input__inner {
+      padding-left: 40px;
     }
   }
 }

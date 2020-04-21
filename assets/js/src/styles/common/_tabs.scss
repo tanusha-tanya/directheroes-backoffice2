@@ -3,6 +3,10 @@ $tab-active-font-size: 14px;
 .dh-tab {
   width: 100%;
 
+  .el-tabs__content {
+    overflow: inherit;
+  }
+
   .el-tabs__nav-wrap::after {
     width: inherit;
   }

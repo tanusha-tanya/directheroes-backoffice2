@@ -7,8 +7,8 @@ const isDev = process.env.NODE_ENV === 'development';
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { WebpackCompilerPlugin } = require('webpack-compiler-plugin');
 // const commonTarget = 'https://www.directheroes.com/app_dev.php';
-const commonTarget = 'https://staging.directheroes.com/app_dev.php';
-// const commonTarget = 'https://beta2.directheroes.com/app_dev.php';
+// const commonTarget = 'https://staging.directheroes.com/app_dev.php';
+const commonTarget = 'https://beta2.directheroes.com/app_dev.php';
 // const commonTarget = 'https://beta.directheroes.com/app_dev.php';
 
 require('dotenv').config({ path: '../../.env' })
@@ -29,7 +29,12 @@ const commonConfig = {
       entry: './oldJS/login/login.js',
       template: './public/login.html',
       filename: 'login.html'
-    }
+    },
+    landing: {
+      entry: './src/landing/landing.js',
+      template: './public/landing.html',
+      filename: 'landing.html'
+    },
   },
   css: {
     loaderOptions: {
@@ -65,8 +70,9 @@ const devConfig = {
     historyApiFallback: {
       rewrites: [
         { from: /\/$/, to: '/index.html' },
-        { from: /\/register/, to: '/register.html' },
+        { from: /\/check-out/, to: '/register.html' },
         { from: /\/login/, to: '/login.html' },
+        { from: /\/pricing/, to: '/landing.html' },
       ],
     },
     proxy: {

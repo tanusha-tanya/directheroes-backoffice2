@@ -17,7 +17,9 @@ import {
   Progress,
   TabPane,
   Tabs,
-  Tree
+  Tree,
+  Collapse,
+  CollapseItem
 } from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/select.css';
@@ -39,9 +41,11 @@ import 'element-ui/lib/theme-chalk/progress.css';
 import 'element-ui/lib/theme-chalk/tabs.css';
 import 'element-ui/lib/theme-chalk/tab-pane.css';
 import 'element-ui/lib/theme-chalk/tree.css';
+import 'element-ui/lib/theme-chalk/collapse.css';
 
 
 Vue.use(Select);
+Vue.use(Option);
 Vue.use(Option);
 Vue.use(OptionGroup);
 Vue.use(InputNumber);
@@ -59,3 +63,5 @@ Vue.use(Progress);
 Vue.use(Tabs);
 Vue.use(TabPane);
 Vue.use(Tree);
+Vue.use(Collapse);
+Vue.use(CollapseItem);
