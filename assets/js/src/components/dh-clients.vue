@@ -129,6 +129,7 @@ $clients-footer-title-font-size: $font-size-heading-h2;
     background-repeat: no-repeat;
     background-position-x: 100%;
     z-index: -1;
+    pointer-events: none;
   }
 
   .landing-clients__header {

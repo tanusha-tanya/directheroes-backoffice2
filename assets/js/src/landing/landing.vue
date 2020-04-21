@@ -17,7 +17,7 @@
       </div>
       <span></span>
       <div class="dh-header__buttons">
-        <dh-button class="dh-button--signin" type="outline" @click="goToPath('/pricing#plans')">Create account</dh-button>
+        <dh-button class="dh-button--signin" type="outline" @click="goToPath('#plans')">Create account</dh-button>
         <dh-button class="dh-button--signup" type="outline" @click="goToPath('/login')">Login</dh-button>
       </div>
     </div>
@@ -241,6 +241,12 @@ export default {
     goToPath(path) {
       this.showModalMenu = false;
 
+      if (/^#/.test(path)) {
+        window.location.hash = '';
+        window.location.hash = path;
+        return;
+      }
+
       window.location.href = window.location.origin + path;
     },
 
@@ -417,7 +423,6 @@ button.dh-button.dh-button + .dh-button {
   border-radius: 4px;
   padding: 40px 28px 24px;
   position: relative;
-  overflow: hidden;
 }
 
 .dh-plans-block__title {
