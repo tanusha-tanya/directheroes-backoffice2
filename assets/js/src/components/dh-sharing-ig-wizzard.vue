@@ -7,7 +7,7 @@
     @close="isVisible = false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
-    class="dh-wizzard-dialog dh-sharing-ig"
+    class="dh-wizard-dialog dh-sharing-ig"
   >
     <component 
       :is="wizzardState" 
@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.el-dialog__wrapper.dh-wizzard-dialog {
+div.el-dialog__wrapper.dh-wizard-dialog {
   .dh-button {
     cursor: pointer;
   }

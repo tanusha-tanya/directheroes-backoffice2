@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-select-account-wizzard">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-select-account-wizard">
+    <div class="dh-wizard-step-body">
       <template v-if="igAccounts.length">
         <div
           :class="{'dh-select-account-founded': true, 'dh-select-account-selected': isAccountChecked(delegate, account)}"
@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss">
-.dh-select-account-wizzard {
+.dh-select-account-wizard {
   .dh-select-account-info {
     margin-right: 20px;
   }
