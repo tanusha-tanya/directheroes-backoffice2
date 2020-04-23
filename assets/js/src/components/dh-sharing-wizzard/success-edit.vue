@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-changes-success">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-changes-success">
+    <div class="dh-wizard-step-body">
       <div
         :class="{'dh-wizzard-success': isShared, 'dh-wizzard-error': !isShared}"
       >
