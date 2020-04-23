@@ -6,7 +6,7 @@
     <div class="dh-plan-list" ref="scrollElement">
       <div
         class="dh-plan-item"
-        :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs }"
+        :class="{'dh-selected-plan': plan === selectedPlan, 'dh-plan-contact-us': plan.contactUs, 'dh-plan-recommended': plan.code === recommendedPlan }"
         v-for="plan in plans"
         :key="plan.code"
         :ref="plan.code">
@@ -19,7 +19,10 @@
         <div class="dh-plan-info">
           <div class="dh-plan-name">{{plan.name}}</div>
           <div class="dh-plan-price" v-if="plan.contactUs">Individual</div>
-          <div class="dh-plan-price" v-else>${{plan.price}} / month</div>
+          <div class="dh-plan-price" v-else>
+            <div class="dh-plan-old-price" v-if="plan.oldPrice">${{plan.oldPrice}}</div>
+            <div class="dh-gradient-text">${{plan.price}} / month</div>
+          </div>
         </div>
         <div class="dh-plan-parameters" >
           <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
@@ -68,15 +71,15 @@
 <script>
 export default {
   data() {
-    const { selectedPlan, plans } = this;
+    const { selectedPlan, plans, recommendedPlan } = this;
     const currentPlan = selectedPlan || plans[0];
 
     return {
-      selectedTab: currentPlan.code
+      selectedTab: recommendedPlan || currentPlan.code
     }
   },
 
-  props: ['plans', 'selectedPlan', 'actionText'],
+  props: ['plans', 'selectedPlan', 'actionText', 'recommendedPlan'],
 
   computed: {
     quotaExtensions() {
@@ -182,6 +185,34 @@ export default {
           color: $white;
         }
       }
+
+      &.dh-plan-recommended {
+        border: double 1px transparent;
+        background-image: linear-gradient($white, $white), linear-gradient(90deg, #661ACE 60.16%, #2665F9 100%);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+      }
+
+      &:not(.dh-plan-recommended):not(.dh-plan-contact-us) {
+        .dh-plan-name {
+          color: #98A9BC;
+
+          &:after {
+            content: ' (Unavailable)';
+          }
+        }
+
+        .dh-plan-price {
+          border-color: #98A9BC;
+        }
+
+        .dh-gradient-text {
+          background: none;
+          -webkit-text-fill-color:#98A9BC;
+          color: #98A9BC;
+          text-decoration: line-through;
+        }
+      }
     }
 
     .dh-plan-selected__sign {
@@ -192,7 +223,7 @@ export default {
     }
 
     .dh-plan-info {
-      padding: 16px;
+      padding: 16px 0;
       display: flex;
       align-items: center;
       flex-direction: column;
@@ -212,10 +243,25 @@ export default {
       border-radius: 60px;
       font-size: 26px;
       line-height: 31px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dh-gradient-text {
       background: linear-gradient(90deg, #661ACE 60.16%, #2665F9 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       color: #661ACE;
+    }
+
+    .dh-plan-old-price {
+      font-size: 18px;
+      line-height: 22px;
+      text-decoration: line-through;
+      background: none;
+      color: #98A9BC;
+      margin-right: 10px;
     }
 
     .dh-plan-parameters {

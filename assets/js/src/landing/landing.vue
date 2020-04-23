@@ -101,6 +101,7 @@
             Get <strong>HERO</strong>  plan for $97 / month
           </div>
         </div>
+        <dh-button class="dh-button--get-plan" type="outline">Get plan</dh-button>
       </a>
     </div>
     <div class="dh-plans-block" id="plans">
@@ -109,7 +110,8 @@
       </div>
       <dh-plans
         :plans="plans"
-        action-text="Choose plan"
+        action-text="Claim Hero plan"
+        :recommended-plan="defaultPlan"
         @select-plan="selectPlan"
       ></dh-plans>
     </div>
@@ -251,9 +253,9 @@ export default {
     },
 
     selectPlan(plan) {
-      const { goToPath } = this;
+      const { goToPath, defaultPlan } = this;
 
-      goToPath(`/check-out?code=${ plan.code }`);
+      goToPath(`/check-out?code=${ defaultPlan || plan.code }`);
     }
   },
 
@@ -375,6 +377,15 @@ button.dh-button.dh-button + .dh-button {
   font-size: 20px;
   line-height: 24px;
   margin-top: 20px;
+}
+
+.dh-button.dh-button--get-plan.dh-button--get-plan {
+  background: transparent;
+  border-color: $white;
+  color: $white;
+  align-self: center;
+  margin-right: 20px;
+  min-width: 120px;
 }
 
 .dh-offer {
@@ -635,15 +646,27 @@ button.dh-button.dh-button + .dh-button {
   }
 
   .dh-offer {
-    height: 145px;
+    height: 175px;
     margin-top: 28px;
+    position: relative;
+
+    .dh-button--get-plan {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      height: 40px;
+      width: 200px;
+      padding: 0;
+      margin-right: 0 !important;
+    }
   }
 
   .dh-offer__slogan {
     flex-direction: column;
-    align-self: center;
+    align-self: flex-start;
     align-items: flex-start;
     text-align: left;
+    margin-top: 20px;
 
     & > svg {
       display: none;

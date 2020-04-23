@@ -111,7 +111,8 @@ export default {
 
       span {
         color: $elementActiveColor;
-        cursor: pointer;
+        pointer-events: none;
+        // cursor: pointer;
       }
     }
 
