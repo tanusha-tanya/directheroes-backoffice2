@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-share-request">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-share-request">
+    <div class="dh-wizard-step-body">
       <div class="dh-share-text">
         <span>
           {{ delegate.username }} is sending you a request to manage your Instagram account @{{ account.login }}

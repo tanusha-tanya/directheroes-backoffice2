@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-share-deny">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-share-deny">
+    <div class="dh-wizard-step-body">
       <div>You are about to deny user {{ delegate.username }} to access Instagram account @{{ account.login }}.</div>
       <div>Please select the most suitable option:</div>
       <div class="dh-deny-options">

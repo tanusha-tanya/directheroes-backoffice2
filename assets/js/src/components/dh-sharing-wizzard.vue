@@ -7,7 +7,7 @@
     @close="isVisible = false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
-    class="dh-wizzard-dialog dh-share-access"
+    class="dh-wizard-dialog dh-share-access"
   >
     <component
       :is="wizzardState"

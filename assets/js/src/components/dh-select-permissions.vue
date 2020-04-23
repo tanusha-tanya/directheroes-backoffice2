@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-select-permissions">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-select-permissions">
+    <div class="dh-wizard-step-body">
       <div class="dh-select-permissions__title">
         Specify the backoffice sections which will be accessible by {{ delegate.username }}
       </div>
@@ -19,7 +19,7 @@
         :highlight-current="true"
         @check-change="togglePermission"
       ></el-tree>
-      <div class="dh-wizzard-step-buttons" v-if="accountIsShared">
+      <div class="dh-wizard-step-buttons" v-if="accountIsShared">
         <button class="dh-button dh-small" :class="{'dh-loading': loading.revoke}" @click="shareAction('revoke')">Deny access</button>
       </div>
     </div>
@@ -192,7 +192,7 @@ export default {
 
 <style lang="scss">
 div.dh-select-permissions {
-  .dh-wizzard-step-buttons {
+  .dh-wizard-step-buttons {
     padding-top: 10px;
     display: flex;
     justify-content: flex-end;
@@ -214,14 +214,6 @@ div.dh-select-permissions {
     border: 1px solid $borderColor;
     max-height: 300px;
     overflow: auto;
-  }
-
-  .el-dialog__footer {
-    justify-content: flex-end;
-
-    .dh-button {
-      margin-left: 8px;
-    }
   }
 }
 </style>
