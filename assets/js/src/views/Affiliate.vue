@@ -78,6 +78,12 @@ export default {
     flex-grow: 1;
     box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
 
+    &.dh-affiliate-column--hidden {
+      background-color: unset;
+      box-shadow: unset;
+      border-radius: unset;
+    }
+
     &:not(:last-child) {
       margin-right: 20px;
     }

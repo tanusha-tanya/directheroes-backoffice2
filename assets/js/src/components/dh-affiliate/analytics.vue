@@ -7,10 +7,12 @@
           <div>Total referrals: {{ affiliateInfo.report.length }}</div>
           <div>Active referrals: {{ affiliateInfo.report.filter(reportItem => reportItem.referredUserIsSubscribed).length }}</div>
         </div>
-        <div class="dh-affiliate-column">
-          <div class="dh-affiliate-column-title">Payout Statistics:</div>
-          <div>Total Earnings: 0</div>
-          <div>Total Unpaid: 0</div>
+        <div class="dh-affiliate-column dh-affiliate-column--hidden">
+          <template v-if="false">
+            <div class="dh-affiliate-column-title">Payout Statistics:</div>
+            <div>Total Earnings: 0</div>
+            <div>Total Unpaid: 0</div>
+          </template>
         </div>
       </div>
       <div class="dh-affiliate-row">
