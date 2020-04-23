@@ -88,7 +88,7 @@ export default {
 
           quotas[parameter.code] = {
             stars: Object.keys(quotas).length + 1,
-            text: `Per unit — $ ${ parameter.quotaPrice }`
+            text: `Per additional ${ parameter.uniteName } — $ ${ parameter.quotaPrice }`
           }
         })
       )
