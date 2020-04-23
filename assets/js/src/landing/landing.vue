@@ -186,22 +186,11 @@
 import logoBig from '../assets/logo-big.svg'
 import logoImage from '../assets/logo-image.svg'
 import dhPlans from '../components/dh-plans'
-import one from '../assets/landing/1.png'
-import two from '../assets/landing/2.png'
-import three from '../assets/landing/3.png'
-import four from '../assets/landing/4.png'
-import five from '../assets/landing/5.png'
-import six from '../assets/landing/6.png'
-import seven from '../assets/landing/7.png'
-import eight from '../assets/landing/8.png'
-import nine from '../assets/landing/9.png'
-import ten from '../assets/landing/10.png'
 import dhClients from "../components/dh-clients";
 
 export default {
   data() {
     return {
-      clients: [one, two, three, four, five, six, seven, eight, nine, ten],
       showModalMenu: false,
     }
   },
@@ -675,7 +664,9 @@ button.dh-button.dh-button + .dh-button {
   }
 
   .dh-plans-block {
-    margin-bottom: 40px;
+    margin: 0 16px 40px;
+    padding: 16px;
+    width: calc(100% - 32px);
 
     .dh-plan-list {
       width: 100%;
