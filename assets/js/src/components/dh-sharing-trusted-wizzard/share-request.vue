@@ -46,7 +46,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.el-dialog__wrapper .dh-wizzard-step.dh-share-request {
+div.el-dialog__wrapper .dh-wizard-step.dh-share-request {
   .dh-share-text {
     span {
       font-size: 16px;

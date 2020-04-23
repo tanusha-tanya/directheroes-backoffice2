@@ -2,7 +2,7 @@
   <div class="dh-wizard-step dh-changes-success">
     <div class="dh-wizard-step-body">
       <div
-        :class="{'dh-wizzard-success': isShared, 'dh-wizzard-error': !isShared}"
+        :class="{'dh-wizard-success': isShared, 'dh-wizard-error': !isShared}"
       >
       <template v-if="isShared">
         @{{account.login}} backoffice access permissions have been successfully saved for {{delegate.username}}

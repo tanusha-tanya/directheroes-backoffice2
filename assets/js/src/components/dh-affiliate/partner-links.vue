@@ -3,12 +3,12 @@
     <el-dialog
       :visible.sync="isEmailSendedPopup"
       append-to-body
-      class="dh-wizzard-dialog"
+      class="dh-wizard-dialog"
       title="Link has been generated"
       width="554px"
       >
-      <div class="dh-wizzard-step dh-partner-links-popup">
-        <div class="dh-wizzard-step-body">
+      <div class="dh-wizard-step dh-partner-links-popup">
+        <div class="dh-wizard-step-body">
           <div class="dh-partner-links-popup__content">Email with the Partner link has been sent to the specified e-mail address, but you can also just copy the link to clipboard and send it manually if you wish.</div>
         </div>
         <div class="el-dialog__footer">

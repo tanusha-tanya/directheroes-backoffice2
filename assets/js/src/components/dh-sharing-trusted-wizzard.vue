@@ -135,7 +135,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.dh-wizzard-dialog.dh-trusted-share-access {
+div.dh-wizard-dialog.dh-trusted-share-access {
   .dh-button {
     cursor: pointer;
   }

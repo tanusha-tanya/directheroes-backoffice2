@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.dh-wizzard-dialog.dh-share-access {
+div.dh-wizard-dialog.dh-share-access {
   .dh-button {
     cursor: pointer;
   }
