@@ -28,10 +28,10 @@
           <div class="dh-plan-parameter-item" v-for="parameter in plan.parameters" :key="parameter.code">
             <div class="dh-plan-parameter-name">
               {{parameter.name}}
-              <span class="dh-parameter-extension" v-if="quotaExtensions[parameter.code]">
+              <!-- <span class="dh-parameter-extension" v-if="quotaExtensions[parameter.code]">
                 {{''.padStart(quotaExtensions[parameter.code].stars, '*')}}
                 <div class="dh-parameter-tooltip">{{`${''.padStart(quotaExtensions[parameter.code].stars, '*')} ${quotaExtensions[parameter.code].text}`}}</div>
-              </span>
+              </span> -->
             </div>
             <div class="dh-plan-quote" v-if="parameter.type === 1">
               {{parameter.quotaLimit === -1 ? 'Unlimited' : parameter.quotaLimit}}
@@ -193,26 +193,26 @@ export default {
         background-clip: content-box, border-box;
       }
 
-      &:not(.dh-plan-recommended):not(.dh-plan-contact-us) {
-        .dh-plan-name {
-          color: #98A9BC;
+      // &:not(.dh-plan-recommended):not(.dh-plan-contact-us) {
+      //   .dh-plan-name {
+      //     color: #98A9BC;
 
-          &:after {
-            content: ' (Unavailable)';
-          }
-        }
+      //     &:after {
+      //       content: ' (Unavailable)';
+      //     }
+      //   }
 
-        .dh-plan-price {
-          border-color: #98A9BC;
-        }
+      //   .dh-plan-price {
+      //     border-color: #98A9BC;
+      //   }
 
-        .dh-gradient-text {
-          background: none;
-          -webkit-text-fill-color:#98A9BC;
-          color: #98A9BC;
-          text-decoration: line-through;
-        }
-      }
+      //   .dh-gradient-text {
+      //     background: none;
+      //     -webkit-text-fill-color:#98A9BC;
+      //     color: #98A9BC;
+      //     text-decoration: line-through;
+      //   }
+      // }
     }
 
     .dh-plan-selected__sign {

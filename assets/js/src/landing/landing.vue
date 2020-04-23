@@ -57,7 +57,7 @@
           </a>
         </div>
         <div class="dh-header__buttons">
-          <dh-button class="dh-button--signin" type="outline" @click="goToPath('/pricing#plans')">Create account</dh-button>
+          <dh-button class="dh-button--signin" type="outline" @click="goToPath('#plans')">Create account</dh-button>
           <dh-button class="dh-button--signup" type="outline" @click="goToPath('/login')">Login</dh-button>
         </div>
         <span></span>
@@ -110,22 +110,12 @@
       </div>
       <dh-plans
         :plans="plans"
-        action-text="Claim Hero plan"
+        action-text="Choose plan"
         :recommended-plan="defaultPlan"
         @select-plan="selectPlan"
       ></dh-plans>
     </div>
     <dh-clients />
-    <!-- <div class="dh-our-clients">
-      <img src="../assets/landing/bg-trust.png" alt="">
-      <div class="dh-our-clients__wrapper">
-        <div class="dh-our-client__title">They trust <span class="dh-colored-text">Direct Heroes</span> </div>
-        <div class="dh-our-client__text">We are paying them back with amazing service & awesome features</div>
-        <div class="dh-our-client-list">
-          <div class="dh-our-client-list__item" v-for="index in 10" :style="{'background-image': `url(${ clients[index - 1] })`}" :key="index"></div>
-        </div>
-      </div>
-    </div> -->
     <div class="dh-connect-block">
       <div class="dh-connect-block__title">
         Empower Your Instagram Today
@@ -253,9 +243,9 @@ export default {
     },
 
     selectPlan(plan) {
-      const { goToPath, defaultPlan } = this;
+      const { goToPath } = this;
 
-      goToPath(`/check-out?code=${ defaultPlan || plan.code }`);
+      goToPath(`/check-out?code=${ plan.code }`);
     }
   },
 
