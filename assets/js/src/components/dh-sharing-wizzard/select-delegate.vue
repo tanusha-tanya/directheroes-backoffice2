@@ -1,6 +1,6 @@
 <template>
-  <div class="dh-wizzard-step dh-select-delegate">
-    <div class="dh-wizzard-step-body">
+  <div class="dh-wizard-step dh-select-delegate">
+    <div class="dh-wizard-step-body">
       <template v-if="delegates !== null">
         <div class="dh-delegate-add-step">
           <div class="dh-delegate-add-input">
@@ -103,7 +103,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.dh-wizzard-step.dh-select-delegate {
+div.dh-wizard-step.dh-select-delegate {
   .dh-delegate-add-step {
     margin-bottom: 10px;
 

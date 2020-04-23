@@ -7,7 +7,7 @@
     @close="isVisible = false"
     :close-on-click-modal="false"
     :destroy-on-close="true"
-    class="dh-wizzard-dialog dh-share-access"
+    class="dh-wizard-dialog dh-share-access"
   >
     <component
       :is="wizzardState"
@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style lang="scss">
-div.dh-wizzard-dialog.dh-share-access {
+div.dh-wizard-dialog.dh-share-access {
   .dh-button {
     cursor: pointer;
   }
