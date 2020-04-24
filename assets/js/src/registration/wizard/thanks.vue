@@ -41,6 +41,7 @@ export default {
   },
 
   created() {
+    const { sendAnalyticEvent } = this;
     const { selectedPlan } = this.wizard;
 
     window.location.hash="thankyou";

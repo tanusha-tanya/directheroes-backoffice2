@@ -108,7 +108,7 @@ export default {
     },
 
     createAccount() {
-      const { account, confirmPassword, errors, hasErrors, wizard } = this;
+      const { account, confirmPassword, errors, hasErrors, wizard, sendAnalyticEvent } = this;
 
       this.globalError = null;
 
@@ -137,8 +137,6 @@ export default {
 
         wizard.setWizardState(null, 'billing', { dhAccount });
       }).catch((error) => {
-        console.dir(error);
-
         this.globalError = 'Server connection problem, please try again';
       }).finally(() => {
         this.creating = false;
