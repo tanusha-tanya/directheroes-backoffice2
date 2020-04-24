@@ -97,7 +97,7 @@ export default {
     },
 
     referralClean(event) {
-      const { settings } = this.affiliateInfo;
+      const { settings } = this;
       this.referrerCodeChanged = true;
 
       settings.referrerCode = settings.referrerCode.replace(
