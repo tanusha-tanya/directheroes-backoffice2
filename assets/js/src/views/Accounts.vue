@@ -36,6 +36,7 @@
     </div>
     <dh-footer></dh-footer>
     <dh-connection-wizard v-model="isAddAccount" :account-auth="accountToAuth" @set-auth-account="setAuthAccount" v-if="isAddAccount"></dh-connection-wizard>
+    <dh-sharing-trusted-wizzard v-model="sharing.trusted" :account-share="accountToShare" :delegate-share="delegateToShare" />
     <dh-sharing-wizzard v-model="sharing.common" :account-share="accountToShare" :delegates="delegates"/>
     <el-dialog
       :visible.sync="isExtraAccount"
@@ -62,6 +63,7 @@ import dhConfirmDialog from '../components/dh-confirm-dialog'
 import dhAccountCard from '../components/dh-account-card'
 import status from '../assets/plus.svg'
 import dhSharingWizzard from '../components/dh-sharing-wizzard'
+import dhSharingTrustedWizzard from '../components/dh-sharing-trusted-wizzard'
 
 import extraAccount from '../../oldJS/assets/svg/extra-account.svg'
 
@@ -88,8 +90,10 @@ export default {
       accountToDelete: false,
       accountToShare: null,
       delegates: null,
+      delegateToShare: null,
       isExtraAccount: false,
       sharing: {
+        trusted: false,
         common: false
       }
     };
@@ -103,7 +107,8 @@ export default {
     extraAccount,
     dhConnectionWizard,
     dhAccountCard,
-    dhSharingWizzard
+    dhSharingWizzard,
+    dhSharingTrustedWizzard
   },
 
   computed: {
@@ -135,6 +140,23 @@ export default {
         this.accountToDelete = value;
       }
     }
+  },
+
+  watch: {
+    isAddAccount(newValue, oldValue) {
+      const { accountToAuth, delegateRequestHandler } = this;
+      if (!newValue && accountToAuth.connectStep === "account.success") {
+        delegateRequestHandler().then(delegates => {
+          const trusted = delegates.find(d => d.isTrusted);
+          if (trusted) {
+            this.delegateToShare = trusted;
+            this.sharing.trusted = true;
+            this.accountToShare = accountToAuth;
+          }
+        });
+      }
+    }
+
   },
 
   methods: {
