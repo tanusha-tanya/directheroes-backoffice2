@@ -9,6 +9,8 @@ Vue.mixin({
     sendAnalyticEvent(event, payload) {
       const { fbq, dataLayer } = window;
 
+      console.log('Event not double');
+
       if (fbq) {
         fbq('track', event, payload);
       }
