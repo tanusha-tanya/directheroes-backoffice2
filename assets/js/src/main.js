@@ -65,6 +65,18 @@ Vue.mixin({
       const { subscriptionCapabilities } = currentAccount;
 
       return subscriptionCapabilities && subscriptionCapabilities.find && subscriptionCapabilities.find(parameter => parameter.code === codeName)
+    },
+
+    sendAnalyticEvent(event, payload) {
+      const { fbq, dataLayer } = window;
+
+      if (fbq) {
+        fbq('track', event, payload);
+      }
+
+      if (dataLayer) {
+        dataLayer.push({ event, ...payload})
+      }
     }
   },
 

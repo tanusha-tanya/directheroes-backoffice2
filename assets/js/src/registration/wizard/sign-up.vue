@@ -133,6 +133,8 @@ export default {
 
         dh.userName = dhAccount.username;
 
+        sendAnalyticEvent('CompleteRegistration');
+
         wizard.setWizardState(null, 'billing', { dhAccount });
       }).catch((error) => {
         this.globalError = 'Server connection problem, please try again';

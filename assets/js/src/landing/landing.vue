@@ -239,7 +239,10 @@ export default {
   },
 
   created() {
+    const { sendAnalyticEvent } = this;
     const referrer = /ref=([^&]*)/.exec(location.search);
+
+    sendAnalyticEvent('AddToCart');
 
     if (referrer && referrer[1]) {
       document.cookie = 'referrer=' + referrer[1] + '; path=/; max-age=2592000'

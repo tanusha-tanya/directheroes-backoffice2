@@ -84,8 +84,14 @@ export default {
   },
 
   created() {
+    const { setWizardState, sendAnalyticEvent, selectedPlan } = this;
     const referrer = /ref=([^&]*)/.exec(location.search);
-    const { setWizardState } = this;
+
+    sendAnalyticEvent('InitiateCheckout', {
+      value: selectedPlan.price,
+      currency: 'USD',
+      plan: selectedPlan.code,
+    });
 
     if (referrer && referrer[1]) {
       document.cookie = 'referrer=' + referrer[1] + '; path=/; max-age=2592000'

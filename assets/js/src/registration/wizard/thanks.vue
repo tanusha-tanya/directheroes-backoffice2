@@ -17,11 +17,14 @@
 
 <script>
 import logoPic from '../../assets/logo-pic.svg'
+import wizardStep from '../../mixins/wizard/wizard-step'
 
 export default {
   components: {
     logoPic
   },
+
+  mixins: [wizardStep],
 
   computed: {
     contactEmail() {
@@ -38,7 +41,15 @@ export default {
   },
 
   created() {
-    window.location.hash="thankyou"
+    const { selectedPlan } = this.wizard;
+
+    window.location.hash="thankyou";
+
+    sendAnalyticEvent('Purchase', {
+      value: selectedPlan.price,
+      currency: 'USD',
+      plan: selectedPlan.code,
+    });
   }
 }
 </script>

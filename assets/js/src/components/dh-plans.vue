@@ -29,8 +29,7 @@
             <div class="dh-plan-parameter-name">
               {{parameter.name}}
               <span class="dh-parameter-extension" v-if="parameter.quotaExtensionType === 'pay_per_unit'">
-                *
-                <div class="dh-parameter-tooltip">* Increase {{ parameter.name }} (per {{ parameter.uniteName }}) — $ {{ parameter.quotaPrice }}</div>
+                * <div class="dh-parameter-tooltip">Increase {{ parameter.name }} (per {{ parameter.uniteName }}) — $ {{ parameter.quotaPrice }}</div>
               </span>
             </div>
             <div class="dh-plan-quote" v-if="parameter.type === 1">
