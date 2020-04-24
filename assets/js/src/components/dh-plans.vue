@@ -87,10 +87,11 @@
 export default {
   data() {
     const { selectedPlan, plans, recommendedPlan } = this;
+    const planRecommended = plans.find(plan => plan.code === recommendedPlan);
     const currentPlan = selectedPlan || plans[0];
 
     return {
-      selectedTab: recommendedPlan || currentPlan.code
+      selectedTab: (planRecommended && planRecommended.code) || currentPlan.code
     }
   },
 
