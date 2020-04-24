@@ -9,7 +9,8 @@ Vue.mixin({
       const { fbq, dataLayer } = window;
 
       if (fbq) {
-        fbq('track', event, payload);
+        fbq('trackSingle', event, payload);
+        fbq('trackSingleCustom', event, payload);
       }
 
       if (dataLayer) {
