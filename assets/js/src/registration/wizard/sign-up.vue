@@ -137,6 +137,8 @@ export default {
 
         wizard.setWizardState(null, 'billing', { dhAccount });
       }).catch((error) => {
+        console.dir(error);
+
         this.globalError = 'Server connection problem, please try again';
       }).finally(() => {
         this.creating = false;
