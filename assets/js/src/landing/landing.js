@@ -1,31 +1,30 @@
 import Vue from 'vue'
 import App from './landing.vue'
+import analytics from '../analytics'
 
 import "../components/uikit";
+
+analytics.init();
 
 Vue.mixin({
   methods: {
     sendAnalyticEvent(event, payload) {
-      const { fbq, dataLayer, ga, location } = window;
+      const { fbq, dataLayer, dhGa, location } = window;
 
-      console.log('Event', event);
+      try {
+        if (fbq) {
+          fbq('track', event, payload);
+        }
 
-      if (fbq) {
-        fbq('track', event, payload);
-        // fbq('trackSingleCustom', event, payload);
-      }
+        if (dataLayer) {
+          dataLayer.push({ event, ...payload})
+        }
 
-      if (dataLayer) {
-        dataLayer.push({ event, ...payload})
-      }
-
-      if (ga) {
-        ga.getAll().forEach(tracker => {
-          const trackerName = tracker.get("name");
-          const sendTrackerName = trackerName ? `${trackerName}.send` : 'send';
-
-          ga(sendTrackerName, 'event', event, location.href)
-        });
+        if (dhGa) {
+          dhGa('event', event, location.href);
+        }
+      } catch(error) {
+        console.dir(error);
       }
     }
   }
