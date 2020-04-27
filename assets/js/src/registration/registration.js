@@ -7,7 +7,7 @@ import "../components/uikit";
 Vue.mixin({
   methods: {
     sendAnalyticEvent(event, payload) {
-      const { fbq, dataLayer } = window;
+      const { fbq, dataLayer, ga, location } = window;
 
       console.log('Event', event);
 
@@ -18,6 +18,10 @@ Vue.mixin({
 
       if (dataLayer) {
         dataLayer.push({ event, ...payload})
+      }
+
+      if (ga) {
+        ga('send', 'event', event, location.href)
       }
     }
   }
