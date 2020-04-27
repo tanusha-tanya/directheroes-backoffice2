@@ -5,6 +5,8 @@ import analytics from '../analytics'
 import '../elementui'
 import '../components/uikit';
 
+console.log(analytics);
+
 analytics.init();
 
 Vue.mixin({
