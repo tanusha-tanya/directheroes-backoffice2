@@ -9,9 +9,11 @@ Vue.mixin({
     sendAnalyticEvent(event, payload) {
       const { fbq, dataLayer } = window;
 
+      console.log('Event', event);
+
       if (fbq) {
-        fbq('trackSingle', event, payload);
-        fbq('trackSingleCustom', event, payload);
+        fbq('track', event, payload);
+        // fbq('trackSingleCustom', event, payload);
       }
 
       if (dataLayer) {
