@@ -21,7 +21,12 @@ Vue.mixin({
       }
 
       if (ga) {
-        ga('send', 'event', event, location.href)
+        ga.getAll().forEach(tracker => {
+          const trackerName = tracker.get("name");
+          const sendTrackerName = trackerName ? `${trackerName}.send` : 'send';
+
+          ga(sendTrackerName, 'event', event, location.href)
+        });
       }
     }
   }
