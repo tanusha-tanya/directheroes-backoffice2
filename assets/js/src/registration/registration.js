@@ -7,18 +7,18 @@ import "../components/uikit";
 Vue.mixin({
   methods: {
     sendAnalyticEvent(event, payload) {
-      // const { fbq, dataLayer } = window;
+      const { fbq, dataLayer } = window;
 
-      // console.log('Event', event);
+      console.log('Event', event);
 
-      // if (fbq) {
-      //   fbq('track', event, payload);
-      //   // fbq('trackSingleCustom', event, payload);
-      // }
+      if (fbq) {
+        fbq('track', event, payload);
+        // fbq('trackSingleCustom', event, payload);
+      }
 
-      // if (dataLayer) {
-      //   dataLayer.push({ event, ...payload})
-      // }
+      if (dataLayer) {
+        dataLayer.push({ event, ...payload})
+      }
     }
   }
 })
