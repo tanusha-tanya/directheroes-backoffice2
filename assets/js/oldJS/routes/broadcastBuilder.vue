@@ -19,56 +19,56 @@
     </div>
     <flow-builder v-else-if="currentBroadcast" :entry-item="currentBroadcast" :disabled="startAt && blockStatus" :has-warning="hasWarning" ref="flowBuilder"></flow-builder>
     <div class="broadcast-settings" v-if="isSettings" @click="isSettings = false">
-    <div class="broadcast-settings-area" @click.stop="">
-      <div class="broadcast-settings-controls">
-        Broadcast on:
-          <el-date-picker
-            v-model="startAt"
-            type="datetime"
-            time-arrow-control
-            :clearable="false"
-            size="mini"
-            :disabled="(startAt && blockStatus) || Boolean(hasWarning)"
-            :picker-options="pickerOptions"
-            placeholder="Select date and time">
-          </el-date-picker>
-        or:
-          <button @click="setNowDate" :disabled="(startAt && blockStatus) || Boolean(hasWarning)">Broadcast now</button>
-      </div>
-      <div class="broadcast-settings-info">
-        <div class="broadcast-settings-campaign-list">
-          <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="currentBroadcast.settings.categoryList"></check-box-branch>
+      <div class="broadcast-settings-area" @click.stop="">
+        <div class="broadcast-settings-controls">
+          Broadcast on:
+            <el-date-picker
+              v-model="startAt"
+              type="datetime"
+              time-arrow-control
+              :clearable="false"
+              size="mini"
+              :disabled="(startAt && blockStatus) || Boolean(hasWarning)"
+              :picker-options="pickerOptions"
+              placeholder="Select date and time">
+            </el-date-picker>
+          or:
+            <button @click="setNowDate" :disabled="(startAt && blockStatus) || Boolean(hasWarning)">Broadcast now</button>
         </div>
-        <div class="broadcast-chart">
-          <el-progress type="circle" :percentage="messagesInfo.sentPercent" :stroke-width="12" color="#64c6cc"></el-progress>
-          <div class="broadcast-chart-info">
-            Messages sent
-            <strong>{{messagesInfo.sentMessages}} / {{messagesInfo.sentMessages + messagesInfo.remainingMessages}}</strong>
+        <div class="broadcast-settings-info">
+          <div class="broadcast-settings-campaign-list">
+            <check-box-branch v-for="item in subscriberMainCategory" :key="item.id" :item="item" :checkedList="currentBroadcast.settings.categoryList"></check-box-branch>
+          </div>
+          <div class="broadcast-chart">
+            <el-progress type="circle" :percentage="messagesInfo.sentPercent" :stroke-width="12" color="#64c6cc"></el-progress>
+            <div class="broadcast-chart-info">
+              Messages sent
+              <strong>{{messagesInfo.sentMessages}} / {{messagesInfo.sentMessages + messagesInfo.remainingMessages}}</strong>
+            </div>
+          </div>
+          <div class="broadcast-chart">
+            <el-progress type="circle" :percentage="conversationInfo.completedPercent" :stroke-width="12" color="#473cd0"></el-progress>
+            <div class="broadcast-chart-info">
+              Conversation completed
+              <strong>{{conversationInfo.completedConversations}} / {{conversationInfo.completedConversations + conversationInfo.remainingConversations}}</strong>
+            </div>
+          </div>
+          <div class="broadcast-estimated-time" v-if="estimatedTime">
+            Estimated time
+            <div><strong>{{estimatedTime}}</strong></div>
           </div>
         </div>
-        <div class="broadcast-chart">
-          <el-progress type="circle" :percentage="conversationInfo.completedPercent" :stroke-width="12" color="#473cd0"></el-progress>
-          <div class="broadcast-chart-info">
-            Conversation completed
-            <strong>{{conversationInfo.completedConversations}} / {{conversationInfo.completedConversations + conversationInfo.remainingConversations}}</strong>
-          </div>
+        <div class="broadcast-additional-info">
+          Total subscribers:
+          <span v-if="inGetCount" class="broadcast-esimating">estimating...</span>
+          <span v-else-if="totalSubscribers == null" class="broadcast-count-error">Failed to calculate</span>
+          <span v-else>{{ totalSubscribers }}</span>
+          <tariff-wrapper :is-enabled="totalSubscribers <= reachLimitTariff">
+            <triangle/> This broadcast is set up to reach {{totalSubscribers}} subscribers, but your plan only allows up to {{reachLimitTariff}}. Last {{totalSubscribers - reachLimitTariff}} won't get the message <span v-if="false">Do you want to expand reach for ${plan.extraBroadcastParticipantPrice * (broadcast.totalSubscribers - plan.broadcastMaxReach)}?</span>
+          </tariff-wrapper>
         </div>
-        <div class="broadcast-estimated-time" v-if="estimatedTime">
-          Estimated time
-          <div><strong>{{estimatedTime}}</strong></div>
-        </div>
-      </div>
-      <div class="broadcast-additional-info">
-        Total subscribers:
-        <span v-if="inGetCount" class="broadcast-esimating">estimating...</span>
-        <span v-else-if="totalSubscribers == null" class="broadcast-count-error">Failed to calculate</span>
-        <span v-else>{{ totalSubscribers }}</span>
-        <tariff-wrapper :is-enabled="totalSubscribers <= reachLimitTariff">
-          <triangle/> This broadcast is set up to reach {{totalSubscribers}} subscribers, but your plan only allows up to {{reachLimitTariff}}. Last {{totalSubscribers - reachLimitTariff}} won't get the message <span v-if="false">Do you want to expand reach for ${plan.extraBroadcastParticipantPrice * (broadcast.totalSubscribers - plan.broadcastMaxReach)}?</span>
-        </tariff-wrapper>
       </div>
     </div>
-  </div>
   </div>
 </template>
 <script>

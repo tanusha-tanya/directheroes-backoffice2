@@ -625,3 +625,34 @@ div.el-picker-panel {
   border-radius: 10px;
   background-color: #E8ECEF;
 }
+
+div.el-tooltip__popper.dh-button-error {
+  background-color: $failColor;
+  padding: 10px 30px;
+  max-width: 300px;
+
+  &[x-placement^=bottom] .popper__arrow {
+    border-bottom-color: $failColor;
+
+    &:after {
+      border-bottom-color: $failColor;
+    }
+  }
+
+  &[x-placement^=top] .popper__arrow {
+    border-top-color: $failColor;
+
+    &:after {
+      border-top-color: $failColor;
+    }
+  }
+
+  &[x-placement^=left] .popper__arrow {
+    border-left-color: $failColor;
+    top: calc(50% - 6px) !important;
+
+    &:after {
+      border-left-color: $failColor;
+    }
+  }
+}

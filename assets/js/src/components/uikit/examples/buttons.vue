@@ -27,7 +27,7 @@
         <dh-button type="outline" :loading="true">loading</dh-button>
         <dh-button type="outline" :loading="true" :disabled="true">Outline</dh-button>
         <dh-button type="outline" size="small">Small</dh-button>
-        <dh-button type="outline" size="small" :loading="true">Small loading</dh-button>
+        <dh-button type="outline" size="small" :loading="loading" @click="loading = !loading">Small loading</dh-button>
       </div>
       <div class="uikit-items">
         <dh-button type="danger">Danger</dh-button>
@@ -50,10 +50,11 @@
 <script>
 export default {
   props: ["active"],
-  
+
   data: () => {
     return {
-      visible: false
+      visible: false,
+      loading: false,
     }
   },
 
