@@ -6,10 +6,10 @@
     </div>
     <div class="uikit-item__collapsable" :class="{ 'uikit-item__collapsable_active': visible }">
       <div class="uikit-items inputs small">
-        <dh-input error="Error was catched" v-model="inputValue" :autofocus="true" />
-        <dh-input placeholder="hello bro" v-model="inputValue" />
+        <dh-input error="Error was catched" v-model="inputValue" :autofocus="true" label=" "/>
+        <dh-input placeholder="hello bro" v-model="inputValue" label=" "/>
         <dh-input placeholder="hello bro" v-model="inputValue" label="hello world" />
-        <dh-input placeholder="hello bro" v-model="inputValue" error="Error description" />
+        <dh-input placeholder="hello bro" v-model="inputValue" error="Error description" label=" "/>
         <dh-input
           placeholder="hello bro"
           v-model="inputValue"
@@ -25,13 +25,13 @@
       </div>
       <div class="uikit-items inputs large">
         <dh-input label="errored input" error="Error was catchedError was catchedError was catchedError was catchedError was catchedError was catched" v-model="inputValue" :autofocus="true" />
-        <dh-input placeholder="hello bro" error="Error was catchedError was catchedError was catchedError was catchedError was catchedError was catched"  v-model="inputValue" />
+        <dh-input label=" " placeholder="hello bro" error="Error was catchedError was catchedError was catchedError was catchedError was catchedError was catched"  v-model="inputValue" />
         <dh-input placeholder="hello bro" error="Error was catchedError was catchedError was catchedError was catchedError was catchedError was catched"  v-model="inputValue" label="hello world" />
       </div>
       <div class="uikit-items inputs large">
         <dh-input placeholder="Readonly" v-model="inputValue" label="Readonly input" :readonly="true"/>
         <dh-input placeholder="Readonly" error="something went wrong" v-model="inputValue" label="Readonly input" :readonly="true"/>
-        <dh-input placeholder="Readonly" v-model="inputValue" :readonly="true"/>
+        <dh-input placeholder="Readonly" v-model="inputValue" :readonly="true" label=" "/>
       </div>
     </div>
   </div>

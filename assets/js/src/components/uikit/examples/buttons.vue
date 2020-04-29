@@ -43,6 +43,13 @@
         <dh-button type="text" size="small">Small</dh-button>
         <dh-button type="text" size="small" :loading="true">Small loading</dh-button>
       </div>
+      <div class="uikit-items">
+        <dh-button @click="loading = !loading">{{ loading ? 'Stop' : 'Start' }} loading</dh-button>
+        <dh-button type="outline" :loading="loading">Outline</dh-button>
+        <dh-button type="text" :loading="loading">Text</dh-button>
+        <dh-button size="small" type="reset" :loading="loading">Small</dh-button>
+        <dh-button size="small" type="danger" :loading="loading">Small loading</dh-button>
+      </div>
     </div>
   </div>
 </template>
@@ -50,11 +57,12 @@
 <script>
 export default {
   props: ["active"],
-  
+
   data: () => {
     return {
-      visible: false
-    }
+      visible: false,
+      loading: false
+    };
   },
 
   mounted() {
