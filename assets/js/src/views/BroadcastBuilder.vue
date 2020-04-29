@@ -63,12 +63,13 @@
         </div>
       </template>
       <div class="dh-deactivate-body">
-        By deactivating your campaign, contacts could end up not finishing the flow.<br><br>
-        If this campaign gets re-activated through the campaign builder page. contacts will continue from where they finished off.<br><br>
-        Note: If a contact enters a new campaign while this one is still deactivated, the contacts will no longer continue through this flow if reactivated.
+        By deactivating your broadcast, the remaining contacts that are in the message queue will no longer receive your message.<br/><br/>
+        You will not be able to reactivate this broadcast at anytime to continue the queued messages and this interrupted broadcast will still count against your monthly broadcasts quota.<br/><br/>
+        Please note, when you deactivate your broadcast, all campaigns you have active will continue to send messages out.<br/><br/>
+        Are you sure you want to deactivate this broadcast?
       </div>
       <template slot="footer">
-        <button class="dh-button dh-danger-button" @click="interruptBroadcast">Stop broadcast</button>
+        <button class="dh-button dh-danger-button" @click="interruptBroadcast">Yes, Deactivate Broadcast</button>
       </template>
     </el-dialog>
   </div>
@@ -147,7 +148,11 @@ export default {
     canTestBroadcast() {
       const { builder } = this;
 
-      return builder && (!builder.broadcastRuntime || !['running', 'interrupted', 'completed'].includes(builder.broadcastRuntime.status))
+      if (builder) {
+        console.log(builder.broadcastRuntime, builder.startAt);
+      }
+
+      return builder && ((!builder.broadcastRuntime && !builder.startAt) || !['running', 'interrupted', 'completed'].includes(builder.broadcastRuntime.status))
     },
 
     canCancelBroadcast() {
@@ -207,11 +212,21 @@ export default {
           accountId: parseInt(accountId)
         }
       })
-        .then(() => {
+        .then((data) => {
+          console.log(data);
 
         })
         .catch(error => {
-          this.error = error.message;
+          const { response } = error;
+          let errorMessage = error.message;
+
+          if (response && response.data && response.data.request) {
+            const { statusMessage } = response.data.request;
+
+            errorMessage = statusMessage;
+          }
+
+          this.error = errorMessage;
           console.dir(error)
         })
         .finally(() => {
