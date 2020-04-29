@@ -155,7 +155,7 @@ button.dh-button {
 
   &.dh-button--small,
   &.dh-small { // legacy, will be removed later
-    min-width: auto;
+    min-width: 80px;
     height: auto;
     padding: 5px 15px;
 
@@ -163,8 +163,8 @@ button.dh-button {
     &.dh-loading:before {
       width: 5px;
       height: 5px;
-      top: calc(50% - 6px);
-      left: calc(50% - 6px);
+      top: calc(50% - 5px);
+      left: calc(50% - 5px);
     }
   }
 
