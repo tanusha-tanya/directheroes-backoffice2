@@ -93,6 +93,20 @@
         <dh-deactivate-dialog v-model="isDeactivateCampaign" v-if="currentCampaign" :campaign-name="currentCampaign.name" @success="deactivateCampaign"></dh-deactivate-dialog>
       </div>
     </dh-header>
+    <el-tooltip
+      v-if="currentCampaign && currentCampaign.isActive && !reChecked"
+      popper-class="dh-button-error"
+      :value="Boolean(error)"
+      placement="left"
+      :content="error"
+      :manual="true">
+      <dh-button class="dh-button-recheck" type="reset" :loading="inRecheck" @click="recheckCampaignThreads">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 0.5C6.0625 0.5 5.16602 0.6875 4.31055 1.0625C3.50195 1.41406 2.78711 1.91211 2.16602 2.55664C1.54492 3.20117 1.07031 3.94531 0.742188 4.78906L1.7793 5.21094C2.04883 4.50781 2.44141 3.88672 2.95703 3.34766C3.47266 2.80859 4.07031 2.38672 4.75 2.08203C5.46484 1.77734 6.21484 1.625 7 1.625C7.89062 1.625 8.73438 1.83008 9.53125 2.24023C10.3047 2.63867 10.9492 3.18359 11.4648 3.875H9.25V5H13.1875V1.0625H12.0625V2.80273C11.4297 2.08789 10.6855 1.52539 9.83008 1.11523C8.92773 0.705078 7.98438 0.5 7 0.5ZM12.2207 9.28906C11.9512 9.99219 11.5586 10.6133 11.043 11.1523C10.5273 11.6914 9.92969 12.1133 9.25 12.418C8.53516 12.7227 7.78516 12.875 7 12.875C6.09766 12.875 5.24805 12.6699 4.45117 12.2598C3.68945 11.8613 3.04492 11.3164 2.51758 10.625H4.75V9.5H0.8125V13.4375H1.9375V11.6973C2.57031 12.4121 3.31445 12.9688 4.16992 13.3672C5.06055 13.7891 6.00391 14 7 14C7.9375 14 8.83398 13.8125 9.68945 13.4375C10.498 13.0859 11.2129 12.5879 11.834 11.9434C12.4551 11.2988 12.9297 10.5547 13.2578 9.71094L12.2207 9.28906Z" fill="currentColor"/>
+        </svg>
+        Re-check threads
+      </dh-button>
+    </el-tooltip>
     <div class="dh-view-content">
       <old-campaign-builder ref="oldBuilder" :has-warning="hasWarning" :current-campaign="currentCampaign"></old-campaign-builder>
     </div>
@@ -102,6 +116,7 @@
 
 <script>
 import Vue from 'vue'
+import axios from 'axios'
 import moment from 'moment'
 import dhHeader from '../components/dh-header'
 import dhFooter from '../components/dh-footer'
@@ -167,7 +182,10 @@ export default {
 
         //   return time.getTime() < Date.now();
         // }
-      }
+      },
+      inRecheck: false,
+      error: null,
+      reChecked: false,
     }
   },
 
@@ -399,6 +417,38 @@ export default {
 
       return time.getTime() < (startAt ? moment(startAt).toDate() : Date.now());
     },
+
+    recheckCampaignThreads() {
+      const { currentCampaign, currentAccount } = this;
+      this.inRecheck = true;
+
+      axios({
+        url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/thread/recheck-campaigns`,
+        method: 'post',
+        data: {
+          accountId: currentAccount.id,
+          threadIdList: [],
+          depth: '-1day',
+          campaignId: currentCampaign.id
+        }
+      }).then(({ data }) => {
+        this.reChecked = true;     
+      }).catch(error => {
+        const { response } = error;
+        let errorMessage = error.message;
+
+        if (response && response.data && response.data.request) {
+          const { statusMessage } = response.data.request;
+
+          errorMessage = statusMessage;
+        }
+
+        this.error = errorMessage;
+        console.dir(error)
+      }).finally(() => {
+        this.inRecheck = false;
+      })
+    }
   },
 
   watch:{
@@ -477,6 +527,28 @@ export default {
   .dh-campaign-activate-button {
     .el-switch {
       pointer-events: none;
+    }
+  }
+
+  .dh-button-recheck {
+    position: absolute !important;
+    right: 28px;
+    top: 82px;
+    background-color: $white;
+    box-shadow: 0px 2px 16px rgba(153, 155, 168, 0.12);
+    border-radius: 4px;
+    z-index: 10;
+
+    svg {
+      margin: -3px 10px 0 0;
+    }
+
+    &:focus {
+      background-color: $white;
+
+      &.dh-button--loading {
+        color: transparent;
+      }
     }
   }
 }
