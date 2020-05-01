@@ -210,7 +210,7 @@ export default {
         }
       })
         .then(({ data }) => {
-          builder.broadcastRuntime = data.response.body;
+          //builder.broadcastRuntime = data.response.body;
         })
         .catch(error => {
           const { response } = error;
