@@ -148,10 +148,6 @@ export default {
     canTestBroadcast() {
       const { builder } = this;
 
-      if (builder) {
-        console.log(builder.broadcastRuntime, builder.startAt);
-      }
-
       return builder && ((!builder.broadcastRuntime && !builder.startAt) || !['running', 'interrupted', 'completed'].includes(builder.broadcastRuntime.status))
     },
 
@@ -198,6 +194,7 @@ export default {
     },
 
     interruptBroadcast() {
+      const { builder } = this;
       const { campaignId, accountId } = this.$route.params;
 
       this.isInterruptWarning = false;
@@ -212,9 +209,8 @@ export default {
           accountId: parseInt(accountId)
         }
       })
-        .then((data) => {
-          console.log(data);
-
+        .then(({ data }) => {
+          builder.broadcastRuntime = data.response.body;
         })
         .catch(error => {
           const { response } = error;
