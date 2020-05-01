@@ -79,7 +79,7 @@ export default {
       this.error = null;
 
       axios({
-        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/settings/update`,
+        url: `${ dh.apiUrl }/api/1.0.0/${ dh.userName }/campaign/cancel`,
         method: "post",
         data: {
           userId: dhAccount.id,
