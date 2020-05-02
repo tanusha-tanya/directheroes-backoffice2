@@ -59,6 +59,10 @@
               <span><tutorials/></span>
               Top Instagram Giveaway Campaign! 80% email open rate!!!
             </a>
+            <a href="https://youtu.be/FdKyEj17baE" target="_blank" class="dh-list-item">
+              <span><tutorials/></span>
+              What Instagram “Gurus” Are Charging You For
+            </a>
           </el-collapse-item>
           <el-collapse-item title="Documents" name="3">
             <a href="https://www.directheroes.com/doc-dist/Build_Your_First_Flow.pdf" download target=_blank class="dh-list-item">
