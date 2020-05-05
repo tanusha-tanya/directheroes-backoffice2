@@ -1,60 +1,61 @@
 <template>
-  <div class="dh-partner-row dh-affiliate-info dh-partner-links">
-    <el-dialog
-      :visible.sync="isEmailSendedPopup"
-      append-to-body
-      class="dh-wizard-dialog"
-      title="Link has been generated"
-      width="554px"
-      >
-      <div class="dh-wizard-step dh-partner-links-popup">
-        <div class="dh-wizard-step-body">
-          <div class="dh-partner-links-popup__content">Email with the Partner link has been sent to the specified e-mail address, but you can also just copy the link to clipboard and send it manually if you wish.</div>
-        </div>
-        <div class="el-dialog__footer">
-          <span></span>
-          <button class="dh-button" @click="isEmailSendedPopup = false">Ok</button>
-        </div>
-      </div>
-    </el-dialog>
+  <div class="dh-affiliate-row dh-partner">
     <div class="dh-affiliate-column">
-      <div>We will send one-time link to:</div>
-      <div
-        class="dh-notification dh-notification-error"
-        :class="{ 'dh-notification-visible': errors.global || errors.email }"
+      <dh-affiliate-card
+        class="dh-affiliate-partner-card"
+        title="Partner link generation"
+        subtitle="We will generate a one-time link that can be used to give you access to user's account."
+        :icon="true"
       >
-        <warning />
-        {{errors.global || errors.email}}
-      </div>
-      <div class="dh-affiliate-actions">
-        <input
-          type="text"
-          class="dh-input dh-input-validation"
-          :class="{ 'dh-input-error': errors.email }"
-          placeholder="Enter Receiver Email"
-          v-model="receiverEmail"
-          @input="clearError('email')"
-          @keypress.enter="onCreateLink"
-        />
-        <div
-          :class="{'dh-partner-link-wrapper': true, 'dh-partner-link-wrapper-visible': partnerLink}"
-        >
-          <div class="dh-partner-link">{{ partnerLink }}</div>
-        </div>
-        <div class="dh-affiliate-actions__buttons">
-          <button
-            class="dh-button dh-small dh-button-generate"
-            :class="{'dh-loading': creating}"
-            @click="onCreateLink"
-            :disabled="!receiverEmail"
-          >Generate</button>
-          <button class="dh-button dh-small" :disabled="!partnerLink" @click="copyToClipboard">
-            <dh-link />
-          </button>
-        </div>
-      </div>
+        <template v-slot:icon>
+          <dhLink />
+        </template>
+        <template v-slot:body>
+          <div class="dh-input-button-group dh-input-button-group--labeled">
+            <dh-input
+              label="Receiver's email"
+              placeholder="Enter email"
+              v-model="receiverEmail"
+              @input="() => {
+                clearError('email');
+                partnerLink = '';
+              }"
+              @keypress.enter.native="onCreateLink"
+              :error="errors.email || errors.global"
+            />
+            <dh-button
+              :disabled="!receiverEmail"
+              @click="onCreateLink"
+              :loading="creating"
+            >generate</dh-button>
+          </div>
+        </template>
+        <template v-slot:footer v-if="partnerLink">
+          <div class="dh-partner-success-link">
+            <dh-send-outline />
+            <span>Partner link has been generated and sent to the receiver</span>
+          </div>
+          <div class="dh-partner-footer-copy dh-input-button-group dh-input-button-group--labeled">
+            <dh-input
+              label="You can also copy the link and send it manually:"
+              :value="partnerLink"
+            />
+            <el-popover v-model="successPopover" placement="bottom-end" width="234" trigger="click">
+              <div class="dh-notify-success">
+                <dhCopy />
+                <span>Copied to clipboard</span>
+                <dhClose class="dh-notify-close" @click="successPopover = false" />
+              </div>
+              <dh-button slot="reference" @click="copyToClipboard">
+                <dhCopy />
+                <span class="dh-partner-copy-icon">copy</span>
+              </dh-button>
+            </el-popover>
+          </div>
+        </template>
+      </dh-affiliate-card>
     </div>
-    <div></div>
+    <div class="dh-affiliate-column dh-affiliate-column--hidden"></div>
   </div>
 </template>
 
@@ -64,23 +65,31 @@ import axios from "axios";
 import utils from "../../../oldJS/utils";
 import warning from "../../assets/warning.svg";
 import Vue from "vue";
+import dhAffiliateCard from "./affiliate-card";
+import dhSendOutline from "../../assets/send-outline.svg";
+import dhCopy from "../../assets/copy.svg";
+import dhClose from "../../assets/close.svg";
 
 export default {
   components: {
     dhLink,
-    warning
+    warning,
+    dhAffiliateCard,
+    dhSendOutline,
+    dhCopy,
+    dhClose
   },
 
   data: () => {
     return {
       receiverEmail: null,
       partnerLink: null,
-      isEmailSendedPopup: false,
       errors: {
         global: "",
         email: ""
       },
-      creating: false
+      creating: false,
+      successPopover: false
     };
   },
 
@@ -114,83 +123,92 @@ export default {
       this.creating = true;
       axios({
         url: `${dh.apiUrl}/api/1.0.0/${dh.userName}/dh-account/partner/generate?email=${receiverEmail}`
-      }).then(({ data }) => {
+      })
+        .then(({ data }) => {
           const { invitationLink } = data.response.body;
 
           this.partnerLink = invitationLink;
-          this.isEmailSendedPopup = true;
-      }).catch(({ response }) => {
+        })
+        .catch(({ response }) => {
           let message = "Something went wrong";
           if (response && response.data && response.data.request) {
             const { statusMessage } = response.data.request;
             message = statusMessage;
           }
           Vue.set(errors, "global", message);
-      }).finally(() => (this.creating = false));
+        })
+        .finally(() => (this.creating = false));
     }
   }
 };
 </script>
 
 <style lang="scss">
-.dh-affiliate-view .dh-partner-links {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+$partner-link-icon-color: $primary;
+$partner-card-min-height: 214px;
+$partner-card-icon-size: 36px;
 
-  .dh-affiliate-column {
-    flex: 0 50%;
+$partner-footer-border-color: $background1;
+$partner-footer-background-color: $white;
+$partner-footer-success-background: $secondary2;
+$partner-footer-success-text-color: $white;
+$partner-footer-text-link-color: $link;
 
-    .dh-affiliate-actions {
+.dh-affiliate-partner-card {
+  min-height: $partner-card-min-height;
+
+  .dh-affiliate-card-header .dh-affiliate-card-header__icon {
+    color: $partner-link-icon-color;
+
+    svg {
+      width: $partner-card-icon-size;
+      max-height: $partner-card-icon-size;
+      top: 8px;
+    }
+  }
+
+  .dh-affiliate-card-footer {
+    padding-top: 20px;
+    background-color: $partner-footer-background-color;
+    border-top: 1px solid $partner-footer-border-color;
+
+    .dh-partner-success-link {
+      background-color: $partner-footer-success-background;
+      border-radius: 4px;
+      color: $partner-footer-success-text-color;
+      padding: 12px 28px;
       display: flex;
-      flex-direction: column;
-      max-width: 300px;
-      margin: 0 auto;
+      align-items: center;
 
-      .dh-affiliate-actions__buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .dh-button-generate {
-          flex-grow: 1;
-          margin-right: 5px;
-        }
+      svg {
+        width: 24px;
+        max-height: 24px;
       }
 
-      .dh-partner-link-wrapper {
-        display: flex;
-        align-items: center;
-        opacity: 0;
-        min-height: 48px;
-      }
-
-      .dh-partner-link-wrapper-visible {
-        opacity: 1;
-      }
-
-      .dh-partner-link {
-        color: $elementActiveColor;
-        word-break: break-all;
-      }
-
-      .dh-button:not(.dh-link-button) {
-        margin-top: 10px;
-        margin-left: 0;
+      span {
+        padding-left: 12px;
       }
     }
+  }
 
-    .dh-button:not(:disabled) {
-      cursor: pointer;
+  .dh-partner-footer-copy {
+    padding-top: 15px;
+
+    input {
+      color: $partner-footer-text-link-color;
     }
 
-    .dh-notification {
-      margin-top: 5px;
-      opacity: 0;
+    svg {
+      width: 18px;
+      max-height: 18px;
     }
 
-    .dh-notification-visible {
-      opacity: 1;
+    .dh-partner-copy-icon {
+      padding-left: 8px;
+    }
+
+    .dh-button {
+      max-width: 100px;
     }
   }
 }

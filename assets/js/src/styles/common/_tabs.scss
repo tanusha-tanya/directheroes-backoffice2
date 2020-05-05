@@ -22,6 +22,7 @@ $tab-active-font-size: 14px;
       text-align: center;
       font-weight: 500;
       color: $elementsColor;
+      padding: 0 10px;
 
       &.is-active {
         color: $elementActiveColor;
