@@ -155,6 +155,7 @@
         </template>
       </el-dialog>
       <purchase-wizard v-model="$store.state.purchasePlans" v-if="$store.state.purchasePlans"></purchase-wizard>
+      <dh-email-confirmation />
     </div>
     <loader v-else-if="isFirstLoad"></loader>
     <div class="dh-init-error" v-else>
@@ -188,6 +189,7 @@ import TariffWrapper from './components/dh-tariff-wrapper'
 import PurchaseWizard from './components/dh-purchase-wizard'
 import easywebinar from '../oldJS/assets/svg/youtube.svg'
 import dhPermissionWrapper from './components/dh-permission-wrapper'
+import dhEmailConfirmation from './components/dh-email-confirmation'
 import utils from "../oldJS/utils"
 
 export default {
@@ -223,7 +225,8 @@ export default {
     userplus,
     arrow,
     PurchaseWizard,
-    dhPermissionWrapper
+    dhPermissionWrapper,
+    dhEmailConfirmation
   },
 
   computed: {
