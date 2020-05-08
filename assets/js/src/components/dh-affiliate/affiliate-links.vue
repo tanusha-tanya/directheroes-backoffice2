@@ -208,11 +208,7 @@ $affiliate-footer-warning-icon-color: $link;
   .dh-affiliate-paypal-card {
     .dh-affiliate-card-body {
       svg {
-        width: 18px;
-        max-height: 18px;
         color: $affiliate-email-repeat-success;
-        position: relative;
-        top: 14px;
       }
     }
 

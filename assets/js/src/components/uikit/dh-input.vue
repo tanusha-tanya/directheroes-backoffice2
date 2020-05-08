@@ -154,6 +154,12 @@ $input-error-icon-size: 14px;
     .el-input__suffix {
       right: 14px;
 
+      .el-input__suffix-inner {
+        height: 100%;
+        display: flex;
+        align-self: center;
+      }
+
       svg {
         width: 18px;
       }
