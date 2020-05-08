@@ -145,7 +145,9 @@ export default {
   watch: {
     isAddAccount(newValue, oldValue) {
       const { accountToAuth, delegateRequestHandler } = this;
-      if (!newValue && accountToAuth.connectStep === "account.success") {
+      if (!accountToAuth || newValue) return;
+
+      if (accountToAuth.connectStep === "account.success") {
         delegateRequestHandler().then(delegates => {
           const trusted = delegates.find(d => d.isTrusted);
           if (trusted) {
